@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DX推進・業務改善支援 Webサイト
 
-## Getting Started
+本リポジトリは、新潟県内を中心とした中小事業者・個人事業主向けに提供する  
+**DX推進・業務改善支援事業**の内容を紹介するためのWebサイトです。
 
-First, run the development server:
+Next.js を用いて、事業内容・対応可能業務・料金体系・問い合わせ方法などを
+分かりやすく整理・発信することを目的としています。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 事業概要
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+本事業は、業務の非効率化・属人化・アナログ運用といった課題を整理し、  
+ITツールや簡易システムを活用して「現場で実際に使える形」に落とし込む  
+**実務寄りのDX支援**を行うものです。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+一般的なDXコンサルティングに留まらず、
 
-## Learn More
+- 既存ツール（LINE公式・フォーム・スプレッドシート等）の活用
+- 必要に応じた簡易システムの構築
+- 導入後の運用・改善支援
 
-To learn more about Next.js, take a look at the following resources:
+まで一貫して対応します。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 主な対象
 
-## Deploy on Vercel
+- 新潟県内の中小事業者・個人事業主
+- 飲食店、美容室・サロン、小規模サービス業
+- 従業員数 1〜30 名程度
+- IT専任担当者がいない、または兼任している事業者
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 提供サービス例
+
+- 初回相談・ヒアリング
+- 業務フローの整理・見える化
+- 属人化・非効率ポイントの洗い出し
+- LINE公式アカウント、フォーム、管理シートの導入
+- 簡易システム・自動化の構築
+- 導入後の運用サポート・改善提案
+
+---
+
+## 料金イメージ
+
+- 初期費用：内容に応じて相談
+- 月額費用：固定費を抑えた運用支援
+- 成果報酬：成果が出た場合のみ相談ベースで設定
+
+※ 事業者側のリスクを最小限に抑える設計を重視しています。
+
+---
+
+## Webサイトで扱う主なページ
+
+- トップページ（事業概要・コンセプト）
+- サービス内容紹介
+- 料金・契約に関する注意事項
+- 簡易アンケートフォーム（事前ヒアリング用）
+- お問い合わせ方法
+- プライバシーポリシー
+
+---
+
+## 技術スタック
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+
+---
+
+## 注意事項
+
+- 本サイトは契約を保証するものではありません
+- 対応範囲・内容は案件ごとに相談のうえ決定します
+- 法的文言については必要に応じて専門家確認を行います
+
+---
+
+## 開発目的
+
+- 事業内容を分かりやすく言語化・可視化する
+- 問い合わせ前に事業者側の理解を揃える
+- DX支援を「難しいもの」ではなく「身近な改善」として伝える
