@@ -1,0 +1,33 @@
+import { Section } from "@/components/section";
+import { ContactForm } from "@/components/contact-form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { site } from "@/lib/site";
+
+export default function ContactPage() {
+  return (
+    <Section
+      eyebrow="お問い合わせ"
+      title="まずは現状を聞かせてください"
+      description="相談内容が固まっていなくてもOK。課題の言語化から一緒にやります。"
+    >
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <ContactForm />
+        </div>
+
+        <Card className="rounded-3xl">
+          <CardHeader>
+            <CardTitle className="text-base">連絡先（仮）</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            <p>メール: {site.contact.email}</p>
+            <p className="mt-2">対応目安: {site.contact.responseHours}</p>
+            <p className="mt-4 text-xs">
+              ※ 今後、LINE公式/カレンダー予約などもここに追加できます。
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </Section>
+  );
+}
