@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { Separator } from "@/components/ui/separator";
@@ -10,6 +11,7 @@ const footerLinks = [
     links: [
       { label: "サービス概要", href: "/services" },
       { label: "料金の目安", href: "/pricing" },
+      { label: "事業所概要", href: "/about" },
       { label: "事前アンケート", href: "/survey" },
     ],
   },
@@ -34,13 +36,25 @@ export function SiteFooter() {
   const brand = site?.name ?? "DX Support";
 
   return (
-    <footer className="mt-16 border-t">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <footer className="mt-16 border-t border-primary/20 bg-background/70 backdrop-blur relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-20" />
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Top area */}
         <div className="grid gap-8 py-10 md:grid-cols-3">
           {/* Brand */}
           <div className="space-y-3">
-            <p className="text-base font-semibold tracking-tight">{brand}</p>
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
+                <Image
+                  src={site.logo}
+                  alt={`${brand} logo`}
+                  width={44}
+                  height={44}
+                  className="h-9 w-9 rounded-full"
+                />
+              </span>
+              <p className="text-base font-semibold tracking-tight">{brand}</p>
+            </div>
             <p className="text-sm text-muted-foreground">
               Web制作 / 業務改善 / 自動化 / DX支援など、IT領域全般を柔軟にサポートします。
               まずは最小構成で動かして検証し、成果に寄せます。

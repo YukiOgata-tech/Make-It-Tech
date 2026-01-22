@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,7 +96,7 @@ function ServiceCard({ item }: { item: Service }) {
     <Card className="group relative overflow-hidden rounded-3xl">
       {/* subtle hover glow */}
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="absolute -top-24 left-1/2 h-64 w-[28rem] -translate-x-1/2 rounded-full bg-muted blur-3xl" />
+        <div className="absolute -top-24 left-1/2 h-64 w-[28rem] -translate-x-1/2 rounded-full bg-secondary/50 blur-3xl" />
       </div>
 
       <CardHeader className="space-y-3">
@@ -113,8 +114,8 @@ function ServiceCard({ item }: { item: Service }) {
             </div>
           </div>
 
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background shadow-sm">
-            <Icon className="h-5 w-5 text-muted-foreground" />
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+            <Icon className="h-5 w-5" />
           </div>
         </div>
       </CardHeader>
@@ -125,7 +126,7 @@ function ServiceCard({ item }: { item: Service }) {
         <div className="mt-5">
           <Link
             href="/contact"
-            className="inline-flex items-center text-sm font-medium text-foreground hover:underline"
+            className="inline-flex items-center text-sm font-medium text-primary hover:underline"
           >
             相談する <ArrowRight className="ml-1 h-4 w-4" />
           </Link>
@@ -142,7 +143,7 @@ export function ServicesSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="text-sm font-medium text-primary/80">
               サービス
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -173,7 +174,7 @@ export function ServicesSection({ className }: { className?: string }) {
               <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Badge className="rounded-xl" variant="outline">
+                    <Badge className="rounded-xl border-primary/20 text-primary/80" variant="outline">
                       {g.label}
                     </Badge>
                     <p className="text-sm text-muted-foreground">{g.note}</p>
@@ -192,8 +193,10 @@ export function ServicesSection({ className }: { className?: string }) {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                {g.items.map((item) => (
-                  <ServiceCard key={item.title} item={item} />
+                {g.items.map((item, index) => (
+                  <FadeIn key={item.title} delay={0.05 * index}>
+                    <ServiceCard item={item} />
+                  </FadeIn>
                 ))}
               </div>
             </div>
@@ -201,7 +204,7 @@ export function ServicesSection({ className }: { className?: string }) {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-12 rounded-3xl border bg-muted/40 p-6 sm:p-8">
+        <div className="mt-12 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">迷ったらここから</p>

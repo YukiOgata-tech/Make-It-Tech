@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FadeIn } from "@/components/motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -93,7 +94,7 @@ export function OfferSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">サービス / 料金の目安</p>
+            <p className="text-sm font-medium text-primary/80">サービス / 料金の目安</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
               できることと、価格レンジをまとめて提示します
             </h2>
@@ -123,8 +124,8 @@ export function OfferSection({ className }: { className?: string }) {
             <Card key={p.title} className="rounded-3xl">
               <CardContent className="p-6">
                 <div className="flex items-start gap-3">
-                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border bg-background">
-                    <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                    <CheckCircle2 className="h-4 w-4" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">{p.title}</p>
@@ -138,83 +139,85 @@ export function OfferSection({ className }: { className?: string }) {
 
         {/* Offers */}
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
-          {offers.map((o) => {
+          {offers.map((o, index) => {
             const Icon = o.icon;
             return (
-              <Card key={o.title} className="rounded-3xl overflow-hidden">
-                <CardHeader className="space-y-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="grid gap-2">
-                      <CardTitle className="text-base tracking-tight sm:text-lg">
-                        {o.title}
-                      </CardTitle>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="secondary" className="rounded-xl">
-                          {o.range}
-                        </Badge>
-                        <Badge variant="outline" className="rounded-xl">
-                          目安
-                        </Badge>
+              <FadeIn key={o.title} delay={0.05 * index}>
+                <Card className="rounded-3xl overflow-hidden">
+                  <CardHeader className="space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="grid gap-2">
+                        <CardTitle className="text-base tracking-tight sm:text-lg">
+                          {o.title}
+                        </CardTitle>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="secondary" className="rounded-xl">
+                            {o.range}
+                          </Badge>
+                          <Badge variant="outline" className="rounded-xl">
+                            目安
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+                        <Icon className="h-5 w-5" />
                       </div>
                     </div>
 
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background shadow-sm">
-                      <Icon className="h-5 w-5 text-muted-foreground" />
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {o.summary}
+                    </p>
+                  </CardHeader>
+
+                  <CardContent className="grid gap-4">
+                    <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                      <p className="text-sm font-medium">含まれること（例）</p>
+                      <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
+                        {o.includes.map((x) => (
+                          <li key={x} className="flex items-start gap-2">
+                            <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                            <span>{x}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
 
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {o.summary}
-                  </p>
-                </CardHeader>
+                    <div className="rounded-2xl border border-primary/10 bg-secondary/30 p-4">
+                      <p className="text-sm font-medium">変動要因（例）</p>
+                      <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
+                        {o.notes.map((x) => (
+                          <li key={x} className="flex items-start gap-2">
+                            <span className="mt-1 h-2 w-2 rounded-full bg-primary/60" />
+                            <span>{x}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
-                <CardContent className="grid gap-4">
-                  <div className="rounded-2xl border bg-background p-4">
-                    <p className="text-sm font-medium">含まれること（例）</p>
-                    <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
-                      {o.includes.map((x) => (
-                        <li key={x} className="flex items-start gap-2">
-                          <span className="mt-1 h-2 w-2 rounded-full bg-foreground/70" />
-                          <span>{x}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    <div className="flex flex-wrap gap-3">
+                      <Button asChild className="rounded-xl">
+                        <Link href="/contact">
+                          この内容で相談 <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" className="rounded-xl">
+                        <Link href="/pricing">料金ページへ</Link>
+                      </Button>
+                    </div>
 
-                  <div className="rounded-2xl border bg-muted/40 p-4">
-                    <p className="text-sm font-medium">変動要因（例）</p>
-                    <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
-                      {o.notes.map((x) => (
-                        <li key={x} className="flex items-start gap-2">
-                          <span className="mt-1 h-2 w-2 rounded-full bg-foreground/70" />
-                          <span>{x}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    <Button asChild className="rounded-xl">
-                      <Link href="/contact">
-                        この内容で相談 <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" className="rounded-xl">
-                      <Link href="/pricing">料金ページへ</Link>
-                    </Button>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    ※ 上記は目安です。範囲を合意してから見積もります。
-                  </p>
-                </CardContent>
-              </Card>
+                    <p className="text-xs text-muted-foreground">
+                      ※ 上記は目安です。範囲を合意してから見積もります。
+                    </p>
+                  </CardContent>
+                </Card>
+              </FadeIn>
             );
           })}
         </div>
 
         {/* Bottom note */}
-        <div className="mt-10 rounded-3xl border bg-muted/40 p-6 sm:p-8">
+        <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="max-w-2xl">
               <p className="text-sm font-medium">迷ったら、まず「困りごと」だけでOK</p>

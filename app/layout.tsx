@@ -5,17 +5,18 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { Noto_Sans_JP, Inter } from "next/font/google";
+import { Outfit, Zen_Kaku_Gothic_New } from "next/font/google";
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-display",
   display: "swap",
 });
 
-const noto = Noto_Sans_JP({
+const zen = Zen_Kaku_Gothic_New({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-noto",
+  variable: "--font-body",
   display: "swap",
 });
 
@@ -26,6 +27,11 @@ export const metadata: Metadata = {
   },
   description: site.description,
   metadataBase: new URL(site.url),
+  icons: {
+    icon: site.logo,
+    shortcut: site.logo,
+    apple: site.logo,
+  },
   openGraph: {
     title: site.name,
     description: site.description,
@@ -33,6 +39,20 @@ export const metadata: Metadata = {
     siteName: site.name,
     locale: "ja_JP",
     type: "website",
+    images: [
+      {
+        url: site.ogImage ?? site.logo,
+        width: 768,
+        height: 768,
+        alt: site.name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: site.name,
+    description: site.description,
+    images: [site.ogImage ?? site.logo],
   },
 };
 
@@ -41,7 +61,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body className={`${inter.variable} ${noto.variable} min-h-dvh bg-background text-foreground antialiased`}>
+      <body className={`${outfit.variable} ${zen.variable} min-h-dvh bg-background text-foreground font-sans antialiased`}>
         <ThemeProvider>
           <SiteHeader />
           <main className="min-h-[calc(100dvh-64px)]">{children}</main>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -70,7 +71,7 @@ export function FAQSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">FAQ</p>
+            <p className="text-sm font-medium text-primary/80">FAQ</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
               不安になりやすいポイントを先に解消します
             </h2>
@@ -93,16 +94,18 @@ export function FAQSection({ className }: { className?: string }) {
 
         {/* Category chips */}
         <div className="mt-10 grid gap-4 md:grid-cols-4">
-          {categoryMeta.map((c) => (
-            <Card key={c.key} className="rounded-3xl">
-              <CardContent className="p-6">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background">
-                  <c.icon className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <p className="mt-4 text-sm font-medium">{c.key}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{c.desc}</p>
-              </CardContent>
-            </Card>
+          {categoryMeta.map((c, index) => (
+            <FadeIn key={c.key} delay={0.05 * index}>
+              <Card className="rounded-3xl">
+                <CardContent className="p-6">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                    <c.icon className="h-5 w-5" />
+                  </div>
+                  <p className="mt-4 text-sm font-medium">{c.key}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{c.desc}</p>
+                </CardContent>
+              </Card>
+            </FadeIn>
           ))}
         </div>
 
@@ -128,7 +131,7 @@ export function FAQSection({ className }: { className?: string }) {
         </Accordion>
 
         {/* Bottom CTA */}
-        <div className="mt-10 rounded-3xl border bg-muted/40 p-6 sm:p-8">
+        <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">迷ったら、まず“現状”だけでOK</p>

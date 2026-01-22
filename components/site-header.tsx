@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -8,7 +9,7 @@ import { site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Menu, Sparkles, ArrowRight, ChevronDown } from "lucide-react";
+import { Menu, ArrowRight, ChevronDown } from "lucide-react";
 
 type NavItem = { label: string; href: string };
 
@@ -33,6 +34,7 @@ function useScrollShadow(threshold = 8) {
 const primaryNav: NavItem[] = [
   { label: "サービス", href: "/services" },
   { label: "料金", href: "/pricing" },
+  { label: "事業所概要", href: "/about" },
 ];
 
 const secondaryNav: NavItem[] = [
@@ -47,16 +49,24 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b",
-        "bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "sticky top-0 z-50 w-full border-b border-transparent relative",
+        "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70",
+        "after:pointer-events-none after:absolute after:inset-x-6 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-primary/50 after:via-accent/40 after:to-secondary/50",
         scrolled ? "shadow-sm" : "shadow-none"
       )}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link href="/" className="group inline-flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-background shadow-sm transition group-hover:shadow">
-            <Sparkles className="h-4 w-4" />
+          <span className="inline-flex h-9 w-9 items-center justify-center">
+            <Image
+              src={site.logo}
+              alt={`${site.name} logo`}
+              width={36}
+              height={36}
+              className="h-9 w-9 object-contain"
+              priority
+            />
           </span>
           <span className="font-semibold tracking-tight">{site.name}</span>
         </Link>
@@ -72,8 +82,8 @@ export function SiteHeader() {
                 className={cn(
                   "rounded-xl px-3 py-2 text-sm transition",
                   active
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
                 )}
               >
                 {item.label}
@@ -88,7 +98,7 @@ export function SiteHeader() {
                 variant="ghost"
                 className={cn(
                   "rounded-xl px-3 text-sm",
-                  secondaryNav.some((n) => isActive(pathname, n.href)) && "bg-muted"
+                  secondaryNav.some((n) => isActive(pathname, n.href)) && "bg-primary/10"
                 )}
               >
                 もっと <ChevronDown className="ml-1 h-4 w-4" />
@@ -116,15 +126,21 @@ export function SiteHeader() {
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-xl">
+              <Button variant="outline" size="icon" className="rounded-xl border-primary/30">
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="right" className="w-[340px] rounded-l-3xl">
+            <SheetContent side="right" className="w-[340px] rounded-l-3xl bg-background/90 backdrop-blur">
               <div className="mt-2 flex items-center gap-2">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border">
-                  <Sparkles className="h-4 w-4" />
+                <span className="inline-flex h-9 w-9 items-center justify-center">
+                  <Image
+                    src={site.logo}
+                    alt={`${site.name} logo`}
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 object-contain"
+                  />
                 </span>
                 <div>
                   <p className="text-sm font-semibold">{site.name}</p>
@@ -144,8 +160,8 @@ export function SiteHeader() {
                       className={cn(
                         "rounded-2xl px-4 py-3 text-sm transition",
                         active
-                          ? "bg-muted text-foreground"
-                          : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                          ? "bg-primary/10 text-foreground"
+                          : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
                       )}
                     >
                       {item.label}

@@ -60,7 +60,7 @@ export function PricingTable() {
             <ul className="grid gap-2 text-sm text-muted-foreground">
               {p.features.map((f) => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 text-foreground" />
+                  <Check className="mt-0.5 h-4 w-4 text-primary" />
                   <span>{f}</span>
                 </li>
               ))}

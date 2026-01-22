@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,8 +97,8 @@ function StepCard({ s }: { s: Step }) {
             </CardTitle>
           </div>
 
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background shadow-sm">
-            <Icon className="h-5 w-5 text-muted-foreground" />
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+            <Icon className="h-5 w-5" />
           </div>
         </div>
 
@@ -106,7 +107,7 @@ function StepCard({ s }: { s: Step }) {
 
       <CardContent className="grid gap-4">
         {s.decision && (
-          <div className="rounded-2xl border bg-muted/40 p-4">
+          <div className="rounded-2xl border border-primary/10 bg-secondary/30 p-4">
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="rounded-xl">
                 {s.decision.label}
@@ -117,12 +118,12 @@ function StepCard({ s }: { s: Step }) {
           </div>
         )}
 
-        <div className="rounded-2xl border bg-background p-4">
+        <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
           <p className="text-sm font-medium">このステップのアウトプット</p>
           <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
             {s.outputs.map((o) => (
               <li key={o} className="flex items-start gap-2">
-                <span className="mt-1 h-2 w-2 rounded-full bg-foreground/70" />
+                <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
                 <span>{o}</span>
               </li>
             ))}
@@ -140,7 +141,7 @@ export function ProcessSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">進め方</p>
+            <p className="text-sm font-medium text-primary/80">進め方</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
               迷わないために、手順と判断ポイントを明確にします
             </h2>
@@ -166,8 +167,10 @@ export function ProcessSection({ className }: { className?: string }) {
 
         {/* Steps */}
         <div className="grid gap-4 lg:grid-cols-2">
-          {steps.map((s) => (
-            <StepCard key={s.step} s={s} />
+          {steps.map((s, index) => (
+            <FadeIn key={s.step} delay={0.05 * index}>
+              <StepCard s={s} />
+            </FadeIn>
           ))}
         </div>
 
@@ -178,8 +181,8 @@ export function ProcessSection({ className }: { className?: string }) {
               <Card key={g.title} className="rounded-3xl">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background">
-                      <g.icon className="h-5 w-5 text-muted-foreground" />
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                      <g.icon className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium">{g.title}</p>
@@ -210,7 +213,7 @@ export function ProcessSection({ className }: { className?: string }) {
                 </Button>
               </div>
 
-              <div className="mt-6 rounded-2xl bg-muted/50 p-4">
+              <div className="mt-6 rounded-2xl bg-secondary/40 p-4">
                 <p className="text-xs font-medium text-muted-foreground">TIP</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。

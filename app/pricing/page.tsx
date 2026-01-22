@@ -133,7 +133,7 @@ function SectionTitle({
 }) {
   return (
     <div>
-      <p className="text-sm font-medium text-muted-foreground">{eyebrow}</p>
+      <p className="text-sm font-medium text-primary/80">{eyebrow}</p>
       <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
         {title}
       </h2>
@@ -154,7 +154,7 @@ export default function PricingPage() {
             <Badge variant="secondary" className="rounded-xl">
               料金の目安
             </Badge>
-            <Badge variant="outline" className="rounded-xl">
+            <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
               プラン無し・柔軟見積もり
             </Badge>
           </div>
@@ -189,8 +189,8 @@ export default function PricingPage() {
           {principles.map((p) => (
             <Card key={p.title} className="rounded-3xl">
               <CardContent className="p-6">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background">
-                  <p.icon className="h-5 w-5 text-muted-foreground" />
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                  <p.icon className="h-5 w-5" />
                 </div>
                 <p className="mt-4 text-sm font-medium">{p.title}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
@@ -220,32 +220,32 @@ export default function PricingPage() {
                     <p className="mt-2 text-sm font-medium">{ex.range}</p>
                   </div>
 
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background shadow-sm">
-                    <ClipboardList className="h-5 w-5 text-muted-foreground" />
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+                    <ClipboardList className="h-5 w-5" />
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">{ex.summary}</p>
               </CardHeader>
 
               <CardContent className="grid gap-4">
-                <div className="rounded-2xl border bg-background p-4">
+                <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                   <p className="text-sm font-medium">含まれること（例）</p>
                   <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
                     {ex.includes.map((x) => (
                       <li key={x} className="flex items-start gap-2">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                         <span>{x}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border bg-muted/40 p-4">
+                <div className="rounded-2xl border border-primary/10 bg-secondary/30 p-4">
                   <p className="text-sm font-medium">金額が変わりやすい要因（例）</p>
                   <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
                     {ex.dependsOn.map((x) => (
                       <li key={x} className="flex items-start gap-2">
-                        <span className="mt-1 h-2 w-2 rounded-full bg-foreground/70" />
+                        <span className="mt-1 h-2 w-2 rounded-full bg-primary/60" />
                         <span>{x}</span>
                       </li>
                     ))}
@@ -291,7 +291,7 @@ export default function PricingPage() {
                 <ul className="grid gap-2">
                   {b.items.map((x) => (
                     <li key={x} className="flex items-start gap-2">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                       <span>{x}</span>
                     </li>
                   ))}
@@ -335,15 +335,15 @@ export default function PricingPage() {
 
               <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
                 <div className="flex items-start gap-2">
-                  <ShieldCheck className="mt-0.5 h-4 w-4 text-foreground" />
+                  <ShieldCheck className="mt-0.5 h-4 w-4 text-primary" />
                   <span>現状（困っていること）</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Timer className="mt-0.5 h-4 w-4 text-foreground" />
+                  <Timer className="mt-0.5 h-4 w-4 text-primary" />
                   <span>理想（どうしたいか）</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Wallet className="mt-0.5 h-4 w-4 text-foreground" />
+                  <Wallet className="mt-0.5 h-4 w-4 text-primary" />
                   <span>制約（予算/納期/担当者）</span>
                 </div>
               </div>
@@ -363,7 +363,7 @@ export default function PricingPage() {
         </div>
 
         {/* Final CTA */}
-        <div className="mt-12 rounded-3xl border bg-muted/40 p-6 sm:p-8">
+        <div className="mt-12 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">要件が固まってなくても大丈夫です</p>

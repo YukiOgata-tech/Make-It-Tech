@@ -96,12 +96,12 @@ function SelectLike({
     <div className="grid gap-2">
       <Label>{label}</Label>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild>
           <button
             type="button"
             className={cn(
-              "flex h-11 w-full items-center justify-between rounded-xl border bg-background px-3 text-left text-sm",
-              "hover:bg-muted/40 transition",
+              "flex h-11 w-full items-center justify-between rounded-xl border border-border/70 bg-background/70 px-3 text-left text-sm backdrop-blur",
+              "hover:bg-primary/5 transition",
               error && "border-destructive"
             )}
           >
@@ -204,15 +204,15 @@ export function ContactForm() {
       </CardHeader>
 
       <CardContent className="grid gap-6">
-        <div className="rounded-2xl border bg-muted/40 p-4">
+        <div className="rounded-2xl border border-primary/20 bg-secondary/40 p-4">
           <p className="text-sm font-medium">早く見積もるコツ</p>
           <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
-              <Check className="mt-0.5 h-4 w-4 text-foreground" />
+              <Check className="mt-0.5 h-4 w-4 text-primary" />
               <span>「現状」「理想」「制約（予算/納期）」の3点だけでOK</span>
             </li>
             <li className="flex items-start gap-2">
-              <Check className="mt-0.5 h-4 w-4 text-foreground" />
+              <Check className="mt-0.5 h-4 w-4 text-primary" />
               <span>
                 既存ツールで解決できるなら“作らない”提案もします
               </span>
@@ -285,7 +285,7 @@ export function ContactForm() {
             <FieldError message={formState.errors.message?.message} />
           </div>
 
-          <div className="rounded-2xl border bg-background p-4">
+          <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-medium">相談テンプレ（コピペ用）</p>
@@ -305,7 +305,7 @@ export function ContactForm() {
               </Button>
             </div>
 
-            <pre className="mt-3 whitespace-pre-wrap rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
+            <pre className="mt-3 whitespace-pre-wrap rounded-xl bg-secondary/30 p-3 text-xs text-muted-foreground">
 {template}
             </pre>
           </div>
@@ -316,7 +316,7 @@ export function ContactForm() {
             <label className="flex items-start gap-3 text-sm">
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 accent-foreground"
+                className="mt-1 h-4 w-4 accent-primary"
                 {...form.register("consent")}
               />
               <span className="text-muted-foreground">
@@ -344,11 +344,11 @@ export function ContactForm() {
           </p>
         </form>
 
-        <div className="rounded-2xl bg-muted/40 p-4">
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            <p className="text-sm font-medium">メールで直接連絡する場合</p>
-          </div>
+          <div className="rounded-2xl bg-secondary/30 p-4">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <p className="text-sm font-medium">メールで直接連絡する場合</p>
+            </div>
           <p className="mt-2 text-sm text-muted-foreground">
             {site.contact?.email ?? "hello@example.com"}（返信目安：{site.contact?.responseHours ?? "平日 10:00 - 19:00"}）
           </p>

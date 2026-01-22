@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -81,7 +82,7 @@ function PriceCard({ item }: { item: PriceItem }) {
     <Card className="group relative overflow-hidden rounded-3xl">
       {/* subtle hover glow */}
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="absolute -top-24 left-1/2 h-64 w-[28rem] -translate-x-1/2 rounded-full bg-muted blur-3xl" />
+        <div className="absolute -top-24 left-1/2 h-64 w-[28rem] -translate-x-1/2 rounded-full bg-secondary/50 blur-3xl" />
       </div>
 
       <CardHeader className="space-y-3">
@@ -99,8 +100,8 @@ function PriceCard({ item }: { item: PriceItem }) {
             </div>
           </div>
 
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background shadow-sm">
-            <Sparkles className="h-5 w-5 text-muted-foreground" />
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+            <Sparkles className="h-5 w-5" />
           </div>
         </div>
 
@@ -109,12 +110,12 @@ function PriceCard({ item }: { item: PriceItem }) {
       </CardHeader>
 
       <CardContent className="grid gap-4">
-        <div className="rounded-2xl border bg-background p-4">
+        <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
           <p className="text-sm font-medium">含まれること（例）</p>
           <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
             {item.includes.map((x) => (
               <li key={x} className="flex items-start gap-2">
-                <Check className="mt-0.5 h-4 w-4 text-foreground" />
+                <Check className="mt-0.5 h-4 w-4 text-primary" />
                 <span>{x}</span>
               </li>
             ))}
@@ -153,7 +154,7 @@ export function PricingSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">料金の目安</p>
+            <p className="text-sm font-medium text-primary/80">料金の目安</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
               “プラン”ではなく、内容に合わせて柔軟に見積もります
             </h2>
@@ -175,16 +176,18 @@ export function PricingSection({ className }: { className?: string }) {
 
         {/* Principles */}
         <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {principles.map((p) => (
-            <Card key={p.title} className="rounded-3xl">
-              <CardContent className="p-6">
-                <p className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-background">
-                  <p.icon className="h-5 w-5 text-muted-foreground" />
-                </p>
-                <p className="mt-4 text-sm font-medium">{p.title}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
-              </CardContent>
-            </Card>
+          {principles.map((p, index) => (
+            <FadeIn key={p.title} delay={0.05 * index}>
+              <Card className="rounded-3xl">
+                <CardContent className="p-6">
+                  <p className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                    <p.icon className="h-5 w-5" />
+                  </p>
+                  <p className="mt-4 text-sm font-medium">{p.title}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+                </CardContent>
+              </Card>
+            </FadeIn>
           ))}
         </div>
 
@@ -192,13 +195,15 @@ export function PricingSection({ className }: { className?: string }) {
 
         {/* Price list */}
         <div className="grid gap-4 lg:grid-cols-2">
-          {items.map((it) => (
-            <PriceCard key={it.title} item={it} />
+          {items.map((it, index) => (
+            <FadeIn key={it.title} delay={0.05 * index}>
+              <PriceCard item={it} />
+            </FadeIn>
           ))}
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-10 rounded-3xl border bg-muted/40 p-6 sm:p-8">
+        <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">最短で見積もるために</p>
