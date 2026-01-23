@@ -5,7 +5,7 @@ export const site = {
     "中小事業者・個人事業主向けに、Web制作、業務の見える化、ツール導入、自動化、簡易システム構築まで一気通貫で支援します。",
   logo: "/images/logo_MIT_transparent.png",
   ogImage: "/images/logo_MIT_transparent.png",
-  url: "http://localhost:3000",
+  url: "https://make-it-tech.com",
   locale: "ja_JP",
   contact: {
     email: "hello@example.com",
