@@ -168,21 +168,38 @@ export function ContactForm() {
   }, [values.category, values.budget, values.deadline]);
 
   async function onSubmit(data: FormValues) {
-    // TODO: ここをAPIに接続（Resend / Slack / Supabase 等）
-    console.log("CONTACT_SUBMIT", data);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    toast.success("送信しました（仮）", {
-      description: "次はAPI接続で本番送信にできます。",
-    });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload?.error ?? "送信に失敗しました。");
+      }
 
-    form.reset({
-      ...data,
-      name: "",
-      email: "",
-      company: "",
-      message: "",
-      consent: true,
-    });
+      toast.success("送信しました", {
+        description: "内容を確認して折り返しご連絡します。",
+      });
+
+      form.reset({
+        ...data,
+        name: "",
+        email: "",
+        company: "",
+        message: "",
+        consent: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("送信に失敗しました", {
+        description: "時間をおいて再度お試しください。",
+      });
+    }
   }
 
   function copyTemplate() {
@@ -330,8 +347,8 @@ export function ContactForm() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button type="submit" className="rounded-xl">
-              送信（仮） <ArrowRight className="ml-2 h-4 w-4" />
+            <Button type="submit" className="rounded-xl" disabled={formState.isSubmitting}>
+              {formState.isSubmitting ? "送信中..." : "送信する"} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
             <Button asChild variant="outline" className="rounded-xl">
@@ -340,7 +357,7 @@ export function ContactForm() {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            ※ 現時点では送信は「仮」です。次に API 接続（メール/Slack/DB）を行うと本番運用できます。
+            ※ 送信後、内容を確認して折り返しご連絡します。
           </p>
         </form>
 
