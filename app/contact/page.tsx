@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Section } from "@/components/section";
 import { ContactForm } from "@/components/contact-form";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { site } from "@/lib/site";
 
@@ -33,13 +35,26 @@ export default function ContactPage() {
 
         <Card className="rounded-3xl">
           <CardHeader>
-            <CardTitle className="text-base">連絡先（仮）</CardTitle>
+            <CardTitle className="text-base">対応目安</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            <p>メール: {site.contact.email}</p>
-            <p className="mt-2">対応目安: {site.contact.responseHours}</p>
+            <p>{site.contact.responseHours}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <Button asChild variant="outline" className="rounded-xl">
+                <Link
+                  href={site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y"}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  公式LINEで相談
+                </Link>
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                返信が早い場合があります
+              </span>
+            </div>
             <p className="mt-4 text-xs">
-              ※ 今後、LINE公式/カレンダー予約などもここに追加できます。
+              ※ 連絡はフォームからお願いします。今後、LINE公式/カレンダー予約なども追加できます。
             </p>
           </CardContent>
         </Card>

@@ -98,7 +98,6 @@ export default function TermsPage() {
                     お問い合わせページ
                   </Link>
                   よりご連絡ください。
-                  {c.contact.email ? <>（メール：{c.contact.email}）</> : null}
                 </p>
               ) : null}
             </section>

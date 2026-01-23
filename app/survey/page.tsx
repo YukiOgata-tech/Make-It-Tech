@@ -329,7 +329,7 @@ export default function SurveyPage() {
         </div>
 
         <div className="mt-6 text-xs text-muted-foreground">
-          ※ LINEが使えない場合は、メール（{site.contact.email}）でも対応します。
+          ※ LINEが使えない場合は、お問い合わせフォームで対応します。
         </div>
       </Section>
     </>

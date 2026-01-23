@@ -8,18 +8,33 @@ const categories = [
   "その他/相談して決めたい",
 ] as const;
 
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+const MIN_SUBMIT_TIME_MS = 3000;
+const MAX_URL_COUNT = 3;
+
+type RateLimitEntry = { count: number; resetAt: number };
+
+const globalForRateLimit = globalThis as typeof globalThis & {
+  contactRateLimit?: Map<string, RateLimitEntry>;
+};
+const rateLimitMap = globalForRateLimit.contactRateLimit ?? new Map<string, RateLimitEntry>();
+globalForRateLimit.contactRateLimit = rateLimitMap;
+
 const schema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  company: z.string().optional(),
+  name: z.string().min(1).max(80),
+  email: z.string().email().max(200),
+  company: z.string().max(120).optional(),
   category: z
     .string()
     .min(1)
     .refine((value) => (categories as readonly string[]).includes(value)),
   budget: z.string().optional(),
   deadline: z.string().optional(),
-  message: z.string().min(20),
+  message: z.string().min(20).max(2000),
   consent: z.boolean().refine((value) => value === true),
+  website: z.string().optional(),
+  startedAt: z.coerce.number().min(1),
 });
 
 type ContactPayload = z.infer<typeof schema>;
@@ -31,6 +46,14 @@ function escapeHtml(value: string) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function getClientIp(request: Request) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0]?.trim() || "unknown";
+  }
+  return request.headers.get("x-real-ip") ?? "unknown";
 }
 
 function formatEmailText(payload: ContactPayload) {
@@ -164,12 +187,30 @@ export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.RESEND_FROM?.trim();
   const to = process.env.RESEND_TO?.trim();
+  const userAgent = request.headers.get("user-agent");
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("host");
 
   if (!apiKey || !from || !to) {
     return Response.json(
       { error: "Email settings are missing." },
       { status: 500 }
     );
+  }
+
+  if (!userAgent) {
+    return Response.json({ error: "Missing user agent." }, { status: 400 });
+  }
+
+  if (origin && host) {
+    try {
+      const originHost = new URL(origin).host;
+      if (originHost !== host) {
+        return Response.json({ error: "Invalid origin." }, { status: 403 });
+      }
+    } catch {
+      return Response.json({ error: "Invalid origin." }, { status: 403 });
+    }
   }
 
   let payload: ContactPayload;
@@ -181,6 +222,34 @@ export async function POST(request: Request) {
       { error: "Invalid payload.", details: error instanceof Error ? error.message : undefined },
       { status: 400 }
     );
+  }
+
+  if (payload.website && payload.website.trim().length > 0) {
+    return Response.json({ error: "Spam detected." }, { status: 400 });
+  }
+
+  const elapsed = Date.now() - payload.startedAt;
+  if (Number.isFinite(elapsed) && elapsed < MIN_SUBMIT_TIME_MS) {
+    return Response.json({ error: "Submission too fast." }, { status: 429 });
+  }
+
+  const urlMatches = payload.message.match(/https?:\/\/|www\./gi) ?? [];
+  if (urlMatches.length > MAX_URL_COUNT) {
+    return Response.json({ error: "Too many links." }, { status: 400 });
+  }
+
+  const clientIp = getClientIp(request);
+  const now = Date.now();
+  const entry = rateLimitMap.get(clientIp);
+
+  if (entry && entry.resetAt > now && entry.count >= RATE_LIMIT_MAX) {
+    return Response.json({ error: "Too many requests." }, { status: 429 });
+  }
+
+  if (entry && entry.resetAt > now) {
+    entry.count += 1;
+  } else {
+    rateLimitMap.set(clientIp, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
   }
 
   const subject = `【お問い合わせ】${payload.name}様`;

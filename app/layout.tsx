@@ -92,7 +92,6 @@ export default function RootLayout({
     image: ogImageUrl,
     description: site.description,
     slogan: site.tagline,
-    email: site.contact.email,
     areaServed: [
       { "@type": "AdministrativeArea", name: "新潟県" },
       { "@type": "Country", name: "Japan" },
@@ -109,7 +108,7 @@ export default function RootLayout({
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
-      email: site.contact.email,
+      url: `${site.url}/contact`,
       availableLanguage: ["ja"],
     },
     ...(sameAs.length ? { sameAs } : {}),

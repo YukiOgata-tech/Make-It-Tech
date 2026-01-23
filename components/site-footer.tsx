@@ -122,9 +122,9 @@ export function SiteFooter() {
 
             <div className="inline-flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <span>
-                {site?.contact?.email ?? "hello@example.com"}
-              </span>
+              <Link href="/contact" className="hover:text-foreground hover:underline">
+                お問い合わせフォーム
+              </Link>
             </div>
           </div>
         </div>

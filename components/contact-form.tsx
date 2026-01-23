@@ -51,9 +51,15 @@ const deadlines = [
 ] as const;
 
 const schema = z.object({
-  name: z.string().min(1, "お名前を入力してください"),
-  email: z.string().email("メールアドレスの形式が正しくありません"),
-  company: z.string().optional(),
+  name: z
+    .string()
+    .min(1, "お名前を入力してください")
+    .max(80, "お名前は80文字以内で入力してください"),
+  email: z
+    .string()
+    .email("メールアドレスの形式が正しくありません")
+    .max(200, "メールアドレスは200文字以内で入力してください"),
+  company: z.string().max(120, "会社名・屋号は120文字以内で入力してください").optional(),
 
   // ✅ enumオプションを使わず、文字列＋含有チェックに変更
   category: z
@@ -64,10 +70,15 @@ const schema = z.object({
   budget: z.string().optional(),
   deadline: z.string().optional(),
 
-  message: z.string().min(20, "相談内容は20文字以上で入力してください"),
+  message: z
+    .string()
+    .min(20, "相談内容は20文字以上で入力してください")
+    .max(2000, "相談内容は2000文字以内で入力してください"),
 
   // ✅ literal(true) + errorMap をやめ、boolean refineに変更
   consent: z.boolean().refine((v) => v === true, "プライバシーポリシーへの同意が必要です"),
+  website: z.string().optional(),
+  startedAt: z.coerce.number().min(1),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -132,6 +143,8 @@ function SelectLike({
 }
 
 export function ContactForm() {
+  const startedAtRef = React.useRef(Date.now());
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -143,9 +156,15 @@ export function ContactForm() {
       deadline: "未定",
       message: "",
       consent: true, // 実運用は false 推奨（任意）
+      website: "",
+      startedAt: startedAtRef.current,
     },
     mode: "onTouched",
   });
+
+  React.useEffect(() => {
+    form.setValue("startedAt", startedAtRef.current, { shouldValidate: false });
+  }, [form]);
 
   // ⚠ eslint警告の元。機能的にはOKだが、気になるなら useWatch に変えられる（後述）
   const values = form.watch();
@@ -193,6 +212,8 @@ export function ContactForm() {
         company: "",
         message: "",
         consent: true,
+        website: "",
+        startedAt: Date.now(),
       });
     } catch (error) {
       console.error(error);
@@ -238,6 +259,20 @@ export function ContactForm() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
+          <div
+            className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+            aria-hidden="true"
+          >
+            <Label htmlFor="website">Website</Label>
+            <Input
+              id="website"
+              autoComplete="off"
+              tabIndex={-1}
+              {...form.register("website")}
+            />
+          </div>
+          <input type="hidden" {...form.register("startedAt", { valueAsNumber: true })} />
+
           <div className="grid gap-2">
             <Label htmlFor="name">お名前</Label>
             <Input id="name" className="rounded-xl" {...form.register("name")} />
@@ -295,7 +330,7 @@ export function ContactForm() {
             <Textarea
               id="message"
               rows={7}
-              className="rounded-xl"
+              className="rounded-xl min-h-[180px] resize-y"
               placeholder="例：予約がLINEと電話で分散。フォームに統一して一覧管理したい。店舗サイトも合わせて整えたい…"
               {...form.register("message")}
             />
@@ -364,12 +399,12 @@ export function ContactForm() {
           <div className="rounded-2xl bg-secondary/30 p-4">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <p className="text-sm font-medium">メールで直接連絡する場合</p>
+              <p className="text-sm font-medium">返信目安</p>
             </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {site.contact?.email ?? "hello@example.com"}（返信目安：{site.contact?.responseHours ?? "平日 10:00 - 19:00"}）
-          </p>
-        </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {site.contact?.responseHours ?? "平日 10:00 - 19:00"}
+            </p>
+          </div>
       </CardContent>
     </Card>
   );

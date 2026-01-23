@@ -24,7 +24,6 @@ export const site = {
   url: "https://make-it-tech.com",
   locale: "ja_JP",
   contact: {
-    email: "hello@example.com",
     responseHours: "平日 10:00 - 19:00（目安）",
   },
   social: {

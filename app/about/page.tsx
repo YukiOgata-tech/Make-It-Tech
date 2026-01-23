@@ -5,14 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { site } from "@/lib/site";
 import {
-  Building2,
-  CalendarCheck,
-  ClipboardCheck,
-  Sparkles,
-  Video,
-} from "lucide-react";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { CalendarCheck, ClipboardCheck, Video } from "lucide-react";
 
 const overviewItems = [
   { label: "屋号", value: "Make It Tech" },
@@ -20,47 +19,81 @@ const overviewItems = [
   { label: "代表取締役", value: "尾形友輝" },
   { label: "事業内容", value: "Web制作 / 業務改善 / 自動化 / DX支援" },
   { label: "拠点", value: "新潟県（詳細は打合せ時に共有）" },
-  { label: "連絡先", value: site.contact.email },
+];
+
+const experienceIntro =
+  "福祉・教育・飲食など複数分野で、Web開発・業務支援・IT活用の実務に携わってきました。単なる開発にとどまらず、運用や業務全体を見据えた支援を重視しています。";
+
+const experiences = [
+  {
+    title: "東京拠点の福祉系企業（業務委託）",
+    summary:
+      "YouTubeなどのメディア出演実績がある福祉系企業と業務委託契約を締結し、SES業務を中心に総合的な支援を担当。",
+    items: [
+      "社内システム・業務ツールの開発支援",
+      "既存システムの改修・保守",
+      "業務効率化を目的としたIT活用支援",
+      "エンジニア視点での運用改善提案",
+    ],
+  },
+  {
+    title: "教育系事業所",
+    summary:
+      "自習室運営を支援するシステムとWebサイトをフルスタックで開発し、運用まで見据えた設計を実施。",
+    items: [
+      "座席利用状況をリアルタイムで反映するシステム構築",
+      "利用者・運営者双方の使いやすさを考慮したUI設計",
+      "公式ホームページの企画・設計・開発",
+      "公開後の運用を見据えた構成設計",
+    ],
+  },
+  {
+    title: "個人経営飲食店（新潟県内）",
+    summary:
+      "Web活用を軸とした集客支援を実施し、小規模事業者でも継続しやすい運用を重視。",
+    items: [
+      "ホームページの企画・提案",
+      "フルスタックでのWebサイト開発",
+      "店舗の強みが伝わる構成設計",
+      "公開後の保守・管理・軽微な修正対応",
+    ],
+  },
+  {
+    title: "ビジネス用公式LINEの構築・運用補助",
+    summary:
+      "事業者向けに公式LINEの初期設定から運用支援まで対応し、問い合わせ導線を最適化。",
+    items: [
+      "公式LINEアカウントの設計・初期設定",
+      "自動応答メッセージの設計",
+      "問い合わせ導線の整備",
+      "業務負荷軽減を目的とした運用補助",
+    ],
+  },
+];
+
+const commonTasks = [
+  "標準的なSEOを意識したサイト構成・実装",
+  "検索エンジンを考慮したページ設計",
+  "運用を前提とした情報設計",
+  "事業内容や目的に応じた改善提案",
 ];
 
 const highlights = [
   {
     title: "現場起点のDX支援",
     desc: "課題整理から運用まで、現場で“回る形”を最短で作ります。",
-    icon: Sparkles,
+  },
+  {
+    title: "少数精鋭で結果にコミット",
+    desc: "少人数で意思決定を速くし、成果につながる支援に集中します。",
   },
   {
     title: "小さく始めて検証",
     desc: "最小構成で効果を確認し、必要な分だけ拡張します。",
-    icon: ClipboardCheck,
   },
   {
     title: "地域密着・相談重視",
     desc: "新潟県内の中小事業者に寄り添った支援を前提に設計します。",
-    icon: Building2,
-  },
-];
-
-const timeline = [
-  {
-    period: "2018 - 2019",
-    title: "現場の課題整理・業務改善支援",
-    desc: "店舗・小規模事業の業務フロー整理や入力ルール設計を担当（ダミー）。",
-  },
-  {
-    period: "2020 - 2022",
-    title: "Web制作・フォーム設計の実務",
-    desc: "集客LPや問い合わせ導線の改善、フォーム統合の実装を経験（ダミー）。",
-  },
-  {
-    period: "2023 - 2024",
-    title: "小規模DXの伴走支援",
-    desc: "LINE/シート/自動化の運用設計を中心に成果改善を支援（ダミー）。",
-  },
-  {
-    period: "2025 -",
-    title: "Make It Tech として事業開始",
-    desc: "新潟県内の中小事業者向けに、DX推進・業務改善支援を本格展開。",
   },
 ];
 
@@ -132,31 +165,68 @@ export default function AboutPage() {
                   </div>
                 ))}
               </dl>
+              <Separator className="my-4" />
+              <div className="grid gap-3 text-sm text-muted-foreground">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  支援の特徴
+                </p>
+                {highlights.map((h) => (
+                  <div key={h.title} className="grid gap-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {h.title}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{h.desc}</p>
+                  </div>
+                ))}
+              </div>
               <p className="mt-4 text-xs text-muted-foreground">
                 ※ 所在地・連絡先は案件に応じてご案内します。
               </p>
             </CardContent>
           </Card>
 
-          <div className="grid gap-4">
-            {highlights.map((h) => (
-              <Card key={h.title} className="rounded-3xl">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                      <h.icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{h.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {h.desc}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card className="rounded-3xl">
+            <CardHeader className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary" className="rounded-xl">
+                  実績
+                </Badge>
+                <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+                  実務ベース
+                </Badge>
+              </div>
+              <CardTitle className="text-base">対応実績</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {experienceIntro}
+              </p>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              <Accordion type="single" collapsible className="w-full">
+                {[...experiences, {
+                  title: "共通して対応している周辺業務",
+                  summary: "事業全体を見据えた支援のため、以下の業務にも対応しています。",
+                  items: commonTasks,
+                }].map((exp, index) => (
+                  <AccordionItem key={exp.title} value={`item-${index}`}>
+                    <AccordionTrigger className="text-left">
+                      {exp.title}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground">
+                      <p className="mb-3">{exp.summary}</p>
+                      <ul className="grid gap-2">
+                        {exp.items.map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </CardContent>
+          </Card>
         </div>
       </Section>
 
@@ -196,28 +266,6 @@ export default function AboutPage() {
               <p>・成果が出た分だけ、次に投資できる設計へ。</p>
             </CardContent>
           </Card>
-        </div>
-      </Section>
-
-      <Section
-        eyebrow="経歴（仮）"
-        title="これまでの歩み"
-        description="以下は仮の内容です。正式版は確認後に差し替えます。"
-      >
-        <div className="grid gap-4">
-          {timeline.map((t) => (
-            <Card key={t.title} className="rounded-3xl">
-              <CardContent className="p-6">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-                    {t.period}
-                  </Badge>
-                  <p className="text-sm font-medium">{t.title}</p>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">{t.desc}</p>
-              </CardContent>
-            </Card>
-          ))}
         </div>
       </Section>
 
