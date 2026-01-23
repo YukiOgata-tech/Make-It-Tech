@@ -9,7 +9,7 @@ import { FadeIn } from "@/components/motion";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Timer } from "lucide-react";
 
 const bullets = [
-  "LP / 店舗サイト / コーポレート制作（導線設計まで）",
+  "LP / 店舗サイト / コーポレート / アプリケーション制作（導線設計まで）",
   "LINE公式・フォーム・管理シート・自動化（低コスト）",
   "業務の見える化 → 改善案 → 実装 → 運用まで一貫対応",
   "“作る前に整理”で、無駄な開発を避けて最短で成果へ",
@@ -18,7 +18,7 @@ const bullets = [
 const trust = [
   { icon: ShieldCheck, title: "範囲を明確化", desc: "対応範囲・優先順位を最初に決める" },
   { icon: Timer, title: "小さく始める", desc: "まずは最短の“効く改善”から" },
-  { icon: Sparkles, title: "実装まで対応", desc: "ツール導入〜簡易システムまで" },
+  { icon: Sparkles, title: "実装から運用まで対応", desc: "ツール導入や開発〜管理と運用代行まで" },
 ];
 
 function Glow() {
@@ -48,7 +48,7 @@ export function Hero({ className }: { className?: string }) {
           </div>
 
           <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl">
-            Web制作から業務改善・<span className="text-gradient">DX</span>まで。
+            Web制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
             <span className="block text-muted-foreground">
               “現場で回る仕組み”を最短で作ります。
             </span>
@@ -145,7 +145,7 @@ export function Hero({ className }: { className?: string }) {
               <div className="mt-6 rounded-2xl bg-muted/60 p-4">
                 <p className="text-sm font-medium">次の一手（おすすめ）</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  まずは「現状の困りごと」と「理想」を10分で整理して、最短の改善案を作ります。
+                  まずは「現状の困りごと」と「理想」を整理して、最短の改善案を作ります。
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Button asChild size="sm" className="rounded-xl">
