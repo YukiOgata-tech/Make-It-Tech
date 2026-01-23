@@ -12,6 +12,7 @@ const footerLinks = [
       { label: "サービス概要", href: "/services" },
       { label: "料金の目安", href: "/pricing" },
       { label: "事業所概要", href: "/about" },
+      { label: "業務診断", href: "/#diagnosis" },
       { label: "事前アンケート", href: "/survey" },
     ],
   },
@@ -27,6 +28,12 @@ const footerLinks = [
     links: [
       { label: "注意事項（利用規約）", href: "/terms" },
       { label: "プライバシーポリシー", href: "/privacy" },
+    ],
+  },
+  {
+    title: "ナレッジ",
+    links: [
+      { label: "用語集", href: "/glossary" },
     ],
   },
 ] as const;
@@ -73,7 +80,7 @@ export function SiteFooter() {
           </div>
 
           {/* Links */}
-          <div className="grid gap-8 sm:grid-cols-3 md:col-span-2">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 md:col-span-2">
             {footerLinks.map((group) => (
               <div key={group.title} className="space-y-3">
                 <p className="text-sm font-medium">{group.title}</p>

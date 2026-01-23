@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const lineUrl = "https://line.me/R/ti/p/@your-line-id";
+const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
 
 const benefits = [
   {

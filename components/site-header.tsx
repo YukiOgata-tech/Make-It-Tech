@@ -3,13 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Menu, ArrowRight, ChevronDown } from "lucide-react";
+import { Menu, ArrowRight, ChevronDown, Moon, Sun } from "lucide-react";
 
 type NavItem = { label: string; href: string };
 
@@ -40,11 +41,31 @@ const primaryNav: NavItem[] = [
 const secondaryNav: NavItem[] = [
   { label: "お問い合わせ", href: "/contact" },
   { label: "アンケート", href: "/survey" },
+  { label: "業務診断", href: "/#diagnosis" },
+  { label: "用語集", href: "/glossary" },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
   const scrolled = useScrollShadow();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
+  const ThemeIcon = isDark ? Sun : Moon;
+  const themeLabel = mounted
+    ? isDark
+      ? "ライトモードに切り替え"
+      : "ダークモードに切り替え"
+    : "テーマを切り替え";
+
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
+  };
 
   return (
     <header
@@ -115,6 +136,17 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-xl"
+            onClick={toggleTheme}
+            aria-label={themeLabel}
+            title={themeLabel}
+          >
+            <ThemeIcon className="h-4 w-4" />
+          </Button>
+
           <Button asChild className="ml-2 rounded-xl">
             <Link href="/contact">
               無料相談 <ArrowRight className="ml-2 h-4 w-4" />
@@ -123,7 +155,18 @@ export function SiteHeader() {
         </nav>
 
         {/* Mobile */}
-        <div className="md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-xl border-primary/30"
+            onClick={toggleTheme}
+            aria-label={themeLabel}
+            title={themeLabel}
+          >
+            <ThemeIcon className="h-4 w-4" />
+          </Button>
+
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="rounded-xl border-primary/30">

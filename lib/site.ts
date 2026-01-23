@@ -15,6 +15,9 @@ export const site = {
     x: "",
     github: "",
   },
+  line: {
+    surveyUrl: "https://lin.ee/8uHdH0Y",
+  },
   nav: [
     { label: "サービス", href: "/services" },
     { label: "料金", href: "/pricing" },
