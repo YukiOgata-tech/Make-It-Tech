@@ -5,12 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { ExperienceDeck } from "@/components/experience-deck";
 import { CalendarCheck, ClipboardCheck, Video } from "lucide-react";
 
 const overviewItems = [
@@ -19,63 +14,6 @@ const overviewItems = [
   { label: "代表取締役", value: "尾形友輝" },
   { label: "事業内容", value: "Web制作 / 業務改善 / 自動化 / DX支援" },
   { label: "拠点", value: "新潟県（詳細は打合せ時に共有）" },
-];
-
-const experienceIntro =
-  "福祉・教育・飲食など複数分野で、Web開発・業務支援・IT活用の実務に携わってきました。単なる開発にとどまらず、運用や業務全体を見据えた支援を重視しています。";
-
-const experiences = [
-  {
-    title: "東京拠点の福祉系企業（業務委託）",
-    summary:
-      "YouTubeなどのメディア出演実績がある福祉系企業と業務委託契約を締結し、SES業務を中心に総合的な支援を担当。",
-    items: [
-      "社内システム・業務ツールの開発支援",
-      "既存システムの改修・保守",
-      "業務効率化を目的としたIT活用支援",
-      "エンジニア視点での運用改善提案",
-    ],
-  },
-  {
-    title: "教育系事業所",
-    summary:
-      "自習室運営を支援するシステムとWebサイトをフルスタックで開発し、運用まで見据えた設計を実施。",
-    items: [
-      "座席利用状況をリアルタイムで反映するシステム構築",
-      "利用者・運営者双方の使いやすさを考慮したUI設計",
-      "公式ホームページの企画・設計・開発",
-      "公開後の運用を見据えた構成設計",
-    ],
-  },
-  {
-    title: "個人経営飲食店（新潟県内）",
-    summary:
-      "Web活用を軸とした集客支援を実施し、小規模事業者でも継続しやすい運用を重視。",
-    items: [
-      "ホームページの企画・提案",
-      "フルスタックでのWebサイト開発",
-      "店舗の強みが伝わる構成設計",
-      "公開後の保守・管理・軽微な修正対応",
-    ],
-  },
-  {
-    title: "ビジネス用公式LINEの構築・運用補助",
-    summary:
-      "事業者向けに公式LINEの初期設定から運用支援まで対応し、問い合わせ導線を最適化。",
-    items: [
-      "公式LINEアカウントの設計・初期設定",
-      "自動応答メッセージの設計",
-      "問い合わせ導線の整備",
-      "業務負荷軽減を目的とした運用補助",
-    ],
-  },
-];
-
-const commonTasks = [
-  "標準的なSEOを意識したサイト構成・実装",
-  "検索エンジンを考慮したページ設計",
-  "運用を前提とした情報設計",
-  "事業内容や目的に応じた改善提案",
 ];
 
 const highlights = [
@@ -148,7 +86,7 @@ export default function AboutPage() {
           </Badge>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
           <Card className="rounded-3xl">
             <CardHeader>
               <CardTitle className="text-base">基本情報</CardTitle>
@@ -165,20 +103,6 @@ export default function AboutPage() {
                   </div>
                 ))}
               </dl>
-              <Separator className="my-4" />
-              <div className="grid gap-3 text-sm text-muted-foreground">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  支援の特徴
-                </p>
-                {highlights.map((h) => (
-                  <div key={h.title} className="grid gap-1">
-                    <p className="text-sm font-medium text-foreground">
-                      {h.title}
-                    </p>
-                    <p className="text-sm text-muted-foreground">{h.desc}</p>
-                  </div>
-                ))}
-              </div>
               <p className="mt-4 text-xs text-muted-foreground">
                 ※ 所在地・連絡先は案件に応じてご案内します。
               </p>
@@ -186,48 +110,29 @@ export default function AboutPage() {
           </Card>
 
           <Card className="rounded-3xl">
-            <CardHeader className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="rounded-xl">
-                  実績
-                </Badge>
-                <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-                  実務ベース
-                </Badge>
-              </div>
-              <CardTitle className="text-base">対応実績</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                {experienceIntro}
-              </p>
+            <CardHeader>
+              <CardTitle className="text-base">支援の特徴</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <Accordion type="single" collapsible className="w-full">
-                {[...experiences, {
-                  title: "共通して対応している周辺業務",
-                  summary: "事業全体を見据えた支援のため、以下の業務にも対応しています。",
-                  items: commonTasks,
-                }].map((exp, index) => (
-                  <AccordionItem key={exp.title} value={`item-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {exp.title}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground">
-                      <p className="mb-3">{exp.summary}</p>
-                      <ul className="grid gap-2">
-                        {exp.items.map((item) => (
-                          <li key={item} className="flex items-start gap-2">
-                            <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+            <CardContent className="grid gap-3 text-sm text-muted-foreground">
+              {highlights.map((h) => (
+                <div key={h.title} className="grid gap-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {h.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{h.desc}</p>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
+      </Section>
+
+      <Section
+        eyebrow="実績"
+        title="対応実績の概要"
+        description="昨年度からの支援実績をご参考ください。"
+      >
+        <ExperienceDeck />
       </Section>
 
       <Section
