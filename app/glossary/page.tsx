@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { Badge } from "@/components/ui/badge";
@@ -188,6 +189,22 @@ const diagnosisDeliverables = [
   "概算見積・進行プラン",
   "次のアクションの提案",
 ];
+
+export const metadata: Metadata = {
+  title: "用語集",
+  description:
+    "非エンジニア向けに、業務改善・DX・Web制作・IT導入でよく出る用語を整理した簡易辞書です。",
+  keywords: [
+    "用語集",
+    "業務改善",
+    "DX",
+    "IT",
+    "Web制作",
+    "新潟",
+    "非エンジニア",
+    "業務診断",
+  ],
+};
 
 export default function GlossaryPage() {
   const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";

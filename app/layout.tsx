@@ -26,7 +26,27 @@ export const metadata: Metadata = {
     template: `%s | ${site.name}`,
   },
   description: site.description,
+  keywords: site.keywords,
   metadataBase: new URL(site.url),
+  alternates: {
+    canonical: site.url,
+  },
+  applicationName: site.name,
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
+  publisher: site.name,
+  category: "business",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: site.logo,
     shortcut: site.logo,
@@ -59,9 +79,50 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const logoUrl = new URL(site.logo, site.url).toString();
+  const ogImageUrl = new URL(site.ogImage ?? site.logo, site.url).toString();
+  const sameAs = Object.values(site.social).filter((value) => value);
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: site.name,
+    url: site.url,
+    logo: logoUrl,
+    image: ogImageUrl,
+    description: site.description,
+    slogan: site.tagline,
+    email: site.contact.email,
+    areaServed: [
+      { "@type": "AdministrativeArea", name: "新潟県" },
+      { "@type": "Country", name: "Japan" },
+    ],
+    serviceType: [
+      "DX支援",
+      "業務改善",
+      "Web制作",
+      "IT導入",
+      "自動化",
+      "簡易システム構築",
+    ],
+    keywords: site.keywords,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: site.contact.email,
+      availableLanguage: ["ja"],
+    },
+    ...(sameAs.length ? { sameAs } : {}),
+  };
+
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${outfit.variable} ${zen.variable} min-h-dvh bg-background text-foreground font-sans antialiased`}>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <ThemeProvider>
           <SiteHeader />
           <main className="min-h-[calc(100dvh-64px)]">{children}</main>

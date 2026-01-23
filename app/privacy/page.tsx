@@ -1,7 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { privacyContent } from "@/content/privacy";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+
+export const metadata: Metadata = {
+  title: "プライバシーポリシー",
+  description: "Make It Tech のプライバシーポリシーを掲載しています。",
+  keywords: [
+    "プライバシーポリシー",
+    "個人情報",
+    "新潟",
+    "DX",
+    "IT",
+  ],
+};
 
 function formatDate(iso: string) {
   // iso: YYYY-MM-DD

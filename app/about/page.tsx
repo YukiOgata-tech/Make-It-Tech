@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/section";
 import { Badge } from "@/components/ui/badge";
@@ -80,6 +81,22 @@ const activities = [
     icon: ClipboardCheck,
   },
 ];
+
+export const metadata: Metadata = {
+  title: "事業所概要",
+  description:
+    "Make It Tech の事業所概要。新潟の中小事業者向けに、丁寧で信頼重視のDX・業務改善支援を行います。",
+  keywords: [
+    "新潟",
+    "DX",
+    "IT",
+    "業務改善",
+    "丁寧",
+    "信頼",
+    "Web制作",
+    "事業所概要",
+  ],
+};
 
 export default function AboutPage() {
   return (

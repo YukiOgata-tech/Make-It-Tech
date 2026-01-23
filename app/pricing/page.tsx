@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -129,6 +130,23 @@ const faqs = [
     a: "無制限ではありません。範囲と修正の目安は最初に合意して進行します。方針転換や仕様追加は別途相談（見積もり）になります。",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "料金",
+  description:
+    "新潟のDX・IT支援に対応した料金目安。固定プランではなく、内容に合わせて柔軟に見積もります。",
+  keywords: [
+    "新潟",
+    "DX",
+    "IT",
+    "料金",
+    "見積",
+    "安い",
+    "低コスト",
+    "業務改善",
+    "Web制作",
+  ],
+};
 
 function SectionTitle({
   eyebrow,

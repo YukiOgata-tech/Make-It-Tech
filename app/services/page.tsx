@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/section";
 import { ProcessSection } from "@/components/process-section";
@@ -96,6 +97,23 @@ const examples = [
     desc: "現状整理→優先順位→最小実装の順で提案。",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "サービス",
+  description:
+    "新潟の中小事業者向けに、DX・業務改善・Web制作・自動化を必要最小限の範囲で支援します。",
+  keywords: [
+    "新潟",
+    "DX",
+    "IT",
+    "業務改善",
+    "Web制作",
+    "自動化",
+    "低コスト",
+    "アプリ開発",
+    "信頼",
+  ],
+};
 
 export default function ServicesPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/section";
 import { Badge } from "@/components/ui/badge";
@@ -126,6 +127,21 @@ const steps = [
     desc: "内容を整理して、最短の改善案と進め方をご提案します。",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "事前アンケート",
+  description:
+    "LINEで事前アンケートに回答し、現状を整理して最短でDX・業務改善の提案につなげます。",
+  keywords: [
+    "新潟",
+    "DX",
+    "IT",
+    "事前アンケート",
+    "LINE",
+    "業務改善",
+    "相談",
+  ],
+};
 
 export default function SurveyPage() {
   return (

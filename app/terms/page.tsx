@@ -1,8 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { termsContent } from "@/content/terms";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "注意事項（利用規約）",
+  description: "Make It Tech の注意事項（利用規約）を掲載しています。",
+  keywords: [
+    "利用規約",
+    "注意事項",
+    "新潟",
+    "DX",
+    "IT",
+  ],
+};
 
 function formatDate(iso: string) {
   const [y, m, d] = iso.split("-").map((x) => Number(x));
