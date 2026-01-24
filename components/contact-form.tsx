@@ -78,7 +78,7 @@ const schema = z.object({
   // ✅ literal(true) + errorMap をやめ、boolean refineに変更
   consent: z.boolean().refine((v) => v === true, "プライバシーポリシーへの同意が必要です"),
   website: z.string().optional(),
-  startedAt: z.coerce.number().min(1),
+  startedAt: z.number().min(1),
 });
 
 type FormValues = z.infer<typeof schema>;
