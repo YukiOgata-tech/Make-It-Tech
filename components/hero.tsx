@@ -152,7 +152,7 @@ export function Hero({ className }: { className?: string }) {
                     <Link href="/contact">相談する</Link>
                   </Button>
                   <Button asChild size="sm" variant="outline" className="rounded-xl">
-                    <Link href="/survey">事前アンケート</Link>
+                    <Link href="/survey">LINEで相談</Link>
                   </Button>
                 </div>
               </div>

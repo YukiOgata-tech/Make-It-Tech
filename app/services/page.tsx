@@ -139,7 +139,7 @@ export default function ServicesPage() {
             </Link>
           </Button>
           <Button asChild variant="outline" className="rounded-xl">
-            <Link href="/survey">事前アンケート</Link>
+            <Link href="/survey">LINEで相談</Link>
           </Button>
         </div>
 
@@ -256,7 +256,7 @@ export default function ServicesPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">事前アンケート</Link>
+                <Link href="/survey">LINEで相談</Link>
               </Button>
             </div>
           </div>

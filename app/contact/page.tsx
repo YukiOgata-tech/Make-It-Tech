@@ -46,7 +46,7 @@ export default function ContactPage() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  公式LINEで相談
+                  LINEで相談
                 </Link>
               </Button>
               <span className="text-xs text-muted-foreground">

@@ -38,6 +38,6 @@ export const site = {
     { label: "料金", href: "/pricing" },
     { label: "事業所概要", href: "/about" },
     { label: "お問い合わせ", href: "/contact" },
-    { label: "アンケート", href: "/survey" },
+    { label: "LINEで相談", href: "/survey" },
   ],
 };

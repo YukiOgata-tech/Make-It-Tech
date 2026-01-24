@@ -8,6 +8,13 @@ const categories = [
   "その他/相談して決めたい",
 ] as const;
 
+const phoneTimes = [
+  "午前（9:00〜12:00）",
+  "午後（13:00〜17:00）",
+  "夕方（17:00〜20:00）",
+  "いつでも",
+] as const;
+
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 const MIN_SUBMIT_TIME_MS = 3000;
@@ -21,21 +28,41 @@ const globalForRateLimit = globalThis as typeof globalThis & {
 const rateLimitMap = globalForRateLimit.contactRateLimit ?? new Map<string, RateLimitEntry>();
 globalForRateLimit.contactRateLimit = rateLimitMap;
 
-const schema = z.object({
-  name: z.string().min(1).max(80),
-  email: z.string().email().max(200),
-  company: z.string().max(120).optional(),
-  category: z
-    .string()
-    .min(1)
-    .refine((value) => (categories as readonly string[]).includes(value)),
-  budget: z.string().optional(),
-  deadline: z.string().optional(),
-  message: z.string().min(20).max(2000),
-  consent: z.boolean().refine((value) => value === true),
-  website: z.string().optional(),
-  startedAt: z.coerce.number().min(1),
-});
+const schema = z
+  .object({
+    name: z.string().min(1).max(80),
+    email: z.string().email().max(200),
+    company: z.string().max(120).optional(),
+    category: z
+      .string()
+      .min(1)
+      .refine((value) => (categories as readonly string[]).includes(value)),
+    budget: z.string().optional(),
+    deadline: z.string().optional(),
+    phone: z
+      .string()
+      .optional()
+      .refine((value) => !value || /^[0-9+()\-\s]{8,20}$/.test(value)),
+    phoneTime: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value || (phoneTimes as readonly string[]).includes(value)
+      ),
+    message: z.string().min(20).max(2000),
+    consent: z.boolean().refine((value) => value === true),
+    website: z.string().optional(),
+    startedAt: z.coerce.number().min(1),
+  })
+  .superRefine((data, ctx) => {
+    if (data.phone?.trim() && !data.phoneTime) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["phoneTime"],
+        message: "連絡希望時間を選択してください。",
+      });
+    }
+  });
 
 type ContactPayload = z.infer<typeof schema>;
 
@@ -57,19 +84,30 @@ function getClientIp(request: Request) {
 }
 
 function formatEmailText(payload: ContactPayload) {
-  return [
+  const rows = [
     "Webサイトからお問い合わせが届きました。",
     "",
     `お名前: ${payload.name}`,
     `メール: ${payload.email}`,
     `会社名・屋号: ${payload.company ?? "（未記入）"}`,
+    `電話番号: ${payload.phone?.trim() ? payload.phone : "（未記入）"}`,
     `相談カテゴリ: ${payload.category}`,
     `予算感: ${payload.budget ?? "未定"}`,
     `希望納期: ${payload.deadline ?? "未定"}`,
     "",
     "相談内容:",
     payload.message,
-  ].join("\n");
+  ];
+
+  if (payload.phone?.trim()) {
+    rows.splice(
+      6,
+      0,
+      `連絡希望時間: ${payload.phoneTime ?? "（未選択）"}`
+    );
+  }
+
+  return rows.join("\n");
 }
 
 function formatEmailHtml(payload: ContactPayload) {
@@ -77,6 +115,8 @@ function formatEmailHtml(payload: ContactPayload) {
     name: escapeHtml(payload.name),
     email: escapeHtml(payload.email),
     company: escapeHtml(payload.company ?? "（未記入）"),
+    phone: escapeHtml(payload.phone?.trim() ? payload.phone : "（未記入）"),
+    phoneTime: escapeHtml(payload.phoneTime ?? "（未選択）"),
     category: escapeHtml(payload.category),
     budget: escapeHtml(payload.budget ?? "未定"),
     deadline: escapeHtml(payload.deadline ?? "未定"),
@@ -87,10 +127,15 @@ function formatEmailHtml(payload: ContactPayload) {
     ["お名前", safe.name],
     ["メール", safe.email],
     ["会社名・屋号", safe.company],
+    ["電話番号", safe.phone],
     ["相談カテゴリ", safe.category],
     ["予算感", safe.budget],
     ["希望納期", safe.deadline],
   ];
+
+  if (payload.phone?.trim()) {
+    lines.splice(4, 0, ["連絡希望時間", safe.phoneTime]);
+  }
 
   const receivedAt = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
   const accent = "#E2673D";

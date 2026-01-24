@@ -392,7 +392,7 @@ export default function GlossaryPage() {
                   <div className="flex flex-wrap gap-3 md:justify-end">
                     <Button asChild className="rounded-xl">
                       <Link href={lineUrl} target="_blank" rel="noreferrer">
-                        LINEで診断を相談 <ArrowRight className="ml-2 h-4 w-4" />
+                        LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="rounded-xl">

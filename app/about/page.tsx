@@ -56,9 +56,9 @@ const activities = [
 export const metadata: Metadata = {
   title: "事業所概要",
   description:
-    "Make It Tech の事業所概要。新潟の中小事業者向けに、丁寧で信頼重視のDX・業務改善支援を行います。",
+    "Make It Tech の事業概要。現在は新潟の中小事業者向けに、ITによるアプローチ、DX・業務支援を行います。",
   keywords: [
-    "新潟",
+    "新潟", "niigata", "新潟市", "地域創生", "",
     "DX",
     "IT",
     "業務改善",
@@ -206,7 +206,7 @@ export default function AboutPage() {
                 <Link href="/contact">無料相談へ</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">事前アンケート</Link>
+                <Link href="/survey">LINEで相談</Link>
               </Button>
             </div>
           </div>

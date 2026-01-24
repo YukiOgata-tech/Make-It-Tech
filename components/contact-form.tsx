@@ -50,36 +50,68 @@ const deadlines = [
   "中長期（相談）",
 ] as const;
 
-const schema = z.object({
-  name: z
-    .string()
-    .min(1, "お名前を入力してください")
-    .max(80, "お名前は80文字以内で入力してください"),
-  email: z
-    .string()
-    .email("メールアドレスの形式が正しくありません")
-    .max(200, "メールアドレスは200文字以内で入力してください"),
-  company: z.string().max(120, "会社名・屋号は120文字以内で入力してください").optional(),
+const phoneTimes = [
+  "午前（9:00〜12:00）",
+  "午後（13:00〜17:00）",
+  "夕方（17:00〜20:00）",
+  "いつでも",
+] as const;
 
-  // ✅ enumオプションを使わず、文字列＋含有チェックに変更
-  category: z
-    .string()
-    .min(1, "カテゴリを選択してください")
-    .refine((v) => (categories as readonly string[]).includes(v), "カテゴリを選択してください"),
+const schema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "お名前を入力してください")
+      .max(80, "お名前は80文字以内で入力してください"),
+    email: z
+      .string()
+      .email("メールアドレスの形式が正しくありません")
+      .max(200, "メールアドレスは200文字以内で入力してください"),
+    company: z.string().max(120, "会社名・屋号は120文字以内で入力してください").optional(),
 
-  budget: z.string().optional(),
-  deadline: z.string().optional(),
+    // ✅ enumオプションを使わず、文字列＋含有チェックに変更
+    category: z
+      .string()
+      .min(1, "カテゴリを選択してください")
+      .refine((v) => (categories as readonly string[]).includes(v), "カテゴリを選択してください"),
 
-  message: z
-    .string()
-    .min(20, "相談内容は20文字以上で入力してください")
-    .max(2000, "相談内容は2000文字以内で入力してください"),
+    budget: z.string().optional(),
+    deadline: z.string().optional(),
+    phone: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value || /^[0-9+()\-\s]{8,20}$/.test(value),
+        "電話番号の形式が正しくありません"
+      ),
+    phoneTime: z
+      .string()
+      .optional()
+      .refine(
+        (value) =>
+          !value || (phoneTimes as readonly string[]).includes(value),
+        "都合の良い時間帯を選択してください"
+      ),
 
-  // ✅ literal(true) + errorMap をやめ、boolean refineに変更
-  consent: z.boolean().refine((v) => v === true, "プライバシーポリシーへの同意が必要です"),
-  website: z.string().optional(),
-  startedAt: z.number().min(1),
-});
+    message: z
+      .string()
+      .min(20, "相談内容は20文字以上で入力してください")
+      .max(2000, "相談内容は2000文字以内で入力してください"),
+
+    // ✅ literal(true) + errorMap をやめ、boolean refineに変更
+    consent: z.boolean().refine((v) => v === true, "プライバシーポリシーへの同意が必要です"),
+    website: z.string().optional(),
+    startedAt: z.number().min(1),
+  })
+  .superRefine((data, ctx) => {
+    if (data.phone?.trim() && !data.phoneTime) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["phoneTime"],
+        message: "都合の良い時間帯を選択してください",
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof schema>;
 
@@ -107,7 +139,7 @@ function SelectLike({
     <div className="grid gap-2">
       <Label>{label}</Label>
       <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild>
           <button
             type="button"
             className={cn(
@@ -154,6 +186,8 @@ export function ContactForm() {
       category: "",
       budget: "未定",
       deadline: "未定",
+      phone: "",
+      phoneTime: "",
       message: "",
       consent: true, // 実運用は false 推奨（任意）
       website: "",
@@ -168,6 +202,13 @@ export function ContactForm() {
 
   // ⚠ eslint警告の元。機能的にはOKだが、気になるなら useWatch に変えられる（後述）
   const values = form.watch();
+  const hasPhone = Boolean(values.phone?.trim());
+
+  React.useEffect(() => {
+    if (!hasPhone && values.phoneTime) {
+      form.setValue("phoneTime", "", { shouldValidate: false });
+    }
+  }, [form, hasPhone, values.phoneTime]);
 
   const template = React.useMemo(() => {
     return [
@@ -210,6 +251,8 @@ export function ContactForm() {
         name: "",
         email: "",
         company: "",
+        phone: "",
+        phoneTime: "",
         message: "",
         consent: true,
         website: "",
@@ -289,6 +332,32 @@ export function ContactForm() {
             />
             <FieldError message={formState.errors.email?.message} />
           </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="phone">電話番号（任意）</Label>
+            <Input
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              className="rounded-xl"
+              placeholder="例: 090-1234-5678"
+              {...form.register("phone")}
+            />
+            <FieldError message={formState.errors.phone?.message} />
+          </div>
+
+          {hasPhone && (
+            <SelectLike
+              label="都合の良い時間帯"
+              value={values.phoneTime}
+              items={phoneTimes}
+              onChange={(v) =>
+                form.setValue("phoneTime", v, { shouldValidate: true })
+              }
+              placeholder="例：午前 / 午後 / 夕方"
+              error={formState.errors.phoneTime?.message}
+            />
+          )}
 
           <div className="grid gap-2">
             <Label htmlFor="company">会社名・屋号（任意）</Label>
@@ -387,7 +456,7 @@ export function ContactForm() {
             </Button>
 
             <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/survey">事前アンケート</Link>
+              <Link href="/survey">LINEで相談</Link>
             </Button>
           </div>
 

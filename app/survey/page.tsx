@@ -19,18 +19,18 @@ const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
 
 const benefits = [
   {
-    title: "スマホで短時間に回答",
-    desc: "フォームよりも気軽に、会話感覚で必要項目を埋められます。",
+    title: "チャットで気軽に相談",
+    desc: "アンケートではなく会話形式。必要な情報だけを短く共有できます。",
     icon: MessageCircle,
   },
   {
-    title: "やりとりが一本化",
-    desc: "相談とアンケートを同じ窓口で管理でき、連絡が迷子になりません。",
+    title: "やりとりを一本化",
+    desc: "質問や追加確認もLINE内で完結。対応が迷子になりません。",
     icon: ClipboardList,
   },
   {
     title: "資料や画像も送れる",
-    desc: "スクショや既存資料があると、提案精度が一気に上がります。",
+    desc: "スクショや既存資料があると、診断・提案の精度が上がります。",
     icon: Sparkles,
   },
 ];
@@ -70,7 +70,7 @@ const prerequisites = [
   },
 ];
 
-const surveyOutline = [
+const chatOutline = [
   {
     title: "現状と課題",
     items: [
@@ -116,30 +116,30 @@ const surveyOutline = [
 const steps = [
   {
     title: "LINE公式を追加",
-    desc: "友だち追加後、アンケート案内が自動で届きます。",
+    desc: "友だち追加後、すぐにチャット相談を開始できます。",
   },
   {
-    title: "アンケートに回答",
-    desc: "目安は5〜10分。必要なら途中で保存して続きができます。",
+    title: "チャットで状況共有",
+    desc: "現状・理想・制約を短く教えてください。必要なら追加質問します。",
   },
   {
-    title: "内容を確認して提案",
-    desc: "内容を整理して、最短の改善案と進め方をご提案します。",
+    title: "診断と提案",
+    desc: "内容を整理し、無料診断の進め方や概算の方向性をご案内します。",
   },
 ];
 
 export const metadata: Metadata = {
-  title: "事前アンケート",
+  title: "LINEで相談",
   description:
-    "LINEで事前アンケートに回答し、現状を整理して最短でDX・業務改善の提案につなげます。",
+    "LINE公式でチャット相談を受け付けています。アンケートではなく気軽な会話で現状を整理し、無料診断と提案につなげます。",
   keywords: [
     "新潟",
     "DX",
     "IT",
-    "事前アンケート",
-    "LINE",
+    "LINE相談",
+    "無料診断",
+    "業務診断",
     "業務改善",
-    "相談",
   ],
 };
 
@@ -150,40 +150,40 @@ export default function SurveyPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="rounded-xl">
-              事前アンケート
+              LINEで相談
             </Badge>
             <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-              LINEで回答
+              チャット相談
             </Badge>
           </div>
 
           <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-            アンケートはLINEで。
+            LINEで相談
             <span className="block text-muted-foreground">
-              相談前の“現状整理”を最短で終わらせます。
+              アンケートではなく、気軽なチャットで相談できます。
             </span>
           </h1>
 
           <p className="mt-3 max-w-3xl text-base text-muted-foreground">
-            {site.name}では、事前アンケートをLINE公式で行います。
-            スマホで短時間に回答できるため、相談のスタートが早くなり、提案の精度も上がります。
+            {site.name}では、公式LINEでチャット相談を受け付けています。
+            気軽なやりとりで現状を整理し、条件により無料の業務診断と提案につなげます。
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild className="rounded-xl">
               <Link href={lineUrl} target="_blank" rel="noreferrer">
-                LINEでアンケートを始める <ArrowRight className="ml-2 h-4 w-4" />
+                LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/contact">まずは相談だけ</Link>
+              <Link href="/contact">フォームで相談</Link>
             </Button>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2">
               <CheckCircle2 className="h-4 w-4 text-primary" />
-              回答目安：5〜10分
+              初回ヒアリング目安：5〜10分
             </span>
             <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2">
               <ShieldCheck className="h-4 w-4 text-primary" />
@@ -195,8 +195,8 @@ export default function SurveyPage() {
 
       <Section
         eyebrow="LINEでやる理由"
-        title="回答しやすさと、提案精度を両立"
-        description="アンケートは“短く・深く”。必要な情報を最短で集めます。"
+        title="会話ベースで、早く深く整理できる"
+        description="アンケートではなくチャット相談だから、必要な情報だけを素早く集められます。"
       >
         <div className="grid gap-4 md:grid-cols-3">
           {benefits.map((b) => {
@@ -217,9 +217,9 @@ export default function SurveyPage() {
       </Section>
 
       <Section
-        eyebrow="前提知識・条件"
-        title="実際の業務に必要な情報を先に整理します"
-        description="曖昧なまま進めると、見積もりや提案がブレます。先に整理することで最短ルートを作れます。"
+        eyebrow="相談をスムーズに"
+        title="診断に必要な情報を先に整理します"
+        description="曖昧なまま進めると提案がブレます。先に整理することで最短ルートを作れます。"
       >
         <div className="grid gap-4 md:grid-cols-2">
           {prerequisites.map((p) => (
@@ -243,12 +243,12 @@ export default function SurveyPage() {
       </Section>
 
       <Section
-        eyebrow="アンケート内容"
-        title="LINEで聞く内容はここまで"
-        description="質問は絞っていますが、提案に必要な情報は全て押さえます。"
+        eyebrow="相談内容の整理"
+        title="チャットで確認する内容"
+        description="質問は絞っていますが、診断に必要な情報は押さえます。"
       >
         <div className="grid gap-4 md:grid-cols-2">
-          {surveyOutline.map((s) => (
+          {chatOutline.map((s) => (
             <Card key={s.title} className="rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-base">{s.title}</CardTitle>
@@ -273,9 +273,9 @@ export default function SurveyPage() {
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-medium">回答をスムーズにするコツ</p>
+              <p className="text-sm font-medium">相談をスムーズにするコツ</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                既存の資料やスクリーンショットがあれば、送ってもらえると提案が速くなります。
+                既存の資料やスクリーンショットがあれば、送ってもらえると診断が速くなります。
                 迷ったら「現状」「理想」「制約」だけでもOKです。
               </p>
             </div>
@@ -284,9 +284,9 @@ export default function SurveyPage() {
       </Section>
 
       <Section
-        eyebrow="回答後の流れ"
-        title="最短で提案までつなげます"
-        description="アンケート回答後、内容を整理して最短ルートを提案します。"
+        eyebrow="相談後の流れ"
+        title="最短で診断・提案までつなげます"
+        description="チャット相談後、内容を整理して最短ルートを提案します。"
       >
         <div className="grid gap-4 md:grid-cols-3">
           {steps.map((step, index) => (
@@ -309,7 +309,7 @@ export default function SurveyPage() {
           <div>
             <p className="text-sm font-medium">個人情報の取り扱いについて</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              入力いただいた情報は、提案と連絡のためにのみ使用します。詳しくは
+              入力いただいた情報は、診断と連絡のためにのみ使用します。詳しくは
               <Link href="/privacy" className="ml-1 underline underline-offset-2">
                 プライバシーポリシー
               </Link>
@@ -319,11 +319,11 @@ export default function SurveyPage() {
           <div className="flex flex-wrap gap-3 md:justify-end">
             <Button asChild className="rounded-xl">
               <Link href={lineUrl} target="_blank" rel="noreferrer">
-                LINEでアンケートを始める <ArrowRight className="ml-2 h-4 w-4" />
+                LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/contact">相談だけしたい</Link>
+              <Link href="/contact">フォームで相談</Link>
             </Button>
           </div>
         </div>

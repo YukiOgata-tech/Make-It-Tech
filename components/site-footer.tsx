@@ -13,7 +13,7 @@ const footerLinks = [
       { label: "料金の目安", href: "/pricing" },
       { label: "事業所概要", href: "/about" },
       { label: "業務診断", href: "/#diagnosis" },
-      { label: "事前アンケート", href: "/survey" },
+      { label: "LINEで相談", href: "/survey" },
     ],
   },
   {

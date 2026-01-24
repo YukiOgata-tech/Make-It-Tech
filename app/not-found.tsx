@@ -41,10 +41,10 @@ const links = [
     label: "相談",
   },
   {
-    title: "事前アンケート",
+    title: "LINEで相談",
     desc: "LINEで現状を整理し、提案を速くします。",
     href: "/survey",
-    label: "アンケート",
+    label: "LINEで相談",
   },
   {
     title: "用語集",
