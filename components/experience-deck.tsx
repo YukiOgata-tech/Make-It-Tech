@@ -241,7 +241,7 @@ export function ExperienceDeck({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative left-1/2 right-1/2 -mx-[50vw] w-screen",
+        "relative w-full sm:left-1/2 sm:right-1/2 sm:-mx-[50vw] sm:w-screen",
         className
       )}
     >

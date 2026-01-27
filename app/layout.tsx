@@ -79,6 +79,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SiteBreadcrumbs } from "@/components/site-breadcrumbs";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -126,9 +128,12 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         <ThemeProvider>
-          <SiteHeader />
-          <main className="min-h-[calc(100dvh-64px)]">{children}</main>
-          <SiteFooter />
+          <div className="flex min-h-dvh flex-col">
+            <SiteHeader />
+            <SiteBreadcrumbs />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
           <Toaster richColors closeButton />
         </ThemeProvider>
       </body>

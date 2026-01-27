@@ -52,10 +52,16 @@ export function Hero({ className }: { className?: string }) {
             >
               実装型 / 現場密着
             </Badge>
+            <Badge
+              variant="outline"
+              className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
+            >
+              補助金・助成金 対応可
+            </Badge>
           </div>
 
           <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:mt-5 sm:text-5xl">
-            Web制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
+            新潟でのWeb制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
             <span className="block text-muted-foreground">
               “現場で回る仕組み”を最短で作ります。
             </span>
@@ -84,6 +90,10 @@ export function Hero({ className }: { className?: string }) {
                 <span>{b}</span>
               </div>
             ))}
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+              <span>IT導入補助金・小規模事業者持続化補助金などの申請サポート</span>
+            </div>
           </div>
 
           <div className="mt-6 grid gap-2 md:hidden">
@@ -140,21 +150,21 @@ export function Hero({ className }: { className?: string }) {
 
               <div className="mt-6 grid gap-3">
                 <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                  <p className="text-sm font-medium">問い合わせ・予約が分散（電話/LINE/紙）</p>
+                  <h3 className="text-sm font-medium">問い合わせ・予約が分散（電話/LINE/紙）</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     → フォーム統一＋自動通知＋管理シートで一元化
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                  <p className="text-sm font-medium">Excelが属人化して引き継げない</p>
+                  <h3 className="text-sm font-medium">Excelが属人化して引き継げない</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     → 入力ルール＋ビュー分離＋運用手順の整備
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                  <p className="text-sm font-medium">IT導入したいが何から？</p>
+                  <h3 className="text-sm font-medium">IT導入したいが何から？</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     → 目標/KPI→優先順位→最小実装のロードマップ
                   </p>
@@ -167,7 +177,7 @@ export function Hero({ className }: { className?: string }) {
                 {trust.map((t) => (
                   <div key={t.title} className="rounded-2xl border border-border/70 bg-background/70 p-4">
                     <t.icon className="h-4 w-4 text-primary" />
-                    <p className="mt-2 text-sm font-medium">{t.title}</p>
+                    <h3 className="mt-2 text-sm font-medium">{t.title}</h3>
                     <p className="mt-1 text-xs text-muted-foreground">{t.desc}</p>
                   </div>
                 ))}

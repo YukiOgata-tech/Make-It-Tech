@@ -50,10 +50,57 @@ export function SiteHeader() {
   const scrolled = useScrollShadow();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const scrollLockRef = React.useRef<{ y: number; locked: boolean }>({
+    y: 0,
+    locked: false,
+  });
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  React.useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const body = document.body;
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
+    const unlock = () => {
+      const { y, locked } = scrollLockRef.current;
+      body.removeAttribute("data-sheet-open");
+      if (!locked) return;
+      scrollLockRef.current.locked = false;
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.width = "";
+      body.style.overflow = "";
+      window.scrollTo(0, y);
+    };
+
+    if (menuOpen && isMobile && !scrollLockRef.current.locked) {
+      const y = window.scrollY;
+      scrollLockRef.current = { y, locked: true };
+      body.setAttribute("data-sheet-open", "true");
+      body.style.position = "fixed";
+      body.style.top = `-${y}px`;
+      body.style.left = "0";
+      body.style.right = "0";
+      body.style.width = "100%";
+      body.style.overflow = "hidden";
+    } else if (!menuOpen || !isMobile) {
+      unlock();
+    }
+
+    return unlock;
+  }, [menuOpen]);
 
   const isDark = mounted && resolvedTheme === "dark";
   const ThemeIcon = isDark ? Sun : Moon;
@@ -167,7 +214,7 @@ export function SiteHeader() {
             <ThemeIcon className="h-4 w-4" />
           </Button>
 
-          <Sheet>
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen} modal={false}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"

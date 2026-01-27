@@ -158,9 +158,11 @@ export function DiagnosisSection({ className }: { className?: string }) {
             <Card key={c.title} className="rounded-3xl">
               <CardHeader className="space-y-2 p-5 sm:p-6">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-xl">
-                    {c.title}
-                  </Badge>
+                  <h3>
+                    <Badge variant="secondary" className="rounded-xl text-sm font-medium">
+                      {c.title}
+                    </Badge>
+                  </h3>
                   {c.title.includes("業務診断") ? (
                     <Badge variant="outline" className="rounded-xl">
                       条件により無料

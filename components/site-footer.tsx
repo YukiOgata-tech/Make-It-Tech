@@ -63,7 +63,7 @@ export function SiteFooter() {
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Web制作 / 業務改善 / 自動化 / DX支援など、IT領域全般を柔軟にサポートします。
-              まずは最小構成で動かして検証し、成果に寄せます。
+              新潟の地方創生と、ITを通じた学生・若手の活動支援にも取り組んでいます。
             </p>
 
             <div className="grid gap-2 pt-1 sm:flex sm:flex-wrap sm:gap-3">
