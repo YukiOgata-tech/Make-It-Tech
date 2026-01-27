@@ -284,7 +284,7 @@ export function ExperienceDeck({ className }: { className?: string }) {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <span className="min-w-[56px] text-right">
+                <span className="min-w-14 text-right">
                   {activeIndex + 1} / {total}
                 </span>
               </div>
