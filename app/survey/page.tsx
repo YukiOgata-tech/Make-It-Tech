@@ -225,7 +225,7 @@ export default function SurveyPage() {
               return (
                 <div
                   key={b.title}
-                  className="min-w-[220px] snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+                  className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
                 >
                   <div className="flex items-start gap-3">
                     <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
@@ -364,7 +364,7 @@ export default function SurveyPage() {
             {steps.map((step, index) => (
               <div
                 key={step.title}
-                className="min-w-[220px] snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+                className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
               >
                 <p className="text-sm font-medium">
                   {String(index + 1).padStart(2, "0")}. {step.title}

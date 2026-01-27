@@ -143,7 +143,7 @@ export function OfferSection({ className }: { className?: string }) {
             {principles.map((p) => (
               <div
                 key={p.title}
-                className="min-w-[220px] snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+                className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
               >
                 <p className="text-sm font-medium">{p.title}</p>
                 <p className="mt-1 text-xs leading-snug text-muted-foreground">{p.desc}</p>
@@ -284,7 +284,7 @@ export function OfferSection({ className }: { className?: string }) {
               return (
                 <div
                   key={o.title}
-                  className="min-w-[260px] snap-center rounded-3xl border border-border/70 bg-background/80 p-4"
+                  className="min-w-65 snap-center rounded-3xl border border-border/70 bg-background/80 p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="grid gap-1">

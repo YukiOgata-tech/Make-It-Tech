@@ -318,7 +318,7 @@ export function ContactForm() {
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-3 sm:gap-5">
           <div
-            className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+            className="absolute -left-2500 top-auto h-px w-px overflow-hidden"
             aria-hidden="true"
           >
             <Label htmlFor="website">Website</Label>
@@ -418,7 +418,7 @@ export function ContactForm() {
             <Textarea
               id="message"
               rows={5}
-              className="min-h-[120px] rounded-xl resize-y text-sm sm:min-h-[180px] sm:text-base"
+              className="min-h-30 rounded-xl resize-y text-sm sm:min-h-45 sm:text-base"
               placeholder="入力欄（例：予約がLINEと電話で分散。店舗サイトも合わせて整えたい…）"
               {...form.register("message")}
             />
