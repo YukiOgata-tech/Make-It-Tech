@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "ページが見つかりません",
@@ -61,13 +61,13 @@ export default function NotFound() {
       title="ページが見つかりません"
       description="URLが間違っているか、ページが移動した可能性があります。目的に近いページへご案内します。"
     >
-      <div className="grid gap-6">
-        <div className="rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
+      <div className="grid gap-4 sm:gap-6">
+        <div className="rounded-3xl border border-primary/20 bg-secondary/40 p-3 sm:p-8">
           <p className="text-sm font-medium">お探しの内容はどれですか？</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            「現状の困りごと」「理想」「制約」を共有いただければ、最短の改善案をご提案します。
+            「現状の困りごと･理想･制約」を共有で、改善案をご提案！
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:gap-3">
             <Button asChild className="rounded-xl">
               <Link href="/contact">お問い合わせへ</Link>
             </Button>
@@ -77,22 +77,37 @@ export default function NotFound() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3">
           {links.map((item) => (
-            <Card key={item.title} className="rounded-3xl">
-              <CardHeader className="space-y-2">
+            <div
+              key={item.title}
+              className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="rounded-xl">
                   {item.label}
                 </Badge>
-                <CardTitle className="text-base">{item.title}</CardTitle>
-                <p className="text-sm text-muted-foreground">{item.desc}</p>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="outline" className="rounded-xl">
-                  <Link href={item.href}>このページへ</Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">{item.title}</p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7 rounded-full sm:hidden"
+                    >
+                      <Link href={item.href} aria-label={`${item.title}へ移動`}>
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
+                </div>
+              </div>
+              <Button asChild variant="outline" className="hidden rounded-xl sm:inline-flex">
+                <Link href={item.href}>このページへ</Link>
+              </Button>
+            </div>
           ))}
         </div>
       </div>

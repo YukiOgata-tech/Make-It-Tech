@@ -4,7 +4,7 @@ import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent } from "@/components/ui/card";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   Accordion,
   AccordionContent,
@@ -65,6 +65,9 @@ const categoryMeta = [
 ] as const;
 
 export function FAQSection({ className }: { className?: string }) {
+  const previewFaqs = faqs.slice(0, 4);
+  const moreFaqs = faqs.slice(4);
+
   return (
     <section className={cn("py-14 sm:py-18", className)}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -93,18 +96,18 @@ export function FAQSection({ className }: { className?: string }) {
         </div>
 
         {/* Category chips */}
-        <div className="mt-10 grid gap-4 md:grid-cols-4">
+        <div className="mt-8 grid gap-3 sm:gap-4 md:grid-cols-4">
           {categoryMeta.map((c, index) => (
             <FadeIn key={c.key} delay={0.05 * index}>
-              <Card className="rounded-3xl">
-                <CardContent className="p-6">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                    <c.icon className="h-5 w-5" />
-                  </div>
-                  <p className="mt-4 text-sm font-medium">{c.key}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{c.desc}</p>
-                </CardContent>
-              </Card>
+              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 px-3 py-2 sm:px-4">
+                <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary sm:h-9 sm:w-9">
+                  <c.icon className="h-4 w-4" />
+                </div>
+                <div className="grid gap-0.5">
+                  <p className="text-sm font-medium">{c.key}</p>
+                  <p className="text-xs leading-snug text-muted-foreground">{c.desc}</p>
+                </div>
+              </div>
             </FadeIn>
           ))}
         </div>
@@ -112,23 +115,70 @@ export function FAQSection({ className }: { className?: string }) {
         <Separator className="my-10" />
 
         {/* Accordion */}
-        <Accordion type="single" collapsible className="w-full">
-          {faqs.map((f, idx) => (
-            <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`}>
-              <AccordionTrigger className="text-left">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-xl">
-                    {f.category}
-                  </Badge>
-                  <span className="font-medium">{f.q}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                {f.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <div className="hidden md:block">
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((f, idx) => (
+              <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`}>
+                <AccordionTrigger className="text-left">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary" className="rounded-xl">
+                      {f.category}
+                    </Badge>
+                    <span className="font-medium">{f.q}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
+        <div className="grid gap-4 md:hidden">
+          <Accordion type="single" collapsible className="w-full">
+            {previewFaqs.map((f, idx) => (
+              <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`}>
+                <AccordionTrigger className="text-left">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary" className="rounded-xl">
+                      {f.category}
+                    </Badge>
+                    <span className="font-medium">{f.q}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+
+          {moreFaqs.length ? (
+            <MobileDisclosure summary="FAQをもっと見る">
+              <Accordion type="single" collapsible className="w-full">
+                {moreFaqs.map((f, idx) => (
+                  <AccordionItem
+                    key={`${f.category}-more-${idx}`}
+                    value={`item-more-${idx}`}
+                  >
+                    <AccordionTrigger className="text-left">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary" className="rounded-xl">
+                          {f.category}
+                        </Badge>
+                        <span className="font-medium">{f.q}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                      {f.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </MobileDisclosure>
+          ) : null}
+        </div>
 
         {/* Bottom CTA */}
         <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">

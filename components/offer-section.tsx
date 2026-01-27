@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   ArrowRight,
   CheckCircle2,
@@ -119,17 +120,17 @@ export function OfferSection({ className }: { className?: string }) {
         <Separator className="my-10" />
 
         {/* Principles */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="hidden gap-4 md:grid md:grid-cols-3">
           {principles.map((p) => (
             <Card key={p.title} className="rounded-3xl">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex items-center gap-3 sm:items-start">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
                     <CheckCircle2 className="h-4 w-4" />
                   </div>
-                  <div>
+                  <div className="grid gap-1">
                     <p className="text-sm font-medium">{p.title}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
                   </div>
                 </div>
               </CardContent>
@@ -137,15 +138,30 @@ export function OfferSection({ className }: { className?: string }) {
           ))}
         </div>
 
+        <div className="md:hidden">
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
+            {principles.map((p) => (
+              <div
+                key={p.title}
+                className="min-w-[220px] snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+              >
+                <p className="text-sm font-medium">{p.title}</p>
+                <p className="mt-1 text-xs leading-snug text-muted-foreground">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
+        </div>
+
         {/* Offers */}
-        <div className="mt-10 grid gap-4 lg:grid-cols-2">
+        <div className="mt-8 hidden gap-4 lg:grid lg:grid-cols-2">
           {offers.map((o, index) => {
             const Icon = o.icon;
             return (
               <FadeIn key={o.title} delay={0.05 * index}>
                 <Card className="rounded-3xl overflow-hidden">
-                  <CardHeader className="space-y-3">
-                    <div className="flex items-start justify-between gap-4">
+                <CardHeader className="space-y-1.5 sm:space-y-2">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="grid gap-2">
                         <CardTitle className="text-base tracking-tight sm:text-lg">
                           {o.title}
@@ -160,20 +176,20 @@ export function OfferSection({ className }: { className?: string }) {
                         </div>
                       </div>
 
-                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+                      <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm sm:h-10 sm:w-10">
                         <Icon className="h-5 w-5" />
                       </div>
                     </div>
 
-                    <p className="text-sm leading-relaxed text-muted-foreground">
+                    <p className="text-sm leading-snug text-muted-foreground">
                       {o.summary}
                     </p>
                   </CardHeader>
 
-                  <CardContent className="grid gap-4">
-                    <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                  <CardContent className="grid gap-2 sm:gap-3">
+                    <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
                       <p className="text-sm font-medium">含まれること（例）</p>
-                      <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
+                      <ul className="mt-1.5 grid gap-1.5 text-sm leading-snug text-muted-foreground">
                         {o.includes.map((x) => (
                           <li key={x} className="flex items-start gap-2">
                             <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
@@ -183,9 +199,9 @@ export function OfferSection({ className }: { className?: string }) {
                       </ul>
                     </div>
 
-                    <div className="rounded-2xl border border-primary/10 bg-secondary/30 p-4">
+                    <div className="hidden rounded-2xl border border-primary/10 bg-secondary/30 p-4 md:block">
                       <p className="text-sm font-medium">変動要因（例）</p>
-                      <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
+                      <ul className="mt-1.5 grid gap-1.5 text-sm leading-snug text-muted-foreground">
                         {o.notes.map((x) => (
                           <li key={x} className="flex items-start gap-2">
                             <span className="mt-1 h-2 w-2 rounded-full bg-primary/60" />
@@ -195,7 +211,7 @@ export function OfferSection({ className }: { className?: string }) {
                       </ul>
                     </div>
 
-                    <div className="flex flex-wrap gap-3">
+                    <div className="hidden flex-wrap gap-3 md:flex">
                       <Button asChild className="rounded-xl">
                         <Link href="/contact">
                           この内容で相談 <ArrowRight className="ml-2 h-4 w-4" />
@@ -206,14 +222,140 @@ export function OfferSection({ className }: { className?: string }) {
                       </Button>
                     </div>
 
-                    <p className="text-xs text-muted-foreground">
+                    <p className="hidden text-xs text-muted-foreground md:block">
                       ※ 上記は目安です。範囲を合意してから見積もります。
                     </p>
+
+                    <div className="md:hidden">
+                      <MobileDisclosure summary="詳細を見る">
+                        <div className="grid gap-2">
+                          <div className="grid gap-2">
+                            <p className="text-sm font-medium">含まれること（例）</p>
+                            <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                              {o.includes.map((x) => (
+                                <li key={x} className="flex items-start gap-2">
+                                  <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                                  <span>{x}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="grid gap-2">
+                            <p className="text-sm font-medium">変動要因（例）</p>
+                            <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                              {o.notes.map((x) => (
+                                <li key={x} className="flex items-start gap-2">
+                                  <span className="mt-1 h-2 w-2 rounded-full bg-primary/60" />
+                                  <span>{x}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="grid gap-3">
+                            <Button asChild className="rounded-xl">
+                              <Link href="/contact">
+                                この内容で相談 <ArrowRight className="ml-2 h-4 w-4" />
+                              </Link>
+                            </Button>
+                            <Button asChild variant="outline" className="rounded-xl">
+                              <Link href="/pricing">料金ページへ</Link>
+                            </Button>
+                          </div>
+
+                          <p className="text-xs text-muted-foreground">
+                            ※ 上記は目安です。範囲を合意してから見積もります。
+                          </p>
+                        </div>
+                      </MobileDisclosure>
+                    </div>
                   </CardContent>
                 </Card>
               </FadeIn>
             );
           })}
+        </div>
+
+        <div className="mt-6 md:hidden">
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3">
+            {offers.map((o) => {
+              const Icon = o.icon;
+              return (
+                <div
+                  key={o.title}
+                  className="min-w-[260px] snap-center rounded-3xl border border-border/70 bg-background/80 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium">{o.title}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary" className="rounded-xl text-xs">
+                          {o.range}
+                        </Badge>
+                        <Badge variant="outline" className="rounded-xl text-xs">
+                          目安
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                  </div>
+
+                  <p className="mt-2 text-xs leading-snug text-muted-foreground">
+                    {o.summary}
+                  </p>
+
+                  <div className="mt-3">
+                    <MobileDisclosure summary="詳細を見る">
+                      <div className="grid gap-2">
+                        <div className="grid gap-2">
+                          <p className="text-sm font-medium">含まれること（例）</p>
+                          <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                            {o.includes.map((x) => (
+                              <li key={x} className="flex items-start gap-2">
+                                <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                                <span>{x}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="grid gap-2">
+                          <p className="text-sm font-medium">変動要因（例）</p>
+                          <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                            {o.notes.map((x) => (
+                              <li key={x} className="flex items-start gap-2">
+                                <span className="mt-1 h-2 w-2 rounded-full bg-primary/60" />
+                                <span>{x}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="grid gap-2">
+                          <Button asChild className="rounded-xl">
+                            <Link href="/contact">
+                              この内容で相談 <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <Button asChild variant="outline" className="rounded-xl">
+                            <Link href="/pricing">料金ページへ</Link>
+                          </Button>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground">
+                          ※ 上記は目安です。範囲を合意してから見積もります。
+                        </p>
+                      </div>
+                    </MobileDisclosure>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
         </div>
 
         {/* Bottom note */}

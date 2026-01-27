@@ -43,48 +43,47 @@ export function SiteFooter() {
   const brand = site?.name ?? "DX Support";
 
   return (
-    <footer className="mt-16 border-t border-primary/20 bg-background/70 backdrop-blur relative overflow-hidden">
+    <footer className="mt-12 border-t border-primary/20 bg-background/70 backdrop-blur relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-20" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Top area */}
-        <div className="grid gap-8 py-10 md:grid-cols-3">
+        <div className="grid gap-6 py-4 md:grid-cols-3 md:gap-8 md:py-10">
           {/* Brand */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 bg-primary/10">
+          <div className="space-y-1.5 sm:space-y-3">
+            <div className="flex items-center gap-1">
                 <Image
                   src={site.logo}
                   alt={`${brand} logo`}
                   width={44}
                   height={44}
-                  className="h-9 w-9 rounded-full"
+                  className="h-9 w-9 rounded-full sm:h-10 sm:w-10"
                 />
-              </span>
+
               <p className="text-base font-semibold tracking-tight">{brand}</p>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Web制作 / 業務改善 / 自動化 / DX支援など、IT領域全般を柔軟にサポートします。
               まずは最小構成で動かして検証し、成果に寄せます。
             </p>
 
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Button asChild className="rounded-xl">
+            <div className="grid gap-2 pt-1 sm:flex sm:flex-wrap sm:gap-3">
+              <Button asChild size="sm" className="rounded-xl">
                 <Link href="/contact">
                   無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-xl">
+              <Button asChild size="sm" variant="outline" className="rounded-xl">
                 <Link href="/pricing">料金の目安</Link>
               </Button>
             </div>
           </div>
 
           {/* Links */}
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 md:col-span-2">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 md:col-span-2">
             {footerLinks.map((group) => (
-              <div key={group.title} className="space-y-3">
+              <div key={group.title} className="space-y-2">
                 <p className="text-sm font-medium">{group.title}</p>
-                <ul className="grid gap-2 text-sm text-muted-foreground">
+                <ul className="grid gap-1.5 text-sm text-muted-foreground">
                   {group.links.map((l) => (
                     <li key={l.href}>
                       <Link href={l.href} className="hover:text-foreground hover:underline">
@@ -101,12 +100,12 @@ export function SiteFooter() {
         <Separator />
 
         {/* Bottom area */}
-        <div className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
             © {year} {brand}. All rights reserved.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <div className="grid gap-2 text-xs text-muted-foreground sm:flex sm:flex-wrap sm:items-center sm:gap-3">
             <div className="inline-flex items-center gap-2">
               <ShieldCheck className="h-4 w-4" />
               <Link href="/privacy" className="hover:text-foreground hover:underline">

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { ArrowRight, Check, Sparkles, ShieldCheck, Timer, Wallet } from "lucide-react";
 
 type PriceItem = {
@@ -110,7 +111,7 @@ function PriceCard({ item }: { item: PriceItem }) {
       </CardHeader>
 
       <CardContent className="grid gap-4">
-        <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+        <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
           <p className="text-sm font-medium">含まれること（例）</p>
           <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
             {item.includes.map((x) => (
@@ -120,6 +121,19 @@ function PriceCard({ item }: { item: PriceItem }) {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="md:hidden">
+          <MobileDisclosure summary="含まれること（例）">
+            <ul className="grid gap-2">
+              {item.includes.map((x) => (
+                <li key={x} className="flex items-start gap-2">
+                  <Check className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>{x}</span>
+                </li>
+              ))}
+            </ul>
+          </MobileDisclosure>
         </div>
 
         {item.note && (

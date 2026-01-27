@@ -29,12 +29,15 @@ export const metadata: Metadata = {
   keywords: site.keywords,
   metadataBase: new URL(site.url),
   alternates: {
-    canonical: site.url,
+    canonical: "./",
   },
   applicationName: site.name,
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
   publisher: site.name,
+  verification: {
+    google: "google-site-verification=CODE_TO_REPLACE",
+  },
   category: "business",
   robots: {
     index: true,

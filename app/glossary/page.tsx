@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { ArrowRight, BookOpen, CheckCircle2, FileSearch } from "lucide-react";
 
 type GlossaryTerm = {
@@ -240,7 +241,7 @@ export default function GlossaryPage() {
                 </p>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                <div className="grid gap-4">
+                <div className="hidden md:grid md:gap-4">
                   <Link href="#business-diagnosis" className="hover:underline">
                     業務診断とは
                   </Link>
@@ -258,6 +259,29 @@ export default function GlossaryPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+                <div className="md:hidden">
+                  <MobileDisclosure summary="目次を開く">
+                    <div className="grid gap-4">
+                      <Link href="#business-diagnosis" className="hover:underline">
+                        業務診断とは
+                      </Link>
+                      {glossaryGroups.map((group) => (
+                        <div key={group.id} className="grid gap-2">
+                          <Link href={`#${group.id}`} className="font-medium hover:underline">
+                            {group.title}
+                          </Link>
+                          <div className="grid gap-1 text-xs text-muted-foreground">
+                            {group.terms.map((term) => (
+                              <Link key={term.id} href={`#${term.id}`} className="hover:underline">
+                                {term.term}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </MobileDisclosure>
                 </div>
               </CardContent>
             </Card>

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   ArrowRight,
   Bot,
@@ -124,15 +125,18 @@ export default function ServicesPage() {
         description="“作る”より先に“整理”。必要なものだけを実装して、現場で運用できる形にします。"
       >
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="rounded-xl">
+          <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
             現場密着
           </Badge>
-          <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+          <Badge
+            variant="outline"
+            className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
+          >
             最小構成で実装
           </Badge>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-5 grid gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
           <Button asChild className="rounded-xl">
             <Link href="/contact">
               無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
@@ -143,9 +147,9 @@ export default function ServicesPage() {
           </Button>
         </div>
 
-        <Separator className="my-8" />
+        <Separator className="my-8 sm:my-10" />
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="hidden gap-4 md:grid md:grid-cols-2">
           {serviceAreas.map((area) => {
             const Icon = area.icon;
             return (
@@ -171,6 +175,32 @@ export default function ServicesPage() {
             );
           })}
         </div>
+
+        <div className="grid gap-3 md:hidden">
+          {serviceAreas.map((area) => {
+            const Icon = area.icon;
+            return (
+              <MobileDisclosure key={area.title} summary={area.title}>
+                <div className="grid gap-2">
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">{area.desc}</p>
+                  </div>
+                  <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                    {area.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </MobileDisclosure>
+            );
+          })}
+        </div>
       </Section>
 
       <Section
@@ -178,7 +208,7 @@ export default function ServicesPage() {
         title="小さく始めて、成果に寄せる"
         description="不安になりやすいポイントを先に整理し、ムダな開発を避けます。"
       >
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="hidden gap-4 md:grid md:grid-cols-3">
           {principles.map((p) => {
             const Icon = p.icon;
             return (
@@ -194,6 +224,30 @@ export default function ServicesPage() {
             );
           })}
         </div>
+        <div className="md:hidden">
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
+            {principles.map((p) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.title}
+                  className="min-w-[220px] snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium">{p.title}</p>
+                      <p className="text-xs leading-snug text-muted-foreground">{p.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
+        </div>
       </Section>
 
       <Section
@@ -201,7 +255,7 @@ export default function ServicesPage() {
         title="対応範囲のイメージを先に共有します"
         description="案件ごとに違いますが、よく出る成果物を提示してズレを減らします。"
       >
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="hidden gap-4 md:grid md:grid-cols-2">
           {deliverables.map((d) => (
             <Card key={d.title} className="rounded-3xl">
               <CardHeader>
@@ -220,6 +274,20 @@ export default function ServicesPage() {
             </Card>
           ))}
         </div>
+        <div className="grid gap-3 md:hidden">
+          {deliverables.map((d) => (
+            <MobileDisclosure key={d.title} summary={d.title}>
+              <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                {d.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </MobileDisclosure>
+          ))}
+        </div>
       </Section>
 
       <ProcessSection />
@@ -229,7 +297,7 @@ export default function ServicesPage() {
         title="相談内容の例"
         description="同じ悩みでも、優先順位と最小構成で進め方が変わります。"
       >
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="hidden gap-4 md:grid md:grid-cols-2">
           {examples.map((ex) => (
             <Card key={ex.title} className="rounded-3xl">
               <CardContent className="p-6">
@@ -239,8 +307,22 @@ export default function ServicesPage() {
             </Card>
           ))}
         </div>
+        <div className="md:hidden">
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
+            {examples.map((ex) => (
+              <div
+                key={ex.title}
+                className="min-w-[220px] snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+              >
+                <p className="text-sm font-medium">{ex.title}</p>
+                <p className="mt-2 text-xs leading-snug text-muted-foreground">{ex.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
+        </div>
 
-        <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
+        <div className="mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-5 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">まずは現状だけ共有してください</p>
@@ -249,7 +331,7 @@ export default function ServicesPage() {
                 最短の改善案と進め方を提案します。
               </p>
             </div>
-            <div className="flex flex-wrap gap-3 md:justify-end">
+            <div className="grid gap-2 sm:flex sm:flex-wrap sm:gap-3 md:justify-end">
               <Button asChild className="rounded-xl">
                 <Link href="/contact">
                   無料相談へ <ArrowRight className="ml-2 h-4 w-4" />

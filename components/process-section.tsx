@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   ArrowRight,
   ClipboardList,
@@ -107,7 +108,7 @@ function StepCard({ s }: { s: Step }) {
 
       <CardContent className="grid gap-4">
         {s.decision && (
-          <div className="rounded-2xl border border-primary/10 bg-secondary/30 p-4">
+          <div className="hidden rounded-2xl border border-primary/10 bg-secondary/30 p-4 md:block">
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="rounded-xl">
                 {s.decision.label}
@@ -118,7 +119,7 @@ function StepCard({ s }: { s: Step }) {
           </div>
         )}
 
-        <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+        <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
           <p className="text-sm font-medium">このステップのアウトプット</p>
           <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
             {s.outputs.map((o) => (
@@ -128,6 +129,29 @@ function StepCard({ s }: { s: Step }) {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="grid gap-3 md:hidden">
+          {s.decision ? (
+            <MobileDisclosure summary="意思決定ポイント">
+              <div className="grid gap-2">
+                <Badge variant="secondary" className="w-fit rounded-xl">
+                  {s.decision.label}
+                </Badge>
+                <p>{s.decision.note}</p>
+              </div>
+            </MobileDisclosure>
+          ) : null}
+          <MobileDisclosure summary="このステップのアウトプット">
+            <ul className="grid gap-2">
+              {s.outputs.map((o) => (
+                <li key={o} className="flex items-start gap-2">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                  <span>{o}</span>
+                </li>
+              ))}
+            </ul>
+          </MobileDisclosure>
         </div>
       </CardContent>
     </Card>

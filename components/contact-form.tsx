@@ -11,11 +11,11 @@ import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -136,14 +136,14 @@ function SelectLike({
   error?: string;
 }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-0.5 sm:gap-2">
       <Label>{label}</Label>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
             className={cn(
-              "flex h-11 w-full items-center justify-between rounded-xl border border-border/70 bg-background/70 px-3 text-left text-sm backdrop-blur",
+              "flex h-10 w-full items-center justify-between rounded-xl border border-border/70 bg-background/70 px-3 text-left text-sm backdrop-blur sm:h-11",
               "hover:bg-primary/5 transition",
               error && "border-destructive"
             )}
@@ -276,21 +276,21 @@ export function ContactForm() {
   const { formState } = form;
 
   return (
-    <Card className="rounded-3xl">
-      <CardHeader>
-        <CardTitle className="text-lg">お問い合わせ</CardTitle>
+    <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-background/70 p-4 text-card-foreground shadow-sm surface-card sm:p-5 md:gap-6 md:rounded-3xl md:border md:bg-card md:p-6">
+      <div className="grid gap-1.5 md:gap-3">
+        <h2 className="text-md sm:text-lg">お問い合わせ</h2>
         <p className="text-sm text-muted-foreground">
           要件が固まっていなくてもOKです。現状と理想を一緒に整理します。
         </p>
-      </CardHeader>
+      </div>
 
-      <CardContent className="grid gap-6">
-        <div className="rounded-2xl border border-primary/20 bg-secondary/40 p-4">
+      <div className="grid gap-3 sm:gap-4 md:gap-6">
+        <div className="hidden rounded-2xl border border-primary/20 bg-secondary/40 p-4 md:block">
           <p className="text-sm font-medium">早く見積もるコツ</p>
-          <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
+          <ul className="mt-2 grid gap-1 sm:gap-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
               <Check className="mt-0.5 h-4 w-4 text-primary" />
-              <span>「現状」「理想」「制約（予算/納期）」の3点だけでOK</span>
+              <span>「現状･理想･制約(予算/納期)」の3点だけでOK</span>
             </li>
             <li className="flex items-start gap-2">
               <Check className="mt-0.5 h-4 w-4 text-primary" />
@@ -301,7 +301,22 @@ export function ContactForm() {
           </ul>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
+        <div className="md:hidden">
+          <MobileDisclosure summary="早く見積もるコツ">
+            <ul className="grid gap-1.5 text-sm text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 text-primary" />
+                <span>「現状･理想･制約(予算/納期)」の3点だけでOK</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 text-primary" />
+                <span>既存ツールで解決できるなら“作らない”提案もします</span>
+              </li>
+            </ul>
+          </MobileDisclosure>
+        </div>
+
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2 sm:gap-5">
           <div
             className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
             aria-hidden="true"
@@ -316,13 +331,13 @@ export function ContactForm() {
           </div>
           <input type="hidden" {...form.register("startedAt", { valueAsNumber: true })} />
 
-          <div className="grid gap-2">
+          <div className="grid gap-1 sm:gap-2">
             <Label htmlFor="name">お名前</Label>
             <Input id="name" className="rounded-xl" {...form.register("name")} />
             <FieldError message={formState.errors.name?.message} />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid gap-1 sm:gap-2">
             <Label htmlFor="email">メールアドレス</Label>
             <Input
               id="email"
@@ -333,7 +348,7 @@ export function ContactForm() {
             <FieldError message={formState.errors.email?.message} />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid gap-1 sm:gap-2">
             <Label htmlFor="phone">電話番号（任意）</Label>
             <Input
               id="phone"
@@ -354,12 +369,12 @@ export function ContactForm() {
               onChange={(v) =>
                 form.setValue("phoneTime", v, { shouldValidate: true })
               }
-              placeholder="例：午前 / 午後 / 夕方"
+              placeholder="例：午前/午後/夕方"
               error={formState.errors.phoneTime?.message}
             />
           )}
 
-          <div className="grid gap-2">
+          <div className="grid gap-1 sm:gap-2">
             <Label htmlFor="company">会社名・屋号（任意）</Label>
             <Input
               id="company"
@@ -398,15 +413,15 @@ export function ContactForm() {
             <Label htmlFor="message">相談内容</Label>
             <Textarea
               id="message"
-              rows={7}
-              className="rounded-xl min-h-[180px] resize-y"
+              rows={6}
+              className="min-h-[140px] rounded-xl resize-y sm:min-h-[180px]"
               placeholder="例：予約がLINEと電話で分散。フォームに統一して一覧管理したい。店舗サイトも合わせて整えたい…"
               {...form.register("message")}
             />
             <FieldError message={formState.errors.message?.message} />
           </div>
 
-          <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+          <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-medium">相談テンプレ（コピペ用）</p>
@@ -431,7 +446,30 @@ export function ContactForm() {
             </pre>
           </div>
 
-          <Separator />
+          <div className="md:hidden">
+            <MobileDisclosure summary="相談テンプレ（コピペ用）">
+              <div className="grid gap-3">
+                <p className="text-xs text-muted-foreground">
+                  迷ったらこれをコピーして、相談内容に貼り付けてください。
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="rounded-xl w-full"
+                  onClick={copyTemplate}
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  コピー
+                </Button>
+                <pre className="whitespace-pre-wrap rounded-xl bg-secondary/30 p-3 text-xs text-muted-foreground">
+{template}
+                </pre>
+              </div>
+            </MobileDisclosure>
+          </div>
+
+          <Separator className="my-1 sm:my-0" />
 
           <div className="grid gap-2">
             <label className="flex items-start gap-3 text-sm">
@@ -460,21 +498,21 @@ export function ContactForm() {
             </Button>
           </div>
 
-          <p className="text-xs text-muted-foreground">
+          <p className="sm:text-xs text-muted-foreground">
             ※ 送信後、内容を確認して折り返しご連絡します。
           </p>
         </form>
 
-          <div className="rounded-2xl bg-secondary/30 p-4">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              <p className="text-sm font-medium">返信目安</p>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {site.contact?.responseHours ?? "平日 10:00 - 19:00"}
-            </p>
+        <div className="rounded-2xl bg-secondary/30 p-3 sm:p-4">
+          <div className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            <p className="text-sm font-medium">返信目安</p>
           </div>
-      </CardContent>
-    </Card>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {site.contact?.responseHours ?? "平日 10:00 - 19:00"}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

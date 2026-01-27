@@ -8,9 +8,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Menu, ArrowRight, ChevronDown, Moon, Sun } from "lucide-react";
+import { Menu, ArrowRight, ChevronDown, ChevronRight, Moon, Sun } from "lucide-react";
 
 type NavItem = { label: string; href: string };
 
@@ -76,7 +76,7 @@ export function SiteHeader() {
         scrolled ? "shadow-sm" : "shadow-none"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link href="/" className="group inline-flex items-center gap-2">
           <span className="inline-flex h-9 w-9 items-center justify-center">
@@ -89,7 +89,7 @@ export function SiteHeader() {
               priority
             />
           </span>
-          <span className="font-semibold tracking-tight">{site.name}</span>
+          <span className="text-sm font-semibold tracking-tight sm:text-base">{site.name}</span>
         </Link>
 
         {/* Desktop */}
@@ -157,9 +157,9 @@ export function SiteHeader() {
         {/* Mobile */}
         <div className="flex items-center gap-2 md:hidden">
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="rounded-xl border-primary/30"
+            className="rounded-full border border-primary/20 bg-background/80 shadow-sm hover:bg-primary/10"
             onClick={toggleTheme}
             aria-label={themeLabel}
             title={themeLabel}
@@ -169,52 +169,92 @@ export function SiteHeader() {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-xl border-primary/30">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full border border-primary/20 bg-background/80 shadow-sm hover:bg-primary/10"
+                aria-label="メニューを開く"
+              >
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="right" className="w-[340px] rounded-l-3xl bg-background/90 backdrop-blur">
-              <div className="mt-2 flex items-center gap-2">
-                <span className="inline-flex h-9 w-9 items-center justify-center">
-                  <Image
-                    src={site.logo}
-                    alt={`${site.name} logo`}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 object-contain"
-                  />
-                </span>
+            <SheetContent
+              side="right"
+              className="w-[320px] rounded-l-3xl bg-background/95 px-5 py-6 backdrop-blur"
+            >
+              <SheetHeader className="gap-1 p-0">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-9 w-9 items-center justify-center">
+                    <Image
+                      src={site.logo}
+                      alt={`${site.name} logo`}
+                      width={36}
+                      height={36}
+                      className="h-9 w-9 object-contain"
+                    />
+                  </span>
+                  <SheetTitle className="text-sm font-semibold">{site.name}</SheetTitle>
+                </div>
+                <SheetDescription className="text-xs text-muted-foreground">
+                  {site.tagline}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="mt-5 grid gap-4">
                 <div>
-                  <p className="text-sm font-semibold">{site.name}</p>
-                  <p className="text-xs text-muted-foreground line-clamp-1">
-                    {site.tagline}
-                  </p>
+                  <p className="text-xs font-semibold text-muted-foreground">メイン</p>
+                  <div className="mt-2 overflow-hidden rounded-2xl border border-border/60 bg-background/70">
+                    {primaryNav.map((item, index) => {
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn(
+                            "flex items-center justify-between px-4 py-2.5 text-sm transition",
+                            index !== primaryNav.length - 1 && "border-b border-border/60",
+                            active
+                              ? "bg-primary/10 text-foreground"
+                              : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                          )}
+                        >
+                          <span>{item.label}</span>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground/70" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground">その他</p>
+                  <div className="mt-2 overflow-hidden rounded-2xl border border-border/60 bg-background/70">
+                    {secondaryNav.map((item, index) => {
+                      const active = isActive(pathname, item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn(
+                            "flex items-center justify-between px-4 py-2.5 text-sm transition",
+                            index !== secondaryNav.length - 1 && "border-b border-border/60",
+                            active
+                              ? "bg-primary/10 text-foreground"
+                              : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                          )}
+                        >
+                          <span>{item.label}</span>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground/70" />
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-8 grid gap-2">
-                {[...primaryNav, ...secondaryNav].map((item) => {
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "rounded-2xl px-4 py-3 text-sm transition",
-                        active
-                          ? "bg-primary/10 text-foreground"
-                          : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-
-              <div className="mt-6">
-                <Button asChild className="w-full rounded-2xl">
+              <div className="mt-5">
+                <Button asChild size="sm" className="w-full rounded-2xl">
                   <Link href="/contact">
                     無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

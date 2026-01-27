@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { FadeIn } from "@/components/motion";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Timer } from "lucide-react";
 
 const bullets = [
@@ -31,34 +32,40 @@ function Glow() {
 }
 
 export function Hero({ className }: { className?: string }) {
+  const bulletPreview = bullets.slice(0, 2);
+  const bulletRest = bullets.slice(2);
+
   return (
-    <section className={cn("relative overflow-hidden pt-12 sm:pt-16", className)}>
+    <section className={cn("relative overflow-hidden pt-10 sm:pt-16", className)}>
       <Glow />
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-14 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-12 sm:gap-10 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
         {/* Left */}
         <FadeIn className="relative" delay={0.05}>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="rounded-xl">
+            <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
               IT活用・業務改善 総合支援
             </Badge>
-            <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+            <Badge
+              variant="outline"
+              className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
+            >
               実装型 / 現場密着
             </Badge>
           </div>
 
-          <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:mt-5 sm:text-5xl">
             Web制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
             <span className="block text-muted-foreground">
               “現場で回る仕組み”を最短で作ります。
             </span>
           </h1>
 
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
             {site.description}
           </p>
 
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-6 grid gap-2 sm:mt-7 sm:flex sm:flex-wrap sm:gap-3">
             <Button asChild className="rounded-xl">
               <Link href="/contact">
                 無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
@@ -70,7 +77,7 @@ export function Hero({ className }: { className?: string }) {
             </Button>
           </div>
 
-          <div className="mt-8 grid gap-3">
+          <div className="mt-6 hidden gap-3 md:grid">
             {bullets.map((b) => (
               <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
@@ -79,12 +86,36 @@ export function Hero({ className }: { className?: string }) {
             ))}
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2">
+          <div className="mt-6 grid gap-2 md:hidden">
+            {bulletPreview.map((b) => (
+              <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                <span>{b}</span>
+              </div>
+            ))}
+          </div>
+
+          {bulletRest.length ? (
+            <div className="mt-3 md:hidden">
+              <MobileDisclosure summary="対応内容をもっと見る">
+                <div className="grid gap-2">
+                  {bulletRest.map((b) => (
+                    <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                      <span>{b}</span>
+                    </div>
+                  ))}
+                </div>
+              </MobileDisclosure>
+            </div>
+          ) : null}
+
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:mt-8 sm:gap-3">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 sm:px-3 sm:py-2">
               <ShieldCheck className="h-4 w-4" />
               対応範囲は事前に合意して進行
             </span>
-            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 sm:px-3 sm:py-2">
               <Timer className="h-4 w-4" />
               まずは2週間〜の小さな改善もOK
             </span>
@@ -92,7 +123,7 @@ export function Hero({ className }: { className?: string }) {
         </FadeIn>
 
         {/* Right */}
-        <FadeIn className="relative lg:justify-self-end" delay={0.12}>
+        <FadeIn className="relative hidden lg:block lg:justify-self-end" delay={0.12}>
           <Card className="rounded-3xl border bg-card/70 shadow-sm backdrop-blur">
             <CardContent className="p-6 sm:p-7">
               <div className="flex items-start justify-between gap-4">

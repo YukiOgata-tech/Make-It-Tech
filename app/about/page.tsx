@@ -113,7 +113,7 @@ export default function AboutPage() {
             <CardHeader>
               <CardTitle className="text-base">支援の特徴</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-3 text-sm text-muted-foreground">
+            <CardContent className="grid gap-3 text-sm leading-relaxed text-muted-foreground">
               {highlights.map((h) => (
                 <div key={h.title} className="grid gap-1">
                   <p className="text-sm font-medium text-foreground">
@@ -142,7 +142,7 @@ export default function AboutPage() {
       >
         <div className="grid gap-4 md:grid-cols-[1fr_2fr]">
           <Card className="rounded-3xl">
-            <CardContent className="p-6">
+            <CardContent className="p-5 sm:p-6">
               <div className="flex items-center gap-4">
                 <div className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold">
                   OT
@@ -153,7 +153,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <Separator className="my-4" />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 Web制作・業務改善・自動化の実務支援を中心に、現場が回る運用設計を重視。
                 必要最小限の構成から始め、成果が見えた段階で拡張するスタイルです。
               </p>
@@ -164,7 +164,7 @@ export default function AboutPage() {
             <CardHeader>
               <CardTitle className="text-base">支援スタンス</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-3 text-sm text-muted-foreground">
+            <CardContent className="grid gap-3 text-sm leading-relaxed text-muted-foreground">
               <p>・作る前に整理し、必要なら実装へ。</p>
               <p>・既存ツールで解決できるなら、開発しません。</p>
               <p>・現場で運用できる形を最優先します。</p>

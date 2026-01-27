@@ -4,6 +4,7 @@ import { Section } from "@/components/section";
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -22,42 +23,54 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  const responseContent = (
+    <>
+      <p>{site.contact.responseHours}</p>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <Button asChild size="sm" variant="outline" className="rounded-xl">
+          <Link
+            href={site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y"}
+            target="_blank"
+            rel="noreferrer"
+          >
+            LINEで相談
+          </Link>
+        </Button>
+        <span className="text-xs text-muted-foreground">返信が早い場合があります</span>
+      </div>
+      <p className="mt-3 text-xs text-muted-foreground">
+        ※ 連絡はフォームからお願いします。今後、LINE公式/カレンダー予約なども追加できます。
+      </p>
+    </>
+  );
+
   return (
     <Section
       eyebrow="お問い合わせ"
       title="まずは現状を聞かせてください"
       description="相談内容が固まっていなくてもOK。課題の言語化から一緒にやります。"
     >
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <ContactForm />
         </div>
 
-        <Card className="rounded-3xl">
-          <CardHeader>
-            <CardTitle className="text-base">対応目安</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            <p>{site.contact.responseHours}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link
-                  href={site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y"}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LINEで相談
-                </Link>
-              </Button>
-              <span className="text-xs text-muted-foreground">
-                返信が早い場合があります
-              </span>
-            </div>
-            <p className="mt-4 text-xs">
-              ※ 連絡はフォームからお願いします。今後、LINE公式/カレンダー予約なども追加できます。
-            </p>
-          </CardContent>
-        </Card>
+        <div className="hidden lg:block">
+          <Card className="rounded-3xl">
+            <CardHeader className="p-5 sm:p-6">
+              <CardTitle className="text-base">対応目安</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 text-sm text-muted-foreground">
+              {responseContent}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:hidden">
+          <MobileDisclosure summary="対応目安">
+            <div className="text-sm text-muted-foreground">{responseContent}</div>
+          </MobileDisclosure>
+        </div>
       </div>
     </Section>
   );

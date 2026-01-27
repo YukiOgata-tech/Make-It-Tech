@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   Accordion,
   AccordionContent,
@@ -254,7 +255,7 @@ export default function PricingPage() {
               </CardHeader>
 
               <CardContent className="grid gap-4">
-                <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
                   <p className="text-sm font-medium">含まれること（例）</p>
                   <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
                     {ex.includes.map((x) => (
@@ -266,7 +267,7 @@ export default function PricingPage() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-primary/10 bg-secondary/30 p-4">
+                <div className="hidden rounded-2xl border border-primary/10 bg-secondary/30 p-4 md:block">
                   <p className="text-sm font-medium">金額が変わりやすい要因（例）</p>
                   <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
                     {ex.dependsOn.map((x) => (
@@ -276,6 +277,29 @@ export default function PricingPage() {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                <div className="grid gap-3 md:hidden">
+                  <MobileDisclosure summary="含まれること（例）">
+                    <ul className="grid gap-2">
+                      {ex.includes.map((x) => (
+                        <li key={x} className="flex items-start gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                          <span>{x}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </MobileDisclosure>
+                  <MobileDisclosure summary="金額が変わりやすい要因（例）">
+                    <ul className="grid gap-2">
+                      {ex.dependsOn.map((x) => (
+                        <li key={x} className="flex items-start gap-2">
+                          <span className="mt-1 h-2 w-2 rounded-full bg-primary/60" />
+                          <span>{x}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </MobileDisclosure>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
