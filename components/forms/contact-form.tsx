@@ -276,18 +276,18 @@ export function ContactForm() {
   const { formState } = form;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-background/70 p-4 text-card-foreground shadow-sm surface-card sm:p-5 md:gap-6 md:rounded-3xl md:border md:bg-card md:p-6">
+    <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-card-foreground shadow-sm surface-card sm:gap-4 sm:p-5 md:gap-6 md:rounded-3xl md:border md:bg-card md:p-6">
       <div className="grid gap-1.5 md:gap-3">
-        <h2 className="text-md sm:text-lg">お問い合わせ</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-base sm:text-lg">お問い合わせ</h2>
+        <p className="text-xs text-muted-foreground sm:text-sm">
           要件が固まっていなくてもOKです。現状と理想を一緒に整理します。
         </p>
       </div>
 
       <div className="grid gap-3 sm:gap-4 md:gap-6">
-        <div className="hidden rounded-2xl border border-primary/20 bg-secondary/40 p-4 md:block">
+        <div className="hidden rounded-2xl border border-primary/20 bg-secondary/40 p-3 sm:p-4 md:block">
           <p className="text-sm font-medium">早く見積もるコツ</p>
-          <ul className="mt-2 grid gap-1 sm:gap-2 text-sm text-muted-foreground">
+          <ul className="mt-2 grid gap-1.5 text-xs text-muted-foreground sm:gap-2 sm:text-sm">
             <li className="flex items-start gap-2">
               <Check className="mt-0.5 h-4 w-4 text-primary" />
               <span>「現状･理想･制約(予算/納期)」の3点だけでOK</span>
@@ -316,7 +316,7 @@ export function ContactForm() {
           </MobileDisclosure>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2 sm:gap-5">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-3 sm:gap-5">
           <div
             className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
             aria-hidden="true"
@@ -333,7 +333,11 @@ export function ContactForm() {
 
           <div className="grid gap-1 sm:gap-2">
             <Label htmlFor="name">お名前</Label>
-            <Input id="name" className="rounded-xl" {...form.register("name")} />
+            <Input
+              id="name"
+              className="rounded-xl text-sm sm:text-base"
+              {...form.register("name")}
+            />
             <FieldError message={formState.errors.name?.message} />
           </div>
 
@@ -342,7 +346,7 @@ export function ContactForm() {
             <Input
               id="email"
               type="email"
-              className="rounded-xl"
+              className="rounded-xl text-sm sm:text-base"
               {...form.register("email")}
             />
             <FieldError message={formState.errors.email?.message} />
@@ -354,7 +358,7 @@ export function ContactForm() {
               id="phone"
               type="tel"
               autoComplete="tel"
-              className="rounded-xl"
+              className="rounded-xl text-sm sm:text-base"
               placeholder="例: 090-1234-5678"
               {...form.register("phone")}
             />
@@ -378,7 +382,7 @@ export function ContactForm() {
             <Label htmlFor="company">会社名・屋号（任意）</Label>
             <Input
               id="company"
-              className="rounded-xl"
+              className="rounded-xl text-sm sm:text-base"
               {...form.register("company")}
             />
           </div>
@@ -413,9 +417,9 @@ export function ContactForm() {
             <Label htmlFor="message">相談内容</Label>
             <Textarea
               id="message"
-              rows={6}
-              className="min-h-[140px] rounded-xl resize-y sm:min-h-[180px]"
-              placeholder="例：予約がLINEと電話で分散。フォームに統一して一覧管理したい。店舗サイトも合わせて整えたい…"
+              rows={5}
+              className="min-h-[120px] rounded-xl resize-y text-sm sm:min-h-[180px] sm:text-base"
+              placeholder="入力欄（例：予約がLINEと電話で分散。店舗サイトも合わせて整えたい…）"
               {...form.register("message")}
             />
             <FieldError message={formState.errors.message?.message} />
@@ -459,7 +463,7 @@ export function ContactForm() {
                   className="rounded-xl w-full"
                   onClick={copyTemplate}
                 >
-                  <Copy className="mr-2 h-4 w-4" />
+                  <Copy className="mr-1 sm:mr-2 h-4 w-4" />
                   コピー
                 </Button>
                 <pre className="whitespace-pre-wrap rounded-xl bg-secondary/30 p-3 text-xs text-muted-foreground">
@@ -498,7 +502,7 @@ export function ContactForm() {
             </Button>
           </div>
 
-          <p className="sm:text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             ※ 送信後、内容を確認して折り返しご連絡します。
           </p>
         </form>
@@ -508,7 +512,7 @@ export function ContactForm() {
             <Mail className="h-4 w-4" />
             <p className="text-sm font-medium">返信目安</p>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">
             {site.contact?.responseHours ?? "平日 10:00 - 19:00"}
           </p>
         </div>

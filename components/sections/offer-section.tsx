@@ -27,48 +27,48 @@ type Offer = {
 
 const offers: Offer[] = [
   {
-    title: "Web制作（LP / 店舗サイト / 採用ページ）",
-    range: "目安：¥20,000〜¥600,000",
+    title: "Web制作(LP/店舗サイト/採用ページ)",
+    range: "目安：¥30,000〜¥600,000",
     icon: Sparkles,
     summary:
-      "目的（集客/採用/告知）から逆算して、構成→デザイン→実装まで。最短で“問い合わせにつながる形”を作ります。",
+      "目的(集客/採用/告知)から逆算して、構成→デザイン→実装まで。最短で“問い合わせにつながる形”を作ります。",
     includes: ["ヒアリング", "構成案", "デザイン実装", "スマホ最適化", "基本SEO"],
     notes: ["ページ数/素材の有無/アニメーション量で変動", "文章・撮影など制作物は別途の場合あり"],
   },
   {
-    title: "フォーム＋管理（アンケート/予約/問い合わせの一元化）",
+    title: "フォーム＋管理(アンケート/予約/問い合わせの一元化)",
     range: "目安：¥30,000〜¥150,000",
     icon: ClipboardList,
     summary:
       "入力→通知→台帳管理までを整えて、現場で回る運用に。ミス削減と対応スピードを上げます。",
-    includes: ["項目設計", "フォーム作成", "管理表整備", "通知設定（必要に応じて）", "簡易運用手順"],
+    includes: ["項目設計", "フォーム作成", "管理表整備", "通知設定(必要に応じて)", "簡易運用手順"],
     notes: ["分岐・権限・通知先が増えるほど変動", "既存運用の複雑さで調整"],
   },
   {
-    title: "自動化（通知/集計/連携）",
+    title: "自動化(通知/集計/連携)",
     range: "目安：¥50,000〜¥250,000",
     icon: Wrench,
     summary:
       "日々の手作業を減らして、ミスと工数を削減。小さく作って、効果が出たら拡張します。",
-    includes: ["現状整理", "最小要件", "実装", "テスト", "簡易ドキュメント"],
+    includes: ["現状整理", "最小要件", "実装", "テスト", "運用マニュアル作成"],
     notes: ["連携先（LINE/メール/外部SaaS）で変動", "監視・再実行が必要なら別途"],
   },
   {
-    title: "業務改善・DX伴走（運用まで）",
+    title: "業務改善・DX伴走(運用まで)",
     range: "目安：月額 ¥20,000〜（要相談）",
     icon: LineChart,
     summary:
       "導入して終わりにしない。現場の声と数字をもとに改善サイクルを回して成果に寄せます。",
-    includes: ["定例（頻度は相談）", "改善案提示", "優先順位付け", "小修正（範囲内）", "運用ルール整備"],
-    notes: ["頻度/範囲（Web/業務/自動化）で変動", "大規模改修は別途見積もり"],
+    includes: ["定例(頻度は相談)", "改善案提示", "優先順位付け", "修正&更新", "運用ルール整備"],
+    notes: ["頻度/範囲(Web/業務/自動化)で変動", "大規模改修は別途見積もり"],
   },
   {
-    title: "小規模システム（管理画面/会員/簡易DBなど）",
-    range: "目安：¥150,000〜（要相談）",
+    title: "小規模システム(管理画面/会員/簡易DBなど)",
+    range: "目安：¥200,000〜（要相談）",
     icon: Hammer,
     summary:
       "要件を絞って“必要最低限の機能”から。運用負担が増えない設計を優先します。",
-    includes: ["要件整理", "画面設計", "実装", "権限の考慮（必要に応じて）", "運用導線の整備"],
+    includes: ["要件整理", "画面設計", "実装", "権限の考慮(必要に応じて)", "運用導線の整備"],
     notes: ["ログイン/権限/決済などで変動", "外部サービス費用は原則お客様負担"],
   },
 ];
@@ -76,21 +76,21 @@ const offers: Offer[] = [
 const principles = [
   {
     title: "範囲を先に決める",
-    desc: "「やる/やらない」を合意して、無限修正にならないようにします。",
+    desc: "「やる/やらない」を明確にし、合意します。",
   },
   {
-    title: "最小構成で早く動かす",
-    desc: "小さく作って検証→成果が出たら拡張。ムダな開発を避けます。",
+    title: "最小構成で提案・開発",
+    desc: "小さく作って検証→成果が出たら拡張。金銭目的の無駄な提案を避けます。",
   },
   {
     title: "既存ツールで済むなら作らない",
-    desc: "コストと期間を最適化するため、“作らない”提案もします。",
+    desc: "コストと期間を最適化するため、“作らない”提案をします。",
   },
 ];
 
 export function OfferSection({ className }: { className?: string }) {
   return (
-    <section className={cn("py-14 sm:py-18", className)}>
+    <section className={cn("py-6 sm:py-18", className)}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -111,7 +111,7 @@ export function OfferSection({ className }: { className?: string }) {
             </Button>
             <Button asChild className="rounded-xl">
               <Link href="/contact">
-                無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -150,7 +150,7 @@ export function OfferSection({ className }: { className?: string }) {
               </div>
             ))}
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプで確認</p>
         </div>
 
         {/* Offers */}
@@ -188,7 +188,7 @@ export function OfferSection({ className }: { className?: string }) {
 
                   <CardContent className="grid gap-2 sm:gap-3">
                     <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
-                      <p className="text-sm font-medium">含まれること（例）</p>
+                      <p className="text-sm font-medium">含まれること(例)</p>
                       <ul className="mt-1.5 grid gap-1.5 text-sm leading-snug text-muted-foreground">
                         {o.includes.map((x) => (
                           <li key={x} className="flex items-start gap-2">
@@ -200,7 +200,7 @@ export function OfferSection({ className }: { className?: string }) {
                     </div>
 
                     <div className="hidden rounded-2xl border border-primary/10 bg-secondary/30 p-4 md:block">
-                      <p className="text-sm font-medium">変動要因（例）</p>
+                      <p className="text-sm font-medium">変動要因(例)</p>
                       <ul className="mt-1.5 grid gap-1.5 text-sm leading-snug text-muted-foreground">
                         {o.notes.map((x) => (
                           <li key={x} className="flex items-start gap-2">
@@ -230,7 +230,7 @@ export function OfferSection({ className }: { className?: string }) {
                       <MobileDisclosure summary="詳細を見る">
                         <div className="grid gap-2">
                           <div className="grid gap-2">
-                            <p className="text-sm font-medium">含まれること（例）</p>
+                            <p className="text-sm font-medium">含まれること(例)</p>
                             <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                               {o.includes.map((x) => (
                                 <li key={x} className="flex items-start gap-2">
@@ -242,7 +242,7 @@ export function OfferSection({ className }: { className?: string }) {
                           </div>
 
                           <div className="grid gap-2">
-                            <p className="text-sm font-medium">変動要因（例）</p>
+                            <p className="text-sm font-medium">変動要因(例)</p>
                             <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                               {o.notes.map((x) => (
                                 <li key={x} className="flex items-start gap-2">
@@ -311,7 +311,7 @@ export function OfferSection({ className }: { className?: string }) {
                     <MobileDisclosure summary="詳細を見る">
                       <div className="grid gap-2">
                         <div className="grid gap-2">
-                          <p className="text-sm font-medium">含まれること（例）</p>
+                          <p className="text-sm font-medium">含まれること(例)</p>
                           <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                             {o.includes.map((x) => (
                               <li key={x} className="flex items-start gap-2">
@@ -323,7 +323,7 @@ export function OfferSection({ className }: { className?: string }) {
                         </div>
 
                         <div className="grid gap-2">
-                          <p className="text-sm font-medium">変動要因（例）</p>
+                          <p className="text-sm font-medium">変動要因(例)</p>
                           <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                             {o.notes.map((x) => (
                               <li key={x} className="flex items-start gap-2">
@@ -355,14 +355,14 @@ export function OfferSection({ className }: { className?: string }) {
               );
             })}
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプで確認</p>
         </div>
 
         {/* Bottom note */}
         <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-medium">迷ったら、まず「困りごと」だけでOK</p>
+              <p className="text-sm font-medium">まずは「困りごと」だけでOK</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 開発が必要かどうかも含めて判断します。既存ツールで済むなら、開発しません。
                 まずは現状を共有してください。
@@ -372,7 +372,7 @@ export function OfferSection({ className }: { className?: string }) {
             <div className="flex flex-wrap gap-3">
               <Button asChild className="rounded-xl">
                 <Link href="/contact">
-                  無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                  お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">

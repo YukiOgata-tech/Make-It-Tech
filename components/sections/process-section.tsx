@@ -34,8 +34,8 @@ const steps: Step[] = [
     title: "ヒアリング & 現状整理",
     icon: ClipboardList,
     desc:
-      "現状の困りごと・理想・制約（予算/期間/担当者）を整理し、ゴールと優先順位を明確にします。",
-    outputs: ["課題の言語化（箇条書き）", "優先順位（まずやる/後でやる）", "対応範囲の合意（やる/やらない）"],
+      "現状の困りごと・理想・制約(予算/期間/担当者)を整理し、ゴールと優先順位を明確にします。",
+    outputs: ["課題の言語化(箇条書き)", "優先順位(まずやる/後でやる)", "対応範囲の合意(やる/やらない)"],
     decision: {
       label: "ここで決める",
       note: "“何を作るか”より先に、“何を作らないか”を決めます。",
@@ -43,31 +43,31 @@ const steps: Step[] = [
   },
   {
     step: "STEP 02",
-    title: "設計（最小構成の提案）",
+    title: "設計(最小構成の提案)",
     icon: Compass,
     desc:
       "既存ツールで解決できるなら開発しません。最小構成で効果が出る案を設計します。",
-    outputs: ["最小構成の提案（ツール/導線/運用）", "見積もりレンジ（目安）", "2〜4週間の実行プラン"],
+    outputs: ["最小構成の提案(ツール/導線/運用)", "見積もりレンジ(目安)", "2〜4週間の実行プラン"],
     decision: {
       label: "ここで判断",
-      note: "開発が必要かどうか / 先にやるべき改善を判断します。",
+      note: "開発が必要か / 先にやるべき改善を判断します。",
     },
   },
   {
     step: "STEP 03",
-    title: "実装（早く動かす）",
+    title: "実装(テスト確認&公開)",
     icon: Hammer,
     desc:
       "LP/店舗サイト/フォーム/自動化/簡易システムなど、必要な範囲だけを実装。まず動く状態を作ります。",
-    outputs: ["初期版の公開（最小機能）", "運用手順（簡易ドキュメント）", "計測/改善の土台（導線・数字）"],
+    outputs: ["初期版の公開(最小機能)", "運用手順(運用ドキュメント)", "計測/改善の土台(導線・数字)"],
   },
   {
     step: "STEP 04",
-    title: "運用 & 改善（成果に寄せる）",
+    title: "運用 & 改善(成果に寄せる)",
     icon: LineChart,
     desc:
       "導入して終わりにしない。現場の声と数字をもとに改善サイクルを回し、成果に寄せます。",
-    outputs: ["改善案（優先順位付き）", "運用改善（ルール/入力/集計）", "導線改善（CV/予約/問い合わせ）"],
+    outputs: ["改善案(優先順位付き)", "運用改善(ルール/入力/集計)", "導線改善(CV/予約/問い合わせ)"],
   },
 ];
 
@@ -84,12 +84,17 @@ const guarantees = [
   },
 ];
 
-function StepCard({ s }: { s: Step }) {
+function StepCard({ s, compact = false }: { s: Step; compact?: boolean }) {
   const Icon = s.icon;
 
   return (
-    <Card className="relative overflow-hidden rounded-3xl">
-      <CardHeader className="space-y-3">
+    <Card
+      className={cn(
+        "relative overflow-hidden",
+        compact ? "rounded-2xl" : "rounded-3xl"
+      )}
+    >
+      <CardHeader className={cn(compact ? "space-y-2 p-4" : "space-y-3 p-5 sm:p-6")}>
         <div className="flex items-start justify-between gap-4">
           <div className="grid gap-1">
             <p className="text-xs font-medium text-muted-foreground">{s.step}</p>
@@ -98,15 +103,27 @@ function StepCard({ s }: { s: Step }) {
             </CardTitle>
           </div>
 
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
-            <Icon className="h-5 w-5" />
+          <div
+            className={cn(
+              "inline-flex items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm",
+              compact ? "h-9 w-9" : "h-10 w-10"
+            )}
+          >
+            <Icon className={cn(compact ? "h-4 w-4" : "h-5 w-5")} />
           </div>
         </div>
 
-        <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+        <p
+          className={cn(
+            "text-muted-foreground",
+            compact ? "text-xs leading-snug" : "text-sm leading-relaxed"
+          )}
+        >
+          {s.desc}
+        </p>
       </CardHeader>
 
-      <CardContent className="grid gap-4">
+      <CardContent className={cn("grid", compact ? "gap-3 p-4 pt-0" : "gap-4 p-5 pt-0 sm:p-6 sm:pt-0")}>
         {s.decision && (
           <div className="hidden rounded-2xl border border-primary/10 bg-secondary/30 p-4 md:block">
             <div className="flex items-center gap-2">
@@ -120,10 +137,10 @@ function StepCard({ s }: { s: Step }) {
         )}
 
         <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
-          <p className="text-sm font-medium">このステップのアウトプット</p>
+          <p className="text-sm font-medium">アウトプット</p>
           <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
             {s.outputs.map((o) => (
-              <li key={o} className="flex items-start gap-2">
+              <li key={o} className="flex items-start gap-1 sm:gap-2">
                 <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
                 <span>{o}</span>
               </li>
@@ -142,7 +159,7 @@ function StepCard({ s }: { s: Step }) {
               </div>
             </MobileDisclosure>
           ) : null}
-          <MobileDisclosure summary="このステップのアウトプット">
+          <MobileDisclosure summary="アウトプット">
             <ul className="grid gap-2">
               {s.outputs.map((o) => (
                 <li key={o} className="flex items-start gap-2">
@@ -166,10 +183,10 @@ export function ProcessSection({ className }: { className?: string }) {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium text-primary/80">進め方</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-3xl">
               迷わないために、手順と判断ポイントを明確にします
             </h2>
-            <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+            <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
               “何でもできます”は、進め方が曖昧だと不安になります。
               この支援では、範囲を先に決めて、小さく作って検証し、成果に寄せます。
             </p>
@@ -187,23 +204,33 @@ export function ProcessSection({ className }: { className?: string }) {
           </div>
         </div>
 
-        <Separator className="my-10" />
+        <Separator className="my-3 sm:my-10" />
 
         {/* Steps */}
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="hidden gap-4 lg:grid lg:grid-cols-2">
           {steps.map((s, index) => (
             <FadeIn key={s.step} delay={0.05 * index}>
               <StepCard s={s} />
             </FadeIn>
           ))}
         </div>
+        <div className="lg:hidden">
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
+            {steps.map((s) => (
+              <div key={s.step} className="min-w-[280px] snap-center">
+                <StepCard s={s} compact />
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプで確認</p>
+        </div>
 
         {/* Guarantees + CTA */}
-        <div className="mt-10 grid gap-4 md:grid-cols-3 md:items-stretch">
-          <div className="md:col-span-2 grid gap-4">
+        <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 md:items-stretch">
+          <div className="grid gap-4 md:col-span-2">
             {guarantees.map((g) => (
               <Card key={g.title} className="rounded-3xl">
-                <CardContent className="p-6">
+                <CardContent className="p-3 sm:p-6">
                   <div className="flex items-start gap-4">
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
                       <g.icon className="h-5 w-5" />
@@ -219,7 +246,7 @@ export function ProcessSection({ className }: { className?: string }) {
           </div>
 
           <Card className="rounded-3xl">
-            <CardContent className="p-6">
+            <CardContent className="p-6 gap-3">
               <p className="text-sm font-medium">まずはここから</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 現状の困りごとを3つ書ければOK。
@@ -229,7 +256,7 @@ export function ProcessSection({ className }: { className?: string }) {
               <div className="mt-5 grid gap-3">
                 <Button asChild className="rounded-xl">
                   <Link href="/contact">
-                    無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                    お問合せ <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-xl">
@@ -237,7 +264,7 @@ export function ProcessSection({ className }: { className?: string }) {
                 </Button>
               </div>
 
-              <div className="mt-6 rounded-2xl bg-secondary/40 p-4">
+              <div className="mt-3 sm:mt-6 rounded-2xl bg-secondary/40 p-4">
                 <p className="text-xs font-medium text-muted-foreground">TIP</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。
@@ -246,9 +273,51 @@ export function ProcessSection({ className }: { className?: string }) {
             </CardContent>
           </Card>
         </div>
+        <div className="mt-8 grid gap-3 md:hidden">
+          {guarantees.map((g) => (
+            <div
+              key={g.title}
+              className="rounded-2xl border border-border/60 bg-background/70 p-4"
+            >
+              <div className="flex items-start gap-3">
+                <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                  <g.icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium leading-snug">{g.title}</p>
+                  <p className="mt-1 text-xs leading-snug text-muted-foreground">{g.desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+            <p className="text-sm font-medium leading-snug">まずはここから</p>
+            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
+              現状の困りごとを3つ書ければOK。最短の改善案を作って、必要なら実装まで進めます。
+            </p>
+
+            <div className="mt-4 grid gap-2">
+              <Button asChild className="rounded-xl">
+                <Link href="/contact">
+                  お問合せへ <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl">
+                <Link href="/survey">LINEで相談</Link>
+              </Button>
+            </div>
+
+            <MobileDisclosure summary="TIP" className="mt-2">
+              <p className="text-sm text-muted-foreground">
+                “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。
+              </p>
+            </MobileDisclosure>
+          </div>
+        </div>
 
         {/* small note */}
-        <div className="mt-8 text-xs text-muted-foreground">
+        <div className="mt-4 sm:mt-8 text-xs text-muted-foreground">
           ※ 具体的な進め方・成果物・範囲は案件により調整します。無理に大きく作らず、最小構成で効果を検証します。
         </div>
       </div>

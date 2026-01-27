@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 
 export function Section({
   title,
@@ -15,22 +15,22 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section className={cn("py-14 sm:py-18", className)}>
+    <section className={cn("py-3 sm:py-16", className)}>
       <Container>
         {(eyebrow || title || description) && (
-          <div className="mb-10">
+          <div className="mb-3 sm:mb-10">
             {eyebrow && (
               <p className="text-sm font-medium text-primary/80">
                 {eyebrow}
               </p>
             )}
             {title && (
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+              <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-3xl">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
+              <p className="mt-1.5 sm:mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                 {description}
               </p>
             )}

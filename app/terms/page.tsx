@@ -4,7 +4,7 @@ import { termsContent } from "@/content/terms";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
-import { MobileTocList } from "@/components/mobile-toc";
+import { MobileTocList } from "@/components/navigation/mobile-toc";
 
 export const metadata: Metadata = {
   title: "注意事項（利用規約）",

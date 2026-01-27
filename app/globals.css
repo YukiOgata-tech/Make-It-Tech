@@ -49,6 +49,10 @@
 
 :root {
   --radius: 0.75rem;
+  --header-height: 56px;
+  --header-height-sm: 64px;
+  --breadcrumbs-height: 40px;
+  --header-offset: var(--header-height);
   --brand-ink: 28 44 52;
   --brand-sand: 247 243 234;
   --brand-coral: 226 103 61;
@@ -91,6 +95,16 @@
   --sidebar-accent-foreground: rgb(var(--brand-ink));
   --sidebar-border: rgb(226 214 197);
   --sidebar-ring: rgb(var(--brand-coral));
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height: var(--header-height-sm);
+  }
+}
+
+body[data-has-breadcrumbs="true"] {
+  --header-offset: calc(var(--header-height) + var(--breadcrumbs-height));
 }
 
 .dark {
@@ -137,10 +151,12 @@
   }
   html {
     font-size: 18px;
+    overflow-x: clip;
   }
   body {
     @apply bg-background text-foreground;
     font-weight: 500;
+    overflow-x: hidden;
     background-image:
       radial-gradient(60rem 30rem at 10% -10%, rgb(var(--bg-glow-1) / 0.25), transparent 60%),
       radial-gradient(50rem 30rem at 90% 0%, rgb(var(--bg-glow-2) / 0.18), transparent 55%),

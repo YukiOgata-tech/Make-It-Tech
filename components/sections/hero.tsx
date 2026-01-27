@@ -61,7 +61,7 @@ export function Hero({ className }: { className?: string }) {
           </div>
 
           <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:mt-5 sm:text-5xl">
-            新潟でのWeb制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
+            新潟・山形でのWeb制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
             <span className="block text-muted-foreground">
               “現場で回る仕組み”を最短で作ります。
             </span>

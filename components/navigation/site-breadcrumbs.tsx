@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { ChevronRight, Home } from "lucide-react";
 import { site } from "@/lib/site";
 
@@ -23,6 +23,16 @@ const labelMap: Record<string, string> = {
 
 export function SiteBreadcrumbs() {
   const pathname = usePathname();
+
+  useEffect(() => {
+    const body = document.body;
+    if (pathname !== "/") {
+      body.setAttribute("data-has-breadcrumbs", "true");
+    } else {
+      body.removeAttribute("data-has-breadcrumbs");
+    }
+    return () => body.removeAttribute("data-has-breadcrumbs");
+  }, [pathname]);
 
   // トップページでは表示しない
   if (pathname === "/") return null;
@@ -62,7 +72,10 @@ export function SiteBreadcrumbs() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <nav aria-label="Breadcrumb" className="w-full border-b border-border/40 bg-background/50 backdrop-blur-sm">
+      <nav
+        aria-label="Breadcrumb"
+        className="relative z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm"
+      >
         <div className="mx-auto flex h-10 max-w-6xl items-center px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
           <ol className="flex items-center gap-1.5 sm:gap-2">
             <li>

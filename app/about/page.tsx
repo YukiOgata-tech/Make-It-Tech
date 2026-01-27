@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Section } from "@/components/section";
+import { Section } from "@/components/layout/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ExperienceDeck } from "@/components/experience-deck";
+import { ExperienceDeck } from "@/components/sections/experience-deck";
 import { CalendarCheck, ClipboardCheck, Video } from "lucide-react";
 
 const overviewItems = [

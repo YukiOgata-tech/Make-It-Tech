@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Section } from "@/components/section";
-import { ProcessSection } from "@/components/process-section";
+import { Section } from "@/components/layout/section";
+import { ProcessSection } from "@/components/sections/process-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,7 +102,7 @@ const examples = [
 export const metadata: Metadata = {
   title: "サービス",
   description:
-    "新潟の中小事業者向けに、DX・業務改善・Web制作・自動化を必要最小限の範囲で支援します。",
+    "新潟の中小事業者向けに、DX・業務改善・LPやWeb制作・自動化を必要最小限の範囲で支援します。",
   keywords: [
     "新潟",
     "DX",
@@ -113,6 +113,9 @@ export const metadata: Metadata = {
     "低コスト",
     "アプリ開発",
     "信頼",
+    "LP制作",
+    "中小事業者",
+    "個人事業主",
   ],
 };
 
@@ -124,7 +127,7 @@ export default function ServicesPage() {
         title="Web制作から業務改善・DXまで"
         description="“作る”より先に“整理”。必要なものだけを実装して、現場で運用できる形にします。"
       >
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
           <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
             現場密着
           </Badge>
@@ -136,10 +139,10 @@ export default function ServicesPage() {
           </Badge>
         </div>
 
-        <div className="mt-5 grid gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
+        <div className="mt-2 grid gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
           <Button asChild className="rounded-xl">
             <Link href="/contact">
-              無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+              お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
             </Link>
           </Button>
           <Button asChild variant="outline" className="rounded-xl">
@@ -147,7 +150,7 @@ export default function ServicesPage() {
           </Button>
         </div>
 
-        <Separator className="my-8 sm:my-10" />
+        <Separator className="my-4 sm:my-10" />
 
         <div className="hidden gap-4 md:grid md:grid-cols-2">
           {serviceAreas.map((area) => {
@@ -322,19 +325,19 @@ export default function ServicesPage() {
           <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
         </div>
 
-        <div className="mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-5 sm:p-8">
+        <div className="mt-4 sm:mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-5 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">まずは現状だけ共有してください</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                「困っていること」「理想」「制約」を共有してもらえれば、
+                「困っていること･理想･制約」を共有してもらえれば、
                 最短の改善案と進め方を提案します。
               </p>
             </div>
             <div className="grid gap-2 sm:flex sm:flex-wrap sm:gap-3 md:justify-end">
               <Button asChild className="rounded-xl">
                 <Link href="/contact">
-                  無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                  無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">

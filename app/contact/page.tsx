@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Section } from "@/components/section";
-import { ContactForm } from "@/components/contact-form";
+import { Section } from "@/components/layout/section";
+import { ContactForm } from "@/components/forms/contact-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MobileDisclosure } from "@/components/mobile-disclosure";

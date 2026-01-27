@@ -178,11 +178,11 @@ export function ExperienceDeck({ className }: { className?: string }) {
   const stageRef = React.useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = React.useState({ x: 0, y: 0 });
 
-  const cardWidth = isCompact ? 230 : 300;
-  const cardHeight = isCompact ? 330 : 420;
-  const spacing = isCompact ? 150 : 250;
-  const stageHeight = isCompact ? 460 : 560;
-  const baseY = isCompact ? -10 : -20;
+  const cardWidth = isCompact ? 210 : 300;
+  const cardHeight = isCompact ? 320 : 420;
+  const spacing = isCompact ? 135 : 250;
+  const stageHeight = isCompact ? 440 : 560;
+  const baseY = isCompact ? -8 : -20;
   const anchorY = isCompact ? 48 : 45;
 
   const progress = ((activeIndex + 1) / total) * 100;
@@ -241,7 +241,7 @@ export function ExperienceDeck({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative w-full sm:left-1/2 sm:right-1/2 sm:-mx-[50vw] sm:w-screen",
+        "relative w-full overflow-x-hidden sm:left-1/2 sm:right-1/2 sm:-mx-[50vw] sm:w-screen",
         className
       )}
     >
@@ -317,8 +317,8 @@ export function ExperienceDeck({ className }: { className?: string }) {
             onKeyDown={handleKeyDown}
             onPointerMove={handlePointerMove}
             onPointerLeave={handlePointerLeave}
-            className="relative mt-6 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30"
-            style={{ height: stageHeight, perspective: "1600px" }}
+            className="relative mt-6 overflow-hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30"
+            style={{ height: stageHeight, perspective: "1600px", contain: "layout paint size" }}
           >
             {experiences.map((exp, index) => {
               const offset = getOffset(index, activeIndex, total);

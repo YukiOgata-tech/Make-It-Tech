@@ -1,9 +1,9 @@
-import { Hero } from "@/components/hero";
+import { Hero } from "@/components/sections/hero";
 // import { PricingSection } from "@/components/pricing-section";
 // import { ProcessSection } from "@/components/process-section";
-import { FAQSection } from "@/components/faq-section";
-import { OfferSection } from "@/components/offer-section";
-import { DiagnosisSection } from "@/components/diagnosis-section";
+import { FAQSection } from "@/components/sections/faq-section";
+import { OfferSection } from "@/components/sections/offer-section";
+import { DiagnosisSection } from "@/components/sections/diagnosis-section";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
