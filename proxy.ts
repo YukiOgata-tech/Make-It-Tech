@@ -9,7 +9,7 @@ function normalizeHost(host: string) {
   return host.toLowerCase().split(":")[0];
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = normalizeHost(request.headers.get("host") ?? "");
   const targetBase = hostRouteMap[host];
 

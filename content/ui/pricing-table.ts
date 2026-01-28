@@ -1,4 +1,12 @@
-export const pricingPlans = [
+export type PricingPlan = {
+  name: string;
+  price: string;
+  desc: string;
+  features: string[];
+  badge?: string;
+};
+
+export const pricingPlans: PricingPlan[] = [
   {
     name: "ライト",
     price: "¥29,800/月〜",
