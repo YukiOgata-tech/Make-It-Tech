@@ -211,6 +211,102 @@ body[data-has-breadcrumbs="true"] {
     color: transparent;
   }
 
+  @keyframes hero-gradient-pan {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes hero-aurora {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.65;
+    }
+    50% {
+      transform: translate3d(2%, -2%, 0) scale(1.05);
+      opacity: 0.9;
+    }
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes hero-grid {
+    0% {
+      background-position: 0 0, 0 0;
+      opacity: 0.18;
+    }
+    50% {
+      background-position: 40px 30px, 30px 40px;
+      opacity: 0.28;
+    }
+    100% {
+      background-position: 0 0, 0 0;
+      opacity: 0.18;
+    }
+  }
+
+  @keyframes hero-orb {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(18px, -22px, 0) scale(1.06);
+    }
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  @keyframes hero-sheen {
+    0% {
+      transform: translateX(-140%) rotate(6deg);
+      opacity: 0;
+    }
+    30% {
+      opacity: 0.35;
+    }
+    60% {
+      opacity: 0.15;
+    }
+    100% {
+      transform: translateX(140%) rotate(6deg);
+      opacity: 0;
+    }
+  }
+
+  .text-gradient-animate {
+    background-size: 200% 200%;
+    animation: hero-gradient-pan 8s ease infinite;
+  }
+
+  .hero-aurora {
+    animation: hero-aurora 18s ease-in-out infinite;
+  }
+
+  .hero-grid {
+    animation: hero-grid 26s linear infinite;
+  }
+
+  .hero-orb {
+    animation: hero-orb 20s ease-in-out infinite;
+  }
+
+  .hero-orb-delayed {
+    animation-delay: -6s;
+  }
+
+  .hero-sheen {
+    animation: hero-sheen 9s ease-in-out infinite;
+  }
+
   .font-heading {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
@@ -220,5 +316,16 @@ body[data-has-breadcrumbs="true"] {
     background-color: var(--card);
     border-color: rgb(214 200 184 / 0.9);
     box-shadow: 0 16px 35px rgb(20 30 40 / 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-gradient-animate,
+  .hero-aurora,
+  .hero-grid,
+  .hero-orb,
+  .hero-orb-delayed,
+  .hero-sheen {
+    animation: none !important;
   }
 }
