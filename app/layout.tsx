@@ -51,9 +51,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: site.logo,
-    shortcut: site.logo,
-    apple: site.logo,
+    icon: "/images/logo-02_MIT-normal.png",
+    shortcut: "/images/logo-02_MIT-normal.png",
+    apple: "/images/logo-02_MIT-normal.png",
   },
   openGraph: {
     title: site.name,
@@ -119,6 +119,14 @@ export default function RootLayout({
     ...(sameAs.length ? { sameAs } : {}),
   };
 
+  const websiteData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: `${site.name} | DX事業`,
+    url: site.url,
+    alternateName: ["Make It Tech", "MIT", "メイクイットテック"],
+  };
+
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${outfit.variable} ${zen.variable} min-h-dvh bg-background text-foreground font-sans antialiased`}>
@@ -126,6 +134,11 @@ export default function RootLayout({
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
         />
         <ThemeProvider>
           <div className="flex min-h-dvh flex-col">

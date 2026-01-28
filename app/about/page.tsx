@@ -5,52 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ExperienceDeck } from "@/components/sections/experience-deck";
-import { CalendarCheck, ClipboardCheck, Video } from "lucide-react";
-
-const overviewItems = [
-  { label: "屋号", value: "Make It Tech" },
-  { label: "開始", value: "2025年" },
-  { label: "代表取締役", value: "尾形友輝" },
-  { label: "事業内容", value: "Web制作 / 業務改善 / 自動化 / DX支援" },
-  { label: "拠点", value: "新潟県（詳細は打合せ時に共有）" },
-];
-
-const highlights = [
-  {
-    title: "現場起点のDX支援",
-    desc: "課題整理から運用まで、現場で“回る形”を最短で作ります。",
-  },
-  {
-    title: "地方創生・地域への想い",
-    desc: "新潟の事業者がITを武器にできるよう、地方創生の一翼を担う支援を目指します。",
-  },
-  {
-    title: "学生・若手の活動応援",
-    desc: "ITを志す学生や若手への機会提供など、次世代の育成にも協力しています。",
-  },
-  {
-    title: "地域密着・相談重視",
-    desc: "新潟県内の中小事業者に寄り添った支援を前提に設計します。",
-  },
-];
-
-const activities = [
-  {
-    title: "YouTube出演",
-    desc: "就活neo というYouTubeコンテンツに出演。",
-    icon: Video,
-  },
-  {
-    title: "現場ヒアリング",
-    desc: "現状の困りごとを整理し、改善の優先順位を短時間で可視化。",
-    icon: CalendarCheck,
-  },
-  {
-    title: "支援スタイル",
-    desc: "無理に開発せず、既存ツールで解決できるなら“作らない”判断も。",
-    icon: ClipboardCheck,
-  },
-];
+import {
+  aboutActivities,
+  aboutHighlights,
+  aboutOverviewItems,
+} from "@/content/pages/about";
 
 export const metadata: Metadata = {
   title: "事業所概要",
@@ -89,7 +48,7 @@ export default function AboutPage() {
           <div className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 lg:p-6">
             <p className="text-sm font-medium leading-snug">基本情報</p>
             <dl className="mt-3 grid gap-2 text-xs leading-snug sm:gap-3 sm:text-sm">
-              {overviewItems.map((item) => (
+              {aboutOverviewItems.map((item) => (
                 <div
                   key={item.label}
                   className="grid gap-0.5 sm:grid-cols-[120px_1fr] sm:gap-1"
@@ -107,7 +66,7 @@ export default function AboutPage() {
           <div className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 lg:p-6">
             <p className="text-sm font-medium leading-snug">支援の特徴</p>
             <div className="mt-3 grid gap-2 text-xs leading-snug text-muted-foreground sm:gap-3 sm:text-sm sm:leading-relaxed">
-              {highlights.map((h) => (
+              {aboutHighlights.map((h) => (
                 <div key={h.title} className="grid gap-0.5 sm:gap-1">
                   <p className="text-sm font-medium text-foreground">
                     {h.title}
@@ -169,7 +128,7 @@ export default function AboutPage() {
         description="相談しやすさと透明性を重視し、情報発信にも取り組んでいます。"
       >
         <div className="grid gap-2 sm:gap-3 md:grid-cols-3 md:gap-4">
-          {activities.map((a) => (
+          {aboutActivities.map((a) => (
             <div
               key={a.title}
               className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6"

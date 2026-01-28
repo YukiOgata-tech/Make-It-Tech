@@ -7,20 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { FadeIn } from "@/components/motion";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
+import { heroBullets, heroTrust } from "@/content/sections/hero";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Timer } from "lucide-react";
-
-const bullets = [
-  "LP / 店舗サイト / コーポレート / アプリケーション制作（導線設計まで）",
-  "LINE公式・フォーム・管理シート・自動化（低コスト）",
-  "業務の見える化 → 改善案 → 実装 → 運用まで一貫対応",
-  "“作る前に整理”で、無駄な開発を避けて最短で成果へ",
-];
-
-const trust = [
-  { icon: ShieldCheck, title: "範囲を明確化", desc: "対応範囲・優先順位を最初に決める" },
-  { icon: Timer, title: "小さく始める", desc: "まずは最短の“効く改善”から" },
-  { icon: Sparkles, title: "実装から運用まで対応", desc: "ツール導入や開発〜管理と運用代行まで" },
-];
 
 function Glow() {
   return (
@@ -32,14 +20,14 @@ function Glow() {
 }
 
 export function Hero({ className }: { className?: string }) {
-  const bulletPreview = bullets.slice(0, 2);
-  const bulletRest = bullets.slice(2);
+  const bulletPreview = heroBullets.slice(0, 2);
+  const bulletRest = heroBullets.slice(2);
 
   return (
     <section className={cn("relative overflow-hidden pt-10 sm:pt-16", className)}>
       <Glow />
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-12 sm:gap-10 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-3 sm:gap-10 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
         {/* Left */}
         <FadeIn className="relative" delay={0.05}>
           <div className="flex flex-wrap items-center gap-2">
@@ -60,10 +48,10 @@ export function Hero({ className }: { className?: string }) {
             </Badge>
           </div>
 
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:mt-5 sm:text-5xl">
-            新潟・山形でのWeb制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
-            <span className="block text-muted-foreground">
-              “現場で回る仕組み”を最短で作ります。
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:mt-5 sm:text-5xl">
+            Web制作からITによる業務改善・<span className="text-gradient">DX</span>まで。
+            <span className="block text-muted-foreground text-xl sm:text-2xl">
+              “現場で回るシステム”を提供します。
             </span>
           </h1>
 
@@ -74,7 +62,7 @@ export function Hero({ className }: { className?: string }) {
           <div className="mt-6 grid gap-2 sm:mt-7 sm:flex sm:flex-wrap sm:gap-3">
             <Button asChild className="rounded-xl">
               <Link href="/contact">
-                無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
               </Link>
             </Button>
 
@@ -84,7 +72,7 @@ export function Hero({ className }: { className?: string }) {
           </div>
 
           <div className="mt-6 hidden gap-3 md:grid">
-            {bullets.map((b) => (
+            {heroBullets.map((b) => (
               <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                 <span>{b}</span>
@@ -108,10 +96,10 @@ export function Hero({ className }: { className?: string }) {
           {bulletRest.length ? (
             <div className="mt-3 md:hidden">
               <MobileDisclosure summary="対応内容をもっと見る">
-                <div className="grid gap-2">
-                  {bulletRest.map((b) => (
-                    <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+              <div className="grid gap-2">
+                {bulletRest.map((b) => (
+                  <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                       <span>{b}</span>
                     </div>
                   ))}
@@ -134,8 +122,9 @@ export function Hero({ className }: { className?: string }) {
 
         {/* Right */}
         <FadeIn className="relative hidden lg:block lg:justify-self-end" delay={0.12}>
-          <Card className="rounded-3xl border bg-card/70 shadow-sm backdrop-blur">
-            <CardContent className="p-6 sm:p-7">
+          <Card className="relative overflow-hidden rounded-3xl border bg-card/70 shadow-sm backdrop-blur">
+            <div className="pointer-events-none absolute inset-0 bg-[url('/images/bg-light.png')] bg-cover bg-center opacity-50 dark:bg-[url('/images/bg-dark.png')]" />
+            <CardContent className="relative p-6 sm:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold tracking-tight">よくある課題 → 解決の方向性</p>
@@ -174,7 +163,7 @@ export function Hero({ className }: { className?: string }) {
               <Separator className="my-6" />
 
               <div className="grid gap-3 sm:grid-cols-3">
-                {trust.map((t) => (
+                {heroTrust.map((t) => (
                   <div key={t.title} className="rounded-2xl border border-border/70 bg-background/70 p-4">
                     <t.icon className="h-4 w-4 text-primary" />
                     <h3 className="mt-2 text-sm font-medium">{t.title}</h3>

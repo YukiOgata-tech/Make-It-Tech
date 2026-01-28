@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { notFoundLinks } from "@/content/pages/not-found";
 import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -14,45 +15,6 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
-
-const links = [
-  {
-    title: "サービスを見る",
-    desc: "対応範囲と支援スタイルを確認できます。",
-    href: "/services",
-    label: "サービス",
-  },
-  {
-    title: "料金の目安",
-    desc: "価格レンジと見積もりの考え方を紹介します。",
-    href: "/pricing",
-    label: "料金",
-  },
-  {
-    title: "業務診断",
-    desc: "条件により無料の業務診断をご案内します。",
-    href: "/#diagnosis",
-    label: "業務診断",
-  },
-  {
-    title: "お問い合わせ",
-    desc: "現状の共有から丁寧に進めます。",
-    href: "/contact",
-    label: "相談",
-  },
-  {
-    title: "LINEで相談",
-    desc: "LINEで現状を整理し、提案を速くします。",
-    href: "/survey",
-    label: "LINEで相談",
-  },
-  {
-    title: "用語集",
-    desc: "非エンジニア向けの簡易辞書ページです。",
-    href: "/glossary",
-    label: "用語",
-  },
-];
 
 export default function NotFound() {
   return (
@@ -78,7 +40,7 @@ export default function NotFound() {
         </div>
 
         <div className="grid gap-3">
-          {links.map((item) => (
+          {notFoundLinks.map((item) => (
             <div
               key={item.title}
               className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"

@@ -7,7 +7,7 @@ export const site = {
     "新潟", "山形", "DX", "IT", "業務改善", "低コスト", "安い", "丁寧", "LP制作",
     "Web制作", "自動化", "フォーム", "LINE公式", "中小事業者", "個人事業主",
   ],
-  logo: "/images/logo-02_MIT-normal.png",
+  logo: "/images/logo_MIT_transparent.png",
   ogImage: "/images/logo-02_MIT-normal.png",
   url: "https://make-it-tech.com",
   locale: "ja_JP",

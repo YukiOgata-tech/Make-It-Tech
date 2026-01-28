@@ -17,6 +17,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
+  contactBudgets,
+  contactCategories,
+  contactDeadlines,
+  contactPhoneTimes,
+} from "@/content/forms/contact";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,38 +30,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ArrowRight, Check, ChevronDown, Copy, Mail } from "lucide-react";
-
-const categories = [
-  "Web制作（LP/店舗サイト/採用など）",
-  "業務改善（フロー整理/属人化解消）",
-  "ツール導入（LINE/フォーム/管理シート）",
-  "自動化（通知/集計/連携）",
-  "その他/相談して決めたい",
-] as const;
-
-const budgets = [
-  "未定",
-  "〜5万円",
-  "5〜10万円",
-  "10〜30万円",
-  "30〜80万円",
-  "80万円〜",
-] as const;
-
-const deadlines = [
-  "未定",
-  "できれば1〜2週間",
-  "できれば1ヶ月以内",
-  "できれば2〜3ヶ月以内",
-  "中長期（相談）",
-] as const;
-
-const phoneTimes = [
-  "午前（9:00〜12:00）",
-  "午後（13:00〜17:00）",
-  "夕方（17:00〜20:00）",
-  "いつでも",
-] as const;
 
 const schema = z
   .object({
@@ -73,7 +47,7 @@ const schema = z
     category: z
       .string()
       .min(1, "カテゴリを選択してください")
-      .refine((v) => (categories as readonly string[]).includes(v), "カテゴリを選択してください"),
+      .refine((v) => (contactCategories as readonly string[]).includes(v), "カテゴリを選択してください"),
 
     budget: z.string().optional(),
     deadline: z.string().optional(),
@@ -89,7 +63,7 @@ const schema = z
       .optional()
       .refine(
         (value) =>
-          !value || (phoneTimes as readonly string[]).includes(value),
+          !value || (contactPhoneTimes as readonly string[]).includes(value),
         "都合の良い時間帯を選択してください"
       ),
 
@@ -369,7 +343,7 @@ export function ContactForm() {
             <SelectLike
               label="都合の良い時間帯"
               value={values.phoneTime}
-              items={phoneTimes}
+              items={contactPhoneTimes}
               onChange={(v) =>
                 form.setValue("phoneTime", v, { shouldValidate: true })
               }
@@ -390,7 +364,7 @@ export function ContactForm() {
           <SelectLike
             label="相談カテゴリ"
             value={values.category}
-            items={categories}
+            items={contactCategories}
             onChange={(v) => form.setValue("category", v, { shouldValidate: true })}
             placeholder="例：Web制作 / 業務改善 / 自動化…"
             error={formState.errors.category?.message}
@@ -400,13 +374,13 @@ export function ContactForm() {
             <SelectLike
               label="予算感（任意）"
               value={values.budget}
-              items={budgets}
+              items={contactBudgets}
               onChange={(v) => form.setValue("budget", v, { shouldValidate: true })}
             />
             <SelectLike
               label="希望納期（任意）"
               value={values.deadline}
-              items={deadlines}
+              items={contactDeadlines}
               onChange={(v) =>
                 form.setValue("deadline", v, { shouldValidate: true })
               }

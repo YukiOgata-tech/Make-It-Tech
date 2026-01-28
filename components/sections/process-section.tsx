@@ -6,85 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
-import {
-  ArrowRight,
-  ClipboardList,
-  Compass,
-  Hammer,
-  LineChart,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { processGuarantees, processSteps, type ProcessStep } from "@/content/sections/process";
+import { ArrowRight } from "lucide-react";
 
-type Step = {
-  step: string;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  desc: string;
-  outputs: string[];
-  decision?: {
-    label: string;
-    note: string;
-  };
-};
-
-const steps: Step[] = [
-  {
-    step: "STEP 01",
-    title: "ヒアリング & 現状整理",
-    icon: ClipboardList,
-    desc:
-      "現状の困りごと・理想・制約(予算/期間/担当者)を整理し、ゴールと優先順位を明確にします。",
-    outputs: ["課題の言語化(箇条書き)", "優先順位(まずやる/後でやる)", "対応範囲の合意(やる/やらない)"],
-    decision: {
-      label: "ここで決める",
-      note: "“何を作るか”より先に、“何を作らないか”を決めます。",
-    },
-  },
-  {
-    step: "STEP 02",
-    title: "設計(最小構成の提案)",
-    icon: Compass,
-    desc:
-      "既存ツールで解決できるなら開発しません。最小構成で効果が出る案を設計します。",
-    outputs: ["最小構成の提案(ツール/導線/運用)", "見積もりレンジ(目安)", "2〜4週間の実行プラン"],
-    decision: {
-      label: "ここで判断",
-      note: "開発が必要か / 先にやるべき改善を判断します。",
-    },
-  },
-  {
-    step: "STEP 03",
-    title: "実装(テスト確認&公開)",
-    icon: Hammer,
-    desc:
-      "LP/店舗サイト/フォーム/自動化/簡易システムなど、必要な範囲だけを実装。まず動く状態を作ります。",
-    outputs: ["初期版の公開(最小機能)", "運用手順(運用ドキュメント)", "計測/改善の土台(導線・数字)"],
-  },
-  {
-    step: "STEP 04",
-    title: "運用 & 改善(成果に寄せる)",
-    icon: LineChart,
-    desc:
-      "導入して終わりにしない。現場の声と数字をもとに改善サイクルを回し、成果に寄せます。",
-    outputs: ["改善案(優先順位付き)", "運用改善(ルール/入力/集計)", "導線改善(CV/予約/問い合わせ)"],
-  },
-];
-
-const guarantees = [
-  {
-    icon: ShieldCheck,
-    title: "範囲を明確にします",
-    desc: "対応範囲と優先順位を合意して進行。無限対応にならないよう設計します。",
-  },
-  {
-    icon: Sparkles,
-    title: "最小実装を優先します",
-    desc: "小さく作って検証→拡張。ムダな開発を避け、最短で効果に近づけます。",
-  },
-];
-
-function StepCard({ s, compact = false }: { s: Step; compact?: boolean }) {
+function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean }) {
   const Icon = s.icon;
 
   return (
@@ -208,7 +133,7 @@ export function ProcessSection({ className }: { className?: string }) {
 
         {/* Steps */}
         <div className="hidden gap-4 lg:grid lg:grid-cols-2">
-          {steps.map((s, index) => (
+          {processSteps.map((s, index) => (
             <FadeIn key={s.step} delay={0.05 * index}>
               <StepCard s={s} />
             </FadeIn>
@@ -216,7 +141,7 @@ export function ProcessSection({ className }: { className?: string }) {
         </div>
         <div className="lg:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {steps.map((s) => (
+            {processSteps.map((s) => (
               <div key={s.step} className="min-w-[280px] snap-center">
                 <StepCard s={s} compact />
               </div>
@@ -228,7 +153,7 @@ export function ProcessSection({ className }: { className?: string }) {
         {/* Guarantees + CTA */}
         <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 md:items-stretch">
           <div className="grid gap-4 md:col-span-2">
-            {guarantees.map((g) => (
+            {processGuarantees.map((g) => (
               <Card key={g.title} className="rounded-3xl">
                 <CardContent className="p-3 sm:p-6">
                   <div className="flex items-start gap-4">
@@ -274,7 +199,7 @@ export function ProcessSection({ className }: { className?: string }) {
           </Card>
         </div>
         <div className="mt-8 grid gap-3 md:hidden">
-          {guarantees.map((g) => (
+          {processGuarantees.map((g) => (
             <div
               key={g.title}
               className="rounded-2xl border border-border/60 bg-background/70 p-4"

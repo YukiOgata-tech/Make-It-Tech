@@ -5,102 +5,58 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
+import { faqCategoryMeta, faqItems } from "@/content/sections/faq-section";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowRight, ShieldCheck, Timer, Wrench } from "lucide-react";
-
-type FAQ = {
-  category: "サービス" | "料金" | "進め方" | "契約/注意事項";
-  q: string;
-  a: string;
-};
-
-const faqs: FAQ[] = [
-  {
-    category: "サービス",
-    q: "Web制作だけでも依頼できますか？",
-    a: "可能です。LP・店舗サイト・コーポレートなど、目的（集客/採用/告知）に合わせて構成から一緒に整理します。必要なら計測（GA等）や導線改善も対応します。",
-  },
-  {
-    category: "サービス",
-    q: "“ITのこと全部”って、どこまで対応できますか？",
-    a: "IT領域全般を対象にしますが、対応範囲はヒアリングで明確にしてから進めます。無理に開発せず、既存ツールで解決できるなら“作らない”選択もします。",
-  },
-  {
-    category: "料金",
-    q: "プランがないのは不安です。料金はどう決まりますか？",
-    a: "案件ごとに必要範囲が違うため、固定プランは置いていません。代わりに、よくある依頼の価格レンジを提示し、範囲（やる/やらない）を合意してから見積もります。",
-  },
-  {
-    category: "進め方",
-    q: "相談したら、必ず契約しないといけませんか？",
-    a: "いいえ。無料相談では「現状」「理想」「制約」を整理し、最短の改善案を提案します。納得してから進めてください。",
-  },
-  {
-    category: "進め方",
-    q: "どれくらいで効果が出ますか？",
-    a: "内容によりますが、まずは“最小構成”で2〜4週間程度で動く状態を作ることが多いです。そこから運用・改善で成果に寄せます。",
-  },
-  {
-    category: "契約/注意事項",
-    q: "修正は無制限ですか？",
-    a: "無制限ではありません。対応範囲と修正の目安は最初に合意して進めます。仕様の追加や方針転換は、別途相談（見積もり）になります。",
-  },
-  {
-    category: "契約/注意事項",
-    q: "店舗の情報や顧客データなど、情報の取り扱いは大丈夫ですか？",
-    a: "適切なアクセス制御・権限管理を行い、必要最小限の情報のみ扱います。取り扱い方針は個別契約やプライバシーポリシーにも明記します。",
-  },
-];
-
-const categoryMeta = [
-  { key: "サービス", icon: Wrench, desc: "できること/できないこと" },
-  { key: "料金", icon: ShieldCheck, desc: "見積もりの考え方" },
-  { key: "進め方", icon: Timer, desc: "スピード感と手順" },
-  { key: "契約/注意事項", icon: ShieldCheck, desc: "トラブル防止のルール" },
-] as const;
+import { ArrowRight } from "lucide-react";
 
 export function FAQSection({ className }: { className?: string }) {
-  const previewFaqs = faqs.slice(0, 4);
-  const moreFaqs = faqs.slice(4);
+  const previewFaqs = faqItems.slice(0, 4);
+  const moreFaqs = faqItems.slice(4);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: f.a,
+      },
+    })),
+  };
 
   return (
-    <section className={cn("py-14 sm:py-18", className)}>
+    <section className={cn("py-6 sm:py-18", className)}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium text-primary/80">FAQ</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
               不安になりやすいポイントを先に解消します
             </h2>
-            <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+            <p className="mt-0.5 sm:mt-3 max-w-2xl text-md sm:text-base text-muted-foreground">
               “何でもできます”の不透明さをなくすために、範囲・進め方・料金の考え方を明確にします。
             </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/terms">注意事項</Link>
-            </Button>
-            <Button asChild className="rounded-xl">
-              <Link href="/contact">
-                無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
           </div>
         </div>
 
         {/* Category chips */}
-        <div className="mt-8 grid gap-3 sm:gap-4 md:grid-cols-4">
-          {categoryMeta.map((c, index) => (
+        <div className="mt-4 sm:mt-8 grid gap-3 sm:gap-4 md:grid-cols-4">
+          {faqCategoryMeta.map((c, index) => (
             <FadeIn key={c.key} delay={0.05 * index}>
-              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 px-3 py-2 sm:px-4">
-                <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary sm:h-9 sm:w-9">
+              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 px-3 py-1 sm:py-2 sm:px-4">
+                <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-primary/0 bg-primary/10 text-primary sm:h-9 sm:w-9">
                   <c.icon className="h-4 w-4" />
                 </div>
                 <div className="grid gap-0.5">
@@ -112,12 +68,12 @@ export function FAQSection({ className }: { className?: string }) {
           ))}
         </div>
 
-        <Separator className="my-10" />
+        <Separator className="my-4 sm:my-10" />
 
         {/* Accordion */}
         <div className="hidden md:block">
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((f, idx) => (
+          <Accordion type="single" collapsible className="w-full gap-1">
+            {faqItems.map((f, idx) => (
               <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`}>
                 <AccordionTrigger className="text-left">
                   <div className="flex flex-wrap items-center gap-2">
@@ -135,19 +91,19 @@ export function FAQSection({ className }: { className?: string }) {
           </Accordion>
         </div>
 
-        <div className="grid gap-4 md:hidden">
+        <div className="grid gap-2 md:hidden">
           <Accordion type="single" collapsible className="w-full">
             {previewFaqs.map((f, idx) => (
-              <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`}>
+              <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`} className="py-0">
                 <AccordionTrigger className="text-left">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="secondary" className="rounded-xl">
                       {f.category}
                     </Badge>
-                    <span className="font-medium">{f.q}</span>
+                    <span className="pb-0 font-medium text-sm">{f.q}</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                <AccordionContent className="pb-2 pt-0 text-xs leading-relaxed text-muted-foreground">
                   {f.a}
                 </AccordionContent>
               </AccordionItem>
@@ -181,7 +137,7 @@ export function FAQSection({ className }: { className?: string }) {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">
+        <div className="mt-4 sm:mt-10 rounded-3xl border border-primary/20 bg-secondary/40 px-4 p-4 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">迷ったら、まず“現状”だけでOK</p>
@@ -194,7 +150,7 @@ export function FAQSection({ className }: { className?: string }) {
             <div className="flex flex-wrap gap-3 md:justify-end">
               <Button asChild className="rounded-xl">
                 <Link href="/contact">
-                  無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                  無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">
@@ -204,7 +160,7 @@ export function FAQSection({ className }: { className?: string }) {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
+        <p className="mt-3 sm:mt-6 text-xs text-muted-foreground">
           ※ 内容は案件により異なります。対応範囲・費用・納期は事前に合意して進行します。
         </p>
       </div>

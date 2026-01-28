@@ -1,19 +1,5 @@
 import { z } from "zod";
-
-const categories = [
-  "Web制作（LP/店舗サイト/採用など）",
-  "業務改善（フロー整理/属人化解消）",
-  "ツール導入（LINE/フォーム/管理シート）",
-  "自動化（通知/集計/連携）",
-  "その他/相談して決めたい",
-] as const;
-
-const phoneTimes = [
-  "午前（9:00〜12:00）",
-  "午後（13:00〜17:00）",
-  "夕方（17:00〜20:00）",
-  "いつでも",
-] as const;
+import { contactCategories, contactPhoneTimes } from "@/content/forms/contact";
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
@@ -36,7 +22,7 @@ const schema = z
     category: z
       .string()
       .min(1)
-      .refine((value) => (categories as readonly string[]).includes(value)),
+      .refine((value) => (contactCategories as readonly string[]).includes(value)),
     budget: z.string().optional(),
     deadline: z.string().optional(),
     phone: z
@@ -47,7 +33,8 @@ const schema = z
       .string()
       .optional()
       .refine(
-        (value) => !value || (phoneTimes as readonly string[]).includes(value)
+        (value) =>
+          !value || (contactPhoneTimes as readonly string[]).includes(value)
       ),
     message: z.string().min(20).max(2000),
     consent: z.boolean().refine((value) => value === true),

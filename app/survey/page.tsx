@@ -8,126 +8,20 @@ import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { site } from "@/lib/site";
 import {
+  surveyBenefits,
+  surveyChatOutline,
+  surveyPrerequisites,
+  surveySteps,
+} from "@/content/pages/survey";
+import {
   ArrowRight,
   CheckCircle2,
-  ClipboardList,
-  MessageCircle,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 
 const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
 
-const benefits = [
-  {
-    title: "チャットで気軽に相談",
-    desc: "アンケートではなく会話形式。必要な情報だけを短く共有できます。",
-    icon: MessageCircle,
-  },
-  {
-    title: "やりとりを一本化",
-    desc: "質問や追加確認もLINE内で完結。対応が迷子になりません。",
-    icon: ClipboardList,
-  },
-  {
-    title: "資料や画像も送れる",
-    desc: "スクショや既存資料があると、診断・提案の精度が上がります。",
-    icon: Sparkles,
-  },
-];
-
-const prerequisites = [
-  {
-    title: "現状の業務と課題",
-    items: [
-      "誰が・いつ・どの作業をしているか",
-      "詰まりやすいポイント（手戻り/二重入力など）",
-      "今使っているツールや仕組み",
-    ],
-  },
-  {
-    title: "理想の状態・目的",
-    items: [
-      "どの作業を減らしたいか",
-      "達成したいゴール（予約数/対応速度/売上など）",
-      "優先順位（今すぐ/あとで）",
-    ],
-  },
-  {
-    title: "制約・条件",
-    items: [
-      "予算感・希望納期",
-      "担当できる人数や工数",
-      "社内ルールや権限の制約",
-    ],
-  },
-  {
-    title: "既存資料・データ",
-    items: [
-      "既存のフォームやExcel/シート",
-      "メニュー・料金・サービス情報",
-      "予約/問い合わせの流れが分かる資料",
-    ],
-  },
-];
-
-const chatOutline = [
-  {
-    title: "現状と課題",
-    items: [
-      "今困っている作業や場面",
-      "分散している窓口や作業",
-      "改善したい理由・背景",
-    ],
-  },
-  {
-    title: "理想とゴール",
-    items: [
-      "こうなったら嬉しい状態",
-      "優先したい成果（集客/効率/ミス削減）",
-      "最低限必要な機能・条件",
-    ],
-  },
-  {
-    title: "制約・条件",
-    items: [
-      "予算・納期の希望",
-      "担当者の稼働可能時間",
-      "既存ルールや社内事情",
-    ],
-  },
-  {
-    title: "既存ツール・データ",
-    items: [
-      "今使っているツール（LINE/フォーム/シートなど）",
-      "連携したいサービス",
-      "データの保管場所",
-    ],
-  },
-  {
-    title: "支援範囲のイメージ",
-    items: [
-      "Web制作のみ / 業務改善のみ / 両方",
-      "運用まで継続的に支援してほしいか",
-      "まずは小さく試したいか",
-    ],
-  },
-];
-
-const steps = [
-  {
-    title: "LINE公式を追加",
-    desc: "友だち追加後、すぐにチャット相談を開始できます。",
-  },
-  {
-    title: "チャットで状況共有",
-    desc: "現状・理想・制約を短く教えてください。必要なら追加質問します。",
-  },
-  {
-    title: "診断と提案",
-    desc: "内容を整理し、無料診断の進め方や概算の方向性をご案内します。",
-  },
-];
 
 export const metadata: Metadata = {
   title: "LINEで相談",
@@ -203,7 +97,7 @@ export default function SurveyPage() {
         description="アンケートではなくチャット相談だから、必要な情報だけを素早く集められます。"
       >
         <div className="grid gap-4 md:grid-cols-3">
-          {benefits.map((b) => {
+          {surveyBenefits.map((b) => {
             const Icon = b.icon;
             return (
               <Card key={b.title} className="rounded-3xl">
@@ -220,7 +114,7 @@ export default function SurveyPage() {
         </div>
         <div className="md:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {benefits.map((b) => {
+            {surveyBenefits.map((b) => {
               const Icon = b.icon;
               return (
                 <div
@@ -250,7 +144,7 @@ export default function SurveyPage() {
         description="曖昧なまま進めると提案がブレます。先に整理することで最短ルートを作れます。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-2">
-          {prerequisites.map((p) => (
+          {surveyPrerequisites.map((p) => (
             <Card key={p.title} className="rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-base">{p.title}</CardTitle>
@@ -269,7 +163,7 @@ export default function SurveyPage() {
           ))}
         </div>
         <div className="grid gap-3 md:hidden">
-          {prerequisites.map((p) => (
+          {surveyPrerequisites.map((p) => (
             <MobileDisclosure key={p.title} summary={p.title}>
               <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                 {p.items.map((item) => (
@@ -290,7 +184,7 @@ export default function SurveyPage() {
         description="質問は絞っていますが、診断に必要な情報は押さえます。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-2">
-          {chatOutline.map((s) => (
+          {surveyChatOutline.map((s) => (
             <Card key={s.title} className="rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-base">{s.title}</CardTitle>
@@ -309,7 +203,7 @@ export default function SurveyPage() {
           ))}
         </div>
         <div className="grid gap-3 md:hidden">
-          {chatOutline.map((s) => (
+          {surveyChatOutline.map((s) => (
             <MobileDisclosure key={s.title} summary={s.title}>
               <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                 {s.items.map((item) => (
@@ -345,7 +239,7 @@ export default function SurveyPage() {
         description="チャット相談後、内容を整理して最短ルートを提案します。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-3">
-          {steps.map((step, index) => (
+          {surveySteps.map((step, index) => (
             <Card key={step.title} className="rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -361,7 +255,7 @@ export default function SurveyPage() {
 
         <div className="md:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {steps.map((step, index) => (
+            {surveySteps.map((step, index) => (
               <div
                 key={step.title}
                 className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"

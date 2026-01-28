@@ -8,96 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
-  ArrowRight,
-  Bot,
-  ClipboardList,
-  Globe,
-  Hammer,
-  LineChart,
-  Sparkles,
-  Wrench,
-} from "lucide-react";
-
-const serviceAreas = [
-  {
-    title: "Web制作・導線設計",
-    desc: "LP/店舗サイト/採用ページなど、目的から逆算して構成を作ります。",
-    icon: Globe,
-    items: ["構成とコピー整理", "CTA設計・改善", "更新しやすい設計"],
-  },
-  {
-    title: "業務改善・見える化",
-    desc: "属人化や非効率を整理し、引き継げる運用に整えます。",
-    icon: ClipboardList,
-    items: ["業務フロー整理", "入力ルール整備", "運用の型づくり"],
-  },
-  {
-    title: "ツール導入・自動化",
-    desc: "LINE/フォーム/シート/通知連携で、最小コストの仕組み化。",
-    icon: Bot,
-    items: ["問い合わせ一元化", "通知・集計の自動化", "運用負担の削減"],
-  },
-  {
-    title: "小規模システム",
-    desc: "必要最小限の機能から。管理画面や簡易DBも対応します。",
-    icon: Wrench,
-    items: ["要件整理・画面設計", "権限設計（必要に応じて）", "運用導線の整備"],
-  },
-  {
-    title: "改善伴走・運用支援",
-    desc: "導入して終わりにせず、数字と現場の声で改善します。",
-    icon: LineChart,
-    items: ["KPI/導線の改善", "小修正の継続対応", "優先順位の見直し"],
-  },
-];
-
-const principles = [
-  {
-    title: "作る前に整理する",
-    desc: "現状と理想を整理し、必要な範囲だけを見極めます。",
-    icon: Sparkles,
-  },
-  {
-    title: "最小構成で早く動かす",
-    desc: "まず動く状態を作り、効果が見えたら拡張します。",
-    icon: Hammer,
-  },
-  {
-    title: "既存ツールで済むなら作らない",
-    desc: "コストと期間を最適化するために“作らない”提案もします。",
-    icon: ClipboardList,
-  },
-];
-
-const deliverables = [
-  {
-    title: "Web/集客まわりでよく出る成果物",
-    items: ["構成案・導線設計", "デザイン実装", "計測導線の整備", "更新しやすい構成"],
-  },
-  {
-    title: "業務改善でよく出る成果物",
-    items: ["業務フローの見える化", "フォーム/シートの設計", "通知・集計の自動化", "運用手順（簡易）"],
-  },
-];
-
-const examples = [
-  {
-    title: "問い合わせが電話とLINEで分散している",
-    desc: "フォーム統一＋通知自動化で窓口を一本化。",
-  },
-  {
-    title: "Excelが属人化して引き継げない",
-    desc: "入力ルールとビュー分離で運用を標準化。",
-  },
-  {
-    title: "Webが古く、問い合わせ導線が弱い",
-    desc: "目的に合わせて構成を再設計し、CTAを強化。",
-  },
-  {
-    title: "IT導入したいが何から始めるべきか不明",
-    desc: "現状整理→優先順位→最小実装の順で提案。",
-  },
-];
+  serviceAreas,
+  serviceDeliverables,
+  serviceExamples,
+  servicePrinciples,
+} from "@/content/pages/services";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "サービス",
@@ -212,7 +128,7 @@ export default function ServicesPage() {
         description="不安になりやすいポイントを先に整理し、ムダな開発を避けます。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-3">
-          {principles.map((p) => {
+          {servicePrinciples.map((p) => {
             const Icon = p.icon;
             return (
               <Card key={p.title} className="rounded-3xl">
@@ -229,7 +145,7 @@ export default function ServicesPage() {
         </div>
         <div className="md:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {principles.map((p) => {
+            {servicePrinciples.map((p) => {
               const Icon = p.icon;
               return (
                 <div
@@ -259,7 +175,7 @@ export default function ServicesPage() {
         description="案件ごとに違いますが、よく出る成果物を提示してズレを減らします。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-2">
-          {deliverables.map((d) => (
+          {serviceDeliverables.map((d) => (
             <Card key={d.title} className="rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-base">{d.title}</CardTitle>
@@ -278,7 +194,7 @@ export default function ServicesPage() {
           ))}
         </div>
         <div className="grid gap-3 md:hidden">
-          {deliverables.map((d) => (
+          {serviceDeliverables.map((d) => (
             <MobileDisclosure key={d.title} summary={d.title}>
               <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
                 {d.items.map((item) => (
@@ -301,7 +217,7 @@ export default function ServicesPage() {
         description="同じ悩みでも、優先順位と最小構成で進め方が変わります。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-2">
-          {examples.map((ex) => (
+          {serviceExamples.map((ex) => (
             <Card key={ex.title} className="rounded-3xl">
               <CardContent className="p-6">
                 <p className="text-sm font-medium">{ex.title}</p>
@@ -312,7 +228,7 @@ export default function ServicesPage() {
         </div>
         <div className="md:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {examples.map((ex) => (
+            {serviceExamples.map((ex) => (
               <div
                 key={ex.title}
                 className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
