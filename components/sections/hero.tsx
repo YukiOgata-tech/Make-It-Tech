@@ -1,7 +1,8 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type Easing, type Variants } from "framer-motion";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,15 @@ import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { heroBullets, heroTrust } from "@/content/sections/hero";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Timer } from "lucide-react";
+
+const typePhrases = [
+  "現場で回るDXを設計。",
+  "最短の改善ルートを可視化。",
+  "小さく作って確実に検証。",
+];
+
+const easeOut: Easing = [0.22, 1, 0.36, 1];
+const easeInOut: Easing = [0.45, 0, 0.55, 1];
 
 const contentVariants = {
   hidden: { opacity: 0 },
@@ -52,7 +62,7 @@ function Glow() {
         }}
       />
       <div
-        className="absolute left-1/2 top-[-35%] hidden h-[140%] w-[32rem] -translate-x-1/2 rotate-6 opacity-60 blur-3xl hero-orb sm:block"
+        className="absolute left-1/2 top-[-35%] hidden h-[140%] w-lg -translate-x-1/2 rotate-6 opacity-60 blur-3xl hero-orb sm:block"
         style={{
           backgroundImage:
             "radial-gradient(closest-side, rgb(var(--brand-coral) / 0.28), transparent 75%)",
@@ -67,22 +77,74 @@ export function Hero({ className }: { className?: string }) {
   const bulletRest = heroBullets.slice(2);
   const shouldReduceMotion = useReducedMotion();
   const slideDistance = shouldReduceMotion ? 0 : 16;
+  const heroRef = React.useRef<HTMLElement | null>(null);
 
-  const itemVariants = {
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const progressScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const progressOpacity = useTransform(scrollYProgress, [0, 0.2, 1], [0.2, 0.8, 1]);
+  const progressAngle = useTransform(scrollYProgress, [0, 1], ["0deg", "320deg"]);
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const parallaxRotate = useTransform(scrollYProgress, [0, 1], [0, -4]);
+
+  const [typedText, setTypedText] = React.useState(typePhrases[0]);
+  const [phraseIndex, setPhraseIndex] = React.useState(0);
+  const [charIndex, setCharIndex] = React.useState(0);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  React.useEffect(() => {
+    if (shouldReduceMotion) {
+      setTypedText(typePhrases[0]);
+      return;
+    }
+
+    const currentPhrase = typePhrases[phraseIndex];
+    let nextCharIndex = charIndex + (isDeleting ? -1 : 1);
+    let nextIsDeleting = isDeleting;
+    let delay = isDeleting ? 35 : 70;
+
+    if (!isDeleting && nextCharIndex >= currentPhrase.length) {
+      nextCharIndex = currentPhrase.length;
+      nextIsDeleting = true;
+      delay = 1200;
+    }
+
+    if (isDeleting && nextCharIndex <= 0) {
+      nextCharIndex = 0;
+      nextIsDeleting = false;
+      delay = 500;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setCharIndex(nextCharIndex);
+      setIsDeleting(nextIsDeleting);
+      setTypedText(currentPhrase.slice(0, nextCharIndex));
+      if (isDeleting && nextCharIndex === 0) {
+        setPhraseIndex((prev) => (prev + 1) % typePhrases.length);
+      }
+    }, delay);
+
+    return () => window.clearTimeout(timeout);
+  }, [charIndex, isDeleting, phraseIndex, shouldReduceMotion]);
+
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: slideDistance },
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.55, ease: "easeOut" },
+      transition: { duration: 0.55, ease: easeOut },
     },
   };
 
-  const listItemVariants = {
+  const listItemVariants: Variants = {
     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 8 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.35, ease: "easeOut" },
+      transition: { duration: 0.35, ease: easeOut },
     },
   };
 
@@ -91,13 +153,13 @@ export function Hero({ className }: { className?: string }) {
     : { y: [0, -12, 0], rotate: [0, 0.6, 0] };
   const floatTransition = shouldReduceMotion
     ? { duration: 0 }
-    : { duration: 10, repeat: Infinity, ease: "easeInOut" };
+    : { duration: 10, repeat: Infinity, ease: easeInOut };
 
   return (
-    <section className={cn("relative overflow-hidden pt-10 sm:pt-16", className)}>
+    <section ref={heroRef} className={cn("relative overflow-hidden pt-10 sm:pt-16", className)}>
       <Glow />
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-3 sm:gap-10 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-3 sm:gap-8 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
         <motion.div
           className="relative"
           variants={contentVariants}
@@ -106,7 +168,7 @@ export function Hero({ className }: { className?: string }) {
         >
           <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
-              IT活用・業務改善 総合支援
+              IT活用･業務改善 総合支援
             </Badge>
             <Badge
               variant="outline"
@@ -118,7 +180,7 @@ export function Hero({ className }: { className?: string }) {
               variant="outline"
               className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
             >
-              補助金・助成金 対応可
+              補助金･助成金 対応可
             </Badge>
           </motion.div>
 
@@ -126,9 +188,9 @@ export function Hero({ className }: { className?: string }) {
             variants={itemVariants}
             className="mt-4 text-2xl font-semibold tracking-tight sm:mt-5 sm:text-5xl"
           >
-            Web制作からITによる業務改善・
+            Web制作からITによる業務改善･
             <span className="text-gradient text-gradient-animate">DX</span>まで。
-            <span className="block text-muted-foreground text-xl sm:text-2xl">
+            <span className="block text-muted-foreground text-lg sm:text-2xl">
               “現場で回るシステム”を提供します。
             </span>
           </motion.h1>
@@ -139,6 +201,19 @@ export function Hero({ className }: { className?: string }) {
           >
             {site.description}
           </motion.p>
+
+          <motion.div
+            variants={itemVariants}
+            className="mt-2 sm:mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground sm:text-base"
+          >
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-primary">
+              Signal
+            </span>
+            <span className="flex min-h-[1.4em] max-w-full items-center font-medium text-foreground min-w-72 sm:min-w-104">
+              <span className="whitespace-pre">{typedText}</span>
+              <span className="type-caret" aria-hidden="true" />
+            </span>
+          </motion.div>
 
           <motion.div
             variants={itemVariants}
@@ -223,21 +298,43 @@ export function Hero({ className }: { className?: string }) {
           className="relative hidden lg:block lg:justify-self-end"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
+          transition={{ duration: 0.7, ease: easeOut, delay: 0.15 }}
+          style={{ y: parallaxY }}
         >
+          <motion.div
+            className="absolute -left-6 top-14 hidden h-48 w-px origin-top rounded-full bg-primary/40 lg:block"
+            style={{ scaleY: progressScale, opacity: progressOpacity }}
+            aria-hidden="true"
+          />
+
+          <motion.div
+            className="absolute -right-6 top-8 hidden items-center gap-3 rounded-2xl border border-primary/20 bg-background/70 px-3 py-2 text-[11px] text-muted-foreground shadow-sm backdrop-blur lg:flex"
+            style={{ opacity: progressOpacity }}
+          >
+            <div className="h-9 w-9 rounded-full border border-primary/30 bg-secondary/30 p-[3px]">
+              <div
+                className="hero-progress-ring h-full w-full rounded-full"
+                style={{
+                  ...(progressAngle
+                    ? ({ "--hero-progress": progressAngle } as React.CSSProperties)
+                    : {}),
+                }}
+              />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="font-medium text-foreground">Scroll Focus</span>
+              <span>改善の流れを確認</span>
+            </div>
+          </motion.div>
+
           <motion.div className="relative" animate={floatAnimation} transition={floatTransition}>
             <motion.div
               className="pointer-events-none absolute -inset-6 rounded-[2.5rem] opacity-50 blur-2xl"
               style={{
                 backgroundImage:
                   "conic-gradient(from 90deg, rgb(var(--brand-sun) / 0.4), rgb(var(--brand-teal) / 0.35), rgb(var(--brand-coral) / 0.4), rgb(var(--brand-sun) / 0.4))",
+                rotate: parallaxRotate,
               }}
-              animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0 }
-                  : { duration: 24, repeat: Infinity, ease: "linear" }
-              }
             />
             <div className="pointer-events-none absolute -inset-2 rounded-[2.2rem] border border-primary/20" />
 
