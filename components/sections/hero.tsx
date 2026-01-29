@@ -174,13 +174,13 @@ export function Hero({ className }: { className?: string }) {
               variant="outline"
               className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
             >
-              実装型 / 現場密着
+              実装/現場密着
             </Badge>
             <Badge
               variant="outline"
               className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
             >
-              補助金･助成金 対応可
+              補助･助成金 対応可
             </Badge>
           </motion.div>
 
@@ -206,9 +206,9 @@ export function Hero({ className }: { className?: string }) {
             variants={itemVariants}
             className="mt-2 sm:mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground sm:text-base"
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-primary">
+            {/* <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-2 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
               Signal
-            </span>
+            </span> */}
             <span className="flex min-h-[1.4em] max-w-full items-center font-medium text-foreground min-w-72 sm:min-w-104">
               <span className="whitespace-pre">{typedText}</span>
               <span className="type-caret" aria-hidden="true" />
