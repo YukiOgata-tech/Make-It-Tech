@@ -6,6 +6,7 @@ import { ImageResizer } from "./components/image-resizer";
 import { Base64Converter } from "./components/base64-converter";
 import { FaviconGenerator } from "./components/favicon-generator";
 import { MarkdownPreview } from "./components/markdown-preview";
+import { FileExtensionConverter } from "./components/file-extension-converter";
 
 export default function ToolsPage() {
   return (
@@ -46,6 +47,10 @@ export default function ToolsPage() {
 
       <section id="markdown">
         <MarkdownPreview />
+      </section>
+
+      <section id="extension">
+        <FileExtensionConverter />
       </section>
     </div>
   );

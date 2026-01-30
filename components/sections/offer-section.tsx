@@ -293,7 +293,7 @@ export function OfferSection({ className }: { className?: string }) {
             <div className="max-w-2xl">
               <p className="text-sm font-medium">まずは「困りごと」だけでOK</p>
               <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
-                開発の必要性も含めて判断します。既存ツールで済むなら、開発しません。
+                開発の必要性も含めて判断し、既存の運用改善で済むなら、開発しません。
                 まずは現状を共有してください。
               </p>
             </div>

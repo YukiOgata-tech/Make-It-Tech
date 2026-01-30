@@ -31,6 +31,7 @@ export default function ToolsLayout({
             <a href="/sub/tools#base64" className="hover:text-neutral-100 transition-colors">Base64</a>
             <a href="/sub/tools#favicon" className="hover:text-neutral-100 transition-colors">Favicon</a>
             <a href="/sub/tools#markdown" className="hover:text-neutral-100 transition-colors">Markdown</a>
+            <a href="/sub/tools#extension" className="hover:text-neutral-100 transition-colors">拡張子</a>
           </nav>
         </div>
       </header>
