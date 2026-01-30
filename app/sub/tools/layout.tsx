@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: {
@@ -12,6 +13,19 @@ export const metadata: Metadata = {
   },
 };
 
+const navItems = [
+  { href: "/sub/tools", label: "ホーム" },
+  { href: "/sub/tools/compress", label: "圧縮" },
+  { href: "/sub/tools/convert", label: "変換" },
+  { href: "/sub/tools/resize", label: "リサイズ" },
+  { href: "/sub/tools/base64", label: "Base64" },
+  { href: "/sub/tools/favicon", label: "Favicon" },
+  { href: "/sub/tools/markdown", label: "Markdown" },
+  { href: "/sub/tools/extension", label: "拡張子" },
+  { href: "/sub/tools/json", label: "JSON" },
+  { href: "/sub/tools/qr", label: "QR" },
+];
+
 export default function ToolsLayout({
   children,
 }: {
@@ -21,19 +35,19 @@ export default function ToolsLayout({
     <div className="min-h-dvh bg-neutral-950 text-neutral-100">
       <header className="border-b border-neutral-800 bg-neutral-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <a href="/sub/tools" className="font-semibold text-lg tracking-tight">
+          <Link href="/sub/tools" className="font-semibold text-lg tracking-tight">
             <span className="text-blue-400">Dev</span>Tools
-          </a>
-          <nav className="flex items-center gap-4 text-sm text-neutral-400">
-            <a href="/sub/tools#compress" className="hover:text-neutral-100 transition-colors">圧縮</a>
-            <a href="/sub/tools#convert" className="hover:text-neutral-100 transition-colors">変換</a>
-            <a href="/sub/tools#resize" className="hover:text-neutral-100 transition-colors">リサイズ</a>
-            <a href="/sub/tools#base64" className="hover:text-neutral-100 transition-colors">Base64</a>
-            <a href="/sub/tools#favicon" className="hover:text-neutral-100 transition-colors">Favicon</a>
-            <a href="/sub/tools#markdown" className="hover:text-neutral-100 transition-colors">Markdown</a>
-            <a href="/sub/tools#extension" className="hover:text-neutral-100 transition-colors">拡張子</a>
-            <a href="/sub/tools#json" className="hover:text-neutral-100 transition-colors">JSON</a>
-            <a href="/sub/tools#qr" className="hover:text-neutral-100 transition-colors">QR</a>
+          </Link>
+          <nav className="flex items-center gap-3 text-sm text-neutral-400 overflow-x-auto">
+            {navItems.slice(1).map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="hover:text-neutral-100 transition-colors whitespace-nowrap"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </div>
       </header>
