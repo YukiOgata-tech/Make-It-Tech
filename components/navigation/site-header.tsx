@@ -136,7 +136,7 @@ export function SiteHeader() {
               priority
             />
           </span>
-          <span className="font-heading text-sm font-semibold tracking-tight sm:text-base">
+          <span className="brand-mark text-base font-semibold sm:text-lg">
             {site.name}
           </span>
         </Link>
@@ -243,7 +243,7 @@ export function SiteHeader() {
                       className="h-9 w-9 object-contain"
                     />
                   </span>
-                  <SheetTitle className="font-heading text-sm font-semibold">
+                  <SheetTitle className="brand-mark text-base font-semibold">
                     {site.name}
                   </SheetTitle>
                 </div>

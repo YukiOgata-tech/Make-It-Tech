@@ -7,6 +7,8 @@ import { Base64Converter } from "./components/base64-converter";
 import { FaviconGenerator } from "./components/favicon-generator";
 import { MarkdownPreview } from "./components/markdown-preview";
 import { FileExtensionConverter } from "./components/file-extension-converter";
+import { JsonToTable } from "./components/json-to-table";
+import { QRGenerator } from "./components/qr-generator";
 
 export default function ToolsPage() {
   return (
@@ -51,6 +53,14 @@ export default function ToolsPage() {
 
       <section id="extension">
         <FileExtensionConverter />
+      </section>
+
+      <section id="json">
+        <JsonToTable />
+      </section>
+
+      <section id="qr">
+        <QRGenerator />
       </section>
     </div>
   );
