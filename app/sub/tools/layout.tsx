@@ -24,12 +24,13 @@ export default function ToolsLayout({
           <a href="/sub/tools" className="font-semibold text-lg tracking-tight">
             <span className="text-blue-400">Dev</span>Tools
           </a>
-          <nav className="flex items-center gap-6 text-sm text-neutral-400">
+          <nav className="flex items-center gap-4 text-sm text-neutral-400">
             <a href="/sub/tools#compress" className="hover:text-neutral-100 transition-colors">圧縮</a>
             <a href="/sub/tools#convert" className="hover:text-neutral-100 transition-colors">変換</a>
             <a href="/sub/tools#resize" className="hover:text-neutral-100 transition-colors">リサイズ</a>
             <a href="/sub/tools#base64" className="hover:text-neutral-100 transition-colors">Base64</a>
             <a href="/sub/tools#favicon" className="hover:text-neutral-100 transition-colors">Favicon</a>
+            <a href="/sub/tools#markdown" className="hover:text-neutral-100 transition-colors">Markdown</a>
           </nav>
         </div>
       </header>

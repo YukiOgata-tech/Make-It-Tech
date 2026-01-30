@@ -172,6 +172,12 @@ export function ImageResizer() {
   };
 
   const downloadAll = async () => {
+    // 1枚の場合は直接ダウンロード
+    if (images.length === 1) {
+      downloadImage(images[0]);
+      return;
+    }
+
     const JSZip = (await import("jszip")).default;
     const zip = new JSZip();
 
