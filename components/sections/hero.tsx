@@ -206,9 +206,6 @@ export function Hero({ className }: { className?: string }) {
             variants={itemVariants}
             className="mt-2 sm:mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground sm:text-base"
           >
-            {/* <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-2 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-              Signal
-            </span> */}
             <span className="flex min-h-[1.4em] max-w-full items-center font-medium text-foreground min-w-72 sm:min-w-104">
               <span className="whitespace-pre">{typedText}</span>
               <span className="type-caret" aria-hidden="true" />

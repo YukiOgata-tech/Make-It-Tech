@@ -37,14 +37,14 @@ export const diagnosisComparisons = [
 ] as const;
 
 export const diagnosisDeliverables = [
-  "診断サマリー(現状/課題/優先順位)",
-  "推奨IT･導線の提案",
+  "診断サマリー(現状/課題/優先事項の整理)",
+  "推奨IT技術やサービスの提案",
   "概算見積･進行プラン",
   "次のアクションの提案",
 ] as const;
 
 export const diagnosisFreeConditions = [
+  "新潟県内の中小企業であること(業種問わず)",
   "初回の診断であること",
-  "診断範囲が小規模(オンライン中心･短時間)",
-  "支援前提の検討段階であること",
+  "診断範囲が小規模(オンライン･短時間)",
 ] as const;

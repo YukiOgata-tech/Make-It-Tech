@@ -65,7 +65,7 @@ export function DiagnosisSection({ className }: { className?: string }) {
             const Icon = o.icon;
             return (
               <Card key={o.title} className="rounded-3xl">
-                <CardHeader className="space-y-0 p-5 sm:p-6">
+                <CardHeader className="space-y-0 sm:p-2">
                   <div className="flex items-start gap-3">
                     <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
                       <Icon className="h-4 w-4" />
@@ -108,8 +108,16 @@ export function DiagnosisSection({ className }: { className?: string }) {
 
         <div className="mt-8 hidden gap-3 sm:gap-4 md:grid md:grid-cols-2">
           {diagnosisComparisons.map((c) => (
-            <Card key={c.title} className="rounded-3xl">
-              <CardHeader className="space-y-2 p-5 sm:p-6">
+            <Card key={c.title} className="relative overflow-hidden rounded-3xl">
+              <div
+                className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
+                style={{ backgroundImage: "url(/images/bg-2-light.png)" }}
+              />
+              <div
+                className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
+                style={{ backgroundImage: "url(/images/bg-2-dark.png)" }}
+              />
+              <CardHeader className="relative space-y-1 pt-1 sm:px-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3>
                     <Badge variant="secondary" className="rounded-xl text-sm font-medium">
@@ -124,7 +132,7 @@ export function DiagnosisSection({ className }: { className?: string }) {
                 </div>
                 <p className="text-sm leading-snug text-muted-foreground">{c.desc}</p>
               </CardHeader>
-              <CardContent className="pt-0 text-sm text-muted-foreground">
+              <CardContent className="relative pt-0 text-sm text-muted-foreground">
                 <ul className="grid gap-1.5 leading-snug">
                   {c.items.map((item) => (
                     <li key={item} className="flex items-start gap-2">
@@ -156,13 +164,21 @@ export function DiagnosisSection({ className }: { className?: string }) {
           ))}
         </div>
 
-        <div className="mt-8 hidden gap-3 sm:gap-4 lg:grid lg:grid-cols-[1.2fr_1fr]">
-          <Card className="rounded-3xl">
-            <CardHeader className="p-5 sm:p-6">
-              <CardTitle className="text-base">診断で得られること</CardTitle>
+        <div className="mt-8 hidden gap-3 lg:grid lg:grid-cols-[1.2fr_1fr]">
+          <Card className="relative overflow-hidden rounded-3xl">
+            <div
+              className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
+              style={{ backgroundImage: "url(/images/bg-2-light.png)" }}
+            />
+            <div
+              className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
+              style={{ backgroundImage: "url(/images/bg-2-dark.png)" }}
+            />
+            <CardHeader className="relative pt-1 pb-0 sm:px-6">
+              <CardTitle className="text-xl">診断で得られること</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 text-sm text-muted-foreground">
-              <ul className="grid gap-1.5 leading-snug">
+            <CardContent className="relative pt-0 text-sm text-muted-foreground">
+              <ul className="grid gap-1 leading-snug">
                 {diagnosisDeliverables.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <ClipboardCheck className="mt-0.5 h-4 w-4 text-primary" />
@@ -173,12 +189,20 @@ export function DiagnosisSection({ className }: { className?: string }) {
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl">
-            <CardHeader className="p-5 sm:p-6">
-              <CardTitle className="text-base">無料条件(目安)</CardTitle>
+          <Card className="relative overflow-hidden rounded-3xl">
+            <div
+              className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
+              style={{ backgroundImage: "url(/images/bg-2-light.png)" }}
+            />
+            <div
+              className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
+              style={{ backgroundImage: "url(/images/bg-2-dark.png)" }}
+            />
+            <CardHeader className="relative pt-1 pb-0 sm:px-6">
+              <CardTitle className="text-xl">無料条件(目安)</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 text-sm text-muted-foreground">
-              <ul className="grid gap-1.5 leading-snug">
+            <CardContent className="relative pt-0 text-sm text-muted-foreground">
+              <ul className="grid gap-1 leading-snug">
                 {diagnosisFreeConditions.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />

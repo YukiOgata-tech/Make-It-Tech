@@ -210,7 +210,7 @@ export function ServicesSection({ className }: { className?: string }) {
               <p className="text-sm font-medium">迷ったらここから</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 「現状の困りごと」「理想」「制約（予算/期間/担当者）」を
-                ざっくり共有してもらえれば、最短の改善案を提案します。
+                ざっくり共有で、最短の改善案を提案します。
               </p>
             </div>
 

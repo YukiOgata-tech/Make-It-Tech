@@ -9,6 +9,21 @@ import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { processGuarantees, processSteps, type ProcessStep } from "@/content/sections/process";
 import { ArrowRight } from "lucide-react";
 
+function CardBackdrop() {
+  return (
+    <>
+      <div
+        className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
+        style={{ backgroundImage: "url(/images/bg-light.png)" }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
+        style={{ backgroundImage: "url(/images/bg-dark.png)" }}
+      />
+    </>
+  );
+}
+
 function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean }) {
   const Icon = s.icon;
 
@@ -19,8 +34,9 @@ function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean })
         compact ? "rounded-2xl" : "rounded-3xl"
       )}
     >
+      <CardBackdrop />
       <CardHeader className={cn(compact ? "space-y-2 p-4" : "space-y-3 p-5 sm:p-6")}>
-        <div className="flex items-start justify-between gap-4">
+        <div className="relative flex items-start justify-between gap-4">
           <div className="grid gap-1">
             <p className="text-xs font-medium text-muted-foreground">{s.step}</p>
             <CardTitle className="text-base tracking-tight sm:text-lg">
@@ -48,7 +64,7 @@ function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean })
         </p>
       </CardHeader>
 
-      <CardContent className={cn("grid", compact ? "gap-3 p-4 pt-0" : "gap-4 p-5 pt-0 sm:p-6 sm:pt-0")}>
+      <CardContent className={cn("relative grid", compact ? "gap-3 p-4 pt-0" : "gap-4 p-5 pt-0 sm:p-6 sm:pt-0")}>
         {s.decision && (
           <div className="hidden rounded-2xl border border-primary/10 bg-secondary/30 p-4 md:block">
             <div className="flex items-center gap-2">
@@ -154,8 +170,9 @@ export function ProcessSection({ className }: { className?: string }) {
         <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 md:items-stretch">
           <div className="grid gap-4 md:col-span-2">
             {processGuarantees.map((g) => (
-              <Card key={g.title} className="rounded-3xl">
-                <CardContent className="p-3 sm:p-6">
+              <Card key={g.title} className="relative overflow-hidden rounded-3xl">
+                <CardBackdrop />
+                <CardContent className="relative p-3 sm:p-6">
                   <div className="flex items-start gap-4">
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
                       <g.icon className="h-5 w-5" />
@@ -170,8 +187,9 @@ export function ProcessSection({ className }: { className?: string }) {
             ))}
           </div>
 
-          <Card className="rounded-3xl">
-            <CardContent className="p-6 gap-3">
+          <Card className="relative overflow-hidden rounded-3xl">
+            <CardBackdrop />
+            <CardContent className="relative p-6 gap-3">
               <p className="text-sm font-medium">まずはここから</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 現状の困りごとを3つ書ければOK。
@@ -202,9 +220,10 @@ export function ProcessSection({ className }: { className?: string }) {
           {processGuarantees.map((g) => (
             <div
               key={g.title}
-              className="rounded-2xl border border-border/60 bg-background/70 p-4"
+              className="relative overflow-hidden rounded-2xl border border-border/60 bg-background/70 p-4"
             >
-              <div className="flex items-start gap-3">
+              <CardBackdrop />
+              <div className="relative flex items-start gap-3">
                 <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
                   <g.icon className="h-4 w-4" />
                 </div>
@@ -216,28 +235,31 @@ export function ProcessSection({ className }: { className?: string }) {
             </div>
           ))}
 
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-            <p className="text-sm font-medium leading-snug">まずはここから</p>
-            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
-              現状の困りごとを3つ書ければOK。最短の改善案を作って、必要なら実装まで進めます。
-            </p>
-
-            <div className="mt-4 grid gap-2">
-              <Button asChild className="rounded-xl">
-                <Link href="/contact">
-                  お問合せへ <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">LINEで相談</Link>
-              </Button>
-            </div>
-
-            <MobileDisclosure summary="TIP" className="mt-2">
-              <p className="text-sm text-muted-foreground">
-                “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。
+          <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-background/70 p-4">
+            <CardBackdrop />
+            <div className="relative">
+              <p className="text-sm font-medium leading-snug">まずはここから</p>
+              <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
+                現状の困りごとを3つ書ければOK。最短の改善案を作って、必要なら実装まで進めます。
               </p>
-            </MobileDisclosure>
+
+              <div className="mt-4 grid gap-2">
+                <Button asChild className="rounded-xl">
+                  <Link href="/contact">
+                    お問合せへ <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-xl">
+                  <Link href="/survey">LINEで相談</Link>
+                </Button>
+              </div>
+
+              <MobileDisclosure summary="TIP" className="mt-2">
+                <p className="text-sm text-muted-foreground">
+                  “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。
+                </p>
+              </MobileDisclosure>
+            </div>
           </div>
         </div>
 

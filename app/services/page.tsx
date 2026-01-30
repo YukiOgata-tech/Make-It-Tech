@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/layout/section";
 import { ProcessSection } from "@/components/sections/process-section";
+import { ServiceAreaSwap } from "@/components/sections/service-area-swap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +41,7 @@ export default function ServicesPage() {
     <>
       <Section
         eyebrow="サービス"
-        title="Web制作から業務改善・DXまで"
+        title="Web制作から業務改善･DXまで"
         description="“作る”より先に“整理”。必要なものだけを実装して、現場で運用できる形にします。"
       >
         <div className="flex flex-wrap items-center gap-1 sm:gap-2">
@@ -55,68 +56,48 @@ export default function ServicesPage() {
           </Badge>
         </div>
 
-        <div className="mt-2 grid gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
-          <Button asChild className="rounded-xl">
-            <Link href="/contact">
-              お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="rounded-xl">
-            <Link href="/survey">LINEで相談</Link>
-          </Button>
-        </div>
-
         <Separator className="my-4 sm:my-10" />
 
-        <div className="hidden gap-4 md:grid md:grid-cols-2">
-          {serviceAreas.map((area) => {
-            const Icon = area.icon;
-            return (
-              <Card key={area.title} className="rounded-3xl">
-                <CardHeader className="space-y-2">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <CardTitle className="text-base">{area.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{area.desc}</p>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  <ul className="grid gap-2">
-                    {area.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        <ServiceAreaSwap />
 
         <div className="grid gap-3 md:hidden">
           {serviceAreas.map((area) => {
             const Icon = area.icon;
             return (
-              <MobileDisclosure key={area.title} summary={area.title}>
-                <div className="grid gap-2">
-                  <div className="flex items-start gap-3">
-                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                      <Icon className="h-4 w-4" />
+              <div
+                key={area.title}
+                className="relative overflow-hidden rounded-2xl border border-border/60 bg-background/70"
+              >
+                <div
+                  className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-30 dark:hidden"
+                  style={{ backgroundImage: "url(/images/bg-3-light.png)" }}
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-30 dark:block"
+                  style={{ backgroundImage: "url(/images/bg-3-dark.png)" }}
+                />
+                <MobileDisclosure
+                  summary={area.title}
+                  className="relative z-10 border-0 bg-transparent"
+                >
+                  <div className="grid gap-2">
+                    <div className="flex items-start gap-3">
+                      <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">{area.desc}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">{area.desc}</p>
+                    <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
+                      {area.items.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
-                    {area.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </MobileDisclosure>
+                </MobileDisclosure>
+              </div>
             );
           })}
         </div>
@@ -132,11 +113,11 @@ export default function ServicesPage() {
             const Icon = p.icon;
             return (
               <Card key={p.title} className="rounded-3xl">
-                <CardContent className="p-6">
+                <CardContent className="px-6 py-1">
                   <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <p className="mt-4 text-sm font-medium">{p.title}</p>
+                  <p className="mt-4 text-xl font-medium">{p.title}</p>
                   <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
                 </CardContent>
               </Card>
@@ -174,24 +155,32 @@ export default function ServicesPage() {
         title="対応範囲のイメージを先に共有します"
         description="案件ごとに違いますが、よく出る成果物を提示してズレを減らします。"
       >
-        <div className="hidden gap-4 md:grid md:grid-cols-2">
-          {serviceDeliverables.map((d) => (
-            <Card key={d.title} className="rounded-3xl">
-              <CardHeader>
-                <CardTitle className="text-base">{d.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                <ul className="grid gap-2">
-                  {d.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="hidden gap-6 md:grid md:grid-cols-2">
+          {serviceDeliverables.map((d, index) => {
+            const bgImage =
+              index === 0 ? "/images/bg-design-01.png" : "/images/bg-design-02.png";
+            return (
+              <Card key={d.title} className="relative overflow-hidden rounded-3xl">
+                <div
+                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-15"
+                  style={{ backgroundImage: `url(${bgImage})` }}
+                />
+                <CardHeader className="relative">
+                  <CardTitle className="text-xl">{d.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="relative text-sm text-white">
+                  <ul className="grid gap-2">
+                    {d.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="mt-0 h-2 w-2 rounded-full bg-white" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
         <div className="grid gap-3 md:hidden">
           {serviceDeliverables.map((d) => (
@@ -219,7 +208,7 @@ export default function ServicesPage() {
         <div className="hidden gap-4 md:grid md:grid-cols-2">
           {serviceExamples.map((ex) => (
             <Card key={ex.title} className="rounded-3xl">
-              <CardContent className="p-6">
+              <CardContent className="px-6 py-0.5">
                 <p className="text-sm font-medium">{ex.title}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{ex.desc}</p>
               </CardContent>
@@ -253,7 +242,7 @@ export default function ServicesPage() {
             <div className="grid gap-2 sm:flex sm:flex-wrap sm:gap-3 md:justify-end">
               <Button asChild className="rounded-xl">
                 <Link href="/contact">
-                  無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
+                  お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-xl">

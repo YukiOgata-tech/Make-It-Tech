@@ -4,6 +4,7 @@ import { Hero } from "@/components/sections/hero";
 import { FAQSection } from "@/components/sections/faq-section";
 import { OfferSection } from "@/components/sections/offer-section";
 import { DiagnosisSection } from "@/components/sections/diagnosis-section";
+import { FloatingContactCta } from "@/components/sections/floating-contact-cta";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <FloatingContactCta />
       <Hero />
       <DiagnosisSection />
       <OfferSection />

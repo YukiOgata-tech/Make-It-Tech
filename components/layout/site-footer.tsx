@@ -30,20 +30,17 @@ export function SiteFooter() {
               <p className="text-base font-semibold tracking-tight">{brand}</p>
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Web制作 / 業務改善 / 自動化 / DX支援など、IT領域全般を柔軟にサポートします。
-              新潟の地方創生と、ITを通じた学生・若手の活動支援にも取り組んでいます。
+              Web制作/業務改善/自動化/DX開発支援など、IT領域全般を柔軟にサポートします。
+              新潟の地方創生と、ITを通じた地域活動支援にも取り組んでいます。
             </p>
 
-            <div className="grid gap-2 pt-1 sm:flex sm:flex-wrap sm:gap-3">
+            {/* <div className="grid gap-2 pt-1 sm:flex sm:flex-wrap sm:gap-3">
               <Button asChild size="sm" className="rounded-xl">
                 <Link href="/contact">
                   無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="sm" variant="outline" className="rounded-xl">
-                <Link href="/pricing">料金の目安</Link>
-              </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Links */}
