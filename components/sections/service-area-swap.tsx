@@ -17,7 +17,7 @@ const slots = [
 
 export function ServiceAreaSwap({ className }: { className?: string }) {
   const shouldReduceMotion = useReducedMotion();
-  const [featuredTitle, setFeaturedTitle] = React.useState(serviceAreas[0]?.title ?? "");
+  const [featuredTitle, setFeaturedTitle] = React.useState<string>(serviceAreas[0]?.title ?? "");
 
   const orderedAreas = React.useMemo(() => {
     if (!featuredTitle) return serviceAreas;
