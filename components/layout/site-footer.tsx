@@ -33,20 +33,12 @@ export function SiteFooter() {
               Web制作/業務改善/自動化/DX開発支援など、IT領域全般を柔軟にサポートします。
               新潟の地方創生と、ITを通じた地域活動支援にも取り組んでいます。
             </p>
-
-            {/* <div className="grid gap-2 pt-1 sm:flex sm:flex-wrap sm:gap-3">
-              <Button asChild size="sm" className="rounded-xl">
-                <Link href="/contact">
-                  無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div> */}
           </div>
 
           {/* Links */}
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 md:col-span-2">
             {footerLinks.map((group) => (
-              <div key={group.title} className="space-y-2">
+              <div key={group.title} className="space-y-1 sm:space-y-2">
                 <p className="text-sm font-medium">{group.title}</p>
                 <ul className="grid gap-1.5 text-sm text-muted-foreground">
                   {group.links.map((l) => (

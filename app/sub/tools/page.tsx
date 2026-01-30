@@ -4,13 +4,13 @@ const tools = [
   {
     id: "compress",
     name: "画像圧縮",
-    description: "JPG / PNG / WebP / GIF を圧縮してファイルサイズを削減",
+    description: "JPG/PNG/WebP/GIFを圧縮してファイルサイズを削減",
     icon: "📦",
   },
   {
     id: "convert",
     name: "フォーマット変換",
-    description: "画像を JPEG / PNG / WebP に変換",
+    description: "画像をJPEG/PNG/WebPに変換",
     icon: "🔄",
   },
   {
@@ -27,25 +27,25 @@ const tools = [
   },
   {
     id: "favicon",
-    name: "Favicon 生成",
+    name: "Favicon生成",
     description: "画像から各種サイズのfaviconを一括生成",
     icon: "⭐",
   },
   {
     id: "markdown",
     name: "Markdown プレビュー",
-    description: "Markdownをリアルタイムでプレビュー（GFM対応）",
+    description: "Markdownをリアルタイムでプレビュー(GFM対応)",
     icon: "📝",
   },
   {
     id: "extension",
     name: "拡張子変換",
-    description: "HTML / JS / TS などのテキストファイルの拡張子を変換",
+    description: "HTML/JS/TS などのテキストファイルの拡張子を変換",
     icon: "📄",
   },
   {
     id: "json",
-    name: "JSON → CSV / Excel",
+    name: "JSON → CSV/Excel",
     description: "JSONデータをCSVまたはExcel形式に変換",
     icon: "📊",
   },
