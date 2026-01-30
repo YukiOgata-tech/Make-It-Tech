@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { site } from "@/lib/site";
-import { SiteHeader } from "@/components/navigation/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
+import { MainLayout } from "@/components/layout/main-layout";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Outfit, Zen_Kaku_Gothic_New } from "next/font/google";
@@ -79,8 +78,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { SiteBreadcrumbs } from "@/components/navigation/site-breadcrumbs";
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -141,14 +138,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
         />
         <ThemeProvider>
-          <div className="flex min-h-dvh flex-col">
-            <div className="fixed inset-x-0 top-0 z-50">
-              <SiteHeader />
-              <SiteBreadcrumbs />
-            </div>
-            <main className="flex-1 pt-[var(--header-offset)]">{children}</main>
-            <SiteFooter />
-          </div>
+          <MainLayout>{children}</MainLayout>
           <Toaster richColors closeButton />
         </ThemeProvider>
       </body>
