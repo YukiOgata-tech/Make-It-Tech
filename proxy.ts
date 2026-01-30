@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const hostRouteMap: Record<string, string> = {
   "lp.make-it-tech.com": "/sub/lp",
   "admin.make-it-tech.com": "/sub/admin",
+  "tools.make-it-tech.com": "/sub/tools",
 };
 
 function normalizeHost(host: string) {
