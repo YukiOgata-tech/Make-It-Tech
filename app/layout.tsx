@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { MainLayout } from "@/components/layout/main-layout";
+import { CookieConsent } from "@/components/layout/cookie-consent";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Outfit, Zen_Kaku_Gothic_New } from "next/font/google";
@@ -140,6 +141,7 @@ export default function RootLayout({
         <ThemeProvider>
           <MainLayout>{children}</MainLayout>
           <Toaster richColors closeButton />
+          <CookieConsent />
         </ThemeProvider>
       </body>
     </html>

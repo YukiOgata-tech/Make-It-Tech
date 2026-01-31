@@ -158,7 +158,7 @@ export function ProcessSection({ className }: { className?: string }) {
         <div className="lg:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
             {processSteps.map((s) => (
-              <div key={s.step} className="min-w-[280px] snap-center">
+              <div key={s.step} className="min-w-70 snap-center">
                 <StepCard s={s} compact />
               </div>
             ))}

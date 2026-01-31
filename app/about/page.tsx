@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { Section } from "@/components/layout/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ExperienceDeck } from "@/components/sections/experience-deck";
+import { AboutOverviewPanel } from "@/components/sections/about-overview-panel";
 import {
   aboutActivities,
-  aboutHighlights,
-  aboutOverviewItems,
 } from "@/content/pages/about";
 
 export const metadata: Metadata = {
@@ -44,39 +44,7 @@ export default function AboutPage() {
           </Badge>
         </div>
 
-        <div className="mt-6 grid gap-2 sm:gap-3 lg:grid-cols-2 lg:gap-4">
-          <div className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 lg:p-6">
-            <p className="text-sm font-medium leading-snug">基本情報</p>
-            <dl className="mt-3 grid gap-2 text-xs leading-snug sm:gap-3 sm:text-sm">
-              {aboutOverviewItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="grid gap-0.5 sm:grid-cols-[120px_1fr] sm:gap-1"
-                >
-                  <dt className="text-muted-foreground">{item.label}</dt>
-                  <dd className="font-medium">{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-3 text-[11px] leading-snug text-muted-foreground sm:mt-4 sm:text-xs">
-              ※ 所在地・連絡先は案件に応じてご案内します。
-            </p>
-          </div>
-
-          <div className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 lg:p-6">
-            <p className="text-sm font-medium leading-snug">支援の特徴</p>
-            <div className="mt-3 grid gap-2 text-xs leading-snug text-muted-foreground sm:gap-3 sm:text-sm sm:leading-relaxed">
-              {aboutHighlights.map((h) => (
-                <div key={h.title} className="grid gap-0.5 sm:gap-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {h.title}
-                  </p>
-                  <p className="text-muted-foreground">{h.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <AboutOverviewPanel className="mt-6" />
       </Section>
 
       <Section
@@ -128,22 +96,75 @@ export default function AboutPage() {
         description="相談しやすさと透明性を重視し、情報発信にも取り組んでいます。"
       >
         <div className="grid gap-2 sm:gap-3 md:grid-cols-3 md:gap-4">
-          {aboutActivities.map((a) => (
-            <div
-              key={a.title}
-              className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6"
-            >
-              <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
-                <a.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+          {aboutActivities.map((a) => {
+            if (a.kind === "youtube" && a.youtubeId && a.youtubeUrl) {
+              const thumbnailUrl = `https://img.youtube.com/vi/${a.youtubeId}/hqdefault.jpg`;
+              return (
+                <details
+                  key={a.title}
+                  className="group h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6"
+                >
+                  <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
+                          <a.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                        <p className="mt-3 text-sm font-medium leading-snug sm:mt-4">
+                          {a.title}
+                        </p>
+                        <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
+                          {a.desc}
+                        </p>
+                      </div>
+                      <ChevronDown className="mt-2 h-4 w-4 text-muted-foreground transition group-open:rotate-180" />
+                    </div>
+                  </summary>
+
+                  <div className="mt-4 border-t border-border/60 pt-4">
+                    <a
+                      href={a.youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block overflow-hidden rounded-2xl border border-border/60 bg-black/5"
+                    >
+                      <img
+                        src={thumbnailUrl}
+                        alt={`${a.title}のサムネイル`}
+                        className="h-auto w-full object-cover"
+                        loading="lazy"
+                      />
+                    </a>
+                    <a
+                      href={a.youtubeUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-flex text-xs font-semibold text-emerald-700 underline decoration-emerald-400/70 underline-offset-4 transition hover:text-emerald-600 dark:text-emerald-300 dark:decoration-emerald-300/70 dark:hover:text-emerald-200"
+                    >
+                      YouTubeで見る
+                    </a>
+                  </div>
+                </details>
+              );
+            }
+
+            return (
+              <div
+                key={a.title}
+                className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6"
+              >
+                <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
+                  <a.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                </div>
+                <p className="mt-3 text-sm font-medium leading-snug sm:mt-4">
+                  {a.title}
+                </p>
+                <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
+                  {a.desc}
+                </p>
               </div>
-              <p className="mt-3 text-sm font-medium leading-snug sm:mt-4">
-                {a.title}
-              </p>
-              <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
-                {a.desc}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-10 rounded-3xl border border-primary/20 bg-secondary/40 p-6 sm:p-8">

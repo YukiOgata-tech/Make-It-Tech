@@ -50,7 +50,7 @@ export const experiences: Experience[] = [
       "公式サイトの企画･設計･開発",
       "公開後の運用設計",
     ],
-    mark: "EDU",
+    mark: "システム",
     theme: {
       surface:
         "bg-gradient-to-br from-[#BFEADB] via-[#A5E0D0] to-[#7ED1C2] dark:from-[#2A3E3C] dark:via-[#213433] dark:to-[#1A2625]",
@@ -73,7 +73,7 @@ export const experiences: Experience[] = [
       "店舗の強みが伝わる構成設計",
       "保守・軽微修正の継続対応",
     ],
-    mark: "WEB",
+    mark: "WEB･LP",
     theme: {
       surface:
         "bg-gradient-to-br from-[#F6B9B0] via-[#F1A6A7] to-[#E7898E] dark:from-[#3D2C2D] dark:via-[#312425] dark:to-[#241A1B]",
@@ -86,7 +86,7 @@ export const experiences: Experience[] = [
     },
   },
   {
-    id: "line",
+    id: "サービス運用",
     title: "公式LINEの構築･運用補助",
     category: "LINE",
     summary: "問い合わせ導線を整え、運用負荷を軽減。",
@@ -96,7 +96,7 @@ export const experiences: Experience[] = [
       "問い合わせ導線の整備",
       "運用補助",
     ],
-    mark: "LINE",
+    mark: "LINE･google",
     theme: {
       surface:
         "bg-gradient-to-br from-[#BFD7FF] via-[#A6C4FF] to-[#96B0F0] dark:from-[#2A3443] dark:via-[#212A37] dark:to-[#191F2A]",

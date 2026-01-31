@@ -96,7 +96,7 @@ function ServiceCard({ item }: { item: Service }) {
     <Card className="group relative overflow-hidden rounded-3xl">
       {/* subtle hover glow */}
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="absolute -top-24 left-1/2 h-64 w-[28rem] -translate-x-1/2 rounded-full bg-secondary/50 blur-3xl" />
+        <div className="absolute -top-24 left-1/2 h-64 w-md -translate-x-1/2 rounded-full bg-secondary/50 blur-3xl" />
       </div>
 
       <CardHeader className="space-y-3">

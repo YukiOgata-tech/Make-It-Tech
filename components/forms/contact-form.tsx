@@ -31,6 +31,22 @@ import {
 
 import { ArrowRight, Check, ChevronDown, Copy, Mail } from "lucide-react";
 
+const DRAFT_STORAGE_KEY = "mit_contact_draft";
+const DRAFT_PREF_KEY = "mit_contact_draft_pref";
+const DEFAULT_TTL_HOURS = 12;
+
+type DraftPreference = {
+  ttlHours: number;
+};
+
+const draftOptions = [
+  { label: "保存しない", value: 0 },
+  { label: "1時間", value: 1 },
+  { label: "6時間", value: 6 },
+  { label: "12時間", value: 12 },
+  { label: "24時間", value: 24 },
+];
+
 const schema = z
   .object({
     name: z
@@ -150,6 +166,10 @@ function SelectLike({
 
 export function ContactForm() {
   const startedAtRef = React.useRef(Date.now());
+  const saveTimeoutRef = React.useRef<number | null>(null);
+  const [draftTtlHours, setDraftTtlHours] = React.useState(DEFAULT_TTL_HOURS);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [draftReady, setDraftReady] = React.useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -177,6 +197,82 @@ export function ContactForm() {
   // ⚠ eslint警告の元。機能的にはOKだが、気になるなら useWatch に変えられる（後述）
   const values = form.watch();
   const hasPhone = Boolean(values.phone?.trim());
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedPref = window.localStorage.getItem(DRAFT_PREF_KEY);
+    if (storedPref) {
+      try {
+        const parsed = JSON.parse(storedPref) as DraftPreference;
+        if (typeof parsed.ttlHours === "number") {
+          setDraftTtlHours(parsed.ttlHours);
+        }
+      } catch {
+        // ignore invalid pref
+      }
+    }
+
+    const stored = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as {
+          savedAt: number;
+          ttlHours: number;
+          values: Partial<FormValues>;
+        };
+        const ttlHours = Number.isFinite(parsed.ttlHours)
+          ? parsed.ttlHours
+          : DEFAULT_TTL_HOURS;
+        const expiresAt = parsed.savedAt + ttlHours * 60 * 60 * 1000;
+        if (ttlHours > 0 && expiresAt > Date.now()) {
+          form.reset({
+            ...form.getValues(),
+            ...parsed.values,
+            startedAt: Date.now(),
+          });
+        } else {
+          window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+        }
+      } catch {
+        window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+      }
+    }
+
+    setDraftReady(true);
+  }, [form]);
+
+  React.useEffect(() => {
+    if (!draftReady) return;
+    if (typeof window === "undefined") return;
+
+    if (draftTtlHours <= 0) {
+      window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+      return;
+    }
+
+    if (!form.formState.isDirty) return;
+
+    if (saveTimeoutRef.current) {
+      window.clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = window.setTimeout(() => {
+      const { startedAt: _startedAt, ...rest } = form.getValues();
+      const payload = {
+        savedAt: Date.now(),
+        ttlHours: draftTtlHours,
+        values: rest,
+      };
+      window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(payload));
+    }, 600);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        window.clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [draftReady, draftTtlHours, form, values, form.formState.isDirty]);
 
   React.useEffect(() => {
     if (!hasPhone && values.phoneTime) {
@@ -232,6 +328,10 @@ export function ContactForm() {
         website: "",
         startedAt: Date.now(),
       });
+
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+      }
     } catch (error) {
       console.error(error);
       toast.error("送信に失敗しました", {
@@ -247,16 +347,117 @@ export function ContactForm() {
     });
   }
 
+  const updateDraftPref = (ttlHours: number) => {
+    setDraftTtlHours(ttlHours);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(DRAFT_PREF_KEY, JSON.stringify({ ttlHours }));
+      if (ttlHours <= 0) {
+        window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+      }
+    }
+  };
+
+  const clearDraft = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+    }
+    form.reset({
+      ...form.getValues(),
+      name: "",
+      email: "",
+      company: "",
+      category: "",
+      budget: "未定",
+      deadline: "未定",
+      phone: "",
+      phoneTime: "",
+      message: "",
+      consent: true,
+      website: "",
+      startedAt: Date.now(),
+    });
+  };
+
   const { formState } = form;
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-card-foreground shadow-sm surface-card sm:gap-4 sm:p-5 md:gap-6 md:rounded-3xl md:border md:bg-card md:p-6">
       <div className="grid gap-1.5 md:gap-3">
-        <h2 className="text-base sm:text-lg">お問い合わせ</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-base sm:text-lg">お問い合わせ</h2>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-xl text-xs"
+            onClick={() => setSettingsOpen(true)}
+          >
+            入力保存の設定
+          </Button>
+        </div>
         <p className="text-xs text-muted-foreground sm:text-sm">
           要件が固まっていなくてもOKです。現状と理想を一緒に整理します。
         </p>
       </div>
+
+      {settingsOpen ? (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
+            aria-label="閉じる"
+            onClick={() => setSettingsOpen(false)}
+          />
+          <div className="relative w-full max-w-md rounded-3xl border border-border/70 bg-background/95 p-5 shadow-2xl backdrop-blur">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold">入力内容の一時保存</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  端末内に一時保存して、途中から再開できます。保存時間を変更したり無効化できます。
+                </p>
+              </div>
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => setSettingsOpen(false)}
+              >
+                閉じる
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-2">
+              {draftOptions.map((option) => {
+                const active = draftTtlHours === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={cn(
+                      "flex items-center justify-between rounded-2xl border border-border/70 px-4 py-3 text-sm transition",
+                      active
+                        ? "border-primary/40 bg-primary/10 text-foreground"
+                        : "text-muted-foreground hover:border-primary/30 hover:bg-primary/5 hover:text-foreground"
+                    )}
+                    onClick={() => updateDraftPref(option.value)}
+                  >
+                    <span>{option.label}</span>
+                    {active ? <span className="text-xs text-primary">選択中</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground">
+                現在の保存期間: {draftTtlHours === 0 ? "保存しない" : `${draftTtlHours}時間`}
+              </p>
+              <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={clearDraft}>
+                下書きを削除
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid gap-3 sm:gap-4 md:gap-6">
         <div className="hidden rounded-2xl border border-primary/20 bg-secondary/40 p-3 sm:p-4 md:block">
