@@ -8,6 +8,20 @@ Next.js を用いて、事業内容・対応可能業務・料金体系・問い
 
 ---
 
+## 開発手順
+
+```bash
+npm install
+npm run dev
+```
+
+- ローカル起動: `http://localhost:3000`
+- 本番ビルド: `npm run build`
+- 本番起動: `npm run start`
+- Lint: `npm run lint`
+
+---
+
 ## 事業概要
 
 本事業は、業務の非効率化・属人化・アナログ運用といった課題を整理し、  
@@ -74,6 +88,27 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - Next.js
 - TypeScript
 - Tailwind CSS
+- Framer Motion
+- Radix UI
+
+---
+
+## ディレクトリ構成（主要）
+
+- `app/`: ルートセグメント、ページ、`layout.tsx`、`globals.css`
+- `components/`: 共通UI、セクション、レイアウト部品
+- `components/ui/`: ベースUI部品
+- `components/providers/`: アプリ全体のProvider
+- `content/`: 本文データ（`privacy.ts`, `terms.ts` など）
+- `lib/`: ユーティリティ
+- `public/`: 静的アセット（画像、アイコン）
+
+---
+
+## データ保存・クッキー
+
+- クッキー同意モーダルを表示し、同意状態はクッキーに保存します。
+- お問い合わせフォームの入力内容は一時保存（localStorage）に対応し、保存期間はユーザーが変更可能です。
 
 ---
 
