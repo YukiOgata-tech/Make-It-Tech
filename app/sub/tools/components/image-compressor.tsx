@@ -6,6 +6,11 @@ import { useImageHistory } from "../hooks/use-image-history";
 import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
 
+interface PendingFile {
+  file: File;
+  preview: string;
+}
+
 interface CompressedImage {
   original: File;
   compressed: Blob;
@@ -15,6 +20,7 @@ interface CompressedImage {
 }
 
 export function ImageCompressor() {
+  const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [images, setImages] = useState<CompressedImage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [quality, setQuality] = useState(0.8);
@@ -23,13 +29,36 @@ export function ImageCompressor() {
   const { allowsFunctional } = useConsent();
   const history = useImageHistory("compress", allowsFunctional);
 
-  const processFiles = async (files: File[]) => {
-    if (files.length === 0) return;
+  const addFiles = (files: File[]) => {
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    const newPending = imageFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPendingFiles((prev) => [...prev, ...newPending]);
+  };
+
+  const removePendingFile = (index: number) => {
+    setPendingFiles((prev) => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index].preview);
+      updated.splice(index, 1);
+      return updated;
+    });
+  };
+
+  const clearPendingFiles = () => {
+    pendingFiles.forEach((p) => URL.revokeObjectURL(p.preview));
+    setPendingFiles([]);
+  };
+
+  const processFiles = async () => {
+    if (pendingFiles.length === 0) return;
     setIsProcessing(true);
 
     const results: CompressedImage[] = [];
 
-    for (const file of files) {
+    for (const pending of pendingFiles) {
       try {
         const options = {
           maxSizeMB: 10,
@@ -38,21 +67,21 @@ export function ImageCompressor() {
           initialQuality: quality,
         };
 
-        const compressed = await imageCompression(file, options);
+        const compressed = await imageCompression(pending.file, options);
         const preview = URL.createObjectURL(compressed);
 
         results.push({
-          original: file,
+          original: pending.file,
           compressed,
-          originalSize: file.size,
+          originalSize: pending.file.size,
           compressedSize: compressed.size,
           preview,
         });
 
         // Add to history
         if (allowsFunctional) {
-          const reduction = Math.round((1 - compressed.size / file.size) * 100);
-          await history.addItem(file, compressed, {
+          const reduction = Math.round((1 - compressed.size / pending.file.size) * 100);
+          await history.addItem(pending.file, compressed, {
             quality: Math.round(quality * 100),
             reduction: `${reduction}%`,
           });
@@ -62,21 +91,23 @@ export function ImageCompressor() {
       }
     }
 
+    // Clear pending files
+    pendingFiles.forEach((p) => URL.revokeObjectURL(p.preview));
+    setPendingFiles([]);
+
     setImages((prev) => [...prev, ...results]);
     setIsProcessing(false);
   };
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const files = Array.from(e.dataTransfer.files).filter((file) =>
-      file.type.startsWith("image/")
-    );
-    await processFiles(files);
+    const files = Array.from(e.dataTransfer.files);
+    addFiles(files);
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    await processFiles(files);
+    addFiles(files);
     e.target.value = "";
   };
 
@@ -129,37 +160,6 @@ export function ImageCompressor() {
           JPG / PNG / WebP / GIF を圧縮してファイルサイズを削減
         </p>
 
-        {/* Settings */}
-        <div className="flex flex-wrap gap-4 mb-4">
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-neutral-400">品質:</label>
-            <input
-              type="range"
-              min="0.1"
-              max="1"
-              step="0.1"
-              value={quality}
-              onChange={(e) => setQuality(parseFloat(e.target.value))}
-              className="w-24 accent-blue-500"
-            />
-            <span className="text-sm w-10">{Math.round(quality * 100)}%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-neutral-400">最大幅:</label>
-            <select
-              value={maxWidth}
-              onChange={(e) => setMaxWidth(parseInt(e.target.value))}
-              className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm"
-            >
-              <option value={640}>640px</option>
-              <option value={1280}>1280px</option>
-              <option value={1920}>1920px</option>
-              <option value={2560}>2560px</option>
-              <option value={3840}>3840px</option>
-            </select>
-          </div>
-        </div>
-
         {/* Drop Zone */}
         <div
           onDrop={handleDrop}
@@ -184,10 +184,96 @@ export function ImageCompressor() {
           </div>
         </div>
 
-        {isProcessing && (
-          <div className="mt-4 text-center text-blue-400">
-            <div className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-            処理中...
+        {/* Pending Files */}
+        {pendingFiles.length > 0 && (
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium">選択中のファイル ({pendingFiles.length}件)</h3>
+              <button
+                onClick={clearPendingFiles}
+                className="text-xs text-neutral-400 hover:text-white transition-colors"
+              >
+                すべて削除
+              </button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+              {pendingFiles.map((pending, index) => (
+                <div key={index} className="relative group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={pending.preview}
+                    alt=""
+                    className="w-full aspect-square object-cover rounded-lg border border-neutral-700"
+                  />
+                  <button
+                    onClick={() => removePendingFile(index)}
+                    className="absolute top-1 right-1 w-6 h-6 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-[10px] px-2 py-1 rounded-b-lg truncate">
+                    {pending.file.name}
+                  </div>
+                  <div className="absolute top-1 left-1 bg-black/70 text-[10px] px-1.5 py-0.5 rounded">
+                    {formatSize(pending.file.size)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Settings */}
+            <div className="flex flex-wrap gap-4 mb-4 p-4 bg-neutral-800/50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-neutral-400">品質:</label>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="1"
+                  step="0.1"
+                  value={quality}
+                  onChange={(e) => setQuality(parseFloat(e.target.value))}
+                  className="w-24 accent-blue-500"
+                />
+                <span className="text-sm w-10">{Math.round(quality * 100)}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-neutral-400">最大幅:</label>
+                <select
+                  value={maxWidth}
+                  onChange={(e) => setMaxWidth(parseInt(e.target.value))}
+                  className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm"
+                >
+                  <option value={640}>640px</option>
+                  <option value={1280}>1280px</option>
+                  <option value={1920}>1920px</option>
+                  <option value={2560}>2560px</option>
+                  <option value={3840}>3840px</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Start Button */}
+            <button
+              onClick={processFiles}
+              disabled={isProcessing}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              {isProcessing ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  処理中...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  圧縮を開始
+                </>
+              )}
+            </button>
           </div>
         )}
 
