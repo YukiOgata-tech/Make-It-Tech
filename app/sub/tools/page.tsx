@@ -45,8 +45,8 @@ const tools = [
   },
   {
     id: "json",
-    name: "JSON → CSV/Excel",
-    description: "JSONデータをCSVまたはExcel形式に変換",
+    name: "JSON ↔ CSV/Excel",
+    description: "JSON⇔CSV/Excelの相互変換",
     icon: "📊",
   },
   {

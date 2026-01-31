@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { CookieConsentBanner } from "./components/cookie-consent";
 
 const navItems = [
   { href: "/sub/tools", label: "ホーム", icon: "🏠" },
@@ -137,6 +138,9 @@ export default function ToolsLayout({
           </div>
         </div>
       </footer>
+
+      {/* Cookie Consent */}
+      <CookieConsentBanner />
     </div>
   );
 }
