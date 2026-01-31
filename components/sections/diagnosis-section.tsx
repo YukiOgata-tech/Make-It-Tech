@@ -27,34 +27,23 @@ export function DiagnosisSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-3 sm:gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-primary/80">業務診断</p>
+            <p className="text-sm font-medium text-primary/80">-業務診断</p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="rounded-xl">
-                無料診断（条件あり）
+                無料診断(条件あり)
               </Badge>
               <Badge variant="outline" className="rounded-xl">
-                推奨IT + 見積まで
+                推奨IT+見積まで
               </Badge>
             </div>
             <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
-              条件により無料で受けられる「業務診断」
+              契約前に「業務診断」
             </h2>
-            <p className="mt-0.5 sm:mt-3 max-w-2xl text-sm text-muted-foreground">
-              無料診断は条件によりご利用いただけます。お問い合わせや簡易ヒアリングとは違い、現状を詳細に把握し、
+            <p className="hidden sm:block mt-0.5 sm:mt-3 max-w-2xl text-xs sm:text-base text-muted-foreground">
+              お問い合わせや簡易ヒアリングとは違い、現状を詳細に把握し、
               推奨ITの提案と概算見積まで行う“診断”です。
             </p>
           </div>
-
-          {/* <div className="flex flex-wrap gap-3">
-            <Button asChild className="rounded-xl">
-              <Link href={lineUrl} target="_blank" rel="noreferrer">
-                LINEで業務診断を相談 <ArrowRight className="sm:ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/contact">お問い合わせ</Link>
-            </Button>
-          </div> */}
         </div>
 
         <Separator className="my-4 sm:my-10" />
@@ -64,8 +53,8 @@ export function DiagnosisSection({ className }: { className?: string }) {
           {diagnosisOutcomes.map((o) => {
             const Icon = o.icon;
             return (
-              <Card key={o.title} className="rounded-3xl">
-                <CardHeader className="space-y-0 sm:p-2">
+              <Card key={o.title} className="rounded-3xl pt-2 px-2">
+                <CardHeader className="space-y-0 sm:p-1">
                   <div className="flex items-start gap-3">
                     <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
                       <Icon className="h-4 w-4" />

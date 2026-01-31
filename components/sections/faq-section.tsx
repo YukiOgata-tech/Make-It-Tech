@@ -41,7 +41,7 @@ export function FAQSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-primary/80">FAQ</p>
+            <p className="text-sm font-medium text-primary/80">-FAQ</p>
             <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
               不安になりやすいポイントを先に解消します
             </h2>

@@ -20,12 +20,12 @@ export function OfferSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-3 sm:gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-primary/80">サービス/料金の目安</p>
+            <p className="text-sm font-medium text-primary/80">-サービス/料金の目安</p>
             <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
               可能範囲と価格レンジをまとめて提示します
             </h2>
-            <p className="mt-0.5 sm:mt-3 max-w-2xl text-base text-muted-foreground">
-              固定プランは置かず、内容に合わせて柔軟に見積もります。
+            <p className="hidden sm:block mt-0.5 sm:mt-3 max-w-2xl text-xs sm:text-base text-muted-foreground">
+              内容に合わせて柔軟に見積もります。
               まずは「現状･理想･制約」を整理して、最短の改善案を提案します。
             </p>
           </div>
@@ -48,13 +48,13 @@ export function OfferSection({ className }: { className?: string }) {
         <div className="hidden gap-2 sm:gap-4 md:grid md:grid-cols-3">
           {offerPrinciples.map((p) => (
             <Card key={p.title} className="rounded-3xl">
-              <CardContent className="p-4 sm:p-6">
+              <CardContent className="py-2 px-4 sm:py-4">
                 <div className="flex items-center gap-3 sm:items-start">
                   <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
                     <CheckCircle2 className="h-4 w-4" />
                   </div>
                   <div className="grid gap-1">
-                    <p className="text-sm font-medium">{p.title}</p>
+                    <p className="text-sm sm:text-md font-medium">- {p.title}</p>
                     <p className="text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
                   </div>
                 </div>
@@ -70,7 +70,7 @@ export function OfferSection({ className }: { className?: string }) {
                 key={p.title}
                 className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
               >
-                <p className="text-sm font-medium">{p.title}</p>
+                <p className="text-sm font-medium">- {p.title}</p>
                 <p className="mt-1 text-xs leading-snug text-muted-foreground">{p.desc}</p>
               </div>
             ))}
@@ -90,7 +90,7 @@ export function OfferSection({ className }: { className?: string }) {
                     <div className="flex items-start justify-between gap-3">
                       <div className="grid gap-2">
                         <CardTitle className="text-base tracking-tight sm:text-lg">
-                          {o.title}
+                          - {o.title}
                         </CardTitle>
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge variant="secondary" className="rounded-xl">
@@ -216,7 +216,7 @@ export function OfferSection({ className }: { className?: string }) {
                   <div className="relative">
                     <div className="flex items-start justify-between gap-3">
                       <div className="grid gap-1">
-                        <p className="text-sm font-medium">{o.title}</p>
+                        <p className="text-sm font-medium">- {o.title}</p>
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge variant="secondary" className="rounded-xl text-xs">
                             {o.range}
@@ -289,24 +289,13 @@ export function OfferSection({ className }: { className?: string }) {
 
         {/* Bottom note */}
         <div className="mt-5 sm:mt-10 rounded-3xl border border-primary/20 bg-secondary/40 py-4 px-6 sm:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-2xl">
+          <div className="flex gap-4 md:items-center md:justify-between">
+            <div className="w-auto">
               <p className="text-sm font-medium">まずは「困りごと」だけでOK</p>
               <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
                 開発の必要性も含めて判断し、既存の運用改善で済むなら、開発しません。
                 まずは現状を共有してください。
               </p>
-            </div>
-
-            <div className="flex flex-wrap gap-1.5 sm:gap-3">
-              <Button asChild className="rounded-xl">
-                <Link href="/contact">
-                  お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">LINEで相談</Link>
-              </Button>
             </div>
           </div>
 
