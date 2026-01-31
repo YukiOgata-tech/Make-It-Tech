@@ -8,7 +8,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: add image tools page at /sub/tools\n\n- 画像圧縮（browser-image-compression）\n- フォーマット変換（JPEG/PNG/WebP）\n- リサイズ（プリセット＋カスタム）\n- Base64変換\n- Favicon生成\n- tools.make-it-tech.com サブドメイン対応\n- CLAUDE.md追加\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git push)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
