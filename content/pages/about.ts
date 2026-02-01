@@ -3,7 +3,7 @@ import { CalendarCheck, ClipboardCheck, Video } from "lucide-react";
 
 export const aboutOverviewItems = [
   { label: "屋号", value: "Make It Tech" },
-  { label: "開始", value: "2025年" },
+  { label: "開始", value: "2025/6" },
   { label: "代表取締役", value: "尾形友輝" },
   { label: "事業内容", value: "Web制作/業務改善/自動化/DX支援/マーケティング支援" },
   { label: "拠点", value: "新潟県(詳細は打合せ時に共有)" },

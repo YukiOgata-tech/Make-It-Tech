@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
@@ -153,9 +154,7 @@ export function FAQSection({ className }: { className?: string }) {
                   無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">LINEで相談</Link>
-              </Button>
+              <LineButton href="/survey">LINEで相談</LineButton>
             </div>
           </div>
         </div>

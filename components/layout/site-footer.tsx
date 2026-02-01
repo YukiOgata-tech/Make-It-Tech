@@ -2,9 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { footerLinks } from "@/content/layout/site-footer";
-import { ArrowRight, Mail, ShieldCheck } from "lucide-react";
+import { Mail, ShieldCheck } from "lucide-react";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();

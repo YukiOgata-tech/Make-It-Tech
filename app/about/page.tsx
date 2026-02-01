@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { SiYoutube } from "react-icons/si";
 import { Section } from "@/components/layout/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Separator } from "@/components/ui/separator";
 import { ExperienceDeck } from "@/components/sections/experience-deck";
 import { AboutOverviewPanel } from "@/components/sections/about-overview-panel";
@@ -16,15 +18,8 @@ export const metadata: Metadata = {
   description:
     "Make It Tech の事業概要。現在は新潟の中小事業者向けに、ITによるアプローチ、DX・業務支援を行います。",
   keywords: [
-    "新潟", "niigata", "新潟市", "地域創生", "",
-    "DX",
-    "IT",
-    "業務改善",
-    "丁寧",
-    "信頼",
-    "Web制作",
-    "事業所概要",
-  ],
+    "新潟", "niigata", "新潟市", "地域創生", "就活", "就活NEO", "DX",
+    "IT", "業務改善", "LP制作", "信頼", "Web制作", "事業所概要",],
 };
 
 export default function AboutPage() {
@@ -91,7 +86,7 @@ export default function AboutPage() {
       </Section>
 
       <Section
-        eyebrow="活動・メディア"
+        eyebrow="活動･メディア"
         title="現場の信頼を積み重ねるために"
         description="相談しやすさと透明性を重視し、情報発信にも取り組んでいます。"
       >
@@ -107,12 +102,17 @@ export default function AboutPage() {
                   <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
-                          <a.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <div className="flex items-center gap-3">
+                          <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 sm:h-10 sm:w-10">
+                            <SiYoutube
+                              className="h-4 w-4 text-[#FF0000] sm:h-5 sm:w-5"
+                              aria-hidden="true"
+                            />
+                          </div>
+                          <p className="text-sm font-medium leading-snug">
+                            {a.title}
+                          </p>
                         </div>
-                        <p className="mt-3 text-sm font-medium leading-snug sm:mt-4">
-                          {a.title}
-                        </p>
                         <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
                           {a.desc}
                         </p>
@@ -153,12 +153,14 @@ export default function AboutPage() {
                 key={a.title}
                 className="h-full rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6"
               >
-                <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
-                  <a.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
+                    <a.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <p className="text-sm font-medium leading-snug">
+                    {a.title}
+                  </p>
                 </div>
-                <p className="mt-3 text-sm font-medium leading-snug sm:mt-4">
-                  {a.title}
-                </p>
                 <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
                   {a.desc}
                 </p>
@@ -179,9 +181,7 @@ export default function AboutPage() {
               <Button asChild className="rounded-xl">
                 <Link href="/contact">無料相談へ</Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">LINEで相談</Link>
-              </Button>
+              <LineButton href="/survey">LINEで相談</LineButton>
             </div>
           </div>
         </div>

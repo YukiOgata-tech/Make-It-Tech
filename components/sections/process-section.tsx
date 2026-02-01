@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -13,12 +14,7 @@ function CardBackdrop() {
   return (
     <>
       <div
-        className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
-        style={{ backgroundImage: "url(/images/bg-light.png)" }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
-        style={{ backgroundImage: "url(/images/bg-dark.png)" }}
+        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/images/bg-light.png')] bg-cover bg-center opacity-15 saturate-80 brightness-110 dark:bg-[url('/images/bg-dark.png')] dark:opacity-18 dark:brightness-90"
       />
     </>
   );
@@ -30,16 +26,16 @@ function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean })
   return (
     <Card
       className={cn(
-        "relative overflow-hidden",
+        "relative overflow-hidden border bg-card/85 shadow-sm backdrop-blur",
         compact ? "rounded-2xl" : "rounded-3xl"
       )}
     >
       <CardBackdrop />
-      <CardHeader className={cn(compact ? "space-y-2 p-4" : "space-y-3 p-5 sm:p-6")}>
+      <CardHeader className={cn(compact ? "space-y-2 px-4" : "space-y-3 p-5 sm:px-6 ")}>
         <div className="relative flex items-start justify-between gap-4">
           <div className="grid gap-1">
-            <p className="text-xs font-medium text-muted-foreground">{s.step}</p>
-            <CardTitle className="text-base tracking-tight sm:text-lg">
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{s.step}</p>
+            <CardTitle className="text-base tracking-tight sm:text-lg font-extrabold text-slate-950 dark:text-white">
               {s.title}
             </CardTitle>
           </div>
@@ -56,7 +52,7 @@ function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean })
 
         <p
           className={cn(
-            "text-muted-foreground",
+            "text-slate-700 dark:text-slate-200",
             compact ? "text-xs leading-snug" : "text-sm leading-relaxed"
           )}
         >
@@ -123,7 +119,7 @@ export function ProcessSection({ className }: { className?: string }) {
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-medium text-primary/80">進め方</p>
+            <p className="text-sm font-medium text-primary/80">-進め方</p>
             <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-3xl">
               迷わないために、手順と判断ポイントを明確にします
             </h2>
@@ -139,7 +135,7 @@ export function ProcessSection({ className }: { className?: string }) {
             </Button>
             <Button asChild className="rounded-xl">
               <Link href="/contact">
-                無料相談へ <ArrowRight className="ml-2 h-4 w-4" />
+                無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -170,7 +166,7 @@ export function ProcessSection({ className }: { className?: string }) {
         <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 md:items-stretch">
           <div className="grid gap-4 md:col-span-2">
             {processGuarantees.map((g) => (
-              <Card key={g.title} className="relative overflow-hidden rounded-3xl">
+              <Card key={g.title} className="relative overflow-hidden rounded-3xl border bg-card/85 shadow-sm backdrop-blur">
                 <CardBackdrop />
                 <CardContent className="relative p-3 sm:p-6">
                   <div className="flex items-start gap-4">
@@ -178,7 +174,7 @@ export function ProcessSection({ className }: { className?: string }) {
                       <g.icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{g.title}</p>
+                      <p className="text-lg font-medium">{g.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{g.desc}</p>
                     </div>
                   </div>
@@ -187,7 +183,7 @@ export function ProcessSection({ className }: { className?: string }) {
             ))}
           </div>
 
-          <Card className="relative overflow-hidden rounded-3xl">
+          <Card className="relative overflow-hidden rounded-3xl border bg-card/85 shadow-sm backdrop-blur">
             <CardBackdrop />
             <CardContent className="relative p-6 gap-3">
               <p className="text-sm font-medium">まずはここから</p>
@@ -202,9 +198,7 @@ export function ProcessSection({ className }: { className?: string }) {
                     お問合せ <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="rounded-xl">
-                  <Link href="/survey">LINEで相談</Link>
-                </Button>
+                <LineButton href="/survey">LINEで相談</LineButton>
               </div>
 
               <div className="mt-3 sm:mt-6 rounded-2xl bg-secondary/40 p-4">
@@ -249,9 +243,7 @@ export function ProcessSection({ className }: { className?: string }) {
                     お問合せへ <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="rounded-xl">
-                  <Link href="/survey">LINEで相談</Link>
-                </Button>
+                <LineButton href="/survey">LINEで相談</LineButton>
               </div>
 
               <MobileDisclosure summary="TIP" className="mt-2">

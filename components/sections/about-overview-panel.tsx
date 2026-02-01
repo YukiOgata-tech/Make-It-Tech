@@ -54,7 +54,13 @@ export function AboutOverviewPanel({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-4 sm:gap-8", className)}>
       <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-background/70 p-5 sm:rounded-3xl sm:p-6 lg:p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.6),transparent_60%)] opacity-40 dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_60%)]" />
+        {/* <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.6),transparent_60%)] opacity-40 dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_60%)]" /> */}
+        <div className="pointer-events-none absolute inset-0 hidden bg-cover bg-center opacity-30 dark:block"
+             style={{ backgroundImage: "url(/images/bg-dark.png)" }}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-30 dark:hidden"
+             style={{ backgroundImage: "url(/images/bg-light.png)" }}
+        />
         <div className="relative max-w-2xl">
           <p className="text-base font-semibold leading-snug sm:text-lg">--基本情報--</p>
           <dl className="mt-2 sm:mt-4 grid gap-1.5 text-sm leading-snug sm:gap-4 sm:text-base">
@@ -63,8 +69,8 @@ export function AboutOverviewPanel({ className }: { className?: string }) {
                 key={item.label}
                 className="grid gap-1 sm:grid-cols-[140px_1fr] sm:gap-2"
               >
-                <dt className="text-muted-foreground">{item.label}</dt>
-                <dd className="font-medium text-foreground">{item.value}</dd>
+                <dt className="text-muted-foreground">{item.label}:</dt>
+                <dd className="font-medium text-foreground mx-auto">{item.value}</dd>
               </div>
             ))}
           </dl>

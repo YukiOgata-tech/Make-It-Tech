@@ -5,6 +5,7 @@ import { ProcessSection } from "@/components/sections/process-section";
 import { ServiceAreaSwap } from "@/components/sections/service-area-swap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
@@ -114,11 +115,15 @@ export default function ServicesPage() {
             return (
               <Card key={p.title} className="rounded-3xl">
                 <CardContent className="px-6 py-1">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="grid gap-1">
+                      <p className="text-lg font-medium">{p.title}</p>
+                      <p className="text-sm text-muted-foreground">{p.desc}</p>
+                    </div>
                   </div>
-                  <p className="mt-4 text-xl font-medium">{p.title}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
                 </CardContent>
               </Card>
             );
@@ -162,18 +167,18 @@ export default function ServicesPage() {
             return (
               <Card key={d.title} className="relative overflow-hidden rounded-3xl">
                 <div
-                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-15"
+                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-35 dark:opacity-25 -z-10"
                   style={{ backgroundImage: `url(${bgImage})` }}
                 />
-                <CardHeader className="relative">
-                  <CardTitle className="text-xl">{d.title}</CardTitle>
+                <CardHeader className="relative mb-0">
+                  <CardTitle className="text-xl font-extrabold">-- {d.title} --</CardTitle>
                 </CardHeader>
-                <CardContent className="relative text-sm text-white">
-                  <ul className="grid gap-2">
+                <CardContent className="relative text-md dark:text-white">
+                  <ul className="grid gap-1">
                     {d.items.map((item) => (
                       <li key={item} className="flex items-start gap-2">
-                        <span className="mt-0 h-2 w-2 rounded-full bg-white" />
-                        <span>{item}</span>
+                        <span className="mt-0 h-2 w-2 rounded-full " />
+                        <span className="font-bold">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -209,7 +214,7 @@ export default function ServicesPage() {
           {serviceExamples.map((ex) => (
             <Card key={ex.title} className="rounded-3xl">
               <CardContent className="px-6 py-0.5">
-                <p className="text-sm font-medium">{ex.title}</p>
+                <p className="text-lg font-bold">~~ {ex.title}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{ex.desc}</p>
               </CardContent>
             </Card>
@@ -233,7 +238,8 @@ export default function ServicesPage() {
         <div className="mt-4 sm:mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-5 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
-              <p className="text-sm font-medium">まずは現状だけ共有してください</p>
+              <p className="text-md sm:text-2xl font-medium">まずは現状だけ共有してください!
+              </p>
               <p className="mt-2 text-sm text-muted-foreground">
                 「困っていること･理想･制約」を共有してもらえれば、
                 最短の改善案と進め方を提案します。
@@ -245,9 +251,7 @@ export default function ServicesPage() {
                   お問合せへ <ArrowRight className="sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">LINEで相談</Link>
-              </Button>
+              <LineButton href="/survey">LINEで相談</LineButton>
             </div>
           </div>
         </div>

@@ -21,7 +21,7 @@ export function Section({
           <div className="mb-3 sm:mb-10">
             {eyebrow && (
               <p className="text-sm font-medium text-primary/80">
-                {eyebrow}
+                -{eyebrow}
               </p>
             )}
             {title && (

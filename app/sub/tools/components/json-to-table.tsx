@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
+import Papa from "papaparse";
 
 type ConvertMode = "jsonToTable" | "tableToJson";
 
@@ -26,6 +27,110 @@ export function JsonToTable() {
 
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+
+  const getFileExtension = (name: string) =>
+    name.toLowerCase().split(".").pop() ?? "";
+
+  const normalizeCellValue = (value: ExcelJS.CellValue) => {
+    if (value === null || value === undefined) return "";
+    if (value instanceof Date) return value.toISOString();
+    if (typeof value === "object") {
+      if ("text" in value && typeof value.text === "string") {
+        return value.text;
+      }
+      if ("richText" in value && Array.isArray(value.richText)) {
+        return value.richText.map((part) => part.text).join("");
+      }
+      if ("formula" in value) {
+        return (value as { result?: unknown }).result ?? value.formula;
+      }
+      if ("hyperlink" in value) {
+        const linkValue = value as { text?: string; hyperlink?: string };
+        return linkValue.text ?? linkValue.hyperlink ?? "";
+      }
+      if ("result" in value) {
+        return (value as { result?: unknown }).result ?? "";
+      }
+    }
+    return value;
+  };
+
+  const parseCsvText = (text: string) => {
+    const result = Papa.parse<Record<string, unknown>>(text, {
+      header: true,
+      skipEmptyLines: "greedy",
+      dynamicTyping: true,
+    });
+
+    if (result.errors.length) {
+      throw new Error("CSVの解析に失敗しました");
+    }
+
+    const data = result.data.filter((row) =>
+      Object.values(row).some((value) => value !== null && value !== undefined && String(value).trim() !== "")
+    );
+    const columns = result.meta.fields?.filter(Boolean) ?? [];
+
+    return { data, columns };
+  };
+
+  const parseExcelBuffer = async (data: ArrayBuffer) => {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(data);
+    const worksheet = workbook.worksheets[0];
+
+    if (!worksheet) {
+      throw new Error("シートが見つかりません");
+    }
+
+    const headerRow = worksheet.getRow(1);
+    const maxColumns = Math.max(headerRow.cellCount, worksheet.columnCount ?? 0);
+
+    if (maxColumns === 0) {
+      throw new Error("データが空です");
+    }
+
+    const columns = Array.from({ length: maxColumns }, (_, index) => {
+      const cellValue = headerRow.getCell(index + 1).value;
+      const normalized = normalizeCellValue(cellValue);
+      const asText = typeof normalized === "string" ? normalized.trim() : String(normalized ?? "").trim();
+      return asText || `column_${index + 1}`;
+    });
+
+    const dataRows: Record<string, unknown>[] = [];
+    for (let rowIndex = 2; rowIndex <= worksheet.rowCount; rowIndex += 1) {
+      const row = worksheet.getRow(rowIndex);
+      const rowObject: Record<string, unknown> = {};
+      let hasValue = false;
+
+      columns.forEach((column, colIndex) => {
+        const cellValue = normalizeCellValue(row.getCell(colIndex + 1).value);
+        if (cellValue !== "" && cellValue !== null && cellValue !== undefined) {
+          hasValue = true;
+        }
+        rowObject[column] = cellValue;
+      });
+
+      if (hasValue) {
+        dataRows.push(rowObject);
+      }
+    }
+
+    return { data: dataRows, columns };
+  };
+
+  const parseTableFile = async (file: File) => {
+    const extension = getFileExtension(file.name);
+    if (extension === "csv") {
+      const text = await file.text();
+      return parseCsvText(text);
+    }
+    if (extension === "xlsx") {
+      const data = await file.arrayBuffer();
+      return parseExcelBuffer(data);
+    }
+    throw new Error("CSV または XLSX ファイルを選択してください");
+  };
 
   // ========== JSON → Table ==========
   const parseJson = () => {
@@ -85,25 +190,36 @@ export function JsonToTable() {
     link.click();
   };
 
-  const downloadExcel = () => {
+  const downloadExcel = async () => {
     if (parsedData.length === 0) return;
 
-    const wsData = [
-      columns,
-      ...parsedData.map((row) =>
-        columns.map((col) => {
-          const val = row[col];
-          if (val === null || val === undefined) return "";
-          if (typeof val === "object") return JSON.stringify(val);
-          return val;
-        })
-      ),
-    ];
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Data");
 
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Data");
-    XLSX.writeFile(wb, "data.xlsx");
+      worksheet.addRow(columns);
+      parsedData.forEach((row) => {
+        worksheet.addRow(
+          columns.map((col) => {
+            const val = row[col];
+            if (val === null || val === undefined) return "";
+            if (typeof val === "object") return JSON.stringify(val);
+            return val;
+          })
+        );
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "data.xlsx";
+      link.click();
+    } catch {
+      setError("Excelの生成に失敗しました");
+    }
   };
 
   const handleJsonFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,32 +253,18 @@ export function JsonToTable() {
     setFileName(file.name);
 
     try {
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: "array" });
+      const { data, columns } = await parseTableFile(file);
 
-      // 最初のシートを取得
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-
-      // JSONに変換
-      const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
-
-      if (jsonData.length === 0) {
+      if (data.length === 0) {
         setError("データが空です");
         return;
       }
 
-      // カラム名を取得
-      const allKeys = new Set<string>();
-      jsonData.forEach((row) => {
-        Object.keys(row).forEach((key) => allKeys.add(key));
-      });
-
-      setTableColumns(Array.from(allKeys));
-      setTableData(jsonData);
-      setJsonOutput(JSON.stringify(jsonData, null, 2));
-    } catch {
-      setError("ファイルの読み込みに失敗しました");
+      setTableColumns(columns);
+      setTableData(data);
+      setJsonOutput(JSON.stringify(data, null, 2));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ファイルの読み込みに失敗しました");
     }
 
     e.target.value = "";
@@ -173,15 +275,9 @@ export function JsonToTable() {
     const file = e.dataTransfer.files[0];
     if (!file) return;
 
-    const validTypes = [
-      "text/csv",
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ];
-    const validExtensions = [".csv", ".xls", ".xlsx"];
-
-    if (!validTypes.includes(file.type) && !validExtensions.some((ext) => file.name.endsWith(ext))) {
-      setError("CSV または Excel ファイルを選択してください");
+    const validExtensions = [".csv", ".xlsx"];
+    if (!validExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))) {
+      setError("CSV または XLSX ファイルを選択してください");
       return;
     }
 
@@ -189,27 +285,18 @@ export function JsonToTable() {
     setFileName(file.name);
 
     try {
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
+      const { data, columns } = await parseTableFile(file);
 
-      if (jsonData.length === 0) {
+      if (data.length === 0) {
         setError("データが空です");
         return;
       }
 
-      const allKeys = new Set<string>();
-      jsonData.forEach((row) => {
-        Object.keys(row).forEach((key) => allKeys.add(key));
-      });
-
-      setTableColumns(Array.from(allKeys));
-      setTableData(jsonData);
-      setJsonOutput(JSON.stringify(jsonData, null, 2));
-    } catch {
-      setError("ファイルの読み込みに失敗しました");
+      setTableColumns(columns);
+      setTableData(data);
+      setJsonOutput(JSON.stringify(data, null, 2));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ファイルの読み込みに失敗しました");
     }
   };
 
@@ -433,19 +520,19 @@ export function JsonToTable() {
             className="border-2 border-dashed border-neutral-700 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer mb-4"
             onClick={() => document.getElementById("table-file-input")?.click()}
           >
-            <input
-              id="table-file-input"
-              type="file"
-              accept=".csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              onChange={handleTableFileSelect}
-              className="hidden"
-            />
+              <input
+                id="table-file-input"
+                type="file"
+                accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                onChange={handleTableFileSelect}
+                className="hidden"
+              />
             <div className="text-neutral-400">
               <svg className="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <p>ドラッグ＆ドロップ または クリックして選択</p>
-              <p className="text-xs mt-1">CSV / XLS / XLSX 対応</p>
+              <p className="text-xs mt-1">CSV / XLSX 対応</p>
             </div>
           </div>
 

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -53,6 +54,10 @@
   --header-height-sm: 64px;
   --breadcrumbs-height: 40px;
   --header-offset: var(--header-height);
+  --font-display: "Outfit", "Zen Kaku Gothic New", "Noto Sans JP", system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Outfit", "Noto Sans JP", system-ui,
+    -apple-system, "Segoe UI", sans-serif;
   --brand-ink: 28 44 52;
   --brand-sand: 247 243 234;
   --brand-coral: 226 103 61;

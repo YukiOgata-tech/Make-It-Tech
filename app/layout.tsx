@@ -5,20 +5,6 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { Outfit, Zen_Kaku_Gothic_New } from "next/font/google";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const zen = Zen_Kaku_Gothic_New({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -127,7 +113,7 @@ export default function RootLayout({
 
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body className={`${outfit.variable} ${zen.variable} min-h-dvh bg-background text-foreground font-sans antialiased`}>
+      <body className="min-h-dvh bg-background text-foreground font-sans antialiased">
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger

@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
@@ -49,39 +50,42 @@ export function DiagnosisSection({ className }: { className?: string }) {
         <Separator className="my-4 sm:my-10" />
 
         {/* Outcomes */}
-        <div className="hidden gap-2 sm:gap-4 md:grid md:grid-cols-2">
-          {diagnosisOutcomes.map((o) => {
-            const Icon = o.icon;
-            return (
-              <Card key={o.title} className="rounded-3xl pt-2 px-2">
-                <CardHeader className="space-y-0 sm:p-1">
-                  <div className="flex items-start gap-3">
-                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary sm:h-10 sm:w-10">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="grid gap-1">
-                      <CardTitle className="text-base">{o.title}</CardTitle>
-                      <p className="text-sm leading-snug text-muted-foreground">{o.desc}</p>
-                    </div>
+        <div className="hidden md:block">
+          <ol className="grid gap-4 md:grid-cols-4">
+            {diagnosisOutcomes.map((o, index) => {
+              const step = String(index + 1).padStart(2, "0");
+              return (
+                <li
+                  key={o.title}
+                  className="relative md:pr-8 md:after:absolute md:after:right-3 md:after:top-5 md:after:h-px md:after:w-6 md:after:bg-border/70 md:last:after:hidden"
+                >
+                  <div className="grid gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
+                      STEP {step}
+                    </span>
                   </div>
-                </CardHeader>
-              </Card>
-            );
-          })}
+                    <p className="text-lg font-semibold">{o.title}</p>
+                    <p className="text-sm leading-snug text-muted-foreground">{o.desc}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
         </div>
 
         <div className="md:hidden">
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {diagnosisOutcomes.map((o) => {
-              const Icon = o.icon;
+            {diagnosisOutcomes.map((o, index) => {
+              const step = String(index + 1).padStart(2, "0");
               return (
                 <div
                   key={o.title}
                   className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                      <Icon className="h-4 w-4" />
+                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-xs font-semibold text-primary">
+                      {step}
                     </div>
                     <div className="grid gap-1">
                       <p className="text-sm font-medium">{o.title}</p>
@@ -242,11 +246,9 @@ export function DiagnosisSection({ className }: { className?: string }) {
               </p>
             </div>
             <div className="flex flex-wrap gap-3 md:justify-end">
-              <Button asChild className="rounded-xl">
-                <Link href={lineUrl} target="_blank" rel="noreferrer">
-                  LINEで相談 <ArrowRight className="sm:ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <LineButton href={lineUrl} target="_blank" rel="noreferrer">
+                LINEで相談 <ArrowRight className="sm:ml-2 h-4 w-4" />
+              </LineButton>
               <Button asChild variant="outline" className="rounded-xl">
                 <Link href="/survey">相談について</Link>
               </Button>

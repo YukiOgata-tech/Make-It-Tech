@@ -11,6 +11,7 @@ import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -672,9 +673,7 @@ export function ContactForm() {
               {formState.isSubmitting ? "送信中..." : "送信する"} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/survey">LINEで相談</Link>
-            </Button>
+            <LineButton href="/survey">LINEで相談</LineButton>
           </div>
 
           <p className="text-xs text-muted-foreground">

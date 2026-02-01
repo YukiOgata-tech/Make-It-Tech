@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
@@ -86,8 +87,8 @@ export default function PricingPage() {
             “プラン”ではなく、内容に合わせて見積もります
           </h1>
           <p className="mt-3 max-w-3xl text-sm sm:text-base text-muted-foreground">
-            ITは案件ごとに必要な範囲が違うため、固定プランは置きません。
-            代わりに「よくある依頼」の価格レンジを提示し、範囲を合意してから最短の案で進めます。
+            ITは案件ごとに必要な範囲が違うため、
+            「よくある依頼」の価格レンジを提示し、範囲を合意してから最短の案で進めます。
           </p>
 
           <div className="mt-3 sm:mt-6 flex flex-wrap gap-3">
@@ -104,7 +105,7 @@ export default function PricingPage() {
 
         {/* Principles */}
         <SectionTitle
-          eyebrow="考え方"
+          eyebrow="-考え方"
           title="不透明さをなくすための3つの約束"
           desc="範囲を先に決めて、小さく作って検証し、成果に寄せます。"
         />
@@ -131,15 +132,17 @@ export default function PricingPage() {
 
         {/* Examples */}
         <SectionTitle
-          eyebrow="目安"
+          eyebrow="-目安"
           title="よくある依頼の価格レンジ"
           desc="内容･期間･素材提供の有無などで変動します。まずは状況を伺って最適案をご提案します。"
         />
 
         <div className="mt-4 sm:mt-8 grid gap-4 lg:grid-cols-2">
           {pricingExamples.map((ex) => (
-            <Card key={ex.title} className="rounded-3xl overflow-hidden">
-              <CardHeader className="space-y-1 sm:space-y-3">
+            <Card className="relative overflow-hidden rounded-3xl border bg-card/70 shadow-sm backdrop-blur" key={ex.title}>
+              <div className="pointer-events-none absolute inset-0 bg-[url('/images/bg-light.png')] bg-cover bg-center opacity-50 dark:bg-[url('/images/bg-dark.png')]" />
+              <div className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/2 translate-x-[-20%] rotate-6 bg-white/15 blur-xl hero-sheen" />
+              <CardHeader className="relative space-y-1 sm:space-y-3">
                 <div className="flex items-start justify-between gap-1 sm:gap-4">
                   <div>
                     <CardTitle className="text-base sm:text-lg tracking-tight">
@@ -155,7 +158,7 @@ export default function PricingPage() {
                 <p className="text-sm text-muted-foreground">{ex.summary}</p>
               </CardHeader>
 
-              <CardContent className="grid gap-4">
+              <CardContent className="relative grid gap-4">
                 <div className="hidden rounded-2xl border border-border/70 bg-background/70 p-4 md:block">
                   <p className="text-sm font-medium">含まれること(例)</p>
                   <ul className="mt-2 grid gap-2 text-sm text-muted-foreground">
@@ -209,9 +212,7 @@ export default function PricingPage() {
                       この内容で相談 <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="rounded-xl">
-                    <Link href="/survey">LINEで相談</Link>
-                  </Button>
+                  <LineButton href="/survey">LINEで相談</LineButton>
                 </div>
 
                 <p className="text-xs text-muted-foreground">
@@ -226,7 +227,7 @@ export default function PricingPage() {
 
         {/* Extras / Notes */}
         <SectionTitle
-          eyebrow="補足"
+          eyebrow="-補足"
           title="追加事項･作らない判断"
         />
 
@@ -312,9 +313,7 @@ export default function PricingPage() {
                   お問合せへ <ArrowRight className="ml-0 sm:ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/survey">LINEで相談</Link>
-              </Button>
+              <LineButton href="/survey">LINEで相談</LineButton>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { motion, useReducedMotion, useScroll, useTransform, type Easing, type Va
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -157,6 +158,10 @@ export function Hero({ className }: { className?: string }) {
 
   return (
     <section ref={heroRef} className={cn("relative overflow-hidden pt-10 sm:pt-16", className)}>
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-1/2 h-[170%] w-[170%] -translate-x-1/2 -translate-y-1/2 sm:rotate-90 bg-[url('/images/bg-3-light.png')] bg-cover bg-center opacity-35 dark:hidden shadow-2xl" />
+        <div className="absolute left-1/2 top-1/2 hidden h-[170%] w-[170%] -translate-x-1/2 -translate-y-1/2 sm:rotate-90 bg-[url('/images/bg-3-dark.png')] bg-cover bg-center opacity-35 dark:block shadow-2xl" />
+      </div>
       <Glow />
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-3 sm:gap-8 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
@@ -392,14 +397,12 @@ export function Hero({ className }: { className?: string }) {
                   <p className="mt-1 text-sm text-muted-foreground">
                     まずは「現状の困りごと」と「理想」を整理して、最短の改善案を作ります。
                   </p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Button asChild size="sm" className="rounded-xl">
-                      <Link href="/contact">相談する</Link>
-                    </Button>
-                    <Button asChild size="sm" variant="outline" className="rounded-xl">
-                      <Link href="/survey">LINEで相談</Link>
-                    </Button>
-                  </div>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Button asChild size="sm" className="rounded-xl">
+                    <Link href="/contact">相談する</Link>
+                  </Button>
+                  <LineButton href="/survey" size="sm">LINEで相談</LineButton>
+                </div>
                 </div>
               </CardContent>
             </Card>

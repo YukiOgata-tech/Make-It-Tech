@@ -3,6 +3,7 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
@@ -118,11 +119,9 @@ export default function GlossaryPage() {
                   現状把握から推奨IT・見積まで行う診断型の支援です。
                 </p>
                 <div className="mt-4 grid gap-3">
-                  <Button asChild size="sm" className="rounded-xl">
-                    <Link href={lineUrl} target="_blank" rel="noreferrer">
-                      LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <LineButton href={lineUrl} size="sm" target="_blank" rel="noreferrer">
+                    LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
+                  </LineButton>
                   <Button asChild size="sm" variant="outline" className="rounded-xl">
                     <Link href="/contact">お問い合わせ</Link>
                   </Button>
@@ -235,16 +234,14 @@ export default function GlossaryPage() {
                       現状の困りごとを共有いただければ、診断の進め方をご案内します。
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-3 md:justify-end">
-                    <Button asChild className="rounded-xl">
-                      <Link href={lineUrl} target="_blank" rel="noreferrer">
-                        LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" className="rounded-xl">
-                      <Link href="/contact">お問い合わせ</Link>
-                    </Button>
-                  </div>
+                <div className="flex flex-wrap gap-3 md:justify-end">
+                  <LineButton href={lineUrl} target="_blank" rel="noreferrer">
+                    LINEで相談 <ArrowRight className="ml-2 h-4 w-4" />
+                  </LineButton>
+                  <Button asChild variant="outline" className="rounded-xl">
+                    <Link href="/contact">お問い合わせ</Link>
+                  </Button>
+                </div>
                 </div>
               </div>
             </section>

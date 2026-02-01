@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Section } from "@/components/layout/section";
 import { ContactForm } from "@/components/forms/contact-form";
-import { Button } from "@/components/ui/button";
+import { LineButton } from "@/components/ui/line-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { site } from "@/lib/site";
@@ -27,15 +26,14 @@ export default function ContactPage() {
     <>
       <p>{site.contact.responseHours}</p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <Button asChild size="sm" variant="outline" className="rounded-xl">
-          <Link
-            href={site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y"}
-            target="_blank"
-            rel="noreferrer"
-          >
-            LINEで相談
-          </Link>
-        </Button>
+        <LineButton
+          href={site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y"}
+          size="sm"
+          target="_blank"
+          rel="noreferrer"
+        >
+          LINEで相談
+        </LineButton>
         <span className="text-xs text-muted-foreground">返信が早い場合があります</span>
       </div>
       <p className="mt-3 text-xs text-muted-foreground">
