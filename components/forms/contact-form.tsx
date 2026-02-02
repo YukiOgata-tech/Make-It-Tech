@@ -382,7 +382,18 @@ export function ContactForm() {
   const { formState } = form;
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-card-foreground shadow-sm surface-card sm:gap-4 sm:p-5 md:gap-6 md:rounded-3xl md:border md:bg-card md:p-6">
+    <>
+      {formState.isSubmitting ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/70 bg-background/95 px-6 py-5 shadow-2xl">
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+            <p className="text-sm font-medium">送信中...</p>
+            <p className="text-xs text-muted-foreground">しばらくお待ちください</p>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-card-foreground shadow-sm surface-card sm:gap-4 sm:p-5 md:gap-6 md:rounded-3xl md:border md:bg-card md:p-6">
       <div className="grid gap-1.5 md:gap-3">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-base sm:text-lg">お問い合わせ</h2>
@@ -691,6 +702,7 @@ export function ContactForm() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
