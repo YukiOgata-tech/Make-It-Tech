@@ -44,6 +44,13 @@ const statusLabel: Record<string, string> = {
   closed: "クローズ",
 };
 type StatusValue = "new" | "reviewing" | "in_progress" | "contracted" | "closed";
+type AttachmentItem = {
+  name?: string;
+  storagePath?: string;
+  size?: number;
+  contentType?: string;
+  url?: string;
+};
 
 function formatBytes(bytes: number) {
   if (!bytes) return "0 KB";
@@ -55,24 +62,32 @@ function formatBytes(bytes: number) {
 export default async function AdminConsoleDetailPage({
   params,
 }: {
-  params: { id: string };
+  params?: Promise<{ id: string }>;
 }) {
   await requireAdmin();
 
+  const resolvedParams = await params;
+  const id = resolvedParams?.id ?? "";
+  if (!id) {
+    return notFound();
+  }
+
   const { firestore, storage } = getFirebaseAdmin();
-  const doc = await firestore.collection("intakeResponses").doc(params.id).get();
+  const doc = await firestore.collection("intakeResponses").doc(id).get();
 
   if (!doc.exists) {
     return notFound();
   }
 
   const data = doc.data() ?? {};
-  const attachments = Array.isArray(data.attachments) ? data.attachments : [];
+  const attachments = Array.isArray(data.attachments)
+    ? (data.attachments as AttachmentItem[])
+    : [];
   const bucket = storage.bucket();
 
-  const attachmentsWithUrl = await Promise.all(
-    attachments.map(async (item: Record<string, unknown>) => {
-      const storagePath = String(item.storagePath ?? "");
+  const attachmentsWithUrl: AttachmentItem[] = await Promise.all(
+    attachments.map(async (item) => {
+      const storagePath = item.storagePath ?? "";
       if (!storagePath) {
         return { ...item, url: "" };
       }

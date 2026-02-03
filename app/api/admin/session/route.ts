@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { Timestamp } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import {
@@ -7,6 +6,7 @@ import {
   SESSION_EXPIRES_MS,
   getAllowedAdminEmails,
 } from "@/lib/admin-auth";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -61,7 +61,8 @@ export async function POST(request: Request) {
       expiresIn: SESSION_EXPIRES_MS,
     });
 
-    cookies().set({
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set({
       name: ADMIN_SESSION_COOKIE,
       value: sessionCookie,
       httpOnly: true,
@@ -70,8 +71,7 @@ export async function POST(request: Request) {
       path: "/",
       maxAge: SESSION_EXPIRES_MS / 1000,
     });
-
-    return Response.json({ ok: true });
+    return response;
   } catch (error) {
     return Response.json(
       { error: "Unauthorized.", details: error instanceof Error ? error.message : undefined },
@@ -81,11 +81,12 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
-  cookies().set({
+  const response = NextResponse.json({ ok: true });
+  response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
     value: "",
     maxAge: 0,
     path: "/",
   });
-  return Response.json({ ok: true });
+  return response;
 }

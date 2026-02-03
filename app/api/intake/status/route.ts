@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cookies } from "next/headers";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import {
@@ -21,7 +22,8 @@ function addMonths(date: Date, months: number) {
 }
 
 export async function POST(request: Request) {
-  const cookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value ?? "";
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value ?? "";
   const session = await verifyAdminSessionCookie(cookie);
   if (!session) {
     return Response.json({ error: "Unauthorized." }, { status: 401 });

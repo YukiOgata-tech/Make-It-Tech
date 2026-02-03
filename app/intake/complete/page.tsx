@@ -11,12 +11,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function IntakeCompletePage({
+export default async function IntakeCompletePage({
   searchParams,
 }: {
-  searchParams: { id?: string };
+  searchParams?: Promise<{ id?: string }>;
 }) {
-  const id = searchParams?.id ?? "";
+  const resolvedSearchParams = await searchParams;
+  const id = resolvedSearchParams?.id ?? "";
 
   return (
     <div className="py-10 sm:py-16">

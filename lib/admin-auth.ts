@@ -64,7 +64,8 @@ export async function verifyAdminSessionCookie(cookieValue: string) {
 }
 
 export async function getAdminSession() {
-  const cookie = cookies().get(ADMIN_SESSION_COOKIE)?.value ?? "";
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value ?? "";
   return verifyAdminSessionCookie(cookie);
 }
 

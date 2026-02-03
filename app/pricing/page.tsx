@@ -27,14 +27,6 @@ import {
   Wallet,
 } from "lucide-react";
 
-type PriceExample = {
-  title: string;
-  range: string;
-  summary: string;
-  includes: string[];
-  dependsOn: string[];
-};
-
 
 export const metadata: Metadata = {
   title: "料金",
