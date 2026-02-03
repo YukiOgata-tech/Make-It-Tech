@@ -7,11 +7,14 @@ import { SiteBreadcrumbs } from "@/components/navigation/site-breadcrumbs";
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const hostname = typeof window !== "undefined" ? window.location.hostname : "";
   const isToolsPath = pathname.startsWith("/sub/tools");
   const isAdminConsolePath = pathname.startsWith("/sub/admin-console");
+  const isToolsHost = hostname.startsWith("tools.");
+  const isAdminConsoleHost = hostname.startsWith("admin-console.");
 
   // ツール/管理画面は独自レイアウトを使用
-  if (isToolsPath || isAdminConsolePath) {
+  if (isToolsPath || isAdminConsolePath || isToolsHost || isAdminConsoleHost) {
     return <>{children}</>;
   }
 
