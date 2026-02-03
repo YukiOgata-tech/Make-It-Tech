@@ -407,9 +407,6 @@ export function ContactForm() {
             入力保存の設定
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground sm:text-sm">
-          要件が固まっていなくてもOKです。現状と理想を一緒に整理します。
-        </p>
       </div>
 
       {settingsOpen ? (
@@ -540,7 +537,7 @@ export function ContactForm() {
           </div>
 
           <div className="grid gap-1 sm:gap-2">
-            <Label htmlFor="phone">電話番号（任意）</Label>
+            <Label htmlFor="phone">電話番号(任意)</Label>
             <Input
               id="phone"
               type="tel"
@@ -560,13 +557,13 @@ export function ContactForm() {
               onChange={(v) =>
                 form.setValue("phoneTime", v, { shouldValidate: true })
               }
-              placeholder="例：午前/午後/夕方"
+              placeholder="例:午前/午後/夕方"
               error={formState.errors.phoneTime?.message}
             />
           )}
 
           <div className="grid gap-1 sm:gap-2">
-            <Label htmlFor="company">会社名・屋号（任意）</Label>
+            <Label htmlFor="company">会社名･屋号(任意)</Label>
             <Input
               id="company"
               className="rounded-xl text-sm sm:text-base"
@@ -585,13 +582,13 @@ export function ContactForm() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <SelectLike
-              label="予算感（任意）"
+              label="予算感(任意)"
               value={values.budget}
               items={contactBudgets}
               onChange={(v) => form.setValue("budget", v, { shouldValidate: true })}
             />
             <SelectLike
-              label="希望納期（任意）"
+              label="希望納期(任意)"
               value={values.deadline}
               items={contactDeadlines}
               onChange={(v) =>

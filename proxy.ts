@@ -5,6 +5,7 @@ const hostRouteMap: Record<string, string> = {
   "admin.make-it-tech.com": "/sub/admin",
   "tools.make-it-tech.com": "/sub/tools",
 };
+const adminConsolePrefix = "admin-console.";
 
 function normalizeHost(host: string) {
   return host.toLowerCase().split(":")[0];
@@ -12,13 +13,15 @@ function normalizeHost(host: string) {
 
 export function proxy(request: NextRequest) {
   const host = normalizeHost(request.headers.get("host") ?? "");
-  const targetBase = hostRouteMap[host];
+  const { pathname } = request.nextUrl;
+
+  const targetBase = host.startsWith(adminConsolePrefix)
+    ? "/sub/admin-console"
+    : hostRouteMap[host];
 
   if (!targetBase) {
     return NextResponse.next();
   }
-
-  const { pathname } = request.nextUrl;
 
   if (pathname.startsWith(targetBase)) {
     return NextResponse.next();
