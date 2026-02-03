@@ -1,102 +1,121 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { requireAdmin } from "@/lib/admin-auth";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminRefreshButton } from "@/components/admin/admin-refresh-button";
 
 export const metadata: Metadata = {
-  title: "業務診断 管理",
+  title: "管理トップ",
   robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-function toDateString(value: unknown) {
-  if (value && typeof value === "object" && "toDate" in value) {
-    const date = (value as { toDate: () => Date }).toDate();
-    return date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
-  }
-  if (value instanceof Date) {
-    return value.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
-  }
-  return "";
-}
-
-const statusLabel: Record<string, string> = {
-  new: "新規",
-  reviewing: "確認中",
-  in_progress: "対応中",
-  contracted: "契約中",
-  closed: "クローズ",
-};
-
-export default async function AdminConsolePage() {
+export default async function AdminConsoleIndexPage() {
   await requireAdmin();
 
-  let records: Array<Record<string, unknown>> = [];
-  let errorMessage = "";
-
-  try {
-    const { firestore } = getFirebaseAdmin();
-    const snapshot = await firestore
-      .collection("intakeResponses")
-      .orderBy("createdAt", "desc")
-      .limit(100)
-      .get();
-
-    records = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  } catch (error) {
-    errorMessage = error instanceof Error ? error.message : "データ取得に失敗しました。";
-  }
-
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            業務診断 回答一覧
+          <Badge variant="secondary" className="rounded-xl">
+            Admin Console
+          </Badge>
+          <h1 className="mt-3 text-xl font-semibold tracking-tight sm:text-3xl">
+            管理トップ
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            最新100件まで表示しています。
+          <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
+            管理メニューを選択してください。新しい管理機能もここに追加していきます。
           </p>
         </div>
-        <Badge variant="secondary" className="rounded-xl">
-          {records.length} 件
-        </Badge>
       </div>
 
-      {errorMessage ? (
-        <p className="mt-6 text-sm text-destructive">{errorMessage}</p>
-      ) : null}
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-4">
+        <Card className="rounded-2xl gap-2 py-3 sm:col-span-2 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">最新情報の反映</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              管理画面の一覧・詳細はキャッシュ表示です。必要なときだけ更新してください。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              更新ボタンで最新データを取得します。
+            </span>
+            <AdminRefreshButton />
+          </CardContent>
+        </Card>
 
-      <div className="mt-6 grid gap-4">
-        {records.map((record) => (
-          <Link
-            key={String(record.id)}
-            href={`/${record.id}`}
-            className="rounded-2xl border border-border/60 bg-background/70 p-4 transition hover:border-primary/40"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold">{record.company as string}</p>
-                <p className="text-xs text-muted-foreground">
-                  {record.name as string} / {record.email as string}
-                </p>
-              </div>
-              <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-                {statusLabel[String(record.status ?? "new")] ?? "未設定"}
-              </Badge>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-              <span>回答ID: {record.id as string}</span>
-              <span>{toDateString(record.createdAt)}</span>
-            </div>
-          </Link>
-        ))}
+        <Card className="rounded-2xl gap-2 py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">業務診断 回答一覧</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              相談内容の確認・ステータス更新はこちら。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              最新100件まで表示
+            </span>
+            <Button asChild className="rounded-xl">
+              <Link href="/sub/admin-console/results">開く</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl gap-2 border-dashed py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">管理メモ・テンプレート</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              近日追加予定の管理機能です。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+              近日追加
+            </Badge>
+            <Button type="button" variant="outline" className="rounded-xl" disabled>
+              準備中
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl gap-2 border-dashed py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">レポート・分析</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              案件数や対応状況の集計を追加予定です。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+              近日追加
+            </Badge>
+            <Button type="button" variant="outline" className="rounded-xl" disabled>
+              準備中
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl gap-2 border-dashed py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">運用設定</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              通知設定や管理者の権限管理を追加予定です。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+              近日追加
+            </Badge>
+            <Button type="button" variant="outline" className="rounded-xl" disabled>
+              準備中
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { cookies } from "next/headers";
+import { revalidateTag } from "next/cache";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import {
@@ -76,6 +77,10 @@ export async function POST(request: Request) {
     },
     { merge: true }
   );
+
+  revalidateTag("admin-intake-list", { expire: 0 });
+  revalidateTag("admin-intake-detail", { expire: 0 });
+  revalidateTag(`admin-intake-detail:${payload.id}`, { expire: 0 });
 
   return Response.json({
     ok: true,

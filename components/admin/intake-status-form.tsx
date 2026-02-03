@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,14 +64,18 @@ export function IntakeStatusForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 rounded-2xl border border-border/60 bg-background/80 p-4">
+    <form
+      onSubmit={handleSubmit}
+      className="grid gap-3 rounded-2xl border border-border/60 bg-background/80 p-3 sm:gap-4 sm:p-4"
+    >
       <div className="grid gap-2">
         <Label htmlFor="status">ステータス</Label>
         <select
           id="status"
-          className="h-11 rounded-xl border border-border/70 bg-background px-3 text-sm"
+          className="h-10 rounded-xl border border-border/70 bg-background px-3 text-sm sm:h-11"
           value={nextStatus}
           onChange={(event) => setNextStatus(event.target.value as StatusValue)}
+          disabled={saving}
         >
           {statusOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -88,6 +93,7 @@ export function IntakeStatusForm({
             type="date"
             value={nextContractEndAt}
             onChange={(event) => setNextContractEndAt(event.target.value)}
+            disabled={saving}
           />
         </div>
       ) : null}
@@ -95,7 +101,14 @@ export function IntakeStatusForm({
       {message ? <p className="text-xs text-muted-foreground">{message}</p> : null}
 
       <Button type="submit" className="rounded-xl" disabled={saving}>
-        {saving ? "更新中..." : "更新する"}
+        {saving ? (
+          <span className="inline-flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            更新中...
+          </span>
+        ) : (
+          "更新する"
+        )}
       </Button>
     </form>
   );

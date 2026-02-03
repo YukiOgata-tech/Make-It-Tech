@@ -1,24 +1,17 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/navigation/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteBreadcrumbs } from "@/components/navigation/site-breadcrumbs";
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isToolsPage, setIsToolsPage] = useState(false);
+  const isToolsPath = pathname.startsWith("/sub/tools");
+  const isAdminConsolePath = pathname.startsWith("/sub/admin-console");
 
-  useEffect(() => {
-    // パスまたはホスト名でツールページを判定
-    const isToolsPath = pathname.startsWith("/sub/tools");
-    const isToolsHost = window.location.hostname.startsWith("tools.");
-    setIsToolsPage(isToolsPath || isToolsHost);
-  }, [pathname]);
-
-  // ツールページの場合は独自レイアウトを使用
-  if (isToolsPage) {
+  // ツール/管理画面は独自レイアウトを使用
+  if (isToolsPath || isAdminConsolePath) {
     return <>{children}</>;
   }
 

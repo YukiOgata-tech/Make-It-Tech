@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { requireAdmin } from "@/lib/admin-auth";
 import { Badge } from "@/components/ui/badge";
@@ -72,17 +73,27 @@ export default async function AdminConsoleDetailPage({
     return notFound();
   }
 
-  const { firestore, storage } = getFirebaseAdmin();
-  const doc = await firestore.collection("intakeResponses").doc(id).get();
+  const getCachedDetail = unstable_cache(
+    async () => {
+      const { firestore } = getFirebaseAdmin();
+      const snapshot = await firestore.collection("intakeResponses").doc(id).get();
+      if (!snapshot.exists) return null;
+      return { id: snapshot.id, data: snapshot.data() ?? {} };
+    },
+    ["admin-intake-detail", id],
+    { revalidate: false, tags: ["admin-intake-detail", `admin-intake-detail:${id}`] }
+  );
 
-  if (!doc.exists) {
+  const record = await getCachedDetail();
+  if (!record) {
     return notFound();
   }
 
-  const data = doc.data() ?? {};
+  const data = record.data ?? {};
   const attachments = Array.isArray(data.attachments)
     ? (data.attachments as AttachmentItem[])
     : [];
+  const { storage } = getFirebaseAdmin();
   const bucket = storage.bucket();
 
   const attachmentsWithUrl: AttachmentItem[] = await Promise.all(
@@ -109,14 +120,14 @@ export default async function AdminConsoleDetailPage({
     : "new") as StatusValue;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs text-muted-foreground">回答ID</p>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            {doc.id}
+          <h1 className="text-xl font-semibold tracking-tight sm:text-3xl">
+            {record.id}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
             {statusLabel[String(data.status ?? "new")] ?? "未設定"}
           </p>
         </div>
@@ -130,9 +141,9 @@ export default async function AdminConsoleDetailPage({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr,0.9fr]">
-        <div className="grid gap-4">
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+      <div className="mt-5 grid gap-4 sm:mt-6 sm:gap-6 lg:grid-cols-[1.4fr,0.9fr]">
+        <div className="grid gap-3 sm:gap-4">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-3 sm:p-4">
             <h2 className="text-sm font-semibold">基本情報</h2>
             <div className="mt-3 grid gap-2 text-sm">
               <p>お名前: {String(data.name ?? "")}</p>
@@ -144,7 +155,7 @@ export default async function AdminConsoleDetailPage({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-3 sm:p-4">
             <h2 className="text-sm font-semibold">現状</h2>
             <div className="mt-3 grid gap-2 text-sm">
               <p className="whitespace-pre-wrap">{String(data.currentProcess ?? "")}</p>
@@ -154,7 +165,7 @@ export default async function AdminConsoleDetailPage({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-3 sm:p-4">
             <h2 className="text-sm font-semibold">課題・理想</h2>
             <div className="mt-3 grid gap-2 text-sm">
               <p className="whitespace-pre-wrap">課題: {String(data.issues ?? "")}</p>
@@ -163,7 +174,7 @@ export default async function AdminConsoleDetailPage({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-3 sm:p-4">
             <h2 className="text-sm font-semibold">制約・補足</h2>
             <div className="mt-3 grid gap-2 text-sm">
               <p>予算感: {String(data.budget ?? "（未記入）")}</p>
@@ -174,14 +185,17 @@ export default async function AdminConsoleDetailPage({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-3 sm:p-4">
             <h2 className="text-sm font-semibold">添付ファイル</h2>
             <div className="mt-3 grid gap-2 text-sm">
               {attachmentsWithUrl.length === 0 ? (
                 <p>なし</p>
               ) : (
                 attachmentsWithUrl.map((item, index) => (
-                  <div key={`${item.storagePath}-${index}`} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/60 bg-background/80 px-3 py-2 text-xs">
+                  <div
+                    key={`${item.storagePath}-${index}`}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/60 bg-background/80 px-3 py-2 text-[11px] sm:text-xs"
+                  >
                     <div>
                       <p className="font-medium">{String(item.name ?? "")}</p>
                       <p className="text-muted-foreground">
@@ -207,20 +221,20 @@ export default async function AdminConsoleDetailPage({
           </div>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           <IntakeStatusForm
-            id={doc.id}
+            id={record.id}
             status={statusValue}
             contractEndAt={toDateInput(data.contractEndAt)}
           />
 
-          <div className="rounded-2xl border border-border/60 bg-background/70 p-4 text-xs text-muted-foreground">
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-3 text-[11px] text-muted-foreground sm:p-4 sm:text-xs">
             <p>IP: {String(data?.meta?.ip ?? "unknown")}</p>
             <p className="mt-1">Origin: {String(data?.meta?.origin ?? "")}</p>
             <p className="mt-1 break-all">UA: {String(data?.meta?.userAgent ?? "")}</p>
           </div>
 
-          <Link href="/" className="text-sm text-primary underline">
+          <Link href="/sub/admin-console/results" className="text-sm text-primary underline">
             一覧へ戻る
           </Link>
         </div>
