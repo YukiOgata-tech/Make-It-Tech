@@ -2,9 +2,10 @@ import { Hero } from "@/components/sections/hero";
 // import { PricingSection } from "@/components/pricing-section";
 // import { ProcessSection } from "@/components/process-section";
 import { FAQSection } from "@/components/sections/faq-section";
-import { OfferSection } from "@/components/sections/offer-section";
+// import { OfferSection } from "@/components/sections/offer-section";
 import { DiagnosisSection } from "@/components/sections/diagnosis-section";
 import { FloatingContactCta } from "@/components/sections/floating-contact-cta";
+import { PricingLinkSection } from "@/components/sections/pricing-link-section";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -26,7 +27,8 @@ export default function HomePage() {
       <FloatingContactCta />
       <Hero />
       <DiagnosisSection />
-      <OfferSection />
+      {/* <OfferSection /> */}
+      <PricingLinkSection />
       <FAQSection />
     </>
   );

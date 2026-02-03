@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, type Easing } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,11 @@ function setCookieValue(name: string, value: string) {
 
 export function CookieConsent({ className }: { className?: string }) {
   const [consent, setConsent] = React.useState<ConsentState>("unset");
+  const pathname = usePathname();
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname : "";
+  const isToolsHost = hostname.startsWith("tools.");
+  const isToolsPath = pathname.startsWith("/sub/tools");
 
   React.useEffect(() => {
     const stored = getCookieValue(COOKIE_NAME);
@@ -42,6 +48,10 @@ export function CookieConsent({ className }: { className?: string }) {
   };
 
   const isOpen = consent === "unset";
+
+  if (isToolsHost || isToolsPath) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
