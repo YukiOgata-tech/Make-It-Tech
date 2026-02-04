@@ -19,6 +19,7 @@ const labelMap: Record<string, string> = {
   sub: "サブページ",
   lp: "LP",
   admin: "管理画面",
+  niigata: "新潟県内向け",
 };
 
 export function SiteBreadcrumbs() {

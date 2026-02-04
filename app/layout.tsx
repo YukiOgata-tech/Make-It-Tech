@@ -90,8 +90,8 @@ export default function RootLayout({
       "業務改善",
       "Web制作",
       "IT導入",
-      "自動化",
-      "簡易システム構築",
+      "自動化", "アプリ開発",
+      "LP制作",
     ],
     keywords: site.keywords,
     contactPoint: {
