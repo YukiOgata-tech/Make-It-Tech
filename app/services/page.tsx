@@ -214,7 +214,7 @@ export default function ServicesPage() {
           {serviceExamples.map((ex) => (
             <Card key={ex.title} className="rounded-3xl">
               <CardContent className="px-6 py-0.5">
-                <p className="text-lg font-bold">~~ {ex.title}</p>
+                <p className="text-lg font-bold">- {ex.title}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{ex.desc}</p>
               </CardContent>
             </Card>

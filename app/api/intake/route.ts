@@ -10,25 +10,51 @@ const MAX_EMAIL_ATTACHMENT_MB = 4;
 const ADMIN_ATTACHMENT_URL_DAYS = 7;
 
 const schema = z.object({
+  requestType: z.enum(["web", "lp", "ec", "dx", "other"]),
   name: z.string().min(1).max(80),
   email: z.string().email().max(200),
   company: z.string().min(1).max(120),
   phone: z.string().max(30).optional(),
   industry: z.string().min(1).max(120),
   teamSize: z.string().min(1).max(60),
-  currentProcess: z.string().min(10).max(4000),
-  currentTools: z.string().min(1).max(200),
-  volume: z.string().min(1).max(200),
-  stakeholders: z.string().min(1).max(200),
-  issues: z.string().min(20).max(6000),
-  goals: z.string().min(10).max(4000),
+  currentProcess: z.string().max(4000).optional(),
+  currentTools: z.string().max(200).optional(),
+  volume: z.string().max(200).optional(),
+  stakeholders: z.string().max(200).optional(),
+  issues: z.string().max(6000).optional(),
+  goals: z.string().max(4000).optional(),
   successMetrics: z.string().max(400).optional(),
   budget: z.string().max(200).optional(),
   deadline: z.string().max(200).optional(),
   decisionMaker: z.string().max(200).optional(),
   constraints: z.string().max(2000).optional(),
   notes: z.string().max(2000).optional(),
+  websitePurpose: z.string().max(2000).optional(),
+  websitePages: z.string().max(2000).optional(),
+  websiteCurrentUrl: z.string().max(500).optional(),
+  websiteReference: z.string().max(2000).optional(),
+  websiteAssets: z.string().max(1000).optional(),
+  lpGoal: z.string().max(2000).optional(),
+  lpOffer: z.string().max(2000).optional(),
+  lpTarget: z.string().max(1000).optional(),
+  lpReference: z.string().max(2000).optional(),
+  lpAssets: z.string().max(1000).optional(),
+  ecProducts: z.string().max(2000).optional(),
+  ecPlatform: z.string().max(1000).optional(),
+  ecPayments: z.string().max(2000).optional(),
+  ecOperations: z.string().max(2000).optional(),
+  ecReference: z.string().max(2000).optional(),
+  otherRequest: z.string().max(4000).optional(),
+  otherGoal: z.string().max(2000).optional(),
 });
+
+const requestTypeLabels: Record<string, string> = {
+  web: "WEBサイト",
+  lp: "LP",
+  ec: "EC",
+  dx: "DX関連",
+  other: "その他",
+};
 
 type IntakePayload = z.infer<typeof schema>;
 
@@ -139,8 +165,46 @@ async function uploadAttachments(
 }
 
 function buildAdminEmailText(payload: IntakePayload, id: string, attachments: UploadResult[]) {
+  const requestLabel = requestTypeLabels[payload.requestType] ?? "未設定";
+
+  const typeSection =
+    payload.requestType === "web"
+      ? [
+          "WEBサイト要件:",
+          `目的・背景: ${payload.websitePurpose ?? "（未記入）"}`,
+          `必要ページ・構成: ${payload.websitePages ?? "（未記入）"}`,
+          `現サイトURL: ${payload.websiteCurrentUrl ?? "（未記入）"}`,
+          `参考サイト: ${payload.websiteReference ?? "（未記入）"}`,
+          `原稿・写真・ロゴ: ${payload.websiteAssets ?? "（未記入）"}`,
+        ].join("\n")
+      : payload.requestType === "lp"
+        ? [
+            "LP要件:",
+            `目的・コンバージョン: ${payload.lpGoal ?? "（未記入）"}`,
+            `商材・サービス内容: ${payload.lpOffer ?? "（未記入）"}`,
+            `ターゲット: ${payload.lpTarget ?? "（未記入）"}`,
+            `参考LP: ${payload.lpReference ?? "（未記入）"}`,
+            `原稿・素材: ${payload.lpAssets ?? "（未記入）"}`,
+          ].join("\n")
+        : payload.requestType === "ec"
+          ? [
+              "EC要件:",
+              `商材・商品点数: ${payload.ecProducts ?? "（未記入）"}`,
+              `希望プラットフォーム: ${payload.ecPlatform ?? "（未記入）"}`,
+              `決済・配送: ${payload.ecPayments ?? "（未記入）"}`,
+              `在庫・運用: ${payload.ecOperations ?? "（未記入）"}`,
+              `参考サイト: ${payload.ecReference ?? "（未記入）"}`,
+            ].join("\n")
+          : payload.requestType === "other"
+            ? [
+                "その他の相談:",
+                `相談内容: ${payload.otherRequest ?? "（未記入）"}`,
+                `目指したい状態: ${payload.otherGoal ?? "（未記入）"}`,
+              ].join("\n")
+            : "";
+
   const rows = [
-    "業務診断フォームの回答が届きました。",
+    "業務診断/制作相談フォームの回答が届きました。",
     "",
     `回答ID: ${id}`,
     `お名前: ${payload.name}`,
@@ -149,21 +213,36 @@ function buildAdminEmailText(payload: IntakePayload, id: string, attachments: Up
     `電話番号: ${payload.phone ?? "（未記入）"}`,
     `業種: ${payload.industry}`,
     `従業員規模: ${payload.teamSize}`,
+    `依頼種別: ${requestLabel}`,
     "",
-    "現状の業務内容:",
-    payload.currentProcess,
+    ...(payload.requestType === "dx"
+      ? [
+          "現状の業務内容:",
+          payload.currentProcess ?? "（未記入）",
+          "",
+          `使用ツール: ${payload.currentTools ?? "（未記入）"}`,
+          `件数・頻度: ${payload.volume ?? "（未記入）"}`,
+          `関わる人数: ${payload.stakeholders ?? "（未記入）"}`,
+          "",
+          "課題:",
+          payload.issues ?? "（未記入）",
+          "",
+          "理想の状態:",
+          payload.goals ?? "（未記入）",
+          "",
+          `成功指標: ${payload.successMetrics ?? "（未記入）"}`,
+        ]
+      : [
+          "目的・ゴール:",
+          payload.goals ?? "（未記入）",
+          "",
+          "背景・課題:",
+          payload.issues ?? "（未記入）",
+          "",
+          `成功指標: ${payload.successMetrics ?? "（未記入）"}`,
+        ]),
+    ...(typeSection ? ["", typeSection] : []),
     "",
-    `使用ツール: ${payload.currentTools}`,
-    `件数・頻度: ${payload.volume}`,
-    `関わる人数: ${payload.stakeholders}`,
-    "",
-    "課題:",
-    payload.issues,
-    "",
-    "理想の状態:",
-    payload.goals,
-    "",
-    `成功指標: ${payload.successMetrics ?? "（未記入）"}`,
     `予算感: ${payload.budget ?? "（未記入）"}`,
     `希望納期: ${payload.deadline ?? "（未記入）"}`,
     `決裁者: ${payload.decisionMaker ?? "（未記入）"}`,
@@ -196,6 +275,59 @@ function buildAdminEmailHtml(payload: IntakePayload, id: string, attachments: Up
     ])
   ) as Record<keyof IntakePayload, string>;
 
+  const requestLabel = requestTypeLabels[payload.requestType] ?? "未設定";
+  const typeSectionHtml =
+    payload.requestType === "web"
+      ? `
+        <div style="margin-top: 16px;">
+          <p style="margin: 0 0 6px; font-weight: 600;">WEBサイト要件</p>
+          <ul style="margin: 0; padding-left: 18px; font-size: 13px;">
+            <li>目的・背景: ${safe.websitePurpose}</li>
+            <li>必要ページ・構成: ${safe.websitePages}</li>
+            <li>現サイトURL: ${safe.websiteCurrentUrl}</li>
+            <li>参考サイト: ${safe.websiteReference}</li>
+            <li>原稿・写真・ロゴ: ${safe.websiteAssets}</li>
+          </ul>
+        </div>
+      `
+      : payload.requestType === "lp"
+        ? `
+        <div style="margin-top: 16px;">
+          <p style="margin: 0 0 6px; font-weight: 600;">LP要件</p>
+          <ul style="margin: 0; padding-left: 18px; font-size: 13px;">
+            <li>目的・コンバージョン: ${safe.lpGoal}</li>
+            <li>商材・サービス内容: ${safe.lpOffer}</li>
+            <li>ターゲット: ${safe.lpTarget}</li>
+            <li>参考LP: ${safe.lpReference}</li>
+            <li>原稿・素材: ${safe.lpAssets}</li>
+          </ul>
+        </div>
+      `
+        : payload.requestType === "ec"
+          ? `
+        <div style="margin-top: 16px;">
+          <p style="margin: 0 0 6px; font-weight: 600;">EC要件</p>
+          <ul style="margin: 0; padding-left: 18px; font-size: 13px;">
+            <li>商材・商品点数: ${safe.ecProducts}</li>
+            <li>希望プラットフォーム: ${safe.ecPlatform}</li>
+            <li>決済・配送: ${safe.ecPayments}</li>
+            <li>在庫・運用: ${safe.ecOperations}</li>
+            <li>参考サイト: ${safe.ecReference}</li>
+          </ul>
+        </div>
+      `
+          : payload.requestType === "other"
+            ? `
+        <div style="margin-top: 16px;">
+          <p style="margin: 0 0 6px; font-weight: 600;">その他の相談</p>
+          <ul style="margin: 0; padding-left: 18px; font-size: 13px;">
+            <li>相談内容: ${safe.otherRequest}</li>
+            <li>目指したい状態: ${safe.otherGoal}</li>
+          </ul>
+        </div>
+      `
+            : "";
+
   const attachmentHtml = attachments.length
     ? `<ul style="margin: 8px 0 0; padding-left: 18px;">
         ${attachments
@@ -227,8 +359,12 @@ function buildAdminEmailHtml(payload: IntakePayload, id: string, attachments: Up
           <tr><th style="text-align:left; padding: 6px 0; color:#64748b;">電話番号</th><td>${safe.phone}</td></tr>
           <tr><th style="text-align:left; padding: 6px 0; color:#64748b;">業種</th><td>${safe.industry}</td></tr>
           <tr><th style="text-align:left; padding: 6px 0; color:#64748b;">規模</th><td>${safe.teamSize}</td></tr>
+          <tr><th style="text-align:left; padding: 6px 0; color:#64748b;">依頼種別</th><td>${escapeHtml(requestLabel)}</td></tr>
         </table>
 
+        ${
+          payload.requestType === "dx"
+            ? `
         <div style="margin-top: 16px;">
           <p style="margin: 0 0 6px; font-weight: 600;">現状の業務内容</p>
           <p style="margin: 0; white-space: pre-wrap;">${safe.currentProcess}</p>
@@ -249,6 +385,21 @@ function buildAdminEmailHtml(payload: IntakePayload, id: string, attachments: Up
           <p style="margin: 0 0 6px; font-weight: 600;">理想の状態</p>
           <p style="margin: 0; white-space: pre-wrap;">${safe.goals}</p>
         </div>
+        `
+            : `
+        <div style="margin-top: 16px;">
+          <p style="margin: 0 0 6px; font-weight: 600;">目的・ゴール</p>
+          <p style="margin: 0; white-space: pre-wrap;">${safe.goals}</p>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <p style="margin: 0 0 6px; font-weight: 600;">背景・課題</p>
+          <p style="margin: 0; white-space: pre-wrap;">${safe.issues}</p>
+        </div>
+        `
+        }
+
+        ${typeSectionHtml}
 
         <div style="margin-top: 16px; display: grid; gap: 6px;">
           <p style="margin: 0;"><strong>成功指標:</strong> ${safe.successMetrics}</p>
@@ -280,7 +431,7 @@ function buildUserEmailText(payload: IntakePayload, id: string) {
   return [
     `${payload.name}様`,
     "",
-    "業務診断フォームの送信を受け付けました。",
+    "業務診断/制作相談フォームの送信を受け付けました。",
     `回答ID: ${id}`,
     "",
     "このIDは今後の確認に必要になるため、保管をお願いいたします。",
@@ -296,7 +447,7 @@ function buildUserEmailHtml(payload: IntakePayload, id: string) {
       <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e5e7eb; padding: 24px;">
         <p style="margin: 0 0 8px; font-weight: 700; font-size: 18px;">送信を受け付けました</p>
         <p style="margin: 0; color: #6b7280; font-size: 13px;">${escapeHtml(payload.name)}様</p>
-        <p style="margin: 16px 0 0;">業務診断フォームの送信を受け付けました。</p>
+        <p style="margin: 16px 0 0;">業務診断/制作相談フォームの送信を受け付けました。</p>
         <p style="margin: 12px 0 0; font-weight: 600;">回答ID</p>
         <p style="margin: 4px 0 0; font-size: 18px; letter-spacing: 0.08em;">${escapeHtml(id)}</p>
         <p style="margin: 16px 0 0; color: #6b7280; font-size: 13px;">
@@ -360,24 +511,42 @@ export async function POST(request: Request) {
   let payload: IntakePayload;
   try {
     payload = schema.parse({
+      requestType: formData.get("requestType"),
       name: formData.get("name"),
       email: formData.get("email"),
       company: formData.get("company"),
       phone: optionalField(formData.get("phone")),
       industry: formData.get("industry"),
       teamSize: formData.get("teamSize"),
-      currentProcess: formData.get("currentProcess"),
-      currentTools: formData.get("currentTools"),
-      volume: formData.get("volume"),
-      stakeholders: formData.get("stakeholders"),
-      issues: formData.get("issues"),
-      goals: formData.get("goals"),
+      currentProcess: optionalField(formData.get("currentProcess")),
+      currentTools: optionalField(formData.get("currentTools")),
+      volume: optionalField(formData.get("volume")),
+      stakeholders: optionalField(formData.get("stakeholders")),
+      issues: optionalField(formData.get("issues")),
+      goals: optionalField(formData.get("goals")),
       successMetrics: optionalField(formData.get("successMetrics")),
       budget: optionalField(formData.get("budget")),
       deadline: optionalField(formData.get("deadline")),
       decisionMaker: optionalField(formData.get("decisionMaker")),
       constraints: optionalField(formData.get("constraints")),
       notes: optionalField(formData.get("notes")),
+      websitePurpose: optionalField(formData.get("websitePurpose")),
+      websitePages: optionalField(formData.get("websitePages")),
+      websiteCurrentUrl: optionalField(formData.get("websiteCurrentUrl")),
+      websiteReference: optionalField(formData.get("websiteReference")),
+      websiteAssets: optionalField(formData.get("websiteAssets")),
+      lpGoal: optionalField(formData.get("lpGoal")),
+      lpOffer: optionalField(formData.get("lpOffer")),
+      lpTarget: optionalField(formData.get("lpTarget")),
+      lpReference: optionalField(formData.get("lpReference")),
+      lpAssets: optionalField(formData.get("lpAssets")),
+      ecProducts: optionalField(formData.get("ecProducts")),
+      ecPlatform: optionalField(formData.get("ecPlatform")),
+      ecPayments: optionalField(formData.get("ecPayments")),
+      ecOperations: optionalField(formData.get("ecOperations")),
+      ecReference: optionalField(formData.get("ecReference")),
+      otherRequest: optionalField(formData.get("otherRequest")),
+      otherGoal: optionalField(formData.get("otherGoal")),
     });
   } catch (error) {
     return Response.json(
@@ -417,7 +586,8 @@ export async function POST(request: Request) {
       },
     });
 
-    const adminSubject = `【業務診断】${payload.company} ${payload.name}様 (${id})`;
+    const requestLabel = requestTypeLabels[payload.requestType] ?? "未設定";
+    const adminSubject = `【相談:${requestLabel}】${payload.company} ${payload.name}様 (${id})`;
     const adminBody: Record<string, unknown> = {
       from,
       to: [to],
@@ -451,7 +621,7 @@ export async function POST(request: Request) {
       from,
       to: [payload.email],
       reply_to: to,
-      subject: "【Make It Tech】業務診断フォーム受付完了",
+      subject: "【Make It Tech】相談フォーム受付完了",
       text: buildUserEmailText(payload, id),
       html: buildUserEmailHtml(payload, id),
     });

@@ -77,14 +77,14 @@ export default function NiigataPage() {
                 </Badge>
               </div>
 
-              <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+              <h1 className="mt-4 max-w-[32rem] text-xl font-semibold tracking-tight sm:max-w-none sm:text-4xl lg:text-5xl">
                 新潟県内の事業者向け支援
-                <span className="mt-2 block text-base font-medium text-muted-foreground sm:text-xl">
+                <span className="mt-2 block text-sm font-medium text-muted-foreground sm:text-xl">
                   相談から提供まで、一人の担当が最後まで伴走します。
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              <p className="mt-4 max-w-[32rem] text-xs leading-relaxed text-muted-foreground sm:max-w-2xl sm:text-base">
                 代表が直接ヒアリングし、必要な改善だけに絞って支援します。
                 大手では届きにくい現場の細部まで、対面でスムーズに整理できます。
               </p>
@@ -101,18 +101,18 @@ export default function NiigataPage() {
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2 text-xs text-muted-foreground sm:mt-6 sm:gap-3">
-                <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2">
+                <span className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 leading-snug">
                   <Sparkles className="h-4 w-4 text-primary" />
                   公的DX/IT補助金の情報も共有可能
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2">
+                <span className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 leading-snug">
                   <MapPin className="h-4 w-4 text-primary" />
-                  対面相談・診断に対応
+                  対面相談･診断に対応
                 </span>
               </div>
             </div>
 
-            <div className="grid gap-3 sm:gap-4">
+            <div className="hidden sm:grid sm:gap-4">
               {highlights.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -127,12 +127,37 @@ export default function NiigataPage() {
                         </CardTitle>
                       </div>
                     </CardHeader>
-                    <CardContent className="pt-2 text-sm text-muted-foreground">
+                    <CardContent className="pt-0 text-sm text-muted-foreground">
                       {item.desc}
                     </CardContent>
                   </Card>
                 );
               })}
+            </div>
+
+            <div className="min-w-0 sm:hidden">
+              <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
+                {highlights.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={item.title}
+                      className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <p className="text-sm font-medium">{item.title}</p>
+                      </div>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {item.desc}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">左右にスワイプで確認</p>
             </div>
           </div>
         </div>
@@ -147,12 +172,12 @@ export default function NiigataPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-medium text-primary/80">-無料相談・診断の条件</p>
+              <p className="text-sm font-medium text-primary/80">-無料相談･診断の条件</p>
               <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
                 対象の方には無料で対応します
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                条件はシンプルに絞っています。迷う場合もまずは相談ください。
+                迷う場合もまずは相談ください。
               </p>
             </div>
           </div>

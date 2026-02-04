@@ -33,11 +33,20 @@ const statusLabel: Record<string, string> = {
   closed: "クローズ",
 };
 
+const requestTypeLabel: Record<string, string> = {
+  web: "WEBサイト",
+  lp: "LP",
+  ec: "EC",
+  dx: "DX関連",
+  other: "その他",
+};
+
 type IntakeRecord = {
   id: string;
   name?: string;
   email?: string;
   company?: string;
+  requestType?: string;
   status?: string;
   createdAt?: unknown;
 };
@@ -123,13 +132,14 @@ export default async function AdminConsolePage({
     const recordName = normalizeText(record.name);
     const recordCompany = normalizeText(record.company);
     const recordId = normalizeText(record.id);
+    const recordType = normalizeText(record.requestType);
 
     if (emailQuery && recordEmail !== emailQuery) {
       return false;
     }
 
     if (keyword) {
-      const haystack = [recordCompany, recordName, recordEmail, recordId].join(" ");
+      const haystack = [recordCompany, recordName, recordEmail, recordId, recordType].join(" ");
       if (!haystack.includes(keyword)) {
         return false;
       }
@@ -267,9 +277,14 @@ export default async function AdminConsolePage({
                   {record.name as string} / {record.email as string}
                 </p>
               </div>
-              <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-                {statusLabel[String(record.status ?? "new")] ?? "未設定"}
-              </Badge>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+                  {statusLabel[String(record.status ?? "new")] ?? "未設定"}
+                </Badge>
+                <Badge variant="secondary" className="rounded-xl">
+                  {requestTypeLabel[String(record.requestType ?? "dx")] ?? "未設定"}
+                </Badge>
+              </div>
             </div>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>回答ID: {record.id as string}</span>

@@ -157,6 +157,7 @@ body[data-has-breadcrumbs="true"] {
   html {
     font-size: 18px;
     overflow-x: clip;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;

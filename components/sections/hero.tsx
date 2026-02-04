@@ -331,7 +331,7 @@ export function Hero({ className }: { className?: string }) {
                   <div>
                     <p className="text-sm font-semibold tracking-tight">よくある課題 → 解決の方向性</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      “まず整理”して、必要なら実装へ。ムダな開発を避けます。
+                      “まず整理”して、必要なら実装へ。
                     </p>
                   </div>
                   <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
@@ -341,16 +341,16 @@ export function Hero({ className }: { className?: string }) {
 
                 <div className="mt-6 grid gap-3">
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">問い合わせ･予約が分散(電話/LINE/紙)</h3>
+                    <h3 className="text-sm font-medium">問い合わせやメニューのリアルタイム更新など機能性の高いWEBページが欲しい</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      → フォーム統一+自動通知+管理シートで一元化
+                      → 現状のサイト分析+要件整理からのWEBサイト制作/修正作業
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">Excelが属人化して引き継げない</h3>
+                    <h3 className="text-sm font-medium">手入力Excelやデータ管理が大変、そして属人化して引き継げない</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      → 入力ルール+ビュー分離+運用手順の整備
+                      → ルールの言語化+ビュー分離+運用の標準化。AIや計算システムを組み込んだ自動化システムの開発。
                     </p>
                   </div>
 

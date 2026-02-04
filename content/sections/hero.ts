@@ -9,6 +9,6 @@ export const heroBullets = [
 
 export const heroTrust = [
   { icon: ShieldCheck, title: "範囲を明確化", desc: "対応範囲・優先順位を最初に決める" },
-  { icon: Timer, title: "小さく始める", desc: "まずは最短の“効く改善”から" },
-  { icon: Sparkles, title: "実装から運用まで対応", desc: "ツール導入や開発〜管理と運用代行まで" },
+  { icon: Timer, title: "小さく始める", desc: "まずは“効く改善”から" },
+  { icon: Sparkles, title: "実装から運用まで対応", desc: "ツール導入や開発~管理と運用代行/保守まで" },
 ] as const;

@@ -630,7 +630,7 @@ export function ContactForm() {
             </div>
 
             <pre className="mt-3 whitespace-pre-wrap rounded-xl bg-secondary/30 p-3 text-xs text-muted-foreground">
-{template}
+            {template}
             </pre>
           </div>
 
@@ -651,7 +651,7 @@ export function ContactForm() {
                   コピー
                 </Button>
                 <pre className="whitespace-pre-wrap rounded-xl bg-secondary/30 p-3 text-xs text-muted-foreground">
-{template}
+                {template}
                 </pre>
               </div>
             </MobileDisclosure>
@@ -678,7 +678,7 @@ export function ContactForm() {
 
           <div className="flex flex-wrap gap-3">
             <Button type="submit" className="rounded-xl" disabled={formState.isSubmitting}>
-              {formState.isSubmitting ? "送信中..." : "送信する"} <ArrowRight className="ml-2 h-4 w-4" />
+              {formState.isSubmitting ? "送信中..." : "送信する"} <ArrowRight className="sm:ml-2 h-4 w-4" />
             </Button>
 
             <LineButton href="/survey">LINEで相談</LineButton>
@@ -688,16 +688,6 @@ export function ContactForm() {
             ※ 送信後、内容を確認して折り返しご連絡します。
           </p>
         </form>
-
-        <div className="rounded-2xl bg-secondary/30 p-3 sm:p-4">
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            <p className="text-sm font-medium">返信目安</p>
-          </div>
-          <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">
-            {site.contact?.responseHours ?? "平日 10:00 - 19:00"}
-          </p>
-        </div>
       </div>
       </div>
     </>

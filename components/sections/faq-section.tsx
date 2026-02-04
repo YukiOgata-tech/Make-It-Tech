@@ -89,7 +89,7 @@ export function FAQSection({ className }: { className?: string }) {
           </Accordion>
         </div>
 
-        <div className="grid gap-2 md:hidden">
+        <div className="grid gap-1 md:hidden">
           <Accordion type="single" collapsible className="w-full">
             {previewFaqs.map((f, idx) => (
               <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`} className="py-0">
@@ -138,10 +138,10 @@ export function FAQSection({ className }: { className?: string }) {
         <div className="mt-4 sm:mt-10 rounded-3xl border border-primary/20 bg-secondary/40 px-4 p-4 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
-              <p className="text-sm font-medium">迷ったら、まず“現状”だけでOK</p>
+              <p className="text-sm font-medium">まず“現状”だけでOK</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 相談時点で要件が固まっていなくても問題ありません。
-                「困っていること」「理想」「制約」を整理して、最短の改善案を作ります。
+                「困っていること」「理想」「制約」を整理して、改善案を作ります。
               </p>
             </div>
 

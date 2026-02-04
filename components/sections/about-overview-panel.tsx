@@ -86,7 +86,7 @@ export function AboutOverviewPanel({ className }: { className?: string }) {
             <p className="text-base font-semibold text-foreground sm:text-lg">
               - {section.title}
             </p>
-            <div className="max-w-3xl grid gap-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <div className="max-w-3xl grid gap-3 text-xs leading-relaxed text-muted-foreground sm:text-base">
               {section.body?.map((line, index) =>
                 renderDetailLine(line, index)
               )}
