@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 };
 
 function formatDate(iso: string) {
-  // iso: YYYY-MM-DD
   const [y, m, d] = iso.split("-").map((x) => Number(x));
   if (!y || !m || !d) return iso;
   return `${y}年${m}月${d}日`;
@@ -106,7 +105,6 @@ export default function PrivacyPolicyPage() {
                   <Link href={c.contact.formPath} className="underline underline-offset-2">
                     お問い合わせページ
                   </Link>
-                  よりご連絡ください。
                 </p>
               ) : null}
             </section>
@@ -119,13 +117,13 @@ export default function PrivacyPolicyPage() {
               <MobileDisclosure id={s.id} summary={s.title} openOnHash>
                 <div className="grid gap-3">
                   {s.body?.map((p, i) => (
-                    <p key={i} className="text-sm leading-relaxed text-muted-foreground">
+                    <p key={i} className="text-xs leading-relaxed text-muted-foreground">
                       {p}
                     </p>
                   ))}
 
                   {s.bullets?.length ? (
-                    <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                    <ul className="list-disc pl-5 space-y-1 text-xs text-muted-foreground">
                       {s.bullets.map((b) => (
                         <li key={b}>{b}</li>
                       ))}
@@ -133,11 +131,10 @@ export default function PrivacyPolicyPage() {
                   ) : null}
 
                   {s.id === "contact" ? (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground pb-1">
                       <Link href={c.contact.formPath} className="underline underline-offset-2">
                         お問い合わせページ
                       </Link>
-                      よりご連絡ください。
                     </p>
                   ) : null}
                 </div>
