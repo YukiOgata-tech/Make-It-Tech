@@ -384,7 +384,7 @@ export function ContactForm() {
   return (
     <>
       {formState.isSubmitting ? (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
+        <div className="fixed inset-0 z-80 flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/70 bg-background/95 px-6 py-5 shadow-2xl">
             <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
             <p className="text-sm font-medium">送信中...</p>
@@ -410,7 +410,7 @@ export function ContactForm() {
       </div>
 
       {settingsOpen ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-70 flex items-center justify-center px-4">
           <button
             type="button"
             className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"

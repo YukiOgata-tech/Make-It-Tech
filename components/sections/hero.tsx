@@ -295,7 +295,7 @@ export function Hero({ className }: { className?: string }) {
             className="absolute -right-6 top-8 hidden items-center gap-3 rounded-2xl border border-primary/20 bg-background/70 px-3 py-2 text-[11px] text-muted-foreground shadow-sm backdrop-blur lg:flex"
             style={{ opacity: progressOpacity }}
           >
-            <div className="h-9 w-9 rounded-full border border-primary/30 bg-secondary/30 p-[3px]">
+            <div className="h-9 w-9 rounded-full border border-primary/30 bg-secondary/30 p-0.75">
               <div
                 className="hero-progress-ring h-full w-full rounded-full"
                 style={{

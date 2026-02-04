@@ -77,14 +77,14 @@ export default function NiigataPage() {
                 </Badge>
               </div>
 
-              <h1 className="mt-4 max-w-[32rem] text-xl font-semibold tracking-tight sm:max-w-none sm:text-4xl lg:text-5xl">
+              <h1 className="mt-4 max-w-lg text-xl font-semibold tracking-tight sm:max-w-none sm:text-4xl lg:text-5xl">
                 新潟県内の事業者向け支援
                 <span className="mt-2 block text-sm font-medium text-muted-foreground sm:text-xl">
                   相談から提供まで、一人の担当が最後まで伴走します。
                 </span>
               </h1>
 
-              <p className="mt-4 max-w-[32rem] text-xs leading-relaxed text-muted-foreground sm:max-w-2xl sm:text-base">
+              <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted-foreground sm:max-w-2xl sm:text-base">
                 代表が直接ヒアリングし、必要な改善だけに絞って支援します。
                 大手では届きにくい現場の細部まで、対面でスムーズに整理できます。
               </p>
@@ -92,7 +92,7 @@ export default function NiigataPage() {
               <div className="mt-6 flex flex-wrap gap-3 sm:gap-4">
                 <Button asChild className="rounded-xl">
                   <Link href="/contact">
-                    相談してみる <ArrowRight className="ml-2 h-4 w-4" />
+                    相談してみる <ArrowRight className="sm:ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-xl">

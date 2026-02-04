@@ -60,7 +60,7 @@ const UNSPECIFIED_VALUE = "指定なし（提案希望）";
 
 const schema = z.object({
   requestType: z.enum(["web", "lp", "ec", "dx", "other"], {
-    required_error: "依頼種別を選択してください",
+    message: "依頼種別を選択してください",
   }),
   name: z.string().min(1, "お名前を入力してください"),
   email: z.string().email("メールアドレスの形式が正しくありません"),
@@ -108,7 +108,7 @@ type Attachment = {
   compressed: boolean;
 };
 
-const typeSpecificFields = {
+const typeSpecificFields: Record<RequestType, (keyof FormValues)[]> = {
   web: [
     "websitePurpose",
     "websitePages",
@@ -120,7 +120,7 @@ const typeSpecificFields = {
   ec: ["ecProducts", "ecPlatform", "ecPayments", "ecOperations", "ecReference"],
   dx: ["currentProcess", "currentTools", "volume", "stakeholders"],
   other: ["otherRequest", "otherGoal"],
-} as const;
+};
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -236,13 +236,15 @@ export function DiagnosisForm() {
   }, [attachments]);
 
   const allTypeFields = useMemo(
-    () => Object.values(typeSpecificFields).flat() as (keyof FormValues)[],
+    () => Object.values(typeSpecificFields).flat(),
     []
   );
 
   useEffect(() => {
     if (!requestType) return;
-    const allowedFields = new Set(typeSpecificFields[requestType] ?? []);
+    const allowedFields = new Set<keyof FormValues>(
+      typeSpecificFields[requestType] ?? []
+    );
     allTypeFields.forEach((field) => {
       if (!allowedFields.has(field)) {
         form.setValue(field, "", { shouldDirty: true, shouldValidate: false });
@@ -323,9 +325,7 @@ export function DiagnosisForm() {
           "requestType",
         ];
       case "current":
-        return requestType
-          ? ([...(typeSpecificFields[requestType] ?? [])] as (keyof FormValues)[])
-          : [];
+        return requestType ? [...(typeSpecificFields[requestType] ?? [])] : [];
       case "issues":
         return ["issues", "goals", "successMetrics"];
       case "constraints":
