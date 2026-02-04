@@ -32,8 +32,8 @@ export function FloatingContactCta({ className }: { className?: string }) {
           }
         >
           <Link
-            href="/contact"
-            aria-label="新潟県内企業の方はこちら（お問い合わせ）"
+            href="/niigata"
+            aria-label="新潟県内企業の方はこちら（ご案内ページ）"
             className={cn(
               "group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/60 bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(214,214,214,0.85),rgba(255,255,255,0.9))] px-4 py-2 text-xs font-semibold text-slate-900 shadow-lg backdrop-blur",
               "transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-xl dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.15),rgba(180,180,180,0.12),rgba(255,255,255,0.2))] dark:text-white"

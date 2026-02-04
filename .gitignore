@@ -43,3 +43,5 @@ next-env.d.ts
 
 # for me
 docs/
+firestore.rules
+storage.rules

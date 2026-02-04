@@ -9,18 +9,29 @@ import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
   diagnosisComparisons,
-  diagnosisDeliverables,
-  diagnosisFreeConditions,
   diagnosisOutcomes,
 } from "@/content/sections/diagnosis";
 import {
   ArrowRight,
   CheckCircle2,
-  ClipboardCheck,
 } from "lucide-react";
 
 export function DiagnosisSection({ className }: { className?: string }) {
   const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
+  const deliverableBubbles = [
+    {
+      lines: ["診断サマリー", "（現状/課題/優先事項）"],
+    },
+    {
+      lines: ["推奨IT/サービス", "の提案"],
+    },
+    {
+      lines: ["概算見積", "進行プラン"],
+    },
+    {
+      lines: ["次のアクション", "提案"],
+    },
+  ];
 
   return (
     <section id="diagnosis" className={cn("py-6 sm:py-18", className)}>
@@ -37,10 +48,10 @@ export function DiagnosisSection({ className }: { className?: string }) {
                 推奨IT+見積まで
               </Badge>
             </div>
-            <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-3xl">
               契約前に「業務診断」
             </h2>
-            <p className="hidden sm:block mt-0.5 sm:mt-3 max-w-2xl text-xs sm:text-base text-muted-foreground">
+            <p className="hidden sm:block mt-0.5 sm:mt-3 w-auto text-xs sm:text-base text-muted-foreground">
               お問い合わせや簡易ヒアリングとは違い、現状を詳細に把握し、
               推奨ITの提案と概算見積まで行う“診断”です。
             </p>
@@ -118,8 +129,8 @@ export function DiagnosisSection({ className }: { className?: string }) {
                     </Badge>
                   </h3>
                   {c.title.includes("業務診断") ? (
-                    <Badge variant="outline" className="rounded-xl">
-                      条件により無料
+                    <Badge asChild variant="outline" className="rounded-xl">
+                      <Link href="/niigata#free-conditions">条件により無料</Link>
                     </Badge>
                   ) : null}
                 </div>
@@ -152,89 +163,45 @@ export function DiagnosisSection({ className }: { className?: string }) {
                     </li>
                   ))}
                 </ul>
+                {c.title.includes("業務診断") ? (
+                  <div className="pt-1">
+                    <Badge asChild variant="outline" className="rounded-xl">
+                      <Link href="/niigata#free-conditions">条件により無料</Link>
+                    </Badge>
+                  </div>
+                ) : null}
               </div>
             </MobileDisclosure>
           ))}
         </div>
 
-        <div className="mt-8 hidden gap-3 lg:grid lg:grid-cols-[1.2fr_1fr]">
-          <Card className="relative overflow-hidden rounded-3xl">
-            <div
-              className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
-              style={{ backgroundImage: "url(/images/bg-2-light.png)" }}
-            />
-            <div
-              className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
-              style={{ backgroundImage: "url(/images/bg-2-dark.png)" }}
-            />
-            <CardHeader className="relative pt-1 pb-0 sm:px-6">
-              <CardTitle className="text-xl">診断で得られること</CardTitle>
-            </CardHeader>
-            <CardContent className="relative pt-0 text-sm text-muted-foreground">
-              <ul className="grid gap-1 leading-snug">
-                {diagnosisDeliverables.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <ClipboardCheck className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+        <div className="mt-8">
+          <div>
+            <p className="text-sm font-medium text-primary/80">-診断で得られること</p>
+            <h3 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
+              <span className="hidden sm:block">内容が一目で分かる</span><span className="underline">4つ</span>の成果
+            </h3>
+          </div>
 
-          <Card className="relative overflow-hidden rounded-3xl">
-            <div
-              className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
-              style={{ backgroundImage: "url(/images/bg-2-light.png)" }}
-            />
-            <div
-              className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-35 dark:block"
-              style={{ backgroundImage: "url(/images/bg-2-dark.png)" }}
-            />
-            <CardHeader className="relative pt-1 pb-0 sm:px-6">
-              <CardTitle className="text-xl">無料条件(目安)</CardTitle>
-            </CardHeader>
-            <CardContent className="relative pt-0 text-sm text-muted-foreground">
-              <ul className="grid gap-1 leading-snug">
-                {diagnosisFreeConditions.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-3 text-xs text-muted-foreground">
-                ※ 条件や範囲は案件ごとに異なります。詳細は相談時にご案内します。
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mt-8 grid gap-3 lg:hidden">
-          <MobileDisclosure summary="診断で得られること">
-            <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
-              {diagnosisDeliverables.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <ClipboardCheck className="mt-0.5 h-4 w-4 text-primary" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </MobileDisclosure>
-
-          <MobileDisclosure summary="無料になる条件(目安)">
-            <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
-              {diagnosisFreeConditions.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-2 text-xs text-muted-foreground">
-              ※ 条件や範囲は案件ごとに異なります。詳細は相談時にご案内します。
-            </p>
-          </MobileDisclosure>
+          <div className="mt-4 grid gap-3 grid-cols-2 sm:grid-cols-4">
+            {deliverableBubbles.map((item, index) => (
+              <div
+                key={item.lines.join("")}
+                className="relative flex aspect-square min-h-10 items-center justify-center rounded-full border border-primary/25 bg-background/70 p-2 text-center sm:min-h-30 lg:min-h-40"
+              >
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-8xl sm:text-[128px] font-semibold text-primary/10 lg:text-[192px]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div className="relative z-5 text-sm font-semibold leading-snug text-foreground sm:text-base lg:text-xl">
+                  {item.lines.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-4 sm:mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-3 sm:p-6">

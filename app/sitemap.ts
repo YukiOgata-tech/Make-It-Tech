@@ -11,6 +11,7 @@ const routes = [
   "/privacy",
   "/terms",
   "/glossary",
+  "/niigata",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

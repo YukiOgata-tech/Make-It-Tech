@@ -43,12 +43,9 @@ export function FAQSection({ className }: { className?: string }) {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium text-primary/80">-FAQ</p>
-            <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl md:text-3xl">
               不安になりやすいポイントを先に解消します
             </h2>
-            <p className="mt-0.5 sm:mt-3 max-w-2xl text-md sm:text-base text-muted-foreground">
-              “何でもできます”の不透明さをなくすために、範囲・進め方・料金の考え方を明確にします。
-            </p>
           </div>
         </div>
 

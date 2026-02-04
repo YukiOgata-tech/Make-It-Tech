@@ -11,19 +11,18 @@ export function PricingLinkSection({ className }: { className?: string }) {
         <div className="grid gap-3 rounded-3xl border border-border/60 bg-background/80 p-4 sm:gap-6 sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div>
             <Badge variant="secondary" className="rounded-xl">
-              料金ページのご案内
+              料金ページへ
             </Badge>
             <h2 className="mt-3 text-md font-semibold tracking-tight sm:text-2xl">
               料金はページ内でまとめて確認できます
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            {/* <p className="mt-2 text-sm text-muted-foreground">
               考え方と条件等を目安で整理しています。
-            </p>
+            </p> */}
             <ul className="mt-2 sm:mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
               {[
                 "料金の考え方と範囲の目安",
                 "見積もりの前提条件",
-                "成果物/運用支援の扱い",
                 "支払いや契約に関する注意点",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
