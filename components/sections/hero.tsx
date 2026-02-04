@@ -74,8 +74,6 @@ function Glow() {
 }
 
 export function Hero({ className }: { className?: string }) {
-  const bulletPreview = heroBullets.slice(0, 2);
-  const bulletRest = heroBullets.slice(2);
   const shouldReduceMotion = useReducedMotion();
   const slideDistance = shouldReduceMotion ? 0 : 16;
   const heroRef = React.useRef<HTMLElement | null>(null);
@@ -232,54 +230,38 @@ export function Hero({ className }: { className?: string }) {
             </Button>
           </motion.div>
 
-          <motion.div
-            variants={itemVariants}
-            className="mt-6 hidden gap-3 md:grid"
-          >
-            <motion.div variants={listVariants} className="grid gap-3">
-              {heroBullets.map((b) => (
-                <motion.div
-                  key={b}
-                  variants={listItemVariants}
-                  className="flex items-start gap-2 text-sm text-muted-foreground"
-                >
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                  <span>{b}</span>
-                </motion.div>
-              ))}
-              <motion.div
-                variants={listItemVariants}
-                className="flex items-start gap-2 text-sm text-muted-foreground"
-              >
-                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                <span>IT導入補助金・小規模事業者持続化補助金などの申請サポート</span>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="mt-6 grid gap-2 md:hidden">
-            {bulletPreview.map((b) => (
-              <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                <span>{b}</span>
-              </div>
-            ))}
-          </motion.div>
-
-          {bulletRest.length ? (
-            <motion.div variants={itemVariants} className="mt-3 md:hidden">
-              <MobileDisclosure summary="対応内容をもっと見る">
-                <div className="grid gap-2">
-                  {bulletRest.map((b) => (
-                    <div key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
+          <motion.div variants={itemVariants} className="mt-6">
+            <MobileDisclosure summary="対応内容を見る">
+              <div className="text-foreground">
+                <motion.div variants={listVariants} className="grid gap-2">
+                  {heroBullets.map((b) => (
+                    <motion.div
+                      key={b}
+                      variants={listItemVariants}
+                      className="flex items-start gap-2 text-sm text-foreground/90"
+                    >
                       <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                       <span>{b}</span>
-                    </div>
+                    </motion.div>
                   ))}
+                  <motion.div
+                    variants={listItemVariants}
+                    className="flex items-start gap-2 text-sm text-foreground/90"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    <span>IT導入補助金･小規模事業者持続化補助金などの申請サポート</span>
+                  </motion.div>
+                </motion.div>
+                <div className="mt-4">
+                  <Button asChild size="sm" className="rounded-xl">
+                    <Link href="/services">
+                      サービス一覧へ <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
-              </MobileDisclosure>
-            </motion.div>
-          ) : null}
+              </div>
+            </MobileDisclosure>
+          </motion.div>
 
           <motion.div
             variants={itemVariants}
@@ -359,16 +341,16 @@ export function Hero({ className }: { className?: string }) {
 
                 <div className="mt-6 grid gap-3">
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">問い合わせ・予約が分散（電話/LINE/紙）</h3>
+                    <h3 className="text-sm font-medium">問い合わせ･予約が分散(電話/LINE/紙)</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      → フォーム統一＋自動通知＋管理シートで一元化
+                      → フォーム統一+自動通知+管理シートで一元化
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                     <h3 className="text-sm font-medium">Excelが属人化して引き継げない</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      → 入力ルール＋ビュー分離＋運用手順の整備
+                      → 入力ルール+ビュー分離+運用手順の整備
                     </p>
                   </div>
 
@@ -393,9 +375,9 @@ export function Hero({ className }: { className?: string }) {
                 </div>
 
                 <div className="mt-6 rounded-2xl bg-muted/60 p-4">
-                  <p className="text-sm font-medium">次の一手（おすすめ）</p>
+                  <p className="text-sm font-medium">次の一手</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    まずは「現状の困りごと」と「理想」を整理して、最短の改善案を作ります。
+                    まずは「現状の困りごと･要望」を整理して、実装案を作ります。
                   </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Button asChild size="sm" className="rounded-xl">

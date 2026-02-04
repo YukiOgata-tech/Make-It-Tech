@@ -16,9 +16,6 @@ export function PricingLinkSection({ className }: { className?: string }) {
             <h2 className="mt-3 text-md font-semibold tracking-tight sm:text-2xl">
               料金はページ内でまとめて確認できます
             </h2>
-            {/* <p className="mt-2 text-sm text-muted-foreground">
-              考え方と条件等を目安で整理しています。
-            </p> */}
             <ul className="mt-2 sm:mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
               {[
                 "料金の考え方と範囲の目安",
@@ -34,10 +31,7 @@ export function PricingLinkSection({ className }: { className?: string }) {
           </div>
 
           <div className=" border-y border-border/60 bg-background/70 p-3 sm:p-6">
-            <p className="text-sm font-medium">料金ページでできること</p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              範囲や条件を確認したい方向けです。
-            </p>
+            <p className="text-sm sm:text-lg font-medium">-「料金ページ」で詳しく見る</p>
             <div className="mt-4 flex flex-nowrap items-center gap-2 sm:flex-wrap">
               <Button asChild size="sm" className="rounded-lg sm:rounded-xl">
                 <Link href="/pricing">

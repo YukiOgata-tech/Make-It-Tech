@@ -44,8 +44,21 @@ export function MobileDisclosure({
         <span>{summary}</span>
         <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
       </summary>
-      <div className="border-t border-border/70 px-4 py-2 text-sm leading-relaxed text-muted-foreground">
-        {children}
+      <div
+        className="disclosure-content border-t border-border/70 text-sm leading-relaxed text-muted-foreground"
+        ref={(node) => {
+          if (!node) return;
+          const parent = node.parentElement;
+          if (!parent) return;
+          parent.style.setProperty(
+            "--disclosure-content-height",
+            `${node.scrollHeight}px`
+          );
+        }}
+      >
+        <div className="px-4 py-2">
+          {children}
+        </div>
       </div>
     </details>
   );

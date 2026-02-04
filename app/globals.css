@@ -195,6 +195,39 @@ body[data-has-breadcrumbs="true"] {
 }
 
 @layer utilities {
+  @keyframes disclosure-open {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--disclosure-content-height);
+      opacity: 1;
+    }
+  }
+
+  @keyframes disclosure-close {
+    from {
+      height: var(--disclosure-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
+
+  .disclosure-content {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    transition: height 0.28s ease, opacity 0.28s ease;
+  }
+
+  details[open] .disclosure-content {
+    height: var(--disclosure-content-height);
+    opacity: 1;
+  }
   .bg-aurora {
     background-image:
       radial-gradient(50rem 25rem at 20% -10%, rgb(var(--bg-glow-1) / 0.35), transparent 60%),
