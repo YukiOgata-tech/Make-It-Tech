@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import imageCompression from "browser-image-compression";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,10 @@ type AnnouncementLink = {
 
 const VIEW_MODES = ["edit", "preview", "split"] as const;
 type ViewMode = (typeof VIEW_MODES)[number];
+const MAX_COVER_IMAGE_MB = 2;
+const MAX_INLINE_IMAGE_MB = 1.2;
+const MAX_COVER_IMAGE_PX = 2000;
+const MAX_INLINE_IMAGE_PX = 1600;
 
 function normalizeSlug(value: string) {
   const base = value
@@ -104,6 +109,25 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
 
   const previewContent = useMemo(() => content || "本文はまだ入力されていません。", [content]);
 
+  const compressImage = async (file: File, purpose: "cover" | "inline") => {
+    if (file.type === "image/gif") return file;
+    const options = {
+      maxSizeMB: purpose === "cover" ? MAX_COVER_IMAGE_MB : MAX_INLINE_IMAGE_MB,
+      maxWidthOrHeight: purpose === "cover" ? MAX_COVER_IMAGE_PX : MAX_INLINE_IMAGE_PX,
+      useWebWorker: true,
+    };
+    try {
+      const compressed = await imageCompression(file, options);
+      if (compressed instanceof File) {
+        return compressed;
+      }
+      return new File([compressed], file.name, { type: compressed.type || file.type });
+    } catch (error) {
+      console.warn("Image compression failed", error);
+      return file;
+    }
+  };
+
   const handleTitleChange = (value: string) => {
     setTitle(value);
     if (!slugTouched) {
@@ -120,8 +144,9 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
     setUploading(true);
     setMessage("");
     try {
+      const compressedFile = await compressImage(file, purpose);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressedFile);
       formData.append("purpose", purpose);
       if (id) {
         formData.append("announcementId", id);
