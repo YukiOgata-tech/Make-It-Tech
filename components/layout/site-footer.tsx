@@ -26,10 +26,10 @@ export function SiteFooter() {
                   className="h-9 w-9 rounded-full sm:h-10 sm:w-10"
                 />
 
-              <p className="brand-mark text-base font-semibold sm:text-lg">{brand}</p>
+              <p className="brand-mark text-base font-semibold sm:text-xl">{brand}</p>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
-              Web制作/業務改善/自動化/DX開発支援など、IT領域全般を柔軟にサポートします。
+              Web･LP制作/業務自動化/DX開発支援など、IT領域全般を柔軟にサポートします。
               新潟の地方創生と、ITを通じた地域活動支援にも取り組んでいます。
             </p>
           </div>
@@ -70,6 +70,10 @@ export function SiteFooter() {
               <span>·</span>
               <Link href="/terms" className="hover:text-foreground hover:underline">
                 Terms
+              </Link>
+              <span>·</span>
+              <Link href="/security-policy" className="hover:text-foreground hover:underline">
+                Security
               </Link>
             </div>
 

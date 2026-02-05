@@ -21,6 +21,7 @@ export const footerLinks = [
     links: [
       { label: "注意事項(利用規約)", href: "/terms" },
       { label: "プライバシーポリシー", href: "/privacy" },
+      { label: "情報セキュリティ基本方針", href: "/security-policy" },
     ],
   },
   {

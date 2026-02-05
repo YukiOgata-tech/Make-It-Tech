@@ -10,6 +10,7 @@ const routes = [
   "/survey",
   "/privacy",
   "/terms",
+  "/security-policy",
   "/glossary",
   "/niigata",
 ];
