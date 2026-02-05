@@ -13,6 +13,7 @@ const labelMap: Record<string, string> = {
   about: "事業所概要",
   contact: "お問い合わせ",
   survey: "LINE相談",
+  news: "お知らせ",
   privacy: "プライバシーポリシー",
   terms: "利用規約",
   "security-policy": "情報セキュリティ基本方針",

@@ -16,7 +16,7 @@ export function AdminHeader() {
             </p>
           </div>
           <Badge variant="secondary" className="rounded-xl">
-            業務診断
+            運用管理
           </Badge>
         </div>
         <nav className="flex flex-wrap items-center gap-2 text-xs sm:gap-3 sm:text-sm">
@@ -25,6 +25,12 @@ export function AdminHeader() {
             className="rounded-xl border border-border/60 bg-background/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground sm:px-3 sm:py-2 sm:text-xs"
           >
             管理トップ
+          </Link>
+          <Link
+            href="/sub/admin-console/news"
+            className="rounded-xl border border-border/60 bg-background/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground sm:px-3 sm:py-2 sm:text-xs"
+          >
+            お知らせ
           </Link>
           <Link
             href="/sub/admin-console/results"

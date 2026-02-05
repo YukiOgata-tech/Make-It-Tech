@@ -54,7 +54,7 @@ import { heroContent } from "@/content/sections/hero";
 ### ルーティング
 
 - `app/` - メインルート（/, /services, /pricing, /contact, /about, /privacy, /terms, /glossary, /survey）
-- `app/sub/` - サブドメイン用ページ（lp, admin）- middleware によるサブドメインルーティング想定
+- `app/sub/` - サブドメイン用ページ（lp, admin）- proxy.ts によるサブドメインルーティング想定
 - `app/api/` - APIルート（お問い合わせフォーム）
 
 ### ファイル命名規則

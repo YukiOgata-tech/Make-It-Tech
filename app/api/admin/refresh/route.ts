@@ -21,6 +21,8 @@ export async function POST(request: Request) {
   if (id) {
     revalidateTag(`admin-intake-detail:${id}`, { expire: 0 });
   }
+  revalidateTag("admin-announcements", { expire: 0 });
+  revalidateTag("public-announcements", { expire: 0 });
 
   return Response.json({ ok: true });
 }

@@ -33,7 +33,7 @@
 
 ## Commit & Pull Request Guidelines
 
-- Git 履歴は短い小文字メッセージ（例: "first commit"）が中心です。短く、命令形で、単一変更に絞ったコミットにしてください。
+- Git 履歴は短い小文字メッセージ（例: "first commit"）が中心です。命令形で、単一変更に絞ったコミットにしてください。
 - PR には概要、テスト結果（`npm run lint` / `npm run build`）、UI 変更時のスクリーンショットを含め、関連 Issue があればリンクしてください。
 
 ## Security & Configuration Tips

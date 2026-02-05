@@ -66,19 +66,19 @@ export default async function AdminConsoleIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl gap-2 border-dashed py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+        <Card className="rounded-2xl gap-2 py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
           <CardHeader>
-            <CardTitle className="text-base">管理メモ・テンプレート</CardTitle>
+            <CardTitle className="text-base">お知らせ 投稿管理</CardTitle>
             <p className="text-xs text-muted-foreground">
-              近日追加予定の管理機能です。
+              企業のお知らせ・メディア・実績を投稿します。
             </p>
           </CardHeader>
           <CardContent className="flex flex-wrap items-center justify-between gap-2">
-            <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-              近日追加
-            </Badge>
-            <Button type="button" variant="outline" className="rounded-xl" disabled>
-              準備中
+            <span className="text-xs text-muted-foreground">
+              公開ページに反映
+            </span>
+            <Button asChild className="rounded-xl">
+              <Link href="/sub/admin-console/news">開く</Link>
             </Button>
           </CardContent>
         </Card>

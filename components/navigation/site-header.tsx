@@ -39,6 +39,7 @@ const primaryNav: NavItem[] = [
 ];
 
 const secondaryNav: NavItem[] = [
+  { label: "お知らせ", href: "/news" },
   { label: "お問い合わせ", href: "/contact" },
   { label: "LINEで相談", href: "/survey" },
   { label: "業務診断", href: "/#diagnosis" },

@@ -1,0 +1,192 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { fetchAnnouncementBySlug } from "@/lib/announcements-data";
+import { categoryLabelMap } from "@/lib/announcements";
+import { site } from "@/lib/site";
+import { ShareButton } from "@/components/news/share-button";
+
+type PageProps = {
+  params?: Promise<{ slug: string }>;
+};
+
+function formatDate(date?: Date) {
+  if (!date) return "";
+  return date.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Tokyo",
+  });
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug ?? "";
+  const record = await fetchAnnouncementBySlug(slug);
+  if (!record) {
+    return {
+      title: "お知らせ",
+      description: "お知らせの詳細ページです。",
+    };
+  }
+
+  const description = record.summary || "お知らせの詳細ページです。";
+  const ogImage = record.coverImage?.url
+    ? record.coverImage.url.startsWith("http")
+      ? record.coverImage.url
+      : `${site.url}${record.coverImage.url}`
+    : `${site.url}${site.ogImage}`;
+
+  return {
+    title: record.title,
+    description,
+    alternates: {
+      canonical: `${site.url}/news/${record.slug}`,
+    },
+    openGraph: {
+      title: record.title,
+      description,
+      url: `${site.url}/news/${record.slug}`,
+      type: "article",
+      images: [
+        {
+          url: ogImage,
+          alt: record.coverImage?.alt ?? record.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: record.title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
+
+export default async function NewsDetailPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug ?? "";
+  const record = await fetchAnnouncementBySlug(slug);
+  if (!record) return notFound();
+
+  const linkMap = new Map(
+    (record.links ?? []).map((link) => [link.url, link])
+  );
+
+  const LinkCard = ({ url }: { url: string }) => {
+    const data = linkMap.get(url);
+    if (!data) {
+      return (
+        <a href={url} className="text-primary underline underline-offset-2" target="_blank" rel="noreferrer">
+          {url}
+        </a>
+      );
+    }
+    const host = (() => {
+      try {
+        return new URL(url).hostname.replace("www.", "");
+      } catch {
+        return url;
+      }
+    })();
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        className="group not-prose flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/70 p-4 transition hover:border-primary/40 sm:flex-row"
+      >
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-foreground">{data.title || host}</p>
+          {data.description ? (
+            <p className="mt-1 text-xs text-muted-foreground line-clamp-3">{data.description}</p>
+          ) : null}
+          <p className="mt-2 text-[11px] text-muted-foreground">{host}</p>
+        </div>
+        {data.image ? (
+          <div className="h-24 w-full overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:h-24 sm:w-32">
+            <img src={data.image} alt={data.title || host} className="h-full w-full object-cover" />
+          </div>
+        ) : null}
+      </a>
+    );
+  };
+
+  return (
+    <div className="py-10 sm:py-16">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <Badge variant="secondary" className="rounded-xl">
+            {categoryLabelMap[record.category] ?? "お知らせ"}
+          </Badge>
+          <span>{formatDate(record.publishedAt)}</span>
+        </div>
+
+        <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-4xl">
+          {record.title}
+        </h1>
+
+        {record.summary ? (
+          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+            {record.summary}
+          </p>
+        ) : null}
+
+        <div className="mt-3">
+          <ShareButton url={`${site.url}/news/${record.slug}`} />
+        </div>
+
+        {record.coverImage?.url ? (
+          <div className="mt-6 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30">
+            <img
+              src={record.coverImage.url}
+              alt={record.coverImage.alt ?? record.title}
+              className="h-auto w-full object-cover"
+            />
+          </div>
+        ) : null}
+
+        <Separator className="my-8 sm:my-10" />
+
+        <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p({ children }) {
+                if (Array.isArray(children) && children.length === 1) {
+                  const child = children[0];
+                  if (React.isValidElement(child) && child.type === "a") {
+                    const element = child as React.ReactElement<{
+                      href?: string;
+                      children?: React.ReactNode;
+                    }>;
+                    const href = typeof element.props.href === "string" ? element.props.href : "";
+                    const text =
+                      typeof element.props.children === "string"
+                        ? element.props.children
+                        : "";
+                    if (
+                      href &&
+                      (text === href || text === href.replace(/^https?:\/\//, ""))
+                    ) {
+                      return <LinkCard url={href} />;
+                    }
+                  }
+                }
+                return <p>{children}</p>;
+              },
+            }}
+          >
+            {record.content || "本文は準備中です。"}
+          </ReactMarkdown>
+        </div>
+      </div>
+    </div>
+  );
+}
