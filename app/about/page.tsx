@@ -65,11 +65,11 @@ export default function AboutPage() {
               </div>
             </div>
             <Separator className="my-2 sm:my-3" />
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <div className="text-sm leading-relaxed text-muted-foreground">
               山形県 南陽市出身
               <p>新潟大学 工学部 情報電子分野 在学中</p>
               <p>ENTP / 憧れの先輩</p>
-            </p>
+            </div>
           </div>
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6">
             <p className="text-sm font-medium leading-snug"></p>
