@@ -102,6 +102,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"info" | "success" | "error">("info");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [uploading, setUploading] = useState(false);
   const [linkLoading, setLinkLoading] = useState(false);
@@ -143,6 +144,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const handleUploadImage = async (file: File, purpose: "cover" | "inline") => {
     setUploading(true);
     setMessage("");
+    setMessageTone("info");
     try {
       const compressedFile = await compressImage(file, purpose);
       const formData = new FormData();
@@ -156,8 +158,19 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
         body: formData,
       });
       if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        throw new Error(payload?.error ?? "画像のアップロードに失敗しました。");
+        const rawText = await response.text().catch(() => "");
+        let payload: { error?: string; details?: string } | null = null;
+        try {
+          payload = rawText ? JSON.parse(rawText) : null;
+        } catch {
+          payload = null;
+        }
+        const reason =
+          payload?.error ||
+          payload?.details ||
+          rawText ||
+          `画像のアップロードに失敗しました。(status ${response.status})`;
+        throw new Error(reason);
       }
       const payload = await response.json();
       const url = String(payload?.url ?? "");
@@ -186,6 +199,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
         element.focus();
       });
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "画像のアップロードに失敗しました。");
     } finally {
       setUploading(false);
@@ -202,6 +216,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
 
     setLinkLoading(true);
     setMessage("");
+    setMessageTone("info");
     try {
       const response = await fetch("/api/admin/announcements/link-preview", {
         method: "POST",
@@ -222,6 +237,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
       setLinkItems((prev) => [...prev, link]);
       setLinkInput("");
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "リンク情報の取得に失敗しました。");
     } finally {
       setLinkLoading(false);
@@ -247,6 +263,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const handleSubmit = async () => {
     setSaving(true);
     setMessage("");
+    setMessageTone("info");
 
     try {
       const normalizedSlug = normalizeSlug(slug || title);
@@ -294,11 +311,13 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
       const responsePayload = await response.json().catch(() => ({}));
       const nextId = id ?? responsePayload?.id;
 
+      setMessageTone("success");
       setMessage("保存しました。");
       if (!id && nextId) {
         router.push(`/sub/admin-console/news/${nextId}`);
       }
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "保存に失敗しました。");
     } finally {
       setSaving(false);
@@ -311,6 +330,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
     if (!confirmed) return;
     setSaving(true);
     setMessage("");
+    setMessageTone("info");
     try {
       const response = await fetch(`/api/admin/announcements/${id}`, {
         method: "DELETE",
@@ -321,6 +341,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
       }
       router.push("/sub/admin-console/news");
     } catch (error) {
+      setMessageTone("error");
       setMessage(error instanceof Error ? error.message : "削除に失敗しました。");
     } finally {
       setSaving(false);
@@ -368,7 +389,18 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
         </div>
 
         {message ? (
-          <p className="mt-3 text-xs text-primary">{message}</p>
+          <p
+            className={cn(
+              "mt-3 text-xs",
+              messageTone === "error"
+                ? "text-destructive"
+                : messageTone === "success"
+                ? "text-primary"
+                : "text-muted-foreground"
+            )}
+          >
+            {message}
+          </p>
         ) : null}
 
         <Separator className="my-4" />

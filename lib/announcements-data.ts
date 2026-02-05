@@ -75,12 +75,11 @@ const getLatestAnnouncements = unstable_cache(
   async () => {
     const { firestore } = getFirebaseAdmin();
     const now = new Date();
-    const snapshot = await firestore
-      .collection("announcements")
-      .where("publishedAt", "<=", now)
-      .orderBy("publishedAt", "desc")
-      .limit(3)
-      .get();
+    const baseQuery = firestore.collection("announcements");
+    const query = process.env.NODE_ENV === "production"
+      ? baseQuery.where("publishedAt", "<=", now).orderBy("publishedAt", "desc")
+      : baseQuery.orderBy("publishedAt", "desc");
+    const snapshot = await query.limit(3).get();
 
     return snapshot.docs.map((doc) => normalizeAnnouncementDoc(doc));
   },
@@ -92,12 +91,11 @@ const getAnnouncementList = unstable_cache(
   async () => {
     const { firestore } = getFirebaseAdmin();
     const now = new Date();
-    const snapshot = await firestore
-      .collection("announcements")
-      .where("publishedAt", "<=", now)
-      .orderBy("publishedAt", "desc")
-      .limit(100)
-      .get();
+    const baseQuery = firestore.collection("announcements");
+    const query = process.env.NODE_ENV === "production"
+      ? baseQuery.where("publishedAt", "<=", now).orderBy("publishedAt", "desc")
+      : baseQuery.orderBy("publishedAt", "desc");
+    const snapshot = await query.limit(100).get();
 
     return snapshot.docs.map((doc) => normalizeAnnouncementDoc(doc));
   },
@@ -106,14 +104,33 @@ const getAnnouncementList = unstable_cache(
 );
 
 export async function fetchLatestAnnouncements() {
+  if (process.env.NODE_ENV !== "production") {
+    const { firestore } = getFirebaseAdmin();
+    const snapshot = await firestore
+      .collection("announcements")
+      .orderBy("publishedAt", "desc")
+      .limit(3)
+      .get();
+    return snapshot.docs.map((doc) => normalizeAnnouncementDoc(doc));
+  }
   return getLatestAnnouncements();
 }
 
 export async function fetchAnnouncementList() {
+  if (process.env.NODE_ENV !== "production") {
+    const { firestore } = getFirebaseAdmin();
+    const snapshot = await firestore
+      .collection("announcements")
+      .orderBy("publishedAt", "desc")
+      .limit(100)
+      .get();
+    return snapshot.docs.map((doc) => normalizeAnnouncementDoc(doc));
+  }
   return getAnnouncementList();
 }
 
 export async function fetchAnnouncementBySlug(slug: string) {
+  if (!slug) return null;
   const getCached = unstable_cache(
     async () => {
       const { firestore } = getFirebaseAdmin();
@@ -131,9 +148,23 @@ export async function fetchAnnouncementBySlug(slug: string) {
     { revalidate: false, tags: ["public-announcements", `public-announcement:${slug}`] }
   );
 
-  const record = await getCached();
+  const record = process.env.NODE_ENV !== "production"
+    ? await (async () => {
+        const { firestore } = getFirebaseAdmin();
+        const snapshot = await firestore
+          .collection("announcements")
+          .where("slug", "==", slug)
+          .limit(1)
+          .get();
+        const doc = snapshot.docs[0];
+        if (!doc) return null;
+        return normalizeAnnouncementDoc(doc);
+      })()
+    : await getCached();
   if (!record) return null;
-  if (!record.publishedAt) return null;
-  if (record.publishedAt.getTime() > Date.now()) return null;
+  if (process.env.NODE_ENV === "production") {
+    if (!record.publishedAt) return null;
+    if (record.publishedAt.getTime() > Date.now()) return null;
+  }
   return record;
 }
