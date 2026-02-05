@@ -36,10 +36,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const description = record.summary || "お知らせの詳細ページです。";
-  const ogImage = record.coverImage?.url
-    ? record.coverImage.url.startsWith("http")
-      ? record.coverImage.url
-      : `${site.url}${record.coverImage.url}`
+  const rawCoverUrl = record.coverImage?.url;
+  const ogImage = rawCoverUrl
+    ? rawCoverUrl.startsWith("http")
+      ? rawCoverUrl
+      : `${site.url}${rawCoverUrl.startsWith("/") ? "" : "/"}${rawCoverUrl}`
     : `${site.url}${site.ogImage}`;
 
   return {
@@ -139,7 +140,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         ) : null}
 
         <div className="mt-3">
-          <ShareButton url={`${site.url}/news/${record.slug}`} />
+          <ShareButton url={`${site.url}/news/${record.slug}`} title={record.title} />
         </div>
 
         {record.coverImage?.url ? (
@@ -154,7 +155,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
         <Separator className="my-8 sm:my-10" />
 
-        <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl">
+        <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl">
           <ReactMarkdown
             remarkPlugins={remarkPlugins}
             rehypePlugins={rehypePlugins}

@@ -63,7 +63,14 @@ export function normalizeAnnouncementDoc(
   doc: FirebaseFirestore.DocumentSnapshot
 ): AnnouncementRecord {
   const data = doc.data() ?? {};
-  const coverImage = (data.coverImage ?? {}) as AnnouncementCover;
+  const coverImageRaw = data.coverImage ?? data.coverImageUrl;
+  const coverImage =
+    typeof coverImageRaw === "string"
+      ? { url: coverImageRaw }
+      : (coverImageRaw ?? {}) as AnnouncementCover;
+  const coverImageUrl = typeof coverImage.url === "string" ? coverImage.url : "";
+  const coverImageAlt = typeof coverImage.alt === "string" ? coverImage.alt : undefined;
+  const coverImagePath = typeof coverImage.path === "string" ? coverImage.path : undefined;
   const linksRaw = Array.isArray(data.links) ? data.links : [];
   const links = linksRaw
     .map((item) => ({
@@ -82,7 +89,13 @@ export function normalizeAnnouncementDoc(
     content: typeof data.content === "string" ? data.content : undefined,
     category: (data.category ?? "news") as AnnouncementCategory,
     status: (data.status ?? "draft") as AnnouncementStatus,
-    coverImage: coverImage?.url ? coverImage : undefined,
+    coverImage: coverImageUrl
+      ? {
+          url: coverImageUrl,
+          alt: coverImageAlt,
+          path: coverImagePath,
+        }
+      : undefined,
     links: links.length > 0 ? links : undefined,
     publishedAt: toDate(data.publishedAt),
     createdAt: toDate(data.createdAt),
