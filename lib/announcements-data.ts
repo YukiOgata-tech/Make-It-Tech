@@ -37,6 +37,19 @@ function toDate(value: unknown) {
   if (value instanceof Date) {
     return value;
   }
+  if (value && typeof value === "object") {
+    const maybeSeconds = (value as { seconds?: unknown; _seconds?: unknown }).seconds;
+    const maybeAltSeconds = (value as { _seconds?: unknown })._seconds;
+    const seconds =
+      typeof maybeSeconds === "number"
+        ? maybeSeconds
+        : typeof maybeAltSeconds === "number"
+          ? maybeAltSeconds
+          : null;
+    if (seconds !== null) {
+      return new Date(seconds * 1000);
+    }
+  }
   if (typeof value === "string" || typeof value === "number") {
     const parsed = new Date(value);
     if (!Number.isNaN(parsed.getTime())) {
