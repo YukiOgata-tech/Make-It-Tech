@@ -6,15 +6,16 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
+import type { PluggableList } from "unified";
 
-export const remarkPlugins = [
+export const remarkPlugins: PluggableList = [
   remarkGfm,
   remarkBreaks,
   remarkEmoji,
   remarkSmartypants,
 ];
 
-export const rehypePlugins = [
+export const rehypePlugins: PluggableList = [
   rehypeSlug,
   [
     rehypeAutolinkHeadings,
