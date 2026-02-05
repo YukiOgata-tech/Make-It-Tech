@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 type PageProps = {
-  searchParams?: Promise<{ category?: string }> | { category?: string };
+  searchParams?: Promise<{ category?: string }>;
 };
 
 function formatDate(date?: Date) {
@@ -26,7 +26,7 @@ function formatDate(date?: Date) {
 }
 
 export default async function NewsPage({ searchParams }: PageProps) {
-  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const resolvedSearchParams = await searchParams;
   const activeCategory =
     typeof resolvedSearchParams?.category === "string" ? resolvedSearchParams.category : "all";
   const announcements = await fetchAnnouncementList();
