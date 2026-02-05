@@ -33,5 +33,5 @@ export const rehypePlugins: PluggableList = [
       target: "_blank",
     },
   ],
-  rehypeHighlight,
+  [rehypeHighlight, { ignoreMissing: true }],
 ];

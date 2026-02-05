@@ -117,7 +117,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
       useWebWorker: true,
     };
     try {
-      const compressed = await imageCompression(file, options);
+      const compressed = (await imageCompression(file, options)) as File | Blob;
       if (compressed instanceof File) {
         return compressed;
       }
