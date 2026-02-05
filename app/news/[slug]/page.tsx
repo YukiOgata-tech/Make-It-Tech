@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { fetchAnnouncementBySlug } from "@/lib/announcements-data";
 import { categoryLabelMap } from "@/lib/announcements";
 import { site } from "@/lib/site";
+import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { ShareButton } from "@/components/news/share-button";
 
 type PageProps = {
@@ -156,7 +156,8 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
         <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl">
           <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={remarkPlugins}
+            rehypePlugins={rehypePlugins}
             components={{
               p({ children }) {
                 if (Array.isArray(children) && children.length === 1) {

@@ -423,3 +423,64 @@ body[data-has-breadcrumbs="true"] {
     animation: none !important;
   }
 }
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: hsl(var(--muted-foreground));
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type {
+  color: hsl(var(--primary));
+}
+
+.hljs-literal,
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: hsl(var(--secondary-foreground));
+}
+
+.hljs-string,
+.hljs-doctag,
+.hljs-addition {
+  color: hsl(var(--accent-foreground));
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-attribute,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: hsl(var(--chart-2));
+}
+
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable {
+  color: hsl(var(--chart-3));
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+}
+
+.prose pre code.hljs {
+  background: transparent;
+  padding: 0;
+}

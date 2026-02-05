@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 
 const SAMPLE_MARKDOWN = `# Markdownプレビュー
 
@@ -192,7 +192,7 @@ export function MarkdownPreview() {
               prose-img:rounded-lg
               prose-li:marker:text-neutral-500
             ">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
                 {markdown || "*プレビューするコンテンツがありません*"}
               </ReactMarkdown>
             </div>

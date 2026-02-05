@@ -3,13 +3,13 @@
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import {
   announcementCategories,
   announcementStatuses,
@@ -244,13 +244,13 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
               path: coverImagePath || null,
             }
           : null,
-        links: linkItems.map((item) => ({
-          url: item.url,
-          title: item.title ?? "",
-          description: item.description ?? "",
-          image: item.image ?? "",
-        })),
-      };
+          links: linkItems.map((item) => ({
+            url: item.url,
+            title: item.title ?? "",
+            description: item.description ?? "",
+            image: item.image ? item.image : undefined,
+          })),
+        };
 
       const response = await fetch(
         id ? `/api/admin/announcements/${id}` : "/api/admin/announcements",
@@ -597,7 +597,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
               {(viewMode === "preview" || viewMode === "split") && (
                 <div className="rounded-2xl border border-border/60 bg-background/70 p-3 text-sm text-muted-foreground">
                   <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
                       {previewContent}
                     </ReactMarkdown>
                   </div>

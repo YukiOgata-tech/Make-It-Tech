@@ -30,7 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ArrowRight, Check, ChevronDown, Copy, Mail } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Copy } from "lucide-react";
 
 const DRAFT_STORAGE_KEY = "mit_contact_draft";
 const DRAFT_PREF_KEY = "mit_contact_draft_pref";

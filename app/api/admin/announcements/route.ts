@@ -28,7 +28,7 @@ const schema = z.object({
         url: z.string().url(),
         title: z.string().max(200).optional(),
         description: z.string().max(600).optional(),
-        image: z.string().url().optional(),
+        image: z.union([z.string().url(), z.literal("")]).optional(),
       })
     )
     .optional(),
