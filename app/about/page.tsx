@@ -51,35 +51,33 @@ export default function AboutPage() {
       </Section>
 
       <Section
-        eyebrow="代表プロフィール"
-        title="尾形友輝"
-        description="現場理解と実装力の両方を重視し、最短で成果につながる支援を行います。"
+        title="-代表者 プロフィール"
       >
         <div className="grid gap-2 sm:gap-3 md:grid-cols-[1fr_2fr] md:gap-4">
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold sm:h-14 sm:w-14">
-                OT
+                OY
               </div>
               <div>
-                <p className="text-sm font-medium">代表取締役</p>
+                <p className="text-sm font-medium">代表</p>
                 <p className="text-lg font-semibold">尾形友輝</p>
               </div>
             </div>
-            <Separator className="my-3 sm:my-4" />
+            <Separator className="my-2 sm:my-3" />
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Web制作・業務改善・自動化の実務支援を中心に、現場が回る運用設計を重視。
-              必要最小限の構成から始め、成果が見えた段階で拡張するスタイルです。
+              山形県 南陽市出身
+              <p>新潟大学 工学部 情報電子分野 在学中</p>
+              <p>ENTP / 憧れの先輩</p>
             </p>
           </div>
-
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4 sm:rounded-3xl sm:p-5 md:p-6">
-            <p className="text-sm font-medium leading-snug">支援スタンス</p>
+            <p className="text-sm font-medium leading-snug"></p>
             <div className="mt-3 grid gap-2 text-xs leading-snug text-muted-foreground sm:gap-3 sm:text-sm sm:leading-relaxed">
-              <p>・作る前に整理し、必要なら実装へ。</p>
-              <p>・既存ツールで解決できるなら、開発しません。</p>
-              <p>・現場で運用できる形を最優先します。</p>
-              <p>・成果が出た分だけ、次に投資できる設計へ。</p>
+              <p>8歳よりバスケットボールに取り組み、インターハイ(2021)および国民体育大会(2019)に出場。</p>
+              <p>大学を1年間休学し、カナダにてワーキングホリデーを経験(2024-25)。</p>
+              <p>どんなことも自分で見たいし、自分で経験したい。そんなマインドで生きています。</p>
+              <p>現在は学業を続けながら、事業主として実務案件に携わっています。</p>
             </div>
           </div>
         </div>
