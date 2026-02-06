@@ -43,6 +43,7 @@ import {
   type BlogCategory,
   type BlogStatus,
 } from "@/lib/blog";
+import { BlogImageDialog } from "@/components/admin/blog-image-dialog";
 
 const MDXEditor = dynamic(() => import("@mdxeditor/editor").then((mod) => mod.MDXEditor), {
   ssr: false,
@@ -223,7 +224,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
       listsPlugin(),
       quotePlugin(),
       linkPlugin(),
-      imagePlugin({ imageUploadHandler }),
+      imagePlugin({ imageUploadHandler, ImageDialog: BlogImageDialog }),
       tablePlugin(),
       thematicBreakPlugin(),
       codeBlockPlugin({ defaultCodeBlockLanguage: "txt" }),
@@ -587,6 +588,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
             <ul className="grid gap-1">
               <li>・公開ページでは自動で見出しアンカーやコード装飾が付きます。</li>
               <li>・URLは自動リンク化され、共有用のOGP画像に反映されます。</li>
+              <li>・本文画像は挿入時にサイズ/配置を選べます。</li>
               <li>・下書きは公開ページに表示されません。</li>
             </ul>
           </div>

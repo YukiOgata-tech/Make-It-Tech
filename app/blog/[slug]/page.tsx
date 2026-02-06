@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ShareButton } from "@/components/news/share-button";
+import { MarkdownImage } from "@/components/content/markdown-image";
 import { blogCategoryLabelMap } from "@/lib/blog";
 import { fetchBlogBySlug } from "@/lib/blog-data";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
@@ -178,8 +179,23 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
         <Separator className="my-8 sm:my-10" />
 
-        <div className="prose prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl sm:prose-lg">
-          <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
+        <div className="article-prose prose prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl sm:prose-lg">
+          <ReactMarkdown
+            remarkPlugins={remarkPlugins}
+            rehypePlugins={rehypePlugins}
+            components={{
+              img: MarkdownImage,
+              p({ children }) {
+                if (Array.isArray(children) && children.length === 1) {
+                  const child = children[0];
+                  if (React.isValidElement(child) && child.type === MarkdownImage) {
+                    return <>{child}</>;
+                  }
+                }
+                return <p>{children}</p>;
+              },
+            }}
+          >
             {record.content || "本文は準備中です。"}
           </ReactMarkdown>
         </div>

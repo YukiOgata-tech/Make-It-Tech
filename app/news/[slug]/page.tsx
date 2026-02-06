@@ -9,6 +9,7 @@ import { categoryLabelMap } from "@/lib/announcements";
 import { site } from "@/lib/site";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { ShareButton } from "@/components/news/share-button";
+import { MarkdownImage } from "@/components/content/markdown-image";
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -179,7 +180,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
         <Separator className="my-8 sm:my-10" />
 
-        <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl">
+        <div className="article-prose prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl">
           <ReactMarkdown
             remarkPlugins={remarkPlugins}
             rehypePlugins={rehypePlugins}
@@ -187,26 +188,32 @@ export default async function NewsDetailPage({ params }: PageProps) {
               p({ children }) {
                 if (Array.isArray(children) && children.length === 1) {
                   const child = children[0];
-                  if (React.isValidElement(child) && child.type === "a") {
-                    const element = child as React.ReactElement<{
-                      href?: string;
-                      children?: React.ReactNode;
-                    }>;
-                    const href = typeof element.props.href === "string" ? element.props.href : "";
-                    const text =
-                      typeof element.props.children === "string"
-                        ? element.props.children
-                        : "";
-                    if (
-                      href &&
-                      (text === href || text === href.replace(/^https?:\/\//, ""))
-                    ) {
-                      return <LinkCard url={href} />;
+                  if (React.isValidElement(child)) {
+                    if (child.type === MarkdownImage) {
+                      return <>{child}</>;
+                    }
+                    if (child.type === "a") {
+                      const element = child as React.ReactElement<{
+                        href?: string;
+                        children?: React.ReactNode;
+                      }>;
+                      const href = typeof element.props.href === "string" ? element.props.href : "";
+                      const text =
+                        typeof element.props.children === "string"
+                          ? element.props.children
+                          : "";
+                      if (
+                        href &&
+                        (text === href || text === href.replace(/^https?:\/\//, ""))
+                      ) {
+                        return <LinkCard url={href} />;
+                      }
                     }
                   }
                 }
                 return <p>{children}</p>;
               },
+              img: MarkdownImage,
             }}
           >
             {record.content || "本文は準備中です。"}
