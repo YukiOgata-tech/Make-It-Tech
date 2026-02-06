@@ -48,7 +48,31 @@ const mockAnnouncements: AnnouncementRecord[] = [
   },
 ];
 
-function formatDate(date?: Date) {
+function toDateValue(value: unknown) {
+  if (!value) return undefined;
+  if (value instanceof Date) return value;
+  if (typeof value === "string" || typeof value === "number") {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+  if (value && typeof value === "object") {
+    const maybeSeconds = (value as { seconds?: unknown; _seconds?: unknown }).seconds;
+    const maybeAltSeconds = (value as { _seconds?: unknown })._seconds;
+    const seconds =
+      typeof maybeSeconds === "number"
+        ? maybeSeconds
+        : typeof maybeAltSeconds === "number"
+          ? maybeAltSeconds
+          : null;
+    if (seconds !== null) {
+      return new Date(seconds * 1000);
+    }
+  }
+  return undefined;
+}
+
+function formatDate(value?: unknown) {
+  const date = toDateValue(value);
   if (!date) return "";
   return date.toLocaleDateString("ja-JP", {
     year: "numeric",

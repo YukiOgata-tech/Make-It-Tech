@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   ArrowRight,
   BadgeCheck,
+  CheckCircle2,
   Handshake,
   MapPin,
   Sparkles,
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
   description:
     "新潟県内の事業者向けに、代表が相談から提供まで一貫対応。対面相談･無料診断や、公的DX/IT補助金の最新情報共有に対応します。",
   keywords: [
-    "新潟", "安い", "低コスト", "フリーランス", "信頼", "無料", "WEB制作", "LP制作", "激安",
+    "新潟", "新潟市", "長岡市", "上越市", "三条市", "柏崎市", "新発田市", "燕市",
+    "安い", "低コスト", "フリーランス", "信頼", "無料", "WEB制作", "LP制作", "激安",
     "DX支援", "IT支援", "業務改善", "niigata", "新潟県", "地域創生", "ベンチャー支援",
     "補助金", "対面相談", "無料診断", "IT導入補助金", "ホームページ制作", "SES", "システム開発",
   ],
@@ -162,6 +164,103 @@ export default function NiigataPage() {
           </div>
         </div>
       </div>
+
+      {/* Niigata Focus Services */}
+      <section className="py-6 sm:py-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="rounded-3xl border border-primary/10 bg-secondary/20 p-6 sm:p-8">
+              <h3 className="flex items-center gap-2 text-xl font-semibold">
+                <span className="text-primary">新潟のWeb制作・LP制作</span>
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground">
+                新潟市・長岡市を中心に、県内事業者様のホームページ制作、ランディングページ(LP)制作を承ります。
+                「ただ作るだけ」ではなく、お問い合わせや採用につながる成果重視の設計を行います。
+              </p>
+              <ul className="mt-4 grid gap-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>新潟の地域性に合わせたデザイン・コンテンツ提案</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>採用サイト・集客用LP・コーポレートサイト対応</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>保守・更新も低コストでサポート</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-3xl border border-primary/10 bg-secondary/20 p-6 sm:p-8">
+              <h3 className="flex items-center gap-2 text-xl font-semibold">
+                <span className="text-primary">新潟のDX支援・業務改善</span>
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground">
+                「デジタル化したいが何から始めればいいかわからない」という新潟の企業様へ。
+                現場訪問による業務整理から、身近なツール(LINE, Google)を使った低コストな改善を提案します。
+              </p>
+              <ul className="mt-4 grid gap-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>現場訪問・対面ヒアリングによる課題の可視化</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>kintone / LINE公式 / Google Workspace 導入支援</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                  <span>新潟県のDX補助金・IT導入補助金の活用サポート</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Area Served */}
+      <section className="py-6 sm:py-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-border/60 bg-background/50 p-6 sm:p-8">
+            <div className="flex items-start gap-3">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">対応エリア</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  新潟県内全域に対応しています。訪問・対面でのお打ち合わせも可能です（地域によりオンライン併用）。
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm text-muted-foreground">
+              <div>
+                <span className="block font-medium text-foreground mb-1">下越エリア</span>
+                新潟市（中央区, 西区, 東区, 北区, 江南区, 秋葉区, 南区, 西蒲区）、
+                新発田市、村上市、燕市、五泉市、阿賀野市、胎内市、聖籠町、阿賀町、関川村、粟島浦村、弥彦村
+              </div>
+              <div>
+                <span className="block font-medium text-foreground mb-1">中越エリア</span>
+                長岡市、三条市、柏崎市、小千谷市、加茂市、十日町市、見附市、魚沼市、南魚沼市、田上町、出雲崎町、湯沢町、津南町、刈羽村
+              </div>
+              <div>
+                <span className="block font-medium text-foreground mb-1">上越エリア</span>
+                上越市、糸魚川市、妙高市
+              </div>
+              <div>
+                <span className="block font-medium text-foreground mb-1">佐渡エリア</span>
+                佐渡市
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              ※ 県外（山形県、福島県、群馬県、富山県など）のお客様も、オンライン中心で対応可能です。お気軽にご相談ください。
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Separator className="my-6 sm:my-10" />

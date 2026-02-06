@@ -11,7 +11,7 @@ import {
 export const serviceAreas = [
   {
     title: "Web制作･導線設計",
-    desc: "LP/店舗サイト/採用ページなど、目的から逆算して構成を作ります。",
+    desc: "新潟の店舗サイト/採用ページなど、目的から逆算して構成を作ります。",
     icon: Globe,
     items: ["構成とデザイン考案･実装", "CTA設計･改善", "管理･運用しやすい設計"],
   },

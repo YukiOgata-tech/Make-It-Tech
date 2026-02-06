@@ -7,26 +7,27 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AdminRefreshButton } from "@/components/admin/admin-refresh-button";
 import {
-  announcementCategories,
-  announcementStatuses,
-  categoryLabelMap,
-} from "@/lib/announcements";
+  blogCategories,
+  blogStatuses,
+  blogCategoryLabelMap,
+} from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "お知らせ 管理",
+  title: "ブログ 管理",
   robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-type AnnouncementRecord = {
+type BlogRecord = {
   id: string;
   title?: string;
   slug?: string;
   category?: string;
   status?: string;
   summary?: string;
+  tags?: string[];
   publishedAt?: unknown;
   createdAt?: unknown;
 };
@@ -61,11 +62,11 @@ function toDateString(value: unknown) {
   return "";
 }
 
-const getCachedAnnouncements = unstable_cache(
+const getCachedBlogPosts = unstable_cache(
   async () => {
     const { firestore } = getFirebaseAdmin();
     const snapshot = await firestore
-      .collection("announcements")
+      .collection("blogPosts")
       .orderBy("createdAt", "desc")
       .limit(200)
       .get();
@@ -73,17 +74,17 @@ const getCachedAnnouncements = unstable_cache(
     return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as AnnouncementRecord[];
+    })) as BlogRecord[];
   },
-  ["admin-announcements"],
-  { revalidate: false, tags: ["admin-announcements"] }
+  ["admin-blog"],
+  { revalidate: false, tags: ["admin-blog"] }
 );
 
 function normalizeText(value: unknown) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
-export default async function AdminAnnouncementsPage({
+export default async function AdminBlogPage({
   searchParams,
 }: {
   searchParams?: Promise<{ q?: string; category?: string; status?: string }>;
@@ -92,9 +93,7 @@ export default async function AdminAnnouncementsPage({
 
   const resolvedSearchParams = await searchParams;
   const keywordQuery =
-    typeof resolvedSearchParams?.q === "string"
-      ? resolvedSearchParams.q.trim()
-      : "";
+    typeof resolvedSearchParams?.q === "string" ? resolvedSearchParams.q.trim() : "";
   const categoryQuery =
     typeof resolvedSearchParams?.category === "string"
       ? resolvedSearchParams.category.trim()
@@ -109,11 +108,11 @@ export default async function AdminAnnouncementsPage({
   const statusFilter = normalizeText(statusQuery);
   const hasFilter = Boolean(keyword || categoryFilter || statusFilter);
 
-  let records: AnnouncementRecord[] = [];
+  let records: BlogRecord[] = [];
   let errorMessage = "";
 
   try {
-    records = await getCachedAnnouncements();
+    records = await getCachedBlogPosts();
   } catch (error) {
     errorMessage = error instanceof Error ? error.message : "データ取得に失敗しました。";
   }
@@ -148,14 +147,14 @@ export default async function AdminAnnouncementsPage({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            お知らせ 管理
+            ブログ 管理
           </h1>
           <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
             最新200件まで表示しています。
           </p>
         </div>
         <Button asChild className="rounded-xl">
-          <Link href="/sub/admin-console/news/new">新規作成</Link>
+          <Link href="/sub/admin-console/blog/new">新規作成</Link>
         </Button>
       </div>
 
@@ -164,7 +163,7 @@ export default async function AdminAnnouncementsPage({
           対象: {filteredRecords.length}件 / 取得: {records.length}件
         </span>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href="/news" className="underline">
+          <Link href="/blog" className="underline">
             公開ページを見る
           </Link>
           <AdminRefreshButton />
@@ -172,7 +171,7 @@ export default async function AdminAnnouncementsPage({
       </div>
 
       <form
-        action="/sub/admin-console/news"
+        action="/sub/admin-console/blog"
         method="get"
         className="mt-4 grid gap-3 sm:flex sm:flex-wrap sm:items-end"
       >
@@ -200,7 +199,7 @@ export default async function AdminAnnouncementsPage({
             className="h-10 w-full rounded-xl border border-border/70 bg-background px-3 text-sm sm:h-11 sm:w-40"
           >
             <option value="">すべて</option>
-            {announcementCategories.map((c) => (
+            {blogCategories.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
               </option>
@@ -218,7 +217,7 @@ export default async function AdminAnnouncementsPage({
             className="h-10 w-full rounded-xl border border-border/70 bg-background px-3 text-sm sm:h-11 sm:w-32"
           >
             <option value="">すべて</option>
-            {announcementStatuses.map((s) => (
+            {blogStatuses.map((s) => (
               <option key={s.value} value={s.value}>
                 {s.label}
               </option>
@@ -233,7 +232,7 @@ export default async function AdminAnnouncementsPage({
         </button>
         {hasFilter ? (
           <Link
-            href="/sub/admin-console/news"
+            href="/sub/admin-console/blog"
             className="text-xs text-muted-foreground underline"
           >
             クリア
@@ -248,13 +247,13 @@ export default async function AdminAnnouncementsPage({
       <div className="mt-5 grid gap-3 sm:mt-6 sm:gap-4">
         {!errorMessage && filteredRecords.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-background/50 p-4 text-sm text-muted-foreground sm:p-6">
-            {hasFilter ? "該当するお知らせがありません。" : "お知らせがありません。"}
+            {hasFilter ? "該当するブログがありません。" : "ブログがありません。"}
           </div>
         ) : null}
         {filteredRecords.map((record) => (
           <Link
             key={record.id}
-            href={`/sub/admin-console/news/${record.id}`}
+            href={`/sub/admin-console/blog/${record.id}`}
             className="rounded-2xl border border-border/60 bg-background/70 p-3 transition hover:border-primary/40 sm:p-4"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -265,9 +264,16 @@ export default async function AdminAnnouncementsPage({
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="rounded-xl">
-                  {categoryLabelMap[(record.category ?? "news") as keyof typeof categoryLabelMap] ?? "お知らせ"}
-                </Badge>
+                {record.category ? (
+                  <Badge variant="secondary" className="rounded-xl">
+                    {blogCategoryLabelMap[(record.category ?? "other") as keyof typeof blogCategoryLabelMap] ??
+                      "未設定"}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="rounded-xl text-muted-foreground">
+                    未設定
+                  </Badge>
+                )}
                 <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
                   {record.status === "published" ? "公開" : "下書き"}
                 </Badge>
@@ -275,7 +281,7 @@ export default async function AdminAnnouncementsPage({
             </div>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>公開日: {toDateString(record.publishedAt) || "未公開"}</span>
-              <span>作成日: {toDateString(record.createdAt)}</span>
+              <span>作成日: {toDateString(record.createdAt) || "-"}</span>
             </div>
           </Link>
         ))}

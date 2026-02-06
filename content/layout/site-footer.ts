@@ -28,6 +28,7 @@ export const footerLinks = [
     title: "ナレッジ",
     links: [
       { label: "お知らせ", href: "/news" },
+      { label: "ブログ", href: "/blog" },
       { label: "用語集", href: "/glossary" },
     ],
   },

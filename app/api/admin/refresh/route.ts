@@ -23,6 +23,8 @@ export async function POST(request: Request) {
   }
   revalidateTag("admin-announcements", { expire: 0 });
   revalidateTag("public-announcements", { expire: 0 });
+  revalidateTag("admin-blog", { expire: 0 });
+  revalidateTag("public-blog", { expire: 0 });
 
   return Response.json({ ok: true });
 }

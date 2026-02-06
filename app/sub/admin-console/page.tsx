@@ -83,6 +83,23 @@ export default async function AdminConsoleIndexPage() {
           </CardContent>
         </Card>
 
+        <Card className="rounded-2xl gap-2 py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">ブログ 投稿管理</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              事業所の課題解決に役立つ記事を作成します。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              SEO/GEO向けコンテンツ
+            </span>
+            <Button asChild className="rounded-xl">
+              <Link href="/sub/admin-console/blog">開く</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className="rounded-2xl gap-2 border-dashed py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
           <CardHeader>
             <CardTitle className="text-base">レポート・分析</CardTitle>

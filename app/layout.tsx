@@ -83,6 +83,10 @@ export default function RootLayout({
     slogan: site.tagline,
     areaServed: [
       { "@type": "AdministrativeArea", name: "新潟県" },
+      { "@type": "City", name: "新潟市" },
+      { "@type": "City", name: "長岡市" },
+      { "@type": "City", name: "上越市" },
+      { "@type": "City", name: "三条市" },
       { "@type": "Country", name: "Japan" },
     ],
     serviceType: [
