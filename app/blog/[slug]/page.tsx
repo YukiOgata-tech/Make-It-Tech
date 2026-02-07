@@ -6,10 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ShareButton } from "@/components/news/share-button";
 import { MarkdownImage } from "@/components/content/markdown-image";
+import { MarkdownLink } from "@/components/content/markdown-link";
+import { MarkdownTable } from "@/components/content/markdown-table";
 import { blogCategoryLabelMap } from "@/lib/blog";
 import { fetchBlogBySlug } from "@/lib/blog-data";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
+import { buildHeadingSequence } from "@/lib/markdown-toc";
 import { site } from "@/lib/site";
+import { cn } from "@/lib/utils";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -131,15 +137,32 @@ export default async function BlogDetailPage({ params }: PageProps) {
     mainEntityOfPage: `${site.url}/blog/${record.slug}`,
   };
 
+  const headingSequence = buildHeadingSequence(record.content ?? "");
+  const tocItems = headingSequence.filter(
+    (heading) => heading.level === 2 || heading.level === 3
+  );
+  let headingIndex = 0;
+  const nextHeadingId = () => {
+    const entry = headingSequence[headingIndex];
+    headingIndex += 1;
+    return entry?.id;
+  };
+
+  const blogRehypePlugins = rehypePlugins.filter((plugin) => {
+    if (plugin === rehypeSlug) return false;
+    if (Array.isArray(plugin) && plugin[0] === rehypeAutolinkHeadings) return false;
+    return true;
+  });
+
   return (
-    <div className="py-10 sm:py-16">
+    <div className="py-8 sm:py-16">
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
           {record.category ? (
             <Badge variant="secondary" className="rounded-xl">
               {blogCategoryLabelMap[record.category] ?? "ブログ"}
@@ -147,18 +170,18 @@ export default async function BlogDetailPage({ params }: PageProps) {
           ) : null}
           <span>{formatDate(record.publishedAt)}</span>
           {record.tags?.length ? (
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground sm:text-[11px]">
               {record.tags.map((tag) => `#${tag}`).join(" ")}
             </span>
           ) : null}
         </div>
 
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="mt-3 text-[1.4rem] font-semibold leading-snug tracking-tight sm:text-4xl">
           {record.title}
         </h1>
 
         {record.summary ? (
-          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+          <p className="mt-2 text-xs text-muted-foreground sm:text-base">
             {record.summary}
           </p>
         ) : null}
@@ -168,7 +191,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
         </div>
 
         {record.coverImage?.url ? (
-          <div className="mt-6 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30">
+          <div className="mt-4 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30 sm:mt-6">
             <img
               src={record.coverImage.url}
               alt={record.coverImage.alt ?? record.title}
@@ -177,20 +200,86 @@ export default async function BlogDetailPage({ params }: PageProps) {
           </div>
         ) : null}
 
-        <Separator className="my-8 sm:my-10" />
+        {tocItems.length >= 2 ? (
+          <nav className="mt-4 border-t border-border/50 pt-3">
+            <p className="text-xs font-semibold text-muted-foreground sm:text-sm">目次</p>
+            <ul className="mt-2 grid gap-2 text-xs sm:text-sm">
+              {tocItems.map((item) => (
+                <li
+                  key={item.id}
+                  className={cn(
+                    "flex items-start gap-2 leading-snug",
+                    item.level === 3 ? "pl-3 text-[11px] sm:text-xs" : ""
+                  )}
+                >
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground/70" />
+                  <a
+                    href={`#${item.id}`}
+                    className="article-link article-link--internal no-underline hover:underline"
+                  >
+                    {item.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
-        <div className="article-prose prose prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl sm:prose-lg">
+        <Separator className="my-6 sm:my-10" />
+
+        <div className="article-prose prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl sm:prose-lg">
           <ReactMarkdown
             remarkPlugins={remarkPlugins}
-            rehypePlugins={rehypePlugins}
+            rehypePlugins={blogRehypePlugins}
             components={{
               img: MarkdownImage,
+              a: MarkdownLink,
+              table: MarkdownTable,
+              h1({ children, ...props }) {
+                const id = nextHeadingId();
+                return (
+                  <h1 id={id ?? props.id} {...props}>
+                    {children}
+                  </h1>
+                );
+              },
+              h2({ children, ...props }) {
+                const id = nextHeadingId();
+                return (
+                  <h2 id={id ?? props.id} {...props}>
+                    {children}
+                  </h2>
+                );
+              },
+              h3({ children, ...props }) {
+                const id = nextHeadingId();
+                return (
+                  <h3 id={id ?? props.id} {...props}>
+                    {children}
+                  </h3>
+                );
+              },
+              h4({ children, ...props }) {
+                const id = nextHeadingId();
+                return (
+                  <h4 id={id ?? props.id} {...props}>
+                    {children}
+                  </h4>
+                );
+              },
               p({ children }) {
-                if (Array.isArray(children) && children.length === 1) {
-                  const child = children[0];
-                  if (React.isValidElement(child) && child.type === MarkdownImage) {
-                    return <>{child}</>;
+                const nodes = React.Children.toArray(children).filter((node) => {
+                  if (typeof node === "string") {
+                    return node.trim().length > 0;
                   }
+                  return true;
+                });
+                if (
+                  nodes.length === 1 &&
+                  React.isValidElement(nodes[0]) &&
+                  nodes[0].type === MarkdownImage
+                ) {
+                  return <>{nodes[0]}</>;
                 }
                 return <p>{children}</p>;
               },
@@ -200,7 +289,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
           </ReactMarkdown>
         </div>
 
-        <div className="mt-10 text-sm">
+        <div className="mt-8 text-xs sm:mt-10 sm:text-sm">
           <a
             href="/blog"
             className="inline-flex items-center gap-2 text-primary underline underline-offset-4"

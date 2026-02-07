@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { Children, isValidElement, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import imageCompression from "browser-image-compression";
@@ -11,6 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
+import { MarkdownLink } from "@/components/content/markdown-link";
+import { MarkdownImage } from "@/components/content/markdown-image";
+import { MarkdownTable } from "@/components/content/markdown-table";
 import {
   announcementCategories,
   announcementStatuses,
@@ -653,8 +656,32 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
 
               {(viewMode === "preview" || viewMode === "split") && (
                 <div className="rounded-2xl border border-border/60 bg-background/70 p-3 text-sm text-muted-foreground">
-                  <div className="prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl">
-                    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
+                  <div className="article-prose prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl">
+                    <ReactMarkdown
+                      remarkPlugins={remarkPlugins}
+                      rehypePlugins={rehypePlugins}
+                      components={{
+                        a: MarkdownLink,
+                        img: MarkdownImage,
+                        table: MarkdownTable,
+                        p({ children }) {
+                          const nodes = Children.toArray(children).filter((node) => {
+                            if (typeof node === "string") {
+                              return node.trim().length > 0;
+                            }
+                            return true;
+                          });
+                          if (
+                            nodes.length === 1 &&
+                            isValidElement(nodes[0]) &&
+                            nodes[0].type === MarkdownImage
+                          ) {
+                            return <>{nodes[0]}</>;
+                          }
+                          return <p>{children}</p>;
+                        },
+                      }}
+                    >
                       {previewContent}
                     </ReactMarkdown>
                   </div>

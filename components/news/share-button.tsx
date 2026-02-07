@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -12,10 +12,11 @@ type ShareButtonProps = {
 export function ShareButton({ url, title }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
-  const canShare = useMemo(
-    () => typeof navigator !== "undefined" && typeof navigator.share === "function",
-    []
-  );
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
 
   const handleCopy = async () => {
     try {

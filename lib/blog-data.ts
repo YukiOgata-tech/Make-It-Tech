@@ -25,55 +25,21 @@ export type BlogRecord = {
 
 const mockBlogPosts: BlogRecord[] = [
   {
-    id: "mock-blog-1",
-    title: "業務改善の最初の一歩は“現状整理”から",
-    slug: "mock-business-improvement",
+    id: "mock-blog-ui-guide",
+    title: "ブログUI見本（H1/見出し/表/コード/画像の表示確認）",
+    slug: "mock-blog-ui-guide",
     summary:
-      "担当者の頭の中にある業務フローを見える化すると、改善余地が一気に分かります。",
-    content: `## まずは現状を見える化する\n\n業務改善は「何を直すか」を決める前に、\n**いまの流れを整理すること**から始めると失敗しにくくなります。\n\n- どの作業に時間がかかっているか\n- どこで情報が止まっているか\n- 誰がどの判断をしているか\n\nこの3点だけでも書き出してみると、改善ポイントが自然に見えてきます。\n\n## 小さく改善して成果を作る\n\nいきなり全体最適を狙うより、\n「1つの作業を30%短縮する」など、\n**小さな成果**を先に作ると社内の理解も得やすいです。`,
+      "このダミー記事は、見出し・表・コード・画像サイズ・内部/外部リンクなどの表示確認用です。",
+    content: `# H1: ここがH1見出し\n\nこの段落は**H1の下**に配置された本文です。ページタイトルは別に表示されるので、\nH1を使う場合は「本文内の大見出し」として使ってください。\n\n## H2: ここがH2見出し\n\n- 箇条書きの例\n- \`inline code\` の例\n- :sparkles: 絵文字の例\n\n### H3: ここがH3見出し\n\n1. 番号付きリスト\n2. 数値の流れ\n3. 小さな手順\n\n#### H4: ここがH4見出し\n\n> これは引用（blockquote）の見え方です。\n> 複数行でも読みやすく表示されます。\n\n---\n\n## H2: リンクの見え方\n\n- 内部リンク（同サイト）: [/services](/services)\n- 外部リンク: [https://example.com](https://example.com)\n\n## H2: 画像サイズ/配置の見え方\n\n![全幅中央のサンプル](/images/bg-design-01.png "preset:full-center")\n\n![中サイズ右寄せのサンプル](/images/bg-design-02.png "preset:md-right")\n\n![小サイズ左寄せのサンプル](/images/bg-3-light.png "preset:sm-left")\n\n## H2: 表（table）の見え方\n\n| 項目 | 内容 | メモ |\n| --- | --- | --- |\n| 目的 | UI確認 | 見やすさ重視 |\n| 対象 | ブログ本文 | 見出し/表/画像 |\n| 期限 | 任意 | いつでも更新 |\n\n## H2: コードブロックの見え方\n\n\`\`\`ts\nconst task = {\n  title: \"UIチェック\",\n  status: \"published\",\n  tags: [\"見出し\", \"表\", \"画像\"],\n};\n\nconsole.log(task);\n\`\`\`\n`,
     category: "improvement",
     status: "published",
-    tags: ["業務改善", "現状整理", "BPR"],
+    tags: ["UI確認", "ブログ", "Markdown"],
     coverImage: {
       url: "/images/bg-design-01.png",
-      alt: "業務改善のイメージ",
+      alt: "ブログUIのサンプル",
     },
-    publishedAt: new Date("2026-02-01T09:00:00+09:00"),
-    createdAt: new Date("2026-02-01T09:00:00+09:00"),
-  },
-  {
-    id: "mock-blog-2",
-    title: "自動化は“毎日10分”の削減から始める",
-    slug: "mock-automation-start",
-    summary:
-      "繰り返し作業を見つけて、簡単な自動化から取り組むと成果が早く出ます。",
-    content: `## 自動化の第一歩\n\nRPAやAPI連携など大きな施策より、\n「毎日やっている小さな作業」を見つけるのが先です。\n\n**例**\n- CSVの整形\n- 定型メールの送信\n- 日報の集計\n\n## まずは“10分短縮”を目標に\n\n短縮のインパクトを数字で示せると、\n次の改善提案が通りやすくなります。`,
-    category: "automation",
-    status: "published",
-    tags: ["自動化", "RPA", "効率化"],
-    coverImage: {
-      url: "/images/bg-design-02.png",
-      alt: "自動化のイメージ",
-    },
-    publishedAt: new Date("2026-01-28T10:30:00+09:00"),
-    createdAt: new Date("2026-01-28T10:30:00+09:00"),
-  },
-  {
-    id: "mock-blog-3",
-    title: "補助金を使う前に整理すべき3つのこと",
-    slug: "mock-subsidy-checklist",
-    summary:
-      "補助金は申請書より“目的の整理”が重要。失敗しないためのポイントを紹介します。",
-    content: `## 補助金で失敗しないために\n\n申請書の書き方より、\n**何を実現したいか**を明確にすることが大切です。\n\n1. 目的（何を改善したいか）\n2. 対象（どの業務や部署か）\n3. 成果（何がどう良くなるか）\n\nこの3つが整理できれば、\n採択後の運用もスムーズになります。`,
-    category: "subsidy",
-    status: "published",
-    tags: ["補助金", "DX", "申請準備"],
-    coverImage: {
-      url: "/images/bg-3-light.png",
-      alt: "補助金のイメージ",
-    },
-    publishedAt: new Date("2026-01-24T15:00:00+09:00"),
-    createdAt: new Date("2026-01-24T15:00:00+09:00"),
+    publishedAt: new Date("2026-02-07T09:00:00+09:00"),
+    createdAt: new Date("2026-02-07T09:00:00+09:00"),
   },
 ];
 

@@ -10,6 +10,8 @@ import { site } from "@/lib/site";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { ShareButton } from "@/components/news/share-button";
 import { MarkdownImage } from "@/components/content/markdown-image";
+import { MarkdownLink } from "@/components/content/markdown-link";
+import { MarkdownTable } from "@/components/content/markdown-table";
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -145,21 +147,21 @@ export default async function NewsDetailPage({ params }: PageProps) {
   };
 
   return (
-    <div className="py-10 sm:py-16">
+    <div className="py-8 sm:py-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
           <Badge variant="secondary" className="rounded-xl">
             {categoryLabelMap[record.category] ?? "お知らせ"}
           </Badge>
           <span>{formatDate(record.publishedAt)}</span>
         </div>
 
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="mt-3 text-[1.4rem] font-semibold leading-snug tracking-tight sm:text-4xl">
           {record.title}
         </h1>
 
         {record.summary ? (
-          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+          <p className="mt-2 text-xs text-muted-foreground sm:text-base">
             {record.summary}
           </p>
         ) : null}
@@ -169,7 +171,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         </div>
 
         {record.coverImage?.url ? (
-          <div className="mt-6 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30">
+          <div className="mt-4 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30 sm:mt-6">
             <img
               src={record.coverImage.url}
               alt={record.coverImage.alt ?? record.title}
@@ -178,42 +180,52 @@ export default async function NewsDetailPage({ params }: PageProps) {
           </div>
         ) : null}
 
-        <Separator className="my-8 sm:my-10" />
+        <Separator className="my-6 sm:my-10" />
 
-        <div className="article-prose prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl">
+        <div className="article-prose prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl sm:prose-lg">
           <ReactMarkdown
             remarkPlugins={remarkPlugins}
             rehypePlugins={rehypePlugins}
             components={{
               p({ children }) {
-                if (Array.isArray(children) && children.length === 1) {
-                  const child = children[0];
-                  if (React.isValidElement(child)) {
-                    if (child.type === MarkdownImage) {
-                      return <>{child}</>;
-                    }
-                    if (child.type === "a") {
-                      const element = child as React.ReactElement<{
-                        href?: string;
-                        children?: React.ReactNode;
-                      }>;
-                      const href = typeof element.props.href === "string" ? element.props.href : "";
-                      const text =
-                        typeof element.props.children === "string"
-                          ? element.props.children
-                          : "";
-                      if (
-                        href &&
-                        (text === href || text === href.replace(/^https?:\/\//, ""))
-                      ) {
-                        return <LinkCard url={href} />;
-                      }
+                const nodes = React.Children.toArray(children).filter((node) => {
+                  if (typeof node === "string") {
+                    return node.trim().length > 0;
+                  }
+                  return true;
+                });
+                if (
+                  nodes.length === 1 &&
+                  React.isValidElement(nodes[0]) &&
+                  nodes[0].type === MarkdownImage
+                ) {
+                  return <>{nodes[0]}</>;
+                }
+                if (nodes.length === 1 && React.isValidElement(nodes[0])) {
+                  const child = nodes[0];
+                  if (child.type === MarkdownLink || child.type === "a") {
+                    const element = child as React.ReactElement<{
+                      href?: string;
+                      children?: React.ReactNode;
+                    }>;
+                    const href = typeof element.props.href === "string" ? element.props.href : "";
+                    const text =
+                      typeof element.props.children === "string"
+                        ? element.props.children
+                        : "";
+                    if (
+                      href &&
+                      (text === href || text === href.replace(/^https?:\/\//, ""))
+                    ) {
+                      return <LinkCard url={href} />;
                     }
                   }
                 }
                 return <p>{children}</p>;
               },
               img: MarkdownImage,
+              a: MarkdownLink,
+              table: MarkdownTable,
             }}
           >
             {record.content || "本文は準備中です。"}

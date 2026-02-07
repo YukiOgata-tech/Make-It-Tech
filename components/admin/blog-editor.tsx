@@ -591,6 +591,13 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
               <li>・本文画像は挿入時にサイズ/配置を選べます。</li>
               <li>・下書きは公開ページに表示されません。</li>
             </ul>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+              <span className="article-link article-link--internal">内部リンク（/services など）</span>
+              <span className="article-link article-link--external">外部リンク（https://...）</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              内部リンクは相対URLを使うと色分けが正確になります。
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">

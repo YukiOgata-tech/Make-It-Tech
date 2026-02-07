@@ -1,6 +1,6 @@
 import { type MetadataRoute } from "next";
 import { site } from "@/lib/site";
-import { fetchBlogSlugs } from "@/lib/blog-data";
+import { fetchBlogList } from "@/lib/blog-data";
 
 const routes = [
   "",
@@ -19,12 +19,21 @@ const routes = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const blogSlugs = await fetchBlogSlugs().catch(() => []);
-  const blogRoutes = blogSlugs.map((slug) => `/blog/${slug}`);
-  const combinedRoutes = [...routes, ...blogRoutes];
-  return combinedRoutes.map((route) => ({
+  const blogPosts = await fetchBlogList().catch(() => []);
+  const blogRoutes = blogPosts
+    .filter((post) => post.slug)
+    .map((post) => ({
+      url: `${site.url}/blog/${post.slug}`,
+      lastModified: post.updatedAt ?? post.publishedAt ?? post.createdAt ?? undefined,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+
+  const staticRoutes: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${site.url}${route}`,
     changeFrequency: route === "" ? "weekly" : "monthly",
     priority: route === "" ? 1 : 0.7,
   }));
+
+  return [...staticRoutes, ...blogRoutes];
 }
