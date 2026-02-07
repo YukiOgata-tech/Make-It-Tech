@@ -657,6 +657,62 @@ body[data-has-breadcrumbs="true"] {
   color: var(--muted-foreground);
 }
 
+.app-docs {
+  line-height: 1.75;
+}
+
+.app-docs h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.app-docs h2 {
+  margin-top: 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.app-docs h3 {
+  margin-top: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.app-docs p {
+  margin-top: 0.6rem;
+}
+
+.app-docs ul,
+.app-docs ol {
+  margin-top: 0.5rem;
+  padding-left: 1.2rem;
+}
+
+.app-docs li {
+  margin: 0.35rem 0;
+}
+
+.app-docs hr {
+  margin: 1.4rem 0;
+  border: none;
+  border-top: 1px solid rgb(0 0 0 / 0.08);
+}
+
+.app-docs-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: inherit;
+}
+
+.app-docs .article-table-wrap {
+  margin-top: 0.8rem;
+}
+
+.app-docs .article-table {
+  font-size: 0.85rem;
+}
+
 .article-image {
   margin-top: 1.2rem;
   width: 100%;

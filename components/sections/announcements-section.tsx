@@ -137,7 +137,7 @@ export async function AnnouncementsSection() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="h-full w-full bg-gradient-to-br from-primary/10 via-background/60 to-secondary/40" />
+                        <div className="h-full w-full bg-linear-to-br from-primary/10 via-background/60 to-secondary/40" />
                       )}
                     </div>
                     <div className="flex flex-1 flex-col gap-1.5 sm:hidden">

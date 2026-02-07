@@ -10,11 +10,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const hostname = typeof window !== "undefined" ? window.location.hostname : "";
   const isToolsPath = pathname.startsWith("/sub/tools");
   const isAdminConsolePath = pathname.startsWith("/sub/admin-console");
+  const isAppsPath = pathname.startsWith("/apps/");
   const isToolsHost = hostname.startsWith("tools.");
   const isAdminConsoleHost = hostname.startsWith("admin-console.");
 
   // ツール/管理画面は独自レイアウトを使用
-  if (isToolsPath || isAdminConsolePath || isToolsHost || isAdminConsoleHost) {
+  if (isToolsPath || isAdminConsolePath || isAppsPath || isToolsHost || isAdminConsoleHost) {
     return <>{children}</>;
   }
 
