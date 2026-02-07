@@ -13,8 +13,8 @@ function extractPlainText(children: ReactNode): string {
       if (typeof child === "string" || typeof child === "number") {
         return String(child);
       }
-      if (isValidElement(child)) {
-        return extractPlainText(child.props.children as ReactNode);
+      if (isValidElement<{ children?: ReactNode }>(child)) {
+        return extractPlainText(child.props.children ?? "");
       }
       return "";
     })
