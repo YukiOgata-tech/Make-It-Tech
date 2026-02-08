@@ -114,7 +114,7 @@ function StepCard({ s, compact = false }: { s: ProcessStep; compact?: boolean })
 
 export function ProcessSection({ className }: { className?: string }) {
   return (
-    <section className={cn("py-14 sm:py-18", className)}>
+    <section id="process" className={cn("py-14 sm:py-18", className)}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">

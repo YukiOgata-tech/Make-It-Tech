@@ -13,7 +13,7 @@ export const footerLinks = [
     title: "お問い合わせ",
     links: [
       { label: "無料相談", href: "/contact" },
-      { label: "対応の流れ", href: "/#process" },
+      { label: "対応の流れ", href: "/services#process" },
     ],
   },
   {
