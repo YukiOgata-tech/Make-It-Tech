@@ -597,6 +597,10 @@ body[data-has-breadcrumbs="true"] {
   border-top: 1px solid rgb(0 0 0 / 0.08);
 }
 
+.dark .article-prose hr {
+  border-top-color: rgb(255 255 255 / 0.18);
+}
+
 .article-prose table {
   width: 100%;
   border-collapse: collapse;

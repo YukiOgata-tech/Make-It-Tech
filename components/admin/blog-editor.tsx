@@ -565,17 +565,17 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
             ) : null}
           </div>
 
-          <div className="grid gap-2">
-            <label className="text-xs text-muted-foreground">本文（Markdown/MDX）</label>
-            <div className="rounded-2xl border border-border/60 bg-background">
-              <MDXEditor
-                markdown={content}
-                onChange={setContent}
-                plugins={editorPlugins}
-                placeholder="本文を入力してください"
-                className="prose prose-sm max-w-none px-4 py-3 text-foreground [&_.mdxeditor-root-contenteditable]:min-h-[260px]"
-              />
-            </div>
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">本文（Markdown/MDX）</label>
+              <div className="rounded-2xl border border-border/60 bg-card/60 shadow-sm focus-within:border-border focus-within:ring-1 focus-within:ring-border/60">
+                <MDXEditor
+                  markdown={content}
+                  onChange={setContent}
+                  plugins={editorPlugins}
+                  placeholder="本文を入力してください"
+                  className="prose prose-sm prose-invert max-w-none px-4 py-3 text-foreground [&_.mdxeditor-root]:text-foreground [&_.mdxeditor-root-contenteditable]:min-h-[260px] [&_.mdxeditor-root-contenteditable]:text-foreground [&_.mdxeditor-root-contenteditable]:bg-transparent [&_.mdxeditor-root-contenteditable]:outline-none"
+                />
+              </div>
             {contentEmpty ? (
               <p className="text-xs text-muted-foreground">
                 見出しや箇条書き、画像、表なども挿入できます。

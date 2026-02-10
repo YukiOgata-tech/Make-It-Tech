@@ -178,10 +178,25 @@ export async function fetchBlogBySlug(slug: string) {
     return mockBlogPosts.find((post) => post.slug === slug) ?? null;
   }
   if (!record) return null;
+  const publishedAt = toDate(record.publishedAt);
+  const updatedAt = toDate(record.updatedAt);
+  const createdAt = toDate(record.createdAt);
+
   if (process.env.NODE_ENV === "production") {
-    if (!record.publishedAt) return null;
-    if (record.publishedAt.getTime() > Date.now()) return null;
+    if (!publishedAt) return null;
+    if (publishedAt.getTime() > Date.now()) return null;
   }
+
+  if (record.publishedAt !== publishedAt) {
+    record.publishedAt = publishedAt;
+  }
+  if (record.updatedAt !== updatedAt) {
+    record.updatedAt = updatedAt;
+  }
+  if (record.createdAt !== createdAt) {
+    record.createdAt = createdAt;
+  }
+
   return record;
 }
 
