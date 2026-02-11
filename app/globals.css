@@ -414,6 +414,12 @@ body[data-has-breadcrumbs="true"] {
   );
 }
 
+.dark .mdxeditor {
+  --basePageBg: var(--card);
+  --baseText: var(--foreground);
+  --baseTextContrast: var(--foreground);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .text-gradient-animate,
   .hero-aurora,
