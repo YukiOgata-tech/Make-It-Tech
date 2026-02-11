@@ -19,6 +19,30 @@ export function FAQSection({ className }: { className?: string }) {
   const previewFaqs = faqItems.slice(0, 4);
   const moreFaqs = faqItems.slice(4);
 
+  const renderAnswer = (item: typeof faqItems[number], textClass: string) => (
+    <div className="grid gap-2">
+      <p className={cn("text-muted-foreground", textClass)}>{item.a}</p>
+      {item.links?.length ? (
+        <div className="flex flex-wrap gap-2">
+          {item.links.map((link) => (
+            <Button
+              key={link.href}
+              asChild
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+            >
+              <Link href={link.href}>
+                {link.label}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -81,8 +105,8 @@ export function FAQSection({ className }: { className?: string }) {
                     <span className="font-medium">{f.q}</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                  {f.a}
+                <AccordionContent className="text-sm leading-relaxed">
+                  {renderAnswer(f, "text-sm")}
                 </AccordionContent>
               </AccordionItem>
             ))}
@@ -101,8 +125,8 @@ export function FAQSection({ className }: { className?: string }) {
                     <span className="pb-0 font-medium text-sm">{f.q}</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="pb-2 pt-0 text-xs leading-relaxed text-muted-foreground">
-                  {f.a}
+                <AccordionContent className="pb-2 pt-0 text-xs leading-relaxed">
+                  {renderAnswer(f, "text-xs")}
                 </AccordionContent>
               </AccordionItem>
             ))}
@@ -124,8 +148,8 @@ export function FAQSection({ className }: { className?: string }) {
                         <span className="font-medium">{f.q}</span>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                      {f.a}
+                    <AccordionContent className="text-sm leading-relaxed">
+                      {renderAnswer(f, "text-sm")}
                     </AccordionContent>
                   </AccordionItem>
                 ))}
@@ -138,10 +162,10 @@ export function FAQSection({ className }: { className?: string }) {
         <div className="mt-4 sm:mt-10 rounded-3xl border border-primary/20 bg-secondary/40 px-4 p-4 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
-              <p className="text-sm font-medium">まず“現状”だけでOK</p>
+              <p className="text-sm sm:text-md font-medium">まず“現状”だけでOK</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 相談時点で要件が固まっていなくても問題ありません。
-                「困っていること」「理想」「制約」を整理して、改善案を作ります。
+                「困っていること･理想･制約」を整理して、改善案を作ります。
               </p>
             </div>
 

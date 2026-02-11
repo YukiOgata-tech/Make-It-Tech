@@ -167,7 +167,7 @@ export default function ServicesPage() {
             return (
               <Card key={d.title} className="relative overflow-hidden rounded-3xl">
                 <div
-                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-35 dark:opacity-25 -z-10"
+                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-25 dark:opacity-15 -z-10"
                   style={{ backgroundImage: `url(${bgImage})` }}
                 />
                 <CardHeader className="relative mb-0">
@@ -208,7 +208,6 @@ export default function ServicesPage() {
       <Section
         eyebrow="よくある相談"
         title="相談内容の例"
-        description="同じ悩みでも、優先順位と最小構成で進め方が変わります。"
       >
         <div className="hidden gap-4 md:grid md:grid-cols-2">
           {serviceExamples.map((ex) => (

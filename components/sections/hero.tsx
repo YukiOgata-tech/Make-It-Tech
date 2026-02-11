@@ -326,10 +326,10 @@ export function Hero({ className }: { className?: string }) {
               <div className="pointer-events-none absolute inset-0 bg-[url('/images/bg-light.png')] bg-cover bg-center opacity-50 dark:bg-[url('/images/bg-dark.png')]" />
               <div className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/2 translate-x-[-20%] rotate-6 bg-white/15 blur-xl hero-sheen" />
 
-              <CardContent className="relative p-6 sm:p-7">
-                <div className="flex items-start justify-between gap-4">
+              <CardContent className="relative py-2 sm:px-7">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold tracking-tight">よくある課題 → 解決の方向性</p>
+                    <p className="text-md font-semibold tracking-tight">よくある課題 → 解決の方向性</p>
                     <p className="mt-1 text-sm text-muted-foreground">
                       “まず整理”して、必要なら実装へ。
                     </p>
@@ -348,7 +348,7 @@ export function Hero({ className }: { className?: string }) {
                   </div>
 
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">手入力Excelやデータ管理が大変、そして属人化して引き継げない</h3>
+                    <h3 className="text-sm font-medium">手入力作業やデータ管理が大変、そして業務の引き継ぎが心配</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       → ルールの言語化+ビュー分離+運用の標準化。AIや計算システムを組み込んだ自動化システムの開発。
                     </p>
@@ -362,7 +362,7 @@ export function Hero({ className }: { className?: string }) {
                   </div>
                 </div>
 
-                <Separator className="my-6" />
+                <Separator className="my-4" />
 
                 <div className="grid gap-3 sm:grid-cols-3">
                   {heroTrust.map((t) => (
