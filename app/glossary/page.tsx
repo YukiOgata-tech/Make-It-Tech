@@ -9,18 +9,14 @@ import {
 import { GlossaryExplorer } from "@/components/sections/glossary-explorer";
 
 export const metadata: Metadata = {
-  title: "用語集",
+  title: {
+    absolute: "IT・技術用語集 分かりやすい 解説 新潟",
+  },
   description:
-    "非エンジニア向けに、業務改善・DX・Web制作・IT導入でよく出る用語を整理した簡易辞書です。",
+    "非エンジニア向けに、業務改善・DX・Web制作・IT導入でよく出る用語を整理した辞書ページ",
   keywords: [
-    "用語集",
-    "業務改善",
-    "DX",
-    "IT",
-    "Web制作",
-    "新潟",
-    "非エンジニア",
-    "業務診断",
+    "用語集", "LLM", "AI", "人工知能", "生成AI",
+    "DX", "IT", "Web制作", "LP制作", "IT導入", "非エンジニア",
   ],
 };
 

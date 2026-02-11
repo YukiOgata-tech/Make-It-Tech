@@ -10,11 +10,8 @@ export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description: "Make It Tech のプライバシーポリシーを掲載しています。",
   keywords: [
-    "プライバシーポリシー",
-    "個人情報",
-    "新潟",
-    "DX",
-    "IT",
+    "プライバシーポリシー", "個人情報", "新潟", "DX", "IT", "業務改善", "Web制作",
+    "LP制作", "信頼", "情報保護", "データ管理", "セキュリティ", "利用規約", "niigata",
   ],
 };
 
@@ -40,7 +37,7 @@ export default function PrivacyPolicyPage() {
   );
 
   return (
-    <div className="py-10 sm:py-16">
+    <div className="py-6 sm:py-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 sm:mb-10">

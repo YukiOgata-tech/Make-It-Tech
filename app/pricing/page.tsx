@@ -29,7 +29,9 @@ import {
 
 
 export const metadata: Metadata = {
-  title: "料金",
+  title: {
+    absolute: "新潟のIT・DX支援 料金 Web/LP制作",
+  },
   description:
     "DX･IT支援に対応した料金目安。固定プランはなく、内容に合わせて柔軟に見積もります。",
   keywords: [
@@ -146,7 +148,7 @@ export default function PricingPage() {
                   className="group inline-flex items-center gap-1 underline underline-offset-4 decoration-primary/30 transition hover:text-primary hover:decoration-primary"
                 >
                   {index + 1}. {item.label}
-                  <ArrowRight className="h-3 w-3 translate-y-[1px] opacity-70 transition group-hover:opacity-100" />
+                  <ArrowRight className="h-3 w-3 translate-y-px opacity-70 transition group-hover:opacity-100" />
                 </Link>
               ))}
             </div>

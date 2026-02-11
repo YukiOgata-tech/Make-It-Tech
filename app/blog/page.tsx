@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { fetchBlogList } from "@/lib/blog-data";
@@ -81,14 +82,16 @@ export default async function BlogPage() {
                   <div className="flex gap-3">
                     <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-border/60 bg-secondary/30 sm:h-32 sm:w-full sm:rounded-2xl">
                       {post.coverImage?.url ? (
-                        <img
+                        <Image
                           src={post.coverImage.url}
                           alt={post.coverImage.alt ?? post.title}
+                          fill
+                          sizes="(max-width: 640px) 80px, (max-width: 768px) 160px, 33vw"
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                          loading="lazy"
+                          unoptimized={post.coverImage.url.startsWith("http")}
                         />
                       ) : (
-                        <div className="h-full w-full bg-gradient-to-br from-primary/10 via-background/60 to-secondary/40" />
+                        <div className="h-full w-full bg-linear-to-br from-primary/10 via-background/60 to-secondary/40" />
                       )}
                     </div>
                     <div className="flex flex-1 flex-col gap-1.5 sm:hidden">

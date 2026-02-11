@@ -14,7 +14,7 @@ import {
 } from "@/content/pages/about";
 
 export const metadata: Metadata = {
-  title: "事業所概要",
+  title: "事業所概要 IT事業所",
   description:
     "Make It Tech の事業概要。現在は新潟の中小事業者向けに、ITによるアプローチ、DX・業務支援を行います。",
   keywords: [

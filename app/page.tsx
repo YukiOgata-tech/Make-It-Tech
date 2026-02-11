@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Make It Tech | 新潟のDX・IT支援",
+    absolute: "新潟のIT DX支援 WEB制作 | Make It Tech",
   },
   description:
     "新潟の中小事業者向けに、Web LP制作・IT支援・自動化を丁寧に支援。無料の業務診断(条件アリ)も実施します。",

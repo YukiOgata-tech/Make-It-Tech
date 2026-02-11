@@ -18,7 +18,9 @@ import {
 import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "サービス",
+  title: {
+    absolute: "新潟のIT・DX支援・Web制作",
+  },
   description:
     "新潟の中小事業者向けに、DX・業務改善・LPやWeb制作・自動化を必要最小限の範囲で支援します。",
   keywords: [
