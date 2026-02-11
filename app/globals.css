@@ -416,7 +416,14 @@ body[data-has-breadcrumbs="true"] {
 
 .dark .mdxeditor {
   --basePageBg: var(--card);
-  --baseText: var(--foreground);
+  --baseBase: var(--card);
+  --baseBgSubtle: color-mix(in srgb, var(--card) 88%, var(--background));
+  --baseBg: color-mix(in srgb, var(--card) 78%, var(--background));
+  --baseBgHover: color-mix(in srgb, var(--card) 65%, var(--background));
+  --baseBgActive: color-mix(in srgb, var(--card) 52%, var(--background));
+  --baseBorder: color-mix(in srgb, var(--border) 85%, transparent);
+  --baseBorderHover: var(--border);
+  --baseText: var(--muted-foreground);
   --baseTextContrast: var(--foreground);
 }
 

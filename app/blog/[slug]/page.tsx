@@ -14,6 +14,10 @@ import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { buildHeadingSequence } from "@/lib/markdown-toc";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import {
+  normalizeInternalHref,
+  resolveInternalLinkTitle,
+} from "@/lib/internal-link-titles";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 
@@ -53,6 +57,12 @@ function formatDate(value?: unknown) {
     day: "2-digit",
     timeZone: "Asia/Tokyo",
   });
+}
+
+function getSingleText(children: React.ReactNode) {
+  const nodes = React.Children.toArray(children);
+  if (nodes.length !== 1) return null;
+  return typeof nodes[0] === "string" ? nodes[0] : null;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -233,7 +243,20 @@ export default async function BlogDetailPage({ params }: PageProps) {
             rehypePlugins={blogRehypePlugins}
             components={{
               img: MarkdownImage,
-              a: MarkdownLink,
+              a({ href = "", children, ...props }) {
+                const label = resolveInternalLinkTitle(href);
+                const childText = getSingleText(children);
+                const normalized = normalizeInternalHref(href);
+                const shouldReplace =
+                  Boolean(label) &&
+                  Boolean(childText) &&
+                  (childText === href || (normalized && childText === normalized));
+                return (
+                  <MarkdownLink href={href} {...props}>
+                    {shouldReplace && label ? label : children}
+                  </MarkdownLink>
+                );
+              },
               table: MarkdownTable,
               h1({ children, ...props }) {
                 const id = nextHeadingId();

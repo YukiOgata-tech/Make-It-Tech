@@ -12,6 +12,10 @@ import { ShareButton } from "@/components/news/share-button";
 import { MarkdownImage } from "@/components/content/markdown-image";
 import { MarkdownLink } from "@/components/content/markdown-link";
 import { MarkdownTable } from "@/components/content/markdown-table";
+import {
+  normalizeInternalHref,
+  resolveInternalLinkTitle,
+} from "@/lib/internal-link-titles";
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -49,6 +53,12 @@ function formatDate(value?: unknown) {
     day: "2-digit",
     timeZone: "Asia/Tokyo",
   });
+}
+
+function getSingleText(children: React.ReactNode) {
+  const nodes = React.Children.toArray(children);
+  if (nodes.length !== 1) return null;
+  return typeof nodes[0] === "string" ? nodes[0] : null;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -213,10 +223,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                       typeof element.props.children === "string"
                         ? element.props.children
                         : "";
-                    if (
-                      href &&
-                      (text === href || text === href.replace(/^https?:\/\//, ""))
-                    ) {
+                    if (href?.startsWith("http") && (text === href || text === href.replace(/^https?:\/\//, ""))) {
                       return <LinkCard url={href} />;
                     }
                   }
@@ -224,7 +231,20 @@ export default async function NewsDetailPage({ params }: PageProps) {
                 return <p>{children}</p>;
               },
               img: MarkdownImage,
-              a: MarkdownLink,
+              a({ href = "", children, ...props }) {
+                const label = resolveInternalLinkTitle(href);
+                const childText = getSingleText(children);
+                const normalized = normalizeInternalHref(href);
+                const shouldReplace =
+                  Boolean(label) &&
+                  Boolean(childText) &&
+                  (childText === href || (normalized && childText === normalized));
+                return (
+                  <MarkdownLink href={href} {...props}>
+                    {shouldReplace && label ? label : children}
+                  </MarkdownLink>
+                );
+              },
               table: MarkdownTable,
             }}
           >
