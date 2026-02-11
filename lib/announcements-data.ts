@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import type { AnnouncementCategory, AnnouncementStatus } from "@/lib/announcements";
+import { normalizeLinkLabelItems, type LinkLabel } from "@/lib/link-labels";
 
 export type AnnouncementCover = {
   url?: string;
@@ -25,6 +26,7 @@ export type AnnouncementRecord = {
   status: AnnouncementStatus;
   coverImage?: AnnouncementCover;
   links?: AnnouncementLink[];
+  linkLabels?: LinkLabel[];
   publishedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
@@ -80,6 +82,13 @@ export function normalizeAnnouncementDoc(
       image: typeof item?.image === "string" ? item.image : undefined,
     }))
     .filter((item) => item.url.length > 0);
+  const rawLinkLabels = Array.isArray(data.linkLabels)
+    ? data.linkLabels.map((item: { url?: unknown; label?: unknown }) => ({
+        url: String(item?.url ?? ""),
+        label: String(item?.label ?? ""),
+      }))
+    : [];
+  const linkLabels = normalizeLinkLabelItems(rawLinkLabels);
 
   return {
     id: doc.id,
@@ -97,6 +106,7 @@ export function normalizeAnnouncementDoc(
         }
       : undefined,
     links: links.length > 0 ? links : undefined,
+    linkLabels: linkLabels.length ? linkLabels : undefined,
     publishedAt: toDate(data.publishedAt),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),

@@ -39,6 +39,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { MarkdownImage } from "@/components/content/markdown-image";
 import { MarkdownLink } from "@/components/content/markdown-link";
 import { MarkdownTable } from "@/components/content/markdown-table";
+import {
+  buildLinkLabelMap,
+  normalizeLinkLabelItems,
+  normalizeLinkLabelUrl,
+  type LinkLabel,
+} from "@/lib/link-labels";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { buildHeadingSequence } from "@/lib/markdown-toc";
 import { cn } from "@/lib/utils";
@@ -50,6 +56,10 @@ import {
   type BlogStatus,
 } from "@/lib/blog";
 import { BlogImageDialog } from "@/components/admin/blog-image-dialog";
+import {
+  normalizeInternalHref,
+  resolveInternalLinkTitle,
+} from "@/lib/internal-link-titles";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 
@@ -88,9 +98,16 @@ type BlogFormData = {
   status: BlogStatus;
   publishedAt?: string;
   tags?: string[];
+  linkLabels?: LinkLabel[];
   coverImageUrl?: string;
   coverImageAlt?: string;
   coverImagePath?: string;
+};
+
+type LinkLabelState = LinkLabel & {
+  id: string;
+  draftUrl?: string;
+  draftLabel?: string;
 };
 
 type BlogEditorProps = {
@@ -128,6 +145,25 @@ function parseTags(value: string) {
     .slice(0, 12);
 }
 
+function createLinkLabelId() {
+  const stamp = Date.now().toString(36);
+  const random = Math.random().toString(36).slice(2, 8);
+  return `link-label-${stamp}-${random}`;
+}
+
+function toLinkLabelState(items?: LinkLabel[]) {
+  return normalizeLinkLabelItems(items).map((item) => ({
+    ...item,
+    id: createLinkLabelId(),
+  }));
+}
+
+function getSingleText(children: React.ReactNode) {
+  const nodes = React.Children.toArray(children);
+  if (nodes.length !== 1) return null;
+  return typeof nodes[0] === "string" ? nodes[0] : null;
+}
+
 function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -162,6 +198,12 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
   const [tagsInput, setTagsInput] = useState(
     initial?.tags?.length ? initial?.tags.join(", ") : ""
   );
+  const [linkLabels, setLinkLabels] = useState<LinkLabelState[]>(
+    toLinkLabelState(initial?.linkLabels)
+  );
+  const [linkLabelUrlInput, setLinkLabelUrlInput] = useState("");
+  const [linkLabelTextInput, setLinkLabelTextInput] = useState("");
+  const [linkLabelError, setLinkLabelError] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState(initial?.coverImageUrl ?? "");
   const [coverImageAlt, setCoverImageAlt] = useState(initial?.coverImageAlt ?? "");
   const [coverImagePath, setCoverImagePath] = useState(initial?.coverImagePath ?? "");
@@ -182,6 +224,10 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
   const previewContent = useMemo(
     () => content || "本文はまだ入力されていません。",
     [content]
+  );
+  const linkLabelMap = useMemo(
+    () => buildLinkLabelMap(linkLabels.map(({ url, label }) => ({ url, label }))),
+    [linkLabels]
   );
   const headingSequence = useMemo(
     () => buildHeadingSequence(previewContent),
@@ -262,6 +308,84 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
   const handleSlugChange = (value: string) => {
     setSlugTouched(true);
     setSlug(value);
+  };
+
+  const handleAddLinkLabel = () => {
+    const url = linkLabelUrlInput.trim();
+    const label = linkLabelTextInput.trim();
+    if (!url || !label) {
+      setLinkLabelError("URLと表示テキストを入力してください。");
+      return;
+    }
+    if (!/^https?:\/\//i.test(url)) {
+      setLinkLabelError("外部リンクのURL（https://...）を入力してください。");
+      return;
+    }
+    const normalized = normalizeLinkLabelUrl(url);
+    if (linkLabels.some((item) => normalizeLinkLabelUrl(item.url) === normalized)) {
+      setLinkLabelError("同じURLが既に登録されています。");
+      return;
+    }
+    setLinkLabels((prev) => [...prev, { id: createLinkLabelId(), url, label }]);
+    setLinkLabelUrlInput("");
+    setLinkLabelTextInput("");
+    setLinkLabelError("");
+  };
+
+  const handleUpdateLinkLabel = (
+    id: string,
+    field: "url" | "label",
+    value: string
+  ) => {
+    setLinkLabels((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const draftUrl =
+          field === "url"
+            ? value
+            : (item.draftUrl ?? item.url);
+        const draftLabel =
+          field === "label"
+            ? value
+            : (item.draftLabel ?? item.label);
+        return {
+          ...item,
+          draftUrl,
+          draftLabel,
+        };
+      })
+    );
+  };
+
+  const handleSaveLinkLabel = (id: string) => {
+    setLinkLabels((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const nextUrl = (item.draftUrl ?? item.url).trim();
+        const nextLabel = (item.draftLabel ?? item.label).trim();
+        return {
+          ...item,
+          url: nextUrl,
+          label: nextLabel,
+          draftUrl: undefined,
+          draftLabel: undefined,
+        };
+      })
+    );
+  };
+
+  const handleCancelLinkLabel = (id: string) => {
+    setLinkLabels((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, draftUrl: undefined, draftLabel: undefined }
+          : item
+      )
+    );
+  };
+
+  const handleRemoveLinkLabel = (id: string) => {
+    setLinkLabels((prev) => prev.filter((item) => item.id !== id));
   };
 
   const resetCoverPending = () => {
@@ -496,6 +620,9 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
       const normalizedSlug = normalizeSlug(slug || title);
       setSlug(normalizedSlug);
       const tags = parseTags(tagsInput);
+      const normalizedLinkLabels = normalizeLinkLabelItems(
+        linkLabels.map(({ url, label }) => ({ url, label }))
+      );
       const payload = {
         title: title.trim(),
         slug: normalizedSlug,
@@ -503,6 +630,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
         content: content.trim(),
         category: category || undefined,
         tags,
+        linkLabels: normalizedLinkLabels,
         status,
         publishedAt:
           status === "published" ? publishedAt || new Date().toISOString() : null,
@@ -715,6 +843,144 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="grid gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="text-xs text-muted-foreground">
+                外部リンクの表示テキスト
+              </label>
+              <span className="text-[11px] text-muted-foreground">
+                本文でURLをそのまま書いても任意名に置換できます
+              </span>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-[1fr,1fr,auto]">
+              <Input
+                value={linkLabelUrlInput}
+                onChange={(e) => {
+                  setLinkLabelUrlInput(e.target.value);
+                  if (linkLabelError) setLinkLabelError("");
+                }}
+                placeholder="https://example.com"
+              />
+              <Input
+                value={linkLabelTextInput}
+                onChange={(e) => {
+                  setLinkLabelTextInput(e.target.value);
+                  if (linkLabelError) setLinkLabelError("");
+                }}
+                placeholder="表示するテキスト"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={handleAddLinkLabel}
+              >
+                追加
+              </Button>
+            </div>
+            {linkLabelError ? (
+              <p className="text-[11px] text-destructive">{linkLabelError}</p>
+            ) : null}
+            {linkLabels.length ? (
+              <div className="grid gap-2">
+                {(() => {
+                  const effective = linkLabels.map((item) => ({
+                    id: item.id,
+                    url: (item.draftUrl ?? item.url).trim(),
+                    label: (item.draftLabel ?? item.label).trim(),
+                  }));
+                  const counts = new Map<string, number>();
+                  effective.forEach((entry) => {
+                    const key = normalizeLinkLabelUrl(entry.url);
+                    if (!key) return;
+                    counts.set(key, (counts.get(key) ?? 0) + 1);
+                  });
+
+                  return linkLabels.map((item) => {
+                  const trimmedUrl = (item.draftUrl ?? item.url).trim();
+                  const trimmedLabel = (item.draftLabel ?? item.label).trim();
+                  const urlError =
+                    trimmedUrl.length > 0 && !/^https?:\/\//i.test(trimmedUrl);
+                  const labelError = trimmedLabel.length === 0;
+                  const normalized = normalizeLinkLabelUrl(trimmedUrl);
+                  const duplicateError = normalized.length > 0 && (counts.get(normalized) ?? 0) > 1;
+                  const isDirty =
+                    trimmedUrl !== item.url || trimmedLabel !== item.label;
+                  return (
+                  <div
+                    key={item.id}
+                    className="grid gap-2 rounded-2xl border border-border/60 bg-background/70 p-3 text-xs"
+                  >
+                    <div className="grid gap-2 sm:grid-cols-[1fr,1fr,auto] sm:items-center">
+                      <Input
+                        value={item.draftUrl ?? item.url}
+                        onChange={(e) =>
+                          handleUpdateLinkLabel(item.id, "url", e.target.value)
+                        }
+                        placeholder="https://example.com"
+                        className="h-8"
+                      />
+                      <Input
+                        value={item.draftLabel ?? item.label}
+                        onChange={(e) =>
+                          handleUpdateLinkLabel(item.id, "label", e.target.value)
+                        }
+                        placeholder="表示するテキスト"
+                        className="h-8"
+                      />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => handleSaveLinkLabel(item.id)}
+                          disabled={!isDirty || urlError || labelError || duplicateError}
+                        >
+                          保存
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => handleCancelLinkLabel(item.id)}
+                          disabled={!isDirty}
+                        >
+                          キャンセル
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => handleRemoveLinkLabel(item.id)}
+                        >
+                          削除
+                        </Button>
+                      </div>
+                    </div>
+                    {urlError || labelError || duplicateError ? (
+                      <p className="text-[11px] text-destructive">
+                        {urlError
+                          ? "URLはhttps://から始めてください。"
+                          : labelError
+                            ? "表示テキストを入力してください。"
+                            : "同じURLが重複しています。"}
+                      </p>
+                    ) : null}
+                  </div>
+                );
+                });
+                })()}
+              </div>
+            ) : (
+              <p className="text-[11px] text-muted-foreground">
+                まだ登録されていません。
+              </p>
+            )}
           </div>
 
           <div className="grid gap-2 sm:grid-cols-[1fr,220px]">
@@ -972,7 +1238,25 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
                       rehypePlugins={blogRehypePlugins}
                       components={{
                         img: MarkdownImage,
-                        a: MarkdownLink,
+                        a({ href = "", children, ...props }) {
+                          const childText = getSingleText(children);
+                          const normalizedInternal = normalizeInternalHref(href);
+                          const labelOverride = linkLabelMap.get(
+                            normalizeLinkLabelUrl(href)
+                          );
+                          const internalTitle = resolveInternalLinkTitle(href);
+                          const replacement = labelOverride ?? internalTitle;
+                          const shouldReplace =
+                            Boolean(childText) &&
+                            (childText === href ||
+                              (normalizedInternal && childText === normalizedInternal) ||
+                              childText === href.replace(/^https?:\/\//, ""));
+                          return (
+                            <MarkdownLink href={href} {...props}>
+                              {shouldReplace && replacement ? replacement : children}
+                            </MarkdownLink>
+                          );
+                        },
                         table: MarkdownTable,
                         h1({ children, ...props }) {
                           const id = nextHeadingId();

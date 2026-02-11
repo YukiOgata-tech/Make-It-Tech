@@ -18,6 +18,10 @@ import {
   normalizeInternalHref,
   resolveInternalLinkTitle,
 } from "@/lib/internal-link-titles";
+import {
+  buildLinkLabelMap,
+  normalizeLinkLabelUrl,
+} from "@/lib/link-labels";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 
@@ -151,6 +155,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const tocItems = headingSequence.filter(
     (heading) => heading.level === 2 || heading.level === 3
   );
+  const linkLabelMap = buildLinkLabelMap(record.linkLabels);
   let headingIndex = 0;
   const nextHeadingId = () => {
     const entry = headingSequence[headingIndex];
@@ -244,16 +249,21 @@ export default async function BlogDetailPage({ params }: PageProps) {
             components={{
               img: MarkdownImage,
               a({ href = "", children, ...props }) {
-                const label = resolveInternalLinkTitle(href);
                 const childText = getSingleText(children);
-                const normalized = normalizeInternalHref(href);
+                const normalizedInternal = normalizeInternalHref(href);
+                const labelOverride = linkLabelMap.get(
+                  normalizeLinkLabelUrl(href)
+                );
+                const internalTitle = resolveInternalLinkTitle(href);
+                const replacement = labelOverride ?? internalTitle;
                 const shouldReplace =
-                  Boolean(label) &&
                   Boolean(childText) &&
-                  (childText === href || (normalized && childText === normalized));
+                  (childText === href ||
+                    (normalizedInternal && childText === normalizedInternal) ||
+                    childText === href.replace(/^https?:\/\//, ""));
                 return (
                   <MarkdownLink href={href} {...props}>
-                    {shouldReplace && label ? label : children}
+                    {shouldReplace && replacement ? replacement : children}
                   </MarkdownLink>
                 );
               },

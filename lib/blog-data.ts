@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import type { BlogCategory, BlogStatus } from "@/lib/blog";
+import { normalizeLinkLabelItems, type LinkLabel } from "@/lib/link-labels";
 
 export type BlogCover = {
   url?: string;
@@ -17,6 +18,7 @@ export type BlogRecord = {
   category?: BlogCategory;
   status: BlogStatus;
   tags?: string[];
+  linkLabels?: LinkLabel[];
   coverImage?: BlogCover;
   publishedAt?: Date;
   createdAt?: Date;
@@ -87,6 +89,13 @@ export function normalizeBlogDoc(
   const tags = Array.isArray(data.tags)
     ? data.tags.map((tag: unknown) => String(tag)).filter(Boolean)
     : [];
+  const rawLinkLabels = Array.isArray(data.linkLabels)
+    ? data.linkLabels.map((item: { url?: unknown; label?: unknown }) => ({
+        url: String(item?.url ?? ""),
+        label: String(item?.label ?? ""),
+      }))
+    : [];
+  const linkLabels = normalizeLinkLabelItems(rawLinkLabels);
 
   return {
     id: doc.id,
@@ -97,6 +106,7 @@ export function normalizeBlogDoc(
     category: typeof data.category === "string" ? (data.category as BlogCategory) : undefined,
     status: (data.status ?? "draft") as BlogStatus,
     tags: tags.length ? tags : undefined,
+    linkLabels: linkLabels.length ? linkLabels : undefined,
     coverImage: coverUrl
       ? {
           url: coverUrl,

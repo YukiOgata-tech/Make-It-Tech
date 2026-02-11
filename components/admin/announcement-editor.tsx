@@ -15,6 +15,16 @@ import { MarkdownLink } from "@/components/content/markdown-link";
 import { MarkdownImage } from "@/components/content/markdown-image";
 import { MarkdownTable } from "@/components/content/markdown-table";
 import {
+  buildLinkLabelMap,
+  normalizeLinkLabelItems,
+  normalizeLinkLabelUrl,
+  type LinkLabel,
+} from "@/lib/link-labels";
+import {
+  normalizeInternalHref,
+  resolveInternalLinkTitle,
+} from "@/lib/internal-link-titles";
+import {
   announcementCategories,
   announcementStatuses,
   type AnnouncementCategory,
@@ -33,6 +43,7 @@ type AnnouncementFormData = {
   coverImageAlt?: string;
   coverImagePath?: string;
   links?: AnnouncementLink[];
+  linkLabels?: LinkLabel[];
 };
 
 type AnnouncementEditorProps = {
@@ -80,6 +91,12 @@ function insertAtCursor(text: string, insert: string, position: number) {
   return text.slice(0, position) + insert + text.slice(position);
 }
 
+function getSingleText(children: React.ReactNode) {
+  const nodes = Children.toArray(children);
+  if (nodes.length !== 1) return null;
+  return typeof nodes[0] === "string" ? nodes[0] : null;
+}
+
 export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initial?.title ?? "");
@@ -101,6 +118,12 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const [linkItems, setLinkItems] = useState<AnnouncementLink[]>(
     initial?.links ?? []
   );
+  const [linkLabels, setLinkLabels] = useState<LinkLabel[]>(
+    normalizeLinkLabelItems(initial?.linkLabels)
+  );
+  const [linkLabelUrlInput, setLinkLabelUrlInput] = useState("");
+  const [linkLabelTextInput, setLinkLabelTextInput] = useState("");
+  const [linkLabelError, setLinkLabelError] = useState("");
   const [linkInput, setLinkInput] = useState("");
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [saving, setSaving] = useState(false);
@@ -112,6 +135,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
 
   const previewContent = useMemo(() => content || "本文はまだ入力されていません。", [content]);
+  const linkLabelMap = useMemo(() => buildLinkLabelMap(linkLabels), [linkLabels]);
 
   const compressImage = async (file: File, purpose: "cover" | "inline") => {
     if (file.type === "image/gif") return file;
@@ -142,6 +166,35 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const handleSlugChange = (value: string) => {
     setSlugTouched(true);
     setSlug(value);
+  };
+
+  const handleAddLinkLabel = () => {
+    const url = linkLabelUrlInput.trim();
+    const label = linkLabelTextInput.trim();
+    if (!url || !label) {
+      setLinkLabelError("URLと表示テキストを入力してください。");
+      return;
+    }
+    if (!/^https?:\/\//i.test(url)) {
+      setLinkLabelError("外部リンクのURL（https://...）を入力してください。");
+      return;
+    }
+    const normalized = normalizeLinkLabelUrl(url);
+    if (linkLabels.some((item) => normalizeLinkLabelUrl(item.url) === normalized)) {
+      setLinkLabelError("同じURLが既に登録されています。");
+      return;
+    }
+    setLinkLabels((prev) => [...prev, { url, label }]);
+    setLinkLabelUrlInput("");
+    setLinkLabelTextInput("");
+    setLinkLabelError("");
+  };
+
+  const handleRemoveLinkLabel = (url: string) => {
+    const normalized = normalizeLinkLabelUrl(url);
+    setLinkLabels((prev) =>
+      prev.filter((item) => normalizeLinkLabelUrl(item.url) !== normalized)
+    );
   };
 
   const handleUploadImage = async (file: File, purpose: "cover" | "inline") => {
@@ -289,12 +342,13 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
               path: coverImagePath || null,
             }
           : null,
-          links: linkItems.map((item) => ({
-            url: item.url,
-            title: item.title ?? "",
-            description: item.description ?? "",
-            image: item.image ? item.image : undefined,
-          })),
+        linkLabels: normalizeLinkLabelItems(linkLabels),
+        links: linkItems.map((item) => ({
+          url: item.url,
+          title: item.title ?? "",
+          description: item.description ?? "",
+          image: item.image ? item.image : undefined,
+        })),
         };
 
       const response = await fetch(
@@ -451,6 +505,76 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="grid gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="text-xs text-muted-foreground">
+                外部リンクの表示テキスト
+              </label>
+              <span className="text-[11px] text-muted-foreground">
+                本文でURLをそのまま書いても任意名に置換できます
+              </span>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-[1fr,1fr,auto]">
+              <Input
+                value={linkLabelUrlInput}
+                onChange={(e) => {
+                  setLinkLabelUrlInput(e.target.value);
+                  if (linkLabelError) setLinkLabelError("");
+                }}
+                placeholder="https://example.com"
+              />
+              <Input
+                value={linkLabelTextInput}
+                onChange={(e) => {
+                  setLinkLabelTextInput(e.target.value);
+                  if (linkLabelError) setLinkLabelError("");
+                }}
+                placeholder="表示するテキスト"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                onClick={handleAddLinkLabel}
+              >
+                追加
+              </Button>
+            </div>
+            {linkLabelError ? (
+              <p className="text-[11px] text-destructive">{linkLabelError}</p>
+            ) : null}
+            {linkLabels.length ? (
+              <div className="grid gap-2">
+                {linkLabels.map((item) => (
+                  <div
+                    key={item.url}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border/60 bg-background/70 p-3 text-xs"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">{item.label}</p>
+                      <p className="text-[11px] text-muted-foreground break-all">
+                        {item.url}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl"
+                      onClick={() => handleRemoveLinkLabel(item.url)}
+                    >
+                      削除
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-muted-foreground">
+                まだ登録されていません。
+              </p>
+            )}
           </div>
 
           {status === "published" ? (
@@ -661,7 +785,25 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
                       remarkPlugins={remarkPlugins}
                       rehypePlugins={rehypePlugins}
                       components={{
-                        a: MarkdownLink,
+                        a({ href = "", children, ...props }) {
+                          const childText = getSingleText(children);
+                          const normalizedInternal = normalizeInternalHref(href);
+                          const labelOverride = linkLabelMap.get(
+                            normalizeLinkLabelUrl(href)
+                          );
+                          const internalTitle = resolveInternalLinkTitle(href);
+                          const replacement = labelOverride ?? internalTitle;
+                          const shouldReplace =
+                            Boolean(childText) &&
+                            (childText === href ||
+                              (normalizedInternal && childText === normalizedInternal) ||
+                              childText === href.replace(/^https?:\/\//, ""));
+                          return (
+                            <MarkdownLink href={href} {...props}>
+                              {shouldReplace && replacement ? replacement : children}
+                            </MarkdownLink>
+                          );
+                        },
                         img: MarkdownImage,
                         table: MarkdownTable,
                         p({ children }) {

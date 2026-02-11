@@ -4,6 +4,7 @@ import { revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { blogCategories, blogStatuses } from "@/lib/blog";
+import { normalizeLinkLabelItems } from "@/lib/link-labels";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,14 @@ const schema = z.object({
   tags: z.array(z.string().max(30)).optional(),
   status: z.enum(blogStatuses.map((s) => s.value) as [string, ...string[]]),
   publishedAt: z.string().nullable().optional(),
+  linkLabels: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        label: z.string().min(1).max(120),
+      })
+    )
+    .optional(),
   coverImage: z
     .object({
       url: z.string().url(),
@@ -104,6 +113,7 @@ export async function PATCH(
     content: payload.content?.trim() ?? "",
     category: payload.category ?? null,
     tags: payload.tags?.length ? payload.tags : [],
+    linkLabels: normalizeLinkLabelItems(payload.linkLabels),
     status: payload.status,
     updatedAt: Timestamp.now(),
   };

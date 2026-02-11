@@ -16,6 +16,10 @@ import {
   normalizeInternalHref,
   resolveInternalLinkTitle,
 } from "@/lib/internal-link-titles";
+import {
+  buildLinkLabelMap,
+  normalizeLinkLabelUrl,
+} from "@/lib/link-labels";
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -116,6 +120,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
   const linkMap = new Map(
     (record.links ?? []).map((link) => [link.url, link])
   );
+  const linkLabelMap = buildLinkLabelMap(record.linkLabels);
 
   const LinkCard = ({ url }: { url: string }) => {
     const data = linkMap.get(url);
@@ -235,13 +240,16 @@ export default async function NewsDetailPage({ params }: PageProps) {
                 const label = resolveInternalLinkTitle(href);
                 const childText = getSingleText(children);
                 const normalized = normalizeInternalHref(href);
+                const labelOverride = linkLabelMap.get(normalizeLinkLabelUrl(href));
+                const replacement = labelOverride ?? label;
                 const shouldReplace =
-                  Boolean(label) &&
                   Boolean(childText) &&
-                  (childText === href || (normalized && childText === normalized));
+                  (childText === href ||
+                    (normalized && childText === normalized) ||
+                    childText === href.replace(/^https?:\/\//, ""));
                 return (
                   <MarkdownLink href={href} {...props}>
-                    {shouldReplace && label ? label : children}
+                    {shouldReplace && replacement ? replacement : children}
                   </MarkdownLink>
                 );
               },

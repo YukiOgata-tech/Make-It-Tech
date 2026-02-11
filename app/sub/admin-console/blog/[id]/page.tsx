@@ -62,6 +62,12 @@ export default async function AdminBlogDetailPage({
     alt?: string;
     path?: string;
   };
+  const linkLabels = Array.isArray(data.linkLabels)
+    ? data.linkLabels.map((item: { url?: unknown; label?: unknown }) => ({
+        url: String(item?.url ?? ""),
+        label: String(item?.label ?? ""),
+      }))
+    : [];
 
   return (
     <div className="mx-auto max-w-5xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -77,6 +83,7 @@ export default async function AdminBlogDetailPage({
           tags: Array.isArray(data.tags)
             ? data.tags.map((tag: unknown) => String(tag)).filter(Boolean)
             : [],
+          linkLabels,
           publishedAt: toIso(data.publishedAt),
           coverImageUrl: coverImage.url ?? "",
           coverImageAlt: coverImage.alt ?? "",

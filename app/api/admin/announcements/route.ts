@@ -3,6 +3,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { normalizeLinkLabelItems } from "@/lib/link-labels";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,14 @@ const schema = z.object({
   category: z.enum(["news", "media", "case", "other"]),
   status: z.enum(["draft", "published"]),
   publishedAt: z.string().nullable().optional(),
+  linkLabels: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        label: z.string().min(1).max(120),
+      })
+    )
+    .optional(),
   coverImage: z
     .object({
       url: z.string().url(),
@@ -108,6 +117,7 @@ export async function POST(request: Request) {
     content: payload.content?.trim() ?? "",
     category: payload.category,
     status: payload.status,
+    linkLabels: normalizeLinkLabelItems(payload.linkLabels),
     ...(publishedAt ? { publishedAt } : {}),
     ...(payload.coverImage?.url
       ? {

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "新潟の中小事業者向けに、DX・業務改善・LPやWeb制作・自動化を必要最小限の範囲で支援します。",
   keywords: [
-    "新潟",
+    "新潟", "niigata","ベンチャー","生成AI","AI","人工知能",
     "DX",
     "IT",
     "業務改善",
