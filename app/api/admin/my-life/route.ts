@@ -15,7 +15,7 @@ const schema = z.object({
 
 export async function GET() {
   await requireAdmin();
-  const config = await fetchMyLifeConfig();
+  const config = await fetchMyLifeConfig({ bypassCache: true });
   return Response.json({ ok: true, config });
 }
 

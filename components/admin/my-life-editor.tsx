@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,10 +25,41 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
   const [message, setMessage] = useState(initial?.message ?? "");
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
   const [imagePath, setImagePath] = useState(initial?.imagePath ?? "");
+  const [hydrating, setHydrating] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [notice, setNotice] = useState("");
   const [tone, setTone] = useState<"info" | "success" | "error">("info");
+
+  useEffect(() => {
+    let alive = true;
+    const hydrate = async () => {
+      try {
+        const response = await fetch("/api/admin/my-life", { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = await response.json().catch(() => ({}));
+        const config = (payload?.config ?? {}) as {
+          leadText?: string;
+          titleText?: string;
+          message?: string;
+          imageUrl?: string;
+          imagePath?: string;
+        };
+        if (!alive) return;
+        setLeadText(typeof config.leadText === "string" ? config.leadText : "");
+        setTitleText(typeof config.titleText === "string" ? config.titleText : "");
+        setMessage(typeof config.message === "string" ? config.message : "");
+        setImageUrl(typeof config.imageUrl === "string" ? config.imageUrl : "");
+        setImagePath(typeof config.imagePath === "string" ? config.imagePath : "");
+      } finally {
+        if (alive) setHydrating(false);
+      }
+    };
+    hydrate();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const handleUpload = async (file: File) => {
     if (file.size / (1024 * 1024) > MAX_IMAGE_MB) {
@@ -104,7 +135,11 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
               メッセージ 編集
             </h1>
           </div>
-          <Button onClick={handleSave} className="rounded-xl" disabled={saving || uploading}>
+          <Button
+            onClick={handleSave}
+            className="rounded-xl"
+            disabled={saving || uploading || hydrating}
+          >
             {saving ? "保存中..." : "保存する"}
           </Button>
         </div>
@@ -127,6 +162,10 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
         <Separator className="my-4" />
 
         <div className="grid gap-4">
+          {hydrating ? (
+            <p className="text-xs text-muted-foreground">保存済みデータを取得中...</p>
+          ) : null}
+
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="grid gap-2">
               <label className="text-xs text-muted-foreground">上段テキスト</label>

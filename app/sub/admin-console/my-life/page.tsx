@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 
 export default async function AdminMyLifePage() {
   await requireAdmin();
-  const config = await fetchMyLifeConfig();
+  const config = await fetchMyLifeConfig({ bypassCache: true });
 
   return (
     <div className="mx-auto max-w-5xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">

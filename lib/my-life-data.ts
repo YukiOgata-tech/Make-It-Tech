@@ -61,8 +61,8 @@ const getCachedMyLifeConfig = unstable_cache(
   { revalidate: false, tags: ["public-my-life", "admin-my-life"] }
 );
 
-export async function fetchMyLifeConfig() {
-  if (process.env.NODE_ENV !== "production") {
+export async function fetchMyLifeConfig(options?: { bypassCache?: boolean }) {
+  if (options?.bypassCache || process.env.NODE_ENV !== "production") {
     const { firestore } = getFirebaseAdmin();
     const snapshot = await firestore.collection("myLife").doc(MY_LIFE_DOC_ID).get();
     if (!snapshot.exists) {
