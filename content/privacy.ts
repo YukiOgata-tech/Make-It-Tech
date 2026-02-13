@@ -111,6 +111,7 @@ export const privacyContent: PrivacyContent = {
       ],
       bullets: [
         "Firebase / Google Cloud（データ保管・認証・ストレージ等）",
+        "Google Analytics 4（アクセス解析）",
         "Resend（メール送信）",
       ],
     },
@@ -132,7 +133,17 @@ export const privacyContent: PrivacyContent = {
         "Cookieにより取得される情報には、個人を特定する情報は含まれません。利用者はブラウザの設定により、Cookieの使用を制限または無効にすることが可能です。",
         "また、Cookie同意の状態を保存するために必要最小限のCookieを使用します（例：同意/拒否の記録）。このCookieは一定期間で失効し、もしくはブラウザの設定や削除操作により消去できます。",
         "業務診断・制作相談フォームの入力内容について、入力補助のために端末内の保存領域（ローカルストレージ等）へ一時保存する場合があります。この保存は一定期間で失効し、設定で無効化・削除が可能です。",
-        "アクセス解析等の第三者ツールを導入する場合は、同意の取得後に限り利用する運用とし、対象とする場合は本ページで明示します。",
+        "当サイトではGoogle Analytics 4（GA4）を利用し、同意を得た場合に限りアクセス解析を行います。",
+      ],
+      bullets: [
+        "送信先：Google LLC（Google Analytics）",
+        "主な取得情報：閲覧ページURL、ページタイトル、参照元、利用端末・ブラウザ情報、アクセス日時、IPアドレスの一部情報、Cookie識別子等",
+        "利用目的：閲覧状況の把握、導線改善、コンテンツ改善、サービス品質向上",
+        "同意管理：同意バナーの選択内容に基づき、同意時のみ解析を有効化",
+        "無効化方法：同意しないを選択、またはブラウザ設定でCookieを無効化・削除",
+        "Google Analytics利用規約：https://marketingplatform.google.com/about/analytics/terms/jp/",
+        "Googleプライバシーポリシー：https://policies.google.com/privacy?hl=ja",
+        "Google Analyticsオプトアウト：https://tools.google.com/dlpage/gaoptout?hl=ja",
       ],
     },
     {
