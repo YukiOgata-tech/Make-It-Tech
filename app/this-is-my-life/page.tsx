@@ -3,7 +3,19 @@ import { fetchMyLifeConfig } from "@/lib/my-life-data";
 import { MyLifeMessage } from "@/components/sections/my-life-message";
 
 export const metadata: Metadata = {
-  title: "This Is My Life",
+  title: {
+    absolute: "テルマオリゾンへようこそ",
+  },
+  openGraph: {
+    images: [
+      {
+        url: "/images/for-timl-meta.png",
+      },
+    ],
+  },
+  twitter: {
+    images: ["/images/for-timl-meta.png"],
+  },
   robots: {
     index: false,
     follow: false,
