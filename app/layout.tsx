@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { MainLayout } from "@/components/layout/main-layout";
@@ -130,7 +131,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
         />
         <ThemeProvider>
-          <GaTracker />
+          <Suspense fallback={null}>
+            <GaTracker />
+          </Suspense>
           <MainLayout>{children}</MainLayout>
           <Toaster richColors closeButton />
           <CookieConsent />
