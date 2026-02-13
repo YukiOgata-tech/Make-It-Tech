@@ -37,6 +37,8 @@ export const runtime = "nodejs";
 
 export default async function ThisIsMyLifePage() {
   const config = await fetchMyLifeConfig();
+  const leadText = config.leadText?.trim() || "for テルマ･オリゾン";
+  const titleText = config.titleText?.trim() || "making your day";
   const today = new Intl.DateTimeFormat("ja-JP", {
     year: "numeric",
     month: "long",
@@ -51,13 +53,9 @@ export default async function ThisIsMyLifePage() {
       <div className="relative mx-auto flex min-h-dvh w-full max-w-4xl items-center px-4 py-10 sm:px-6">
         <article className="grid w-full gap-6 rounded-3xl border border-border/60 bg-background/70 p-5 shadow-sm backdrop-blur sm:p-8">
           <div className="grid gap-2">
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              for テルマ･オリゾン
-            </p>
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{leadText}</p>
             <p className="text-xs text-muted-foreground">{today}</p>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-              making your day 
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">{titleText}</h1>
           </div>
 
           {config.imageUrl ? (

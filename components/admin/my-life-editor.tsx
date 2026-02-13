@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 
 type MyLifeEditorProps = {
   initial?: {
+    leadText?: string;
+    titleText?: string;
     message?: string;
     imageUrl?: string;
     imagePath?: string;
@@ -18,6 +20,8 @@ type MyLifeEditorProps = {
 const MAX_IMAGE_MB = 5;
 
 export function MyLifeEditor({ initial }: MyLifeEditorProps) {
+  const [leadText, setLeadText] = useState(initial?.leadText ?? "");
+  const [titleText, setTitleText] = useState(initial?.titleText ?? "");
   const [message, setMessage] = useState(initial?.message ?? "");
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
   const [imagePath, setImagePath] = useState(initial?.imagePath ?? "");
@@ -69,6 +73,8 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          leadText: leadText.trim(),
+          titleText: titleText.trim(),
           message: message.trim(),
           imageUrl: imageUrl || null,
           imagePath: imagePath || null,
@@ -93,9 +99,9 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
       <div className="rounded-3xl border border-border/60 bg-background/70 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs text-muted-foreground">My Life 設定</p>
+            <p className="text-xs text-muted-foreground">エントランス 設定</p>
             <h1 className="mt-2 text-lg font-semibold sm:text-2xl">
-              this-is-my-life 編集
+              メッセージ 編集
             </h1>
           </div>
           <Button onClick={handleSave} className="rounded-xl" disabled={saving || uploading}>
@@ -121,8 +127,27 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
         <Separator className="my-4" />
 
         <div className="grid gap-4">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">上段テキスト</label>
+              <Input
+                value={leadText}
+                onChange={(e) => setLeadText(e.target.value)}
+                placeholder="for テルマ･オリゾン"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label className="text-xs text-muted-foreground">タイトル</label>
+              <Input
+                value={titleText}
+                onChange={(e) => setTitleText(e.target.value)}
+                placeholder="making your day"
+              />
+            </div>
+          </div>
+
           <div className="grid gap-2">
-            <label className="text-xs text-muted-foreground">僕からのメッセージ</label>
+            <label className="text-xs text-muted-foreground">メッセージ</label>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -130,7 +155,7 @@ export function MyLifeEditor({ initial }: MyLifeEditorProps) {
               placeholder="このページに表示したいメッセージを入力"
             />
             <p className="text-[11px] text-muted-foreground">
-              公開ページではテキストをアニメーション表示します。
+              公開ページではテキストをアニメーション表示
             </p>
           </div>
 

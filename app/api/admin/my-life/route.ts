@@ -6,6 +6,8 @@ import { fetchMyLifeConfig, saveMyLifeConfig } from "@/lib/my-life-data";
 export const runtime = "nodejs";
 
 const schema = z.object({
+  leadText: z.string().max(120).optional(),
+  titleText: z.string().max(160).optional(),
   message: z.string().max(6000),
   imageUrl: z.string().url().nullable().optional(),
   imagePath: z.string().max(300).nullable().optional(),
@@ -31,6 +33,8 @@ export async function PATCH(request: Request) {
   }
 
   await saveMyLifeConfig({
+    leadText: payload.leadText?.trim() ?? "",
+    titleText: payload.titleText?.trim() ?? "",
     message: payload.message.trim(),
     imageUrl: payload.imageUrl ?? "",
     imagePath: payload.imagePath ?? "",

@@ -3,6 +3,8 @@ import { Timestamp } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 
 export type MyLifeConfig = {
+  leadText?: string;
+  titleText?: string;
   message: string;
   imageUrl?: string;
   imagePath?: string;
@@ -37,6 +39,8 @@ function toDate(value: unknown) {
 function normalize(data: Record<string, unknown> | undefined): MyLifeConfig {
   const raw = data ?? {};
   return {
+    leadText: typeof raw.leadText === "string" ? raw.leadText : undefined,
+    titleText: typeof raw.titleText === "string" ? raw.titleText : undefined,
     message: typeof raw.message === "string" ? raw.message : "",
     imageUrl: typeof raw.imageUrl === "string" ? raw.imageUrl : undefined,
     imagePath: typeof raw.imagePath === "string" ? raw.imagePath : undefined,
@@ -70,6 +74,8 @@ export async function fetchMyLifeConfig() {
 }
 
 export async function saveMyLifeConfig(payload: {
+  leadText?: string;
+  titleText?: string;
   message: string;
   imageUrl?: string;
   imagePath?: string;
@@ -77,6 +83,8 @@ export async function saveMyLifeConfig(payload: {
   const { firestore } = getFirebaseAdmin();
   await firestore.collection("myLife").doc(MY_LIFE_DOC_ID).set(
     {
+      leadText: payload.leadText ?? "",
+      titleText: payload.titleText ?? "",
       message: payload.message,
       imageUrl: payload.imageUrl ?? "",
       imagePath: payload.imagePath ?? "",

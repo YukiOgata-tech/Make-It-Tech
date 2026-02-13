@@ -4,7 +4,7 @@ import { MyLifeEditor } from "@/components/admin/my-life-editor";
 import { fetchMyLifeConfig } from "@/lib/my-life-data";
 
 export const metadata: Metadata = {
-  title: "My Life 設定",
+  title: "マンションのやつ 設定",
   robots: { index: false, follow: false },
 };
 
