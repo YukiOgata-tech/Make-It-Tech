@@ -5,6 +5,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { GaTracker } from "@/components/analytics/ga-tracker";
 
 export const metadata: Metadata = {
   title: {
@@ -129,6 +130,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
         />
         <ThemeProvider>
+          <GaTracker />
           <MainLayout>{children}</MainLayout>
           <Toaster richColors closeButton />
           <CookieConsent />

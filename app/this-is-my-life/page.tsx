@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { fetchMyLifeConfig } from "@/lib/my-life-data";
 import { MyLifeMessage } from "@/components/sections/my-life-message";
+import { MinimalConsentBanner } from "@/components/consent/minimal-consent-banner";
 
 export const metadata: Metadata = {
   title: {
@@ -69,6 +70,7 @@ export default async function ThisIsMyLifePage() {
           <MyLifeMessage text={config.message ?? ""} />
         </article>
       </div>
+      <MinimalConsentBanner />
     </div>
   );
 }

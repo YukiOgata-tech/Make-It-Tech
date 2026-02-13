@@ -12,6 +12,7 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
 const easeOut: Easing = [0.22, 1, 0.36, 1];
 
 type ConsentState = "accepted" | "declined" | "unset";
+const CONSENT_EVENT = "mit-cookie-consent-updated";
 
 function getCookieValue(name: string) {
   if (typeof document === "undefined") return null;
@@ -46,6 +47,9 @@ export function CookieConsent({ className }: { className?: string }) {
   const updateConsent = (next: Exclude<ConsentState, "unset">) => {
     setConsent(next);
     setCookieValue(COOKIE_NAME, next);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event(CONSENT_EVENT));
+    }
   };
 
   const isOpen = consent === "unset";
