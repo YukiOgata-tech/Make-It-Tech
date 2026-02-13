@@ -62,6 +62,12 @@ export function AdminHeader() {
             ブログ
           </Link>
           <Link
+            href="/sub/admin-console/my-life"
+            className="rounded-xl border border-border/60 bg-background/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground sm:px-3 sm:py-2 sm:text-xs"
+          >
+            My Life
+          </Link>
+          <Link
             href="/sub/admin-console/results"
             className="rounded-xl border border-border/60 bg-background/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground sm:px-3 sm:py-2 sm:text-xs"
           >
