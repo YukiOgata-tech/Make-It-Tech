@@ -34,6 +34,7 @@ export function CookieConsent({ className }: { className?: string }) {
     typeof window !== "undefined" ? window.location.hostname : "";
   const isToolsHost = hostname.startsWith("tools.");
   const isToolsPath = pathname.startsWith("/sub/tools");
+  const isMyLifePath = pathname === "/this-is-my-life";
 
   React.useEffect(() => {
     const stored = getCookieValue(COOKIE_NAME);
@@ -49,7 +50,7 @@ export function CookieConsent({ className }: { className?: string }) {
 
   const isOpen = consent === "unset";
 
-  if (isToolsHost || isToolsPath) {
+  if (isToolsHost || isToolsPath || isMyLifePath) {
     return null;
   }
 

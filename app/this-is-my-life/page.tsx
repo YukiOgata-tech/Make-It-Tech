@@ -25,6 +25,13 @@ export const runtime = "nodejs";
 
 export default async function ThisIsMyLifePage() {
   const config = await fetchMyLifeConfig();
+  const today = new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+    timeZone: "Asia/Tokyo",
+  }).format(new Date());
 
   return (
     <div className="relative min-h-dvh overflow-hidden bg-gradient-to-b from-background via-background to-muted/30 text-foreground">
@@ -35,6 +42,7 @@ export default async function ThisIsMyLifePage() {
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               for テルマ･オリゾン
             </p>
+            <p className="text-xs text-muted-foreground">{today}</p>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">
               making your day 
             </h1>
