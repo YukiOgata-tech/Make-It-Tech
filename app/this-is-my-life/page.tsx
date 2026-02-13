@@ -33,10 +33,10 @@ export default async function ThisIsMyLifePage() {
         <article className="grid w-full gap-6 rounded-3xl border border-border/60 bg-background/70 p-5 shadow-sm backdrop-blur sm:p-8">
           <div className="grid gap-2">
             <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              Private Page
+              for テルマ･オリゾン
             </p>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-              This Is My Life
+              making your day 
             </h1>
           </div>
 
