@@ -4,7 +4,21 @@ import { MyLifeMessage } from "@/components/sections/my-life-message";
 
 export const metadata: Metadata = {
   title: "This Is My Life",
-  robots: { index: false, follow: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      noarchive: true,
+      nosnippet: true,
+    },
+  },
 };
 
 export const runtime = "nodejs";

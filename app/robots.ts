@@ -6,7 +6,11 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/sub/admin-console", "/sub/admin-console/login"],
+      disallow: [
+        "/sub/admin-console",
+        "/sub/admin-console/login",
+        "/this-is-my-life",
+      ],
     },
     sitemap: `${site.url}/sitemap.xml`,
   };
