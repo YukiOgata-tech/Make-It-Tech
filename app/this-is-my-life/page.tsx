@@ -49,7 +49,7 @@ export default async function ThisIsMyLifePage() {
   }).format(new Date());
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-gradient-to-b from-background via-background to-muted/30 text-foreground">
+    <div className="relative min-h-dvh overflow-hidden bg-linear-to-b from-background via-background to-muted/30 text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-[0.18]" />
       <div className="relative mx-auto flex min-h-dvh w-full max-w-4xl items-center px-4 py-10 sm:px-6">
         <article className="grid w-full gap-6 rounded-3xl border border-border/60 bg-background/70 p-5 shadow-sm backdrop-blur sm:p-8">
