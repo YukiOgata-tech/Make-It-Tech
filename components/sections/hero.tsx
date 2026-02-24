@@ -191,7 +191,7 @@ export function Hero({ className }: { className?: string }) {
             variants={itemVariants}
             className="mt-4 text-2xl font-semibold tracking-tight sm:mt-5 sm:text-5xl"
           >
-            Web制作からITによる業務改善･
+            Web制作から
             <span className="text-gradient text-gradient-animate">DX</span>まで。
             <span className="block text-muted-foreground text-lg sm:text-2xl">
               “現場で回るシステム”を提供します。
