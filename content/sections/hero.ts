@@ -2,9 +2,9 @@ import { ShieldCheck, Sparkles, Timer } from "lucide-react";
 
 export const heroBullets = [
   "LP/店舗サイト/コーポレート/アプリ制作(導線設計まで)",
-  "LINE公式･フォーム･管理シート･自動化(コスト重視)",
+  "LINE公式･フォーム･管理シート･自動化",
   "業務の見える化 → 改善案 → 実装 → 運用まで一貫対応",
-  "“作る前に整理”でも成果に繋がります",
+  "“整理”でも成果に繋がります",
 ] as const;
 
 export const heroTrust = [

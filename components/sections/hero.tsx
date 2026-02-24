@@ -171,7 +171,7 @@ export function Hero({ className }: { className?: string }) {
         >
           <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
-              IT活用･業務改善 総合支援
+              IT 総合支援
             </Badge>
             <Badge
               variant="outline"
@@ -183,7 +183,7 @@ export function Hero({ className }: { className?: string }) {
               variant="outline"
               className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
             >
-              補助･助成金 対応可
+              補助･助成金 対応
             </Badge>
           </motion.div>
 
@@ -273,7 +273,7 @@ export function Hero({ className }: { className?: string }) {
             </span>
             <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 sm:px-3 sm:py-2">
               <Timer className="h-4 w-4" />
-              まずは2週間〜の小さな改善もOK
+              小さな改善もOK
             </span>
           </motion.div>
         </motion.div>
@@ -364,7 +364,7 @@ export function Hero({ className }: { className?: string }) {
 
                 <Separator className="my-4" />
 
-                <div className="grid gap-3 sm:grid-cols-3">
+                {/* <div className="grid gap-3 sm:grid-cols-3">
                   {heroTrust.map((t) => (
                     <div key={t.title} className="rounded-2xl border border-border/70 bg-background/70 p-4">
                       <t.icon className="h-4 w-4 text-primary" />
@@ -372,7 +372,7 @@ export function Hero({ className }: { className?: string }) {
                       <p className="mt-1 text-xs text-muted-foreground">{t.desc}</p>
                     </div>
                   ))}
-                </div>
+                </div> */}
 
                 <div className="mt-6 rounded-2xl bg-muted/60 p-4">
                   <p className="text-sm font-medium">次の一手</p>
