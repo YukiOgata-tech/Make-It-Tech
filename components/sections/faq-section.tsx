@@ -74,23 +74,23 @@ export function FAQSection({ className }: { className?: string }) {
         </div>
 
         {/* Category chips */}
-        <div className="mt-4 sm:mt-8 grid gap-3 sm:gap-4 md:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-4">
           {faqCategoryMeta.map((c, index) => (
             <FadeIn key={c.key} delay={0.05 * index}>
-              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 px-3 py-1 sm:py-2 sm:px-4">
-                <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-primary/0 bg-primary/10 text-primary sm:h-9 sm:w-9">
-                  <c.icon className="h-4 w-4" />
+              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 pr-2 py-0 sm:pr-4">
+                <div className="inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-primary/0 bg-primary/10 text-primary sm:mr-2">
+                  <c.icon className="h-4 w-4 sm:h-6 sm:w-6" />
                 </div>
                 <div className="grid gap-0.5">
                   <p className="text-sm font-medium">{c.key}</p>
-                  <p className="text-xs leading-snug text-muted-foreground">{c.desc}</p>
+                  <p className="hidden sm:block text-xs leading-snug text-muted-foreground">{c.desc}</p>
                 </div>
               </div>
             </FadeIn>
           ))}
         </div>
 
-        <Separator className="my-4 sm:my-10" />
+        <Separator className="my-4 sm:my-8" />
 
         {/* Accordion */}
         <div className="hidden md:block">

@@ -51,10 +51,10 @@ export function DiagnosisSection({ className }: { className?: string }) {
             <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-3xl">
               契約前に「業務診断」
             </h2>
-            <p className="hidden sm:block mt-0.5 sm:mt-3 w-auto text-xs sm:text-base text-muted-foreground">
+            {/* <p className="hidden sm:block mt-0.5 sm:mt-3 w-auto text-xs sm:text-base text-muted-foreground">
               お問い合わせや簡易ヒアリングとは違い、現状を詳細に把握し、
               推奨ITの提案と概算見積まで行う“診断”です。
-            </p>
+            </p> */}
           </div>
         </div>
 
