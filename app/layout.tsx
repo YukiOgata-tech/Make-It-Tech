@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Script from "next/script";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { MainLayout } from "@/components/layout/main-layout";
@@ -129,6 +130,14 @@ export default function RootLayout({
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
+        />
+        <Script
+          src="https://knotic.make-it-tech.com/widget.js"
+          data-bot-id="bot_f3d4b0cc1387"
+          data-widget-token="knotic_wgt_Uxx07R5paLS_46Qyiig4T5OK"
+          data-mode="overlay"
+          data-position="right-bottom"
+          strategy="lazyOnload"
         />
         <ThemeProvider>
           <Suspense fallback={null}>
