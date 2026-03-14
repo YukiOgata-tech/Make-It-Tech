@@ -75,7 +75,7 @@ export default function NiigataPage() {
                   代表が一貫対応
                 </Badge>
                 <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-                  対面相談OK
+                  対面･オンライン〇
                 </Badge>
               </div>
 
@@ -171,7 +171,7 @@ export default function NiigataPage() {
           <div className="grid gap-8 md:grid-cols-2">
             <div className="rounded-3xl border border-primary/10 bg-secondary/20 p-6 sm:p-8">
               <h3 className="flex items-center gap-2 text-xl font-semibold">
-                <span className="text-primary">新潟のWeb制作・LP制作</span>
+                <span className="text-primary">Web制作・LP制作</span>
               </h3>
               <p className="mt-3 text-sm text-muted-foreground">
                 新潟市・長岡市を中心に、県内事業者様のホームページ制作、ランディングページ(LP)制作を承ります。
@@ -195,10 +195,10 @@ export default function NiigataPage() {
 
             <div className="rounded-3xl border border-primary/10 bg-secondary/20 p-6 sm:p-8">
               <h3 className="flex items-center gap-2 text-xl font-semibold">
-                <span className="text-primary">新潟のDX支援・業務改善</span>
+                <span className="text-primary">DX支援・業務改善</span>
               </h3>
               <p className="mt-3 text-sm text-muted-foreground">
-                「デジタル化したいが何から始めればいいかわからない」という新潟の企業様へ。
+                「デジタル化したいが何から始めればいいかわからない」という企業様へ。
                 現場訪問による業務整理から、身近なツール(LINE, Google)を使った低コストな改善を提案します。
               </p>
               <ul className="mt-4 grid gap-2 text-sm text-muted-foreground">
@@ -208,7 +208,7 @@ export default function NiigataPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                  <span>kintone / LINE公式 / Google Workspace 導入支援</span>
+                  <span>LINE公式 / Google Workspace 導入支援</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
@@ -231,7 +231,7 @@ export default function NiigataPage() {
               <div>
                 <h3 className="text-lg font-semibold">対応エリア</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  新潟県内全域に対応しています。訪問・対面でのお打ち合わせも可能です（地域によりオンライン併用）。
+                  新潟県内全域に対応しています。訪問・対面でのお打ち合わせも可能です（オンライン併用）。
                 </p>
               </div>
             </div>
@@ -256,7 +256,7 @@ export default function NiigataPage() {
               </div>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              ※ 県外（山形県、福島県、群馬県、富山県など）のお客様も、オンライン中心で対応可能です。お気軽にご相談ください。
+              ※ 県外（山形県など）のお客様も、対応可能です。お気軽にご相談ください。
             </p>
           </div>
         </div>
