@@ -135,8 +135,6 @@ export default function RootLayout({
           src="https://knotic.make-it-tech.com/widget.js"
           data-bot-id="bot_f3d4b0cc1387"
           data-widget-token="knotic_wgt_Uxx07R5paLS_46Qyiig4T5OK"
-          data-mode="overlay"
-          data-position="right-bottom"
           strategy="lazyOnload"
         />
         <ThemeProvider>

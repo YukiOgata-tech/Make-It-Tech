@@ -73,6 +73,12 @@ export function AdminHeader() {
           >
             回答一覧
           </Link>
+          <Link
+            href="/sub/admin-console/create-email"
+            className="rounded-xl border border-orange-300/60 bg-orange-50/80 px-2.5 py-1.5 text-[11px] font-medium text-orange-600 transition hover:border-orange-400 hover:text-orange-700 dark:border-orange-700/60 dark:bg-orange-950/40 dark:text-orange-400 dark:hover:border-orange-500 sm:px-3 sm:py-2 sm:text-xs"
+          >
+            メール送信
+          </Link>
           <a
             href={site.url}
             className="rounded-xl border border-border/60 bg-background/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground sm:px-3 sm:py-2 sm:text-xs"

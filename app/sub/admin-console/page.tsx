@@ -117,6 +117,23 @@ export default async function AdminConsoleIndexPage() {
           </CardContent>
         </Card>
 
+        <Card className="rounded-2xl gap-2 py-3 sm:col-span-2 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">メール送信</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              お問い合わせ返信・営業メールをHTMLデザインで個別送信します。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              Resend経由・ブランドデザイン適用
+            </span>
+            <Button asChild className="rounded-xl bg-orange-500 text-white hover:bg-orange-600">
+              <Link href="/sub/admin-console/create-email">開く</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className="rounded-2xl gap-2 border-dashed py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
           <CardHeader>
             <CardTitle className="text-base">レポート・分析</CardTitle>
