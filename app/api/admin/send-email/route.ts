@@ -6,9 +6,18 @@ import {
   type EmailType,
 } from "@/lib/admin-email-template";
 
+const ctaButtonSchema = z.object({
+  label: z.string().min(1).max(80),
+  url: z.string().url().max(500),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .default("#E2673D"),
+});
+
 const attachmentSchema = z.object({
   filename: z.string().min(1).max(255),
-  content: z.string().min(1),  // base64
+  content: z.string().min(1),
   content_type: z.string().min(1).max(100),
 });
 
@@ -16,11 +25,10 @@ const schema = z.object({
   to: z.string().email().max(200),
   toName: z.string().max(100),
   subject: z.string().min(1).max(200),
-  type: z.enum(["reply", "sales", "custom"]),
+  type: z.enum(["reply", "sales", "notice", "custom"]),
   greeting: z.string().min(1).max(1000),
   body: z.string().min(1).max(5000),
-  ctaLabel: z.string().max(80).optional(),
-  ctaUrl: z.string().url().max(500).optional().or(z.literal("")),
+  ctaButtons: z.array(ctaButtonSchema).max(4).optional(),
   closing: z.string().max(500).optional(),
   attachments: z.array(attachmentSchema).max(5).optional(),
 });
@@ -54,14 +62,17 @@ export async function POST(request: Request) {
     );
   }
 
+  const attachmentCount = payload.attachments?.length ?? 0;
+
   const templateParams = {
     toName: payload.toName,
+    toEmail: payload.to,
     type: payload.type as EmailType,
     greeting: payload.greeting,
     body: payload.body,
-    ctaLabel: payload.ctaLabel || undefined,
-    ctaUrl: payload.ctaUrl || undefined,
+    ctaButtons: payload.ctaButtons,
     closing: payload.closing || undefined,
+    attachmentCount,
   };
 
   const emailBody: Record<string, unknown> = {
