@@ -29,7 +29,7 @@ export function SiteFooter() {
               <p className="brand-mark text-base font-semibold sm:text-xl">{brand}</p>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
-              Web･LP制作/業務自動化/DX開発支援など、IT領域全般を柔軟にサポートします。
+              Web･LP制作/AI導入/DX開発支援など、IT領域全般を柔軟にサポートします。
               新潟の地方創生と、ITを通じた地域活動支援にも取り組んでいます。
             </p>
           </div>
@@ -58,7 +58,7 @@ export function SiteFooter() {
         {/* Bottom area */}
         <div className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            © {year} {brand}. All rights reserved.
+            © 2025{year > 2025 ? `–${year}` : ""} {brand}. All rights reserved.
           </p>
 
           <div className="grid gap-2 text-xs text-muted-foreground sm:flex sm:flex-wrap sm:items-center sm:gap-3">
