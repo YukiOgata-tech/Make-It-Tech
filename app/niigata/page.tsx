@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { NiigataContactForm } from "@/components/forms/niigata-contact-form";
 import {
   ArrowRight,
   BadgeCheck,
@@ -58,13 +59,13 @@ const freeConditions = [
 
 export default function NiigataPage() {
   return (
-    <div className="pb-10 sm:pb-16">
+    <div className="pb-6 sm:pb-12">
       {/* Hero */}
       <div className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-aurora opacity-60" />
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-25" />
 
-        <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-10 sm:px-6 sm:pb-12 sm:pt-16 lg:px-8">
+        <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-8 sm:px-6 sm:pb-12 sm:pt-12 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
@@ -72,7 +73,7 @@ export default function NiigataPage() {
                   新潟県内の方へ
                 </Badge>
                 <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
-                  代表が一貫対応
+                  一貫対応
                 </Badge>
                 <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
                   対面･オンライン〇
@@ -93,9 +94,9 @@ export default function NiigataPage() {
 
               <div className="mt-6 flex flex-wrap gap-3 sm:gap-4">
                 <Button asChild className="rounded-xl">
-                  <Link href="/contact">
+                  <a href="#contact">
                     相談してみる <ArrowRight className="sm:ml-2 h-4 w-4" />
-                  </Link>
+                  </a>
                 </Button>
                 <Button asChild variant="outline" className="rounded-xl">
                   <Link href="/pricing">料金ページへ</Link>
@@ -119,8 +120,8 @@ export default function NiigataPage() {
                 const Icon = item.icon;
                 return (
                   <Card key={item.title} className="rounded-3xl">
-                    <CardHeader className="pb-0">
-                      <div className="flex items-center gap-3">
+                    <div className="pb-0 w-auto px-3">
+                      <div className="flex items-center gap-2">
                         <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
                           <Icon className="h-4 w-4" />
                         </div>
@@ -128,7 +129,7 @@ export default function NiigataPage() {
                           {item.title}
                         </CardTitle>
                       </div>
-                    </CardHeader>
+                    </div>
                     <CardContent className="pt-0 text-sm text-muted-foreground">
                       {item.desc}
                     </CardContent>
@@ -166,18 +167,18 @@ export default function NiigataPage() {
       </div>
 
       {/* Niigata Focus Services */}
-      <section className="py-6 sm:py-12">
+      <section className="py-6 sm:py-12 -mx-4 sm:mx-auto">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-2">
-            <div className="rounded-3xl border border-primary/10 bg-secondary/20 p-6 sm:p-8">
+          <div className="grid gap-2 sm:gap-8 md:grid-cols-2">
+            <div className="sm:rounded-3xl border border-primary/10 bg-secondary/20 p-4 sm:p-8">
               <h3 className="flex items-center gap-2 text-xl font-semibold">
                 <span className="text-primary">Web制作・LP制作</span>
               </h3>
-              <p className="mt-3 text-sm text-muted-foreground">
-                新潟市・長岡市を中心に、県内事業者様のホームページ制作、ランディングページ(LP)制作を承ります。
-                「ただ作るだけ」ではなく、お問い合わせや採用につながる成果重視の設計を行います。
+              <p className="mt-3 text-xs sm:text-sm text-muted-foreground">
+                新潟市を中心に、県内事業者様のホームページ/LP制作を承ります。
+                「ただ作るだけ」ではなく、成果つながる設計を行います。開発着工金などは請求一切しません！
               </p>
-              <ul className="mt-4 grid gap-2 text-sm text-muted-foreground">
+              <ul className="mt-4 grid gap-2 text-xs sm:text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                   <span>新潟の地域性に合わせたデザイン・コンテンツ提案</span>
@@ -193,18 +194,18 @@ export default function NiigataPage() {
               </ul>
             </div>
 
-            <div className="rounded-3xl border border-primary/10 bg-secondary/20 p-6 sm:p-8">
+            <div className="sm:rounded-3xl border border-primary/10 bg-secondary/20 p-4 sm:p-8">
               <h3 className="flex items-center gap-2 text-xl font-semibold">
-                <span className="text-primary">DX支援・業務改善</span>
+                <span className="text-primary">DX支援・AI導入</span>
               </h3>
-              <p className="mt-3 text-sm text-muted-foreground">
-                「デジタル化したいが何から始めればいいかわからない」という企業様へ。
-                現場訪問による業務整理から、身近なツール(LINE, Google)を使った低コストな改善を提案します。
+              <p className="mt-3 text-xs sm:text-sm text-muted-foreground">
+                「業務をAI化したいが何から始めればいいかわからない」という企業様へ。
+                現場訪問によるDXコンサルと業務整理から、身近なツールを使った低コストな改善から本格的なDXまでを提案します。
               </p>
-              <ul className="mt-4 grid gap-2 text-sm text-muted-foreground">
+              <ul className="mt-4 grid gap-2 text-xs sm:text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                  <span>現場訪問・対面ヒアリングによる課題の可視化</span>
+                  <span>訪問・対面ヒアリングによる課題の可視化</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
@@ -221,11 +222,11 @@ export default function NiigataPage() {
       </section>
 
       {/* Area Served */}
-      <section className="py-6 sm:py-12">
+      <section className="py-4 sm:py-12 -mx-4 sm:mx-auto">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-border/60 bg-background/50 p-6 sm:p-8">
+          <div className="sm:rounded-3xl border border-border/60 bg-background/50 p-6 sm:p-8">
             <div className="flex items-start gap-3">
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl text-primary">
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
@@ -235,28 +236,27 @@ export default function NiigataPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm text-muted-foreground">
               <div>
-                <span className="block font-medium text-foreground mb-1">下越エリア</span>
+                <span className="block font-medium text-foreground mb-1">- 下越エリア</span>
                 新潟市（中央区, 西区, 東区, 北区, 江南区, 秋葉区, 南区, 西蒲区）、
                 新発田市、村上市、燕市、五泉市、阿賀野市、胎内市、聖籠町、阿賀町、関川村、粟島浦村、弥彦村
               </div>
               <div>
-                <span className="block font-medium text-foreground mb-1">中越エリア</span>
+                <span className="block font-medium text-foreground mb-1">- 中越エリア</span>
                 長岡市、三条市、柏崎市、小千谷市、加茂市、十日町市、見附市、魚沼市、南魚沼市、田上町、出雲崎町、湯沢町、津南町、刈羽村
               </div>
               <div>
-                <span className="block font-medium text-foreground mb-1">上越エリア</span>
+                <span className="block font-medium text-foreground mb-1">- 上越エリア</span>
                 上越市、糸魚川市、妙高市
-              </div>
-              <div>
-                <span className="block font-medium text-foreground mb-1">佐渡エリア</span>
-                佐渡市
               </div>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
               ※ 県外（山形県など）のお客様も、対応可能です。お気軽にご相談ください。
+            </p>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              ※ 訪問対応の場合、交通費（実費）を別途ご請求させていただく場合があります。詳細はご相談時にご説明します。
             </p>
           </div>
         </div>
@@ -292,15 +292,45 @@ export default function NiigataPage() {
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button asChild size="sm" className="rounded-lg sm:rounded-xl">
-                <Link href="/contact">
+                <a href="#contact">
                   無料相談を依頼 <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                </a>
               </Button>
               <Button asChild size="sm" variant="outline" className="rounded-lg sm:rounded-xl">
                 <Link href="/survey">LINEで相談</Link>
               </Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <Separator className="my-6 sm:my-10" />
+      </div>
+
+      {/* Contact form */}
+      <section id="contact" className="py-6 sm:py-12">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-5 sm:mb-8">
+            <p className="text-xs font-medium text-primary/80 sm:text-sm">新潟ページからのご相談</p>
+            <h2 className="mt-1 text-base font-semibold tracking-tight sm:text-2xl">
+              まずはお気軽にご相談ください
+            </h2>
+            <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">
+              対面・オンラインどちらでも対応。内容確認後、担当より直接ご連絡いたします。
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-border/60 bg-background/70 p-5 sm:p-8">
+            <NiigataContactForm />
+          </div>
+
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            LINEで相談したい方は
+            <Link href="/survey" className="ml-1 font-medium text-primary underline underline-offset-2 hover:opacity-80">
+              こちら
+            </Link>
+          </p>
         </div>
       </section>
     </div>
