@@ -18,7 +18,7 @@ const ctaButtonSchema = z.object({
 const attachmentSchema = z.object({
   filename: z.string().min(1).max(255),
   content: z.string().min(1),
-  content_type: z.string().min(1).max(100),
+  content_type: z.string().max(100).optional(), // mobile では空の場合がある
 });
 
 const schema = z.object({
@@ -31,6 +31,7 @@ const schema = z.object({
   ctaButtons: z.array(ctaButtonSchema).max(4).optional(),
   closing: z.string().max(500).optional(),
   attachments: z.array(attachmentSchema).max(5).optional(),
+  fromKey: z.enum(["default", "manual"]).default("default"),
 });
 
 export const runtime = "nodejs";
@@ -40,9 +41,10 @@ export async function POST(request: Request) {
   await requireAdmin();
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.RESEND_FROM?.trim();
+  const fromDefault = process.env.RESEND_FROM?.trim();
+  const fromManual  = process.env.RESEND_FROM_MANUAL?.trim();
 
-  if (!apiKey || !from) {
+  if (!apiKey || !fromDefault) {
     return Response.json(
       { error: "メール送信設定が不足しています。" },
       { status: 500 }
@@ -75,6 +77,9 @@ export async function POST(request: Request) {
     attachmentCount,
   };
 
+  const from =
+    payload.fromKey === "manual" && fromManual ? fromManual : fromDefault;
+
   const emailBody: Record<string, unknown> = {
     from,
     to: [payload.to],
@@ -84,11 +89,14 @@ export async function POST(request: Request) {
   };
 
   if (payload.attachments && payload.attachments.length > 0) {
-    emailBody.attachments = payload.attachments.map((a) => ({
-      filename: a.filename,
-      content: a.content,
-      content_type: a.content_type,
-    }));
+    emailBody.attachments = payload.attachments.map((a) => {
+      const att: Record<string, string> = {
+        filename: a.filename,
+        content: a.content,
+      };
+      if (a.content_type) att.content_type = a.content_type;
+      return att;
+    });
   }
 
   const response = await fetch("https://api.resend.com/emails", {

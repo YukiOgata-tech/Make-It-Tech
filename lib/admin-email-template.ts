@@ -293,16 +293,13 @@ img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration
                       </td>
                     </tr>
 
-                    <!-- Main body (highlighted panel) -->
+                    <!-- Main body -->
                     <tr>
                       <td style="padding-bottom:24px;">
-                        <div class="dm-panel"
-                             style="background:${B.panel};border:1px solid ${B.border};border-left:4px solid ${B.accent};border-radius:0 12px 12px 0;padding:16px 20px;">
-                          <p class="body-text dm-text"
-                             style="margin:0;font-size:15px;line-height:1.9;color:${B.dark};font-family:system-ui,-apple-system,sans-serif;">
-                            ${nl2br(body)}
-                          </p>
-                        </div>
+                        <p class="body-text dm-text"
+                           style="margin:0;font-size:15px;line-height:1.9;color:${B.dark};font-family:system-ui,-apple-system,sans-serif;">
+                          ${nl2br(body)}
+                        </p>
                       </td>
                     </tr>
 

@@ -43,6 +43,21 @@ import {
 
 // ─── Zod schema ───────────────────────────────────────────────────────────────
 
+const FROM_OPTIONS = [
+  {
+    key: "default" as const,
+    label: "no-reply@make-it-tech.com",
+    desc: "自動返信・通知向け",
+  },
+  {
+    key: "manual" as const,
+    label: "info@make-it-tech.com",
+    desc: "手動送信・個別対応向け",
+  },
+] as const;
+
+type FromKey = (typeof FROM_OPTIONS)[number]["key"];
+
 const schema = z.object({
   to: z.string().email("正しいメールアドレスを入力してください"),
   toName: z.string().max(100, "100文字以内で入力してください"),
@@ -122,7 +137,7 @@ const MAX_FILES      = 5;
 
 // Accept string for file input
 const ACCEPT_EXTS = [
-  ".jpg", ".jpeg", ".png", ".gif", ".webp",
+  ".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif",
   ".pdf",
   ".txt", ".csv",
   ".doc", ".docx",
@@ -143,9 +158,23 @@ const ALLOWED_MIME_PREFIXES = [
   "application/vnd.ms-",
   "application/vnd.visio",
   "application/onenote",
+  "application/octet-stream", // Android の汎用タイプ
 ];
 
-function isMimeAllowed(mime: string) {
+// 拡張子ベースの許可リスト（MIMEタイプが取れない場合のフォールバック）
+const ALLOWED_EXTS = new Set([
+  "jpg","jpeg","png","gif","webp","heic","heif",
+  "pdf","txt","csv",
+  "doc","docx","xls","xlsx","ppt","pptx",
+  "mdb","accdb","vsd","vsdx","pub","one",
+]);
+
+function isMimeAllowed(mime: string, filename: string): boolean {
+  // MIMEタイプが空 or 汎用の場合は拡張子で判定
+  if (!mime || mime === "application/octet-stream") {
+    const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+    return ALLOWED_EXTS.has(ext);
+  }
   return ALLOWED_MIME_PREFIXES.some((p) => mime.startsWith(p));
 }
 
@@ -220,6 +249,7 @@ function EmailPreview({ html }: { html: string }) {
 export function EmailComposer() {
   const [showPreview, setShowPreview] = useState(false);
   const [isSending, setIsSending]     = useState(false);
+  const [fromKey, setFromKey]         = useState<FromKey>("manual");
   const [lastSent, setLastSent]       = useState<{ to: string; subject: string } | null>(null);
 
   // CTA buttons
@@ -326,7 +356,7 @@ export function EmailComposer() {
           toast.error(`「${file.name}」は ${formatBytes(MAX_FILE_SIZE)} を超えています。`);
           continue;
         }
-        if (!isMimeAllowed(file.type)) {
+        if (!isMimeAllowed(file.type, file.name)) {
           toast.error(`「${file.name}」は対応していないファイル形式です。`);
           continue;
         }
@@ -392,6 +422,7 @@ export function EmailComposer() {
     try {
       const payload = {
         ...data,
+        fromKey,
         ctaButtons: ctaButtons.length > 0
           ? ctaButtons.map(({ label, url, color }) => ({ label, url, color }))
           : undefined,
@@ -409,8 +440,9 @@ export function EmailComposer() {
         toast.error(json.error ?? "送信に失敗しました。時間をおいて再試行してください。");
         return;
       }
+      const fromLabel = FROM_OPTIONS.find((o) => o.key === fromKey)?.label ?? "";
       setLastSent({ to: data.to, subject: data.subject });
-      toast.success(`「${data.subject}」を ${data.to} に送信しました。`);
+      toast.success(`「${data.subject}」を ${data.to} に送信しました。（送信元: ${fromLabel}）`);
     } catch {
       toast.error("ネットワークエラーが発生しました。");
     } finally {
@@ -477,6 +509,39 @@ export function EmailComposer() {
           className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-4 sm:p-6"
           noValidate
         >
+          {/* 送信元 */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">送信元アドレス</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {FROM_OPTIONS.map((opt) => {
+                const selected = fromKey === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setFromKey(opt.key)}
+                    className={cn(
+                      "flex flex-col items-start gap-0.5 rounded-xl border px-4 py-3 text-left transition-colors",
+                      selected
+                        ? "border-orange-400 bg-orange-50 dark:border-orange-600 dark:bg-orange-950/30"
+                        : "border-border bg-background hover:border-border/80 hover:bg-muted/30"
+                    )}
+                  >
+                    <span className={cn(
+                      "text-xs font-semibold",
+                      selected ? "text-orange-600 dark:text-orange-400" : "text-foreground"
+                    )}>
+                      {opt.label}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">{opt.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <Separator />
+
           {/* 送信先 */}
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">送信先</p>
