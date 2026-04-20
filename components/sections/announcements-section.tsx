@@ -124,11 +124,11 @@ export async function AnnouncementsSection() {
               <Link
                 key={item.id}
                 href={`/news/${item.slug}`}
-                className="group border-y border-border/40 py-2 transition hover:bg-background/40 sm:rounded-3xl sm:border sm:border-border/60 sm:bg-background/70 sm:px-4 sm:py-4 sm:hover:border-primary/40"
+                className="group border-y border-border/90 py-2 transition hover:bg-background/40 sm:rounded-3xl sm:border sm:border-border/60 sm:bg-background/70 sm:px-4 sm:py-4 sm:hover:border-primary/40"
               >
                 <div className="flex h-full flex-col gap-3">
                   <div className="flex gap-3">
-                    <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-border/60 bg-secondary/30 sm:h-32 sm:w-full sm:rounded-2xl">
+                    <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-border/90 bg-secondary/30 sm:h-32 sm:w-full sm:rounded-2xl">
                       {item.coverImage?.url ? (
                         <img
                           src={item.coverImage.url}
@@ -142,7 +142,7 @@ export async function AnnouncementsSection() {
                     </div>
                     <div className="flex flex-1 flex-col gap-1.5 sm:hidden">
                       <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                        <span className="rounded-full border border-primary/30 px-2 py-0.5 text-[10px] text-primary">
+                        <span className="rounded-full border border-primary/80 px-2 py-0.5 text-[10px] text-primary">
                           {categoryLabelMap[item.category] ?? "お知らせ"}
                         </span>
                         <span>{formatDate(item.publishedAt)}</span>

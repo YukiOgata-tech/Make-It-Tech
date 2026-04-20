@@ -110,7 +110,7 @@ export function DiagnosisSection({ className }: { className?: string }) {
           {diagnosisComparisons.map((c) => (
             <Card key={c.title} className="relative overflow-hidden rounded-3xl">
               <div
-                className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-35 dark:hidden"
+                className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-75 dark:hidden"
                 style={{ backgroundImage: "url(/images/bg-2-light.png)" }}
               />
               <div

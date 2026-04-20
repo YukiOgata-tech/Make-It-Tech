@@ -30,7 +30,7 @@ export function PricingLinkSection({ className }: { className?: string }) {
             </ul>
           </div>
 
-          <div className=" border-y border-border/60 bg-background/70 p-3 sm:p-6">
+          <div className=" border-y border-border bg-background/90 p-3 sm:p-6">
             <p className="text-sm sm:text-lg font-medium">-「料金ページ」で詳しく見る</p>
             <div className="mt-4 flex flex-nowrap items-center gap-2 sm:flex-wrap">
               <Button asChild size="sm" className="rounded-lg sm:rounded-xl">
