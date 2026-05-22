@@ -230,7 +230,7 @@ export function Hero({ className }: { className?: string }) {
             </Button>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mt-6">
+          {/* <motion.div variants={itemVariants} className="mt-6">
             <MobileDisclosure summary="対応内容を見る">
               <div className="text-foreground">
                 <motion.div variants={listVariants} className="grid gap-2">
@@ -261,17 +261,17 @@ export function Hero({ className }: { className?: string }) {
                 </div>
               </div>
             </MobileDisclosure>
-          </motion.div>
+          </motion.div> */}
 
           <motion.div
             variants={itemVariants}
-            className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:mt-8 sm:gap-3"
+            className="mt-4 flex flex-wrap items-center gap-1 text-[10px] sm:text-xs text-muted-foreground sm:mt-8 sm:gap-3"
           >
-            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 sm:px-3 sm:py-2">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-1 sm:px-3 sm:py-2">
               <ShieldCheck className="h-4 w-4" />
               対応範囲は事前に合意して進行
             </span>
-            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-2 sm:px-3 sm:py-2">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-1 sm:px-3 sm:py-2">
               <Timer className="h-4 w-4" />
               小さな改善もOK
             </span>
