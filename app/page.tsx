@@ -4,6 +4,7 @@ import { DiagnosisSection } from "@/components/sections/diagnosis-section";
 import { FloatingContactCta } from "@/components/sections/floating-contact-cta";
 import { PricingLinkSection } from "@/components/sections/pricing-link-section";
 import { AnnouncementsSection } from "@/components/sections/announcements-section";
+import { WorksPreviewSection } from "@/components/sections/works-preview-section";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function HomePage() {
       <Hero />
       <AnnouncementsSection />
       <DiagnosisSection />
+      <WorksPreviewSection />
       {/* <OfferSection /> */}
       <PricingLinkSection />
       <FAQSection />

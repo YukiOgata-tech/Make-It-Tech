@@ -1,0 +1,90 @@
+import { Bot, Building2, Globe2, LineChart, Settings2, Smartphone } from "lucide-react";
+
+export type WorkItem = {
+  id: string;
+  companyName: string;
+  title: string;
+  category: string;
+  url: string;
+  summary: string;
+  scope: string[];
+  results: string[];
+  previewTone: "coral" | "teal" | "sun" | "ink";
+  previewType?: "mock" | "live";
+  previewUrl?: string;
+  logoUrl?: string;
+  isPublic: boolean;
+};
+
+export const workStats = [
+  { label: "導入・支援先", value: "5+", note: "飲食店4店舗以上 / 学童保育施設" },
+  { label: "制作・改善案件", value: "18+", note: "サイト・LP・業務システム" },
+];
+
+export const workCapabilities = [
+  { label: "Web制作", icon: Globe2 },
+  { label: "LP制作", icon: Smartphone },
+  { label: "業務改善", icon: Settings2 },
+  { label: "AI導入", icon: Bot },
+  { label: "導線設計", icon: LineChart },
+  { label: "地域事業支援", icon: Building2 },
+];
+
+export const works: WorkItem[] = [
+  {
+    id: "digishift",
+    companyName: "デジシフ",
+    title: "店舗・施設向けシフト管理Webシステム",
+    category: "Webシステム開発",
+    url: "https://digishift.make-it-tech.com",
+    summary: "希望シフト提出、シフト作成、共有、打刻管理、CSV・画像出力、給与計算サポートまでを一元化するWebシフト管理システムを開発。",
+    scope: ["要件整理", "UI設計", "Webアプリ開発", "勤怠管理", "出力機能", "運用支援"],
+    results: ["飲食店4店舗以上と学童保育施設で活用", "LINE・紙・Excelによる希望回収や転記作業を削減"],
+    previewTone: "teal",
+    previewType: "live",
+    previewUrl: "https://digishift.make-it-tech.com",
+    logoUrl: "https://digishift.make-it-tech.com/images/degishift-logo-trans.png",
+    isPublic: true,
+  },
+  {
+    id: "manufacturing-dx",
+    companyName: "製造業 B社",
+    title: "問い合わせ管理と業務フロー改善",
+    category: "DX支援",
+    url: "https://example.com",
+    summary: "紙と口頭で分散していた依頼情報をフォームと管理シートに集約。",
+    scope: ["業務整理", "フォーム設計", "管理シート", "運用支援"],
+    results: ["対応状況を一覧化", "確認漏れを減らす運用へ"],
+    previewTone: "teal",
+    isPublic: false,
+  },
+  {
+    id: "service-lp",
+    companyName: "サービス業 C社",
+    title: "新サービス紹介LP",
+    category: "LP制作",
+    url: "https://example.com",
+    summary: "サービスの強み、導入メリット、問い合わせまでの流れを1ページに集約。",
+    scope: ["LP構成", "コピー整理", "実装", "CTA設計"],
+    results: ["説明資料代わりに使える導線", "紹介営業で共有しやすいページへ"],
+    previewTone: "sun",
+    isPublic: false,
+  },
+  {
+    id: "ai-support",
+    companyName: "小規模事業 D社",
+    title: "AIチャット導入の初期設計",
+    category: "AI活用",
+    url: "https://example.com",
+    summary: "よくある質問と案内文を整理し、問い合わせ前の情報提供を自動化する設計を実施。",
+    scope: ["FAQ整理", "プロンプト設計", "導入支援", "改善提案"],
+    results: ["一次対応の負担を軽減", "案内品質を揃える準備を実施"],
+    previewTone: "ink",
+    isPublic: false,
+  },
+];
+
+
+export const publicWorks = works.filter((work) => work.isPublic);
+
+
