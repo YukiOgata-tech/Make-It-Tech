@@ -201,7 +201,7 @@ export function DiagnosisSection({ className }: { className?: string }) {
           </div>
         </div> */}
 
-        <div className="mt-4 sm:mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-3 sm:p-6">
+        <div className="hidden sm:block mt-4 sm:mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-3 sm:p-6">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
               <p className="text-sm font-medium">診断の第一歩はLINEから</p>

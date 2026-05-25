@@ -21,7 +21,7 @@ export function WorksPreviewSection() {
                 事業に合わせて、開発します
               </h2>
               <p className="mt-1.5 max-w-2xl text-xs leading-5 text-muted-foreground sm:mt-3 sm:text-base sm:leading-7">
-                Web/LP制作、システム開発/導入支援、AI活用まで、必要な範囲に絞って支援しています。
+                Web/LP制作、システム開発/導入支援、AI活用まで、支援しています。
               </p>
             </div>
             <Button asChild size="sm" className="h-9 rounded-xl sm:h-10">
