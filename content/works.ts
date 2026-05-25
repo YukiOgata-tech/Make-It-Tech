@@ -5,12 +5,12 @@ export type WorkItem = {
   companyName: string;
   title: string;
   category: string;
-  url: string;
+  url?: string;
   summary: string;
   scope: string[];
   results: string[];
   previewTone: "coral" | "teal" | "sun" | "ink";
-  previewType?: "mock" | "live";
+  previewType?: "mock" | "live" | "seat-map";
   previewUrl?: string;
   logoUrl?: string;
   isPublic: boolean;
@@ -44,6 +44,18 @@ export const works: WorkItem[] = [
     previewType: "live",
     previewUrl: "https://digishift.make-it-tech.com",
     logoUrl: "https://digishift.make-it-tech.com/images/degishift-logo-trans.png",
+    isPublic: true,
+  },
+  {
+    id: "study-room-occupancy",
+    companyName: "自習室運営事業者",
+    title: "リアルタイム利用状況管理システム",
+    category: "業務システム開発",
+    summary: "QRコードで入退室を記録し、会員と管理側が席の利用状況をリアルタイムに確認できる仕組みを構築。",
+    scope: ["要件整理", "管理画面", "会員向け画面", "QR入退室", "座席状況表示", "機器連携支援"],
+    results: ["席の空き状況をスマートフォンから確認可能に", "自動ロック機材の接続と運用設計を支援"],
+    previewTone: "ink",
+    previewType: "seat-map",
     isPublic: true,
   },
   {

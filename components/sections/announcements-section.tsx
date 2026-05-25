@@ -114,7 +114,7 @@ export async function AnnouncementsSection() {
           </div>
         </div>
 
-        <div className="mt-4 grid gap-0 sm:gap-4 sm:mt-8 md:grid-cols-3">
+        <div className="mt-2 grid gap-0 sm:gap-4 sm:mt-8 md:grid-cols-3">
           {displayAnnouncements.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border/60 bg-background/60 p-6 text-sm text-muted-foreground md:col-span-3">
               まだお知らせはありません。
@@ -140,7 +140,7 @@ export async function AnnouncementsSection() {
                         <div className="h-full w-full bg-linear-to-br from-primary/10 via-background/60 to-secondary/40" />
                       )}
                     </div>
-                    <div className="flex flex-1 flex-col gap-1.5 sm:hidden">
+                    <div className="flex flex-1 flex-col gap-0.5 sm:gap-1.5 sm:hidden">
                       <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                         <span className="rounded-full border border-primary/80 px-2 py-0.5 text-[10px] text-primary">
                           {categoryLabelMap[item.category] ?? "お知らせ"}

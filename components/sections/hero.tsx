@@ -200,7 +200,7 @@ export function Hero({ className }: { className?: string }) {
 
           <motion.p
             variants={itemVariants}
-            className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg"
+            className="mt-4 max-w-xl text-xs sm:text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg"
           >
             {site.description}
           </motion.p>
@@ -357,7 +357,7 @@ export function Hero({ className }: { className?: string }) {
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                     <h3 className="text-sm font-medium">IT導入したいが何から？</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      → 目標/KPI→優先順位→最小実装のロードマップ
+                      → 目標/KPI→優先順位→実装のロードマップ
                     </p>
                   </div>
                 </div>

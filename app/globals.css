@@ -81,7 +81,7 @@
   --secondary: rgb(var(--brand-mint));
   --secondary-foreground: rgb(22 52 47);
   --muted: rgb(238 230 214);
-  --muted-foreground: rgb(85 99 107);
+  --muted-foreground: rgb(61 73 80);
   --accent: rgb(var(--brand-sun));
   --accent-foreground: rgb(58 39 6);
   --destructive: rgb(209 67 67);

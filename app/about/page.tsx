@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { SiYoutube } from "react-icons/si";
 import { Section } from "@/components/layout/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LineButton } from "@/components/ui/line-button";
 import { Separator } from "@/components/ui/separator";
-import { ExperienceDeck } from "@/components/sections/experience-deck";
 import { AboutOverviewPanel } from "@/components/sections/about-overview-panel";
 import {
   aboutActivities,
@@ -47,7 +46,25 @@ export default function AboutPage() {
         title="対応実績の概要"
         description="昨年度からの支援実績をご参考ください。"
       >
-        <ExperienceDeck />
+        <div className="rounded-3xl border border-border/60 bg-background/70 p-5 sm:p-6 md:p-8">
+          <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <p className="text-base font-semibold sm:text-lg">
+                制作・支援実績をまとめています
+              </p>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Web/LP制作、業務システム開発、運用支援など、実際に対応した案件の概要を掲載しています。
+                画面イメージや実施内容は実績紹介ページからご確認ください。
+              </p>
+            </div>
+            <Button asChild className="w-full rounded-xl md:w-auto">
+              <Link href="/works">
+                実績紹介を見る
+                <ArrowRight className="ml-1 size-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       </Section>
 
       <Section

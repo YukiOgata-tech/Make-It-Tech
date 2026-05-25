@@ -12,7 +12,7 @@ export type Offer = {
 export const offers: Offer[] = [
   {
     title: "Web制作(LP/店舗サイト/採用ページ)",
-    range: "目安：¥40,000~¥600,000",
+    range: "目安：¥50,000~¥600,000",
     icon: Sparkles,
     summary:
       "目的(集客/採用/告知)から逆算して、構成→デザイン→実装まで。最短で“問い合わせにつながる形”を作ります。",

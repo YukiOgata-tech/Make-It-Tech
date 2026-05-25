@@ -171,7 +171,8 @@ export function DiagnosisSection({ className }: { className?: string }) {
           ))}
         </div>
 
-        <div className="mt-8">
+        {/* コメントアウトしてます */}
+        {/* <div className="mt-8">
           <div>
             <p className="text-sm font-medium text-primary/80">-診断で得られること</p>
             <h3 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl">
@@ -198,7 +199,7 @@ export function DiagnosisSection({ className }: { className?: string }) {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="mt-4 sm:mt-8 rounded-3xl border border-primary/20 bg-secondary/40 p-3 sm:p-6">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">

@@ -18,10 +18,10 @@ export function WorksPreviewSection() {
                 制作・支援実績
               </Badge>
               <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-3xl">
-                事業に合わせて、見せ方と運用を整えます
+                事業に合わせて、開発します
               </h2>
               <p className="mt-1.5 max-w-2xl text-xs leading-5 text-muted-foreground sm:mt-3 sm:text-base sm:leading-7">
-                Web制作、LP、業務改善、AI活用まで、必要な範囲に絞って支援しています。
+                Web/LP制作、システム開発/導入支援、AI活用まで、必要な範囲に絞って支援しています。
               </p>
             </div>
             <Button asChild size="sm" className="h-9 rounded-xl sm:h-10">
@@ -36,7 +36,7 @@ export function WorksPreviewSection() {
               <div key={stat.label} className="rounded-2xl border border-border/60 bg-background/75 p-2 sm:rounded-3xl sm:p-4">
                 <p className="text-[9px] font-semibold text-muted-foreground sm:text-xs">{stat.label}</p>
                 <p className="mt-0.5 text-lg font-semibold sm:text-3xl">{stat.value}</p>
-                <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground sm:text-sm">{stat.note}</p>
+                <p className="sm:mt-0.5 text-[10px] leading-4 text-muted-foreground sm:text-sm">{stat.note}</p>
               </div>
             ))}
           </div>

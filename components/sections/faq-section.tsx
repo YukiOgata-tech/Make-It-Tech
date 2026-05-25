@@ -68,13 +68,13 @@ export function FAQSection({ className }: { className?: string }) {
           <div>
             <p className="text-sm font-medium text-primary/80">-FAQ</p>
             <h2 className="mt-2 text-lg font-semibold tracking-tight sm:text-2xl md:text-3xl">
-              不安になりやすいポイントを先に解消します
+              不安になりやすいポイントを先に解消
             </h2>
           </div>
         </div>
 
         {/* Category chips */}
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-4">
+        <div className="hidden sm:block mt-4 grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-4">
           {faqCategoryMeta.map((c, index) => (
             <FadeIn key={c.key} delay={0.05 * index}>
               <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 pr-2 py-0 sm:pr-4">
@@ -98,7 +98,7 @@ export function FAQSection({ className }: { className?: string }) {
             {faqItems.map((f, idx) => (
               <AccordionItem key={`${f.category}-${idx}`} value={`item-${idx}`}>
                 <AccordionTrigger className="text-left">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                     <Badge variant="secondary" className="rounded-xl">
                       {f.category}
                     </Badge>
@@ -162,10 +162,10 @@ export function FAQSection({ className }: { className?: string }) {
         <div className="mt-4 sm:mt-10 rounded-3xl border border-primary/20 bg-secondary/40 px-4 p-4 sm:p-8">
           <div className="grid gap-4 md:grid-cols-3 md:items-center">
             <div className="md:col-span-2">
-              <p className="text-sm sm:text-md font-medium">まず“現状”だけでOK</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                相談時点で要件が固まっていなくても問題ありません。
-                「困っていること･理想･制約」を整理して、改善案を作ります。
+              <p className="text-sm sm:text-md font-medium">まず“現状の相談”だけでOK</p>
+              <p className="mt-0.5 sm:mt-2 text-xs sm:text-sm text-muted-foreground">
+                要件が固まっていなくても問題ありません。
+                「困っていること」を整理して、改善案を作ります。
               </p>
             </div>
 

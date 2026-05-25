@@ -100,9 +100,6 @@ export function GlossaryExplorer({
         <Card className="rounded-3xl gap-1">
           <CardHeader>
             <CardTitle className="text-base">目次</CardTitle>
-            {/* <p className="text-sm text-muted-foreground">
-              目的の言葉にすぐ移動できます。
-            </p> */}
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             <div className="hidden md:grid md:gap-4">

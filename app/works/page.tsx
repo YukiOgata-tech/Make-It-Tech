@@ -66,7 +66,7 @@ export default function WorksPage() {
                       <img
                         src={digishiftWork.logoUrl}
                         alt={`${digishiftWork.companyName} ロゴ`}
-                        className="h-8 w-auto max-w-[128px] object-contain sm:h-11 sm:max-w-[180px]"
+                        className="h-8 w-auto max-w-32 object-contain sm:h-11 sm:max-w-45"
                         loading="lazy"
                       />
                     ) : null}
@@ -78,31 +78,19 @@ export default function WorksPage() {
                     飲食店や学童保育施設向けに、シフト希望の回収から作成・共有・打刻までを一元化したWebシステムです。
                   </p>
                 </div>
-                <Link
-                  href={digishiftWork.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-3 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:text-sm"
-                >
-                  サイトを見る <ArrowRight className="ml-1 size-3.5 sm:size-4" />
-                </Link>
+                {digishiftWork.url ? (
+                  <Link
+                    href={digishiftWork.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-3 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:text-sm"
+                  >
+                    サイトを見る <ArrowRight className="ml-1 size-3.5 sm:size-4" />
+                  </Link>
+                ) : null}
               </div>
             </section>
           ) : null}
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
-            {workCapabilities.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.label} className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 p-2 sm:p-3">
-                  <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground sm:size-9">
-                    <Icon className="size-3.5 sm:size-4" />
-                  </span>
-                  <span className="text-[10px] font-semibold sm:text-sm">{item.label}</span>
-                </div>
-              );
-            })}
-          </div>
 
           <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
             {publicWorks.map((work) => (

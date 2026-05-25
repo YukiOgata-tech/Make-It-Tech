@@ -35,11 +35,11 @@ export function SiteFooter() {
           </div>
 
           {/* Links */}
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 md:col-span-2">
+          <div className="grid gap-3 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4 md:col-span-2">
             {footerLinks.map((group) => (
               <div key={group.title} className="space-y-1 sm:space-y-2">
-                <p className="text-sm font-medium">-{group.title}-</p>
-                <ul className="grid gap-1.5 text-sm text-muted-foreground">
+                <p className="text-sm font-semibold">-{group.title}-</p>
+                <ul className="grid gap-0.5 sm:gap-1.5 text-xs sm:text-sm text-muted-foreground">
                   {group.links.map((l) => (
                     <li key={l.href}>
                       <Link href={l.href} className="hover:text-foreground hover:underline">

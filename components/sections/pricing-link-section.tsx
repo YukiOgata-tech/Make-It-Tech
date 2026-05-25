@@ -16,7 +16,7 @@ export function PricingLinkSection({ className }: { className?: string }) {
             <h2 className="mt-3 text-md font-semibold tracking-tight sm:text-2xl">
               料金はページ内でまとめて確認できます
             </h2>
-            <ul className="mt-2 sm:mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+            <ul className="mt-2 sm:mt-4 grid gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground sm:grid-cols-2">
               {[
                 "料金の考え方と範囲の目安",
                 "見積もりの前提条件",
