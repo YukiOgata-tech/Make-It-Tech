@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ExcelJS from "exceljs";
 import Papa from "papaparse";
+import { MakeItTechLoader } from "./make-it-tech-loader";
 
 type ConvertMode = "jsonToTable" | "tableToJson";
 
@@ -27,6 +28,7 @@ export function JsonToTable() {
 
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const getFileExtension = (name: string) =>
     name.toLowerCase().split(".").pop() ?? "";
@@ -135,9 +137,11 @@ export function JsonToTable() {
   // ========== JSON → Table ==========
   const parseJson = () => {
     setError("");
+    setIsProcessing(true);
 
     if (!jsonInput.trim()) {
       setError("JSONデータを入力してください");
+      setIsProcessing(false);
       return;
     }
 
@@ -147,6 +151,7 @@ export function JsonToTable() {
 
       if (dataArray.length === 0) {
         setError("データが空です");
+        setIsProcessing(false);
         return;
       }
 
@@ -159,10 +164,12 @@ export function JsonToTable() {
 
       setColumns(Array.from(allKeys));
       setParsedData(dataArray);
+      setIsProcessing(false);
     } catch {
       setError("JSONの解析に失敗しました。正しい形式か確認してください。");
       setParsedData([]);
       setColumns([]);
+      setIsProcessing(false);
     }
   };
 
@@ -193,6 +200,7 @@ export function JsonToTable() {
   const downloadExcel = async () => {
     if (parsedData.length === 0) return;
 
+    setIsProcessing(true);
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Data");
@@ -219,6 +227,8 @@ export function JsonToTable() {
       link.click();
     } catch {
       setError("Excelの生成に失敗しました");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -251,6 +261,7 @@ export function JsonToTable() {
 
     setError("");
     setFileName(file.name);
+    setIsProcessing(true);
 
     try {
       const { data, columns } = await parseTableFile(file);
@@ -265,6 +276,8 @@ export function JsonToTable() {
       setJsonOutput(JSON.stringify(data, null, 2));
     } catch (err) {
       setError(err instanceof Error ? err.message : "ファイルの読み込みに失敗しました");
+    } finally {
+      setIsProcessing(false);
     }
 
     e.target.value = "";
@@ -283,6 +296,7 @@ export function JsonToTable() {
 
     setError("");
     setFileName(file.name);
+    setIsProcessing(true);
 
     try {
       const { data, columns } = await parseTableFile(file);
@@ -297,6 +311,8 @@ export function JsonToTable() {
       setJsonOutput(JSON.stringify(data, null, 2));
     } catch (err) {
       setError(err instanceof Error ? err.message : "ファイルの読み込みに失敗しました");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -439,9 +455,10 @@ export function JsonToTable() {
           {/* Parse Button */}
           <button
             onClick={parseJson}
+            disabled={isProcessing}
             className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors mb-4"
           >
-            解析してプレビュー
+            {isProcessing ? <MakeItTechLoader label="処理中..." compact /> : "解析してプレビュー"}
           </button>
 
           {/* Preview Table */}
@@ -458,9 +475,10 @@ export function JsonToTable() {
                   </button>
                   <button
                     onClick={downloadExcel}
+                    disabled={isProcessing}
                     className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
                   >
-                    Excel
+                    {isProcessing ? <MakeItTechLoader label="生成中..." compact /> : "Excel"}
                   </button>
                 </div>
               </div>
@@ -537,6 +555,12 @@ export function JsonToTable() {
           </div>
 
           {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+
+          {isProcessing && (
+            <div className="mb-4 flex justify-center text-blue-400">
+              <MakeItTechLoader label="読み込み中..." />
+            </div>
+          )}
 
           {/* Result */}
           {tableData.length > 0 && (

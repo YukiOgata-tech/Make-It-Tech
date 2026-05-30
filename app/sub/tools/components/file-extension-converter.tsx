@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MakeItTechLoader } from "./make-it-tech-loader";
 
 interface ConvertedFile {
   original: File;
@@ -153,9 +154,8 @@ export function FileExtensionConverter() {
       </div>
 
       {isProcessing && (
-        <div className="mt-4 text-center text-blue-400">
-          <div className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-          変換中...
+        <div className="mt-4 flex justify-center text-blue-400">
+          <MakeItTechLoader label="変換中..." />
         </div>
       )}
 

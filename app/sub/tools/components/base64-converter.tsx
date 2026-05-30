@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MakeItTechLoader } from "./make-it-tech-loader";
 
 export function Base64Converter() {
   const [mode, setMode] = useState<"toBase64" | "fromBase64">("toBase64");
@@ -9,19 +10,23 @@ export function Base64Converter() {
   const [fileName, setFileName] = useState("");
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const convertToBase64 = (file: File) => {
     setError("");
     setFileName(file.name);
+    setIsProcessing(true);
 
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
       setBase64Output(result);
       setImagePreview(result);
+      setIsProcessing(false);
     };
     reader.onerror = () => {
       setError("ファイルの読み込みに失敗しました");
+      setIsProcessing(false);
     };
     reader.readAsDataURL(file);
   };
@@ -50,6 +55,7 @@ export function Base64Converter() {
 
     if (!value.trim()) {
       setImagePreview("");
+      setIsProcessing(false);
       return;
     }
 
@@ -72,16 +78,22 @@ export function Base64Converter() {
 
     // Validate base64
     try {
+      setIsProcessing(true);
       const img = new Image();
-      img.onload = () => setImagePreview(dataUrl);
+      img.onload = () => {
+        setImagePreview(dataUrl);
+        setIsProcessing(false);
+      };
       img.onerror = () => {
         setError("無効なBase64画像データです");
         setImagePreview("");
+        setIsProcessing(false);
       };
       img.src = dataUrl;
     } catch {
       setError("Base64のデコードに失敗しました");
       setImagePreview("");
+      setIsProcessing(false);
     }
   };
 
@@ -176,6 +188,12 @@ export function Base64Converter() {
             </div>
           </div>
 
+          {isProcessing && (
+            <div className="mt-4 flex justify-center text-blue-400">
+              <MakeItTechLoader label="変換中..." />
+            </div>
+          )}
+
           {/* Result */}
           {base64Output && (
             <div className="mt-4 space-y-3">
@@ -229,6 +247,12 @@ export function Base64Converter() {
 
           {error && (
             <p className="mt-2 text-sm text-red-400">{error}</p>
+          )}
+
+          {isProcessing && (
+            <div className="mt-4 flex justify-center text-blue-400">
+              <MakeItTechLoader label="復元中..." />
+            </div>
           )}
 
           {/* Preview */}

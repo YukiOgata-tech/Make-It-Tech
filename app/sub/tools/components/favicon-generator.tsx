@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { MakeItTechLoader } from "./make-it-tech-loader";
 
 interface FaviconSize {
   size: number;
@@ -284,10 +285,7 @@ export function FaviconGenerator() {
             className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-700 disabled:text-neutral-400 rounded-lg text-sm font-medium transition-colors"
           >
             {isProcessing ? (
-              <>
-                <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                生成中...
-              </>
+              <MakeItTechLoader label="生成中..." compact />
             ) : (
               "Faviconを生成"
             )}

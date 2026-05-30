@@ -3,24 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import {
+  getToolCategory,
+  getToolHref,
+  type ToolCategory,
+  toolCategories,
+  tools,
+} from "../_data/tools";
 import { CookieConsentBanner } from "./cookie-consent";
-
-const navItems = [
-  { href: "/sub/tools", label: "ホーム", icon: "🏠" },
-  { href: "/sub/tools/compress", label: "圧縮", icon: "📦" },
-  { href: "/sub/tools/convert", label: "変換", icon: "🔄" },
-  { href: "/sub/tools/resize", label: "リサイズ", icon: "📐" },
-  { href: "/sub/tools/base64", label: "Base64", icon: "🔣" },
-  { href: "/sub/tools/favicon", label: "Favicon", icon: "⭐" },
-  { href: "/sub/tools/markdown", label: "Markdown", icon: "📝" },
-  { href: "/sub/tools/extension", label: "拡張子", icon: "📄" },
-  { href: "/sub/tools/json", label: "JSON", icon: "📊" },
-  { href: "/sub/tools/qr", label: "QR", icon: "📱" },
-];
 
 export function ToolsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const activeTool = tools.find((tool) => pathname === getToolHref(tool.id));
+  const activeCategory = activeTool?.category ?? getToolCategory(pathname.replace("/sub/tools/", ""));
+  const [selectedCategory, setSelectedCategory] =
+    useState<ToolCategory["id"]>(activeCategory);
+  const visibleCategory = activeTool ? activeTool.category : selectedCategory;
+  const visibleTools = tools.filter((tool) => tool.category === visibleCategory);
 
   const isActive = (href: string) => {
     if (href === "/sub/tools") {
@@ -30,17 +29,15 @@ export function ToolsShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-dvh bg-neutral-950 text-neutral-100">
-      {/* Header */}
-      <header className="border-b border-neutral-800 bg-neutral-900/95 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="h-14 flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-3">
+    <div className="min-h-dvh bg-neutral-950 text-sm text-neutral-100 sm:text-base">
+      <header className="sticky top-0 z-50 border-b border-neutral-800 bg-neutral-900/95 backdrop-blur-sm">
+        <div className="mx-auto max-w-6xl px-3 sm:px-4">
+          <div className="flex h-12 items-center justify-between sm:h-14">
+            <div className="flex min-w-0 items-center gap-3">
               <Link
                 href="/sub/tools"
-                className="font-semibold text-lg tracking-tight shrink-0"
-                onClick={() => setIsMenuOpen(false)}
+                className="shrink-0 text-base font-semibold tracking-tight sm:text-lg"
+                onClick={() => setSelectedCategory(activeCategory)}
               >
                 <span className="text-blue-400">Dev</span>Tools
               </Link>
@@ -51,65 +48,68 @@ export function ToolsShell({ children }: { children: React.ReactNode }) {
                 ローカル処理
               </span>
             </div>
+            <Link
+              href="/sub/tools"
+              className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
+                isActive("/sub/tools")
+                  ? "bg-blue-600 text-white"
+                  : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
+              }`}
+            >
+              ホーム
+            </Link>
+          </div>
+        </div>
 
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navItems.slice(1).map((item) => (
+        <div className="border-t border-neutral-800/80">
+          <div className="tools-nav-scroll mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-2 py-1.5 sm:px-4">
+            {toolCategories.map((category) => {
+              const isSelected = category.id === visibleCategory;
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors sm:h-9 sm:px-3.5 sm:text-sm ${
+                    isSelected
+                      ? "border-blue-500 bg-blue-600 text-white"
+                      : "border-neutral-800 bg-neutral-950/60 text-neutral-300 hover:border-neutral-700 hover:bg-neutral-800"
+                  }`}
+                  aria-pressed={isSelected}
+                >
+                  <span className="text-[11px] leading-none sm:text-xs">{category.icon}</span>
+                  <span>{category.shortLabel}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="border-t border-neutral-800/60 bg-neutral-950/55">
+          <nav
+            className="tools-nav-scroll mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-2 py-1.5 sm:px-4 sm:py-2"
+            aria-label="Tools category navigation"
+          >
+            {visibleTools.map((item) => {
+              const href = getToolHref(item.id);
+              return (
                 <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                    isActive(item.href)
+                  key={item.id}
+                  href={href}
+                  onClick={() => setSelectedCategory(item.category)}
+                  className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-xs transition-colors sm:h-10 sm:px-3 sm:text-sm ${
+                    isActive(href)
                       ? "bg-blue-600 text-white"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
                   }`}
                 >
-                  {item.label}
+                  <span className="text-sm leading-none sm:text-base">{item.icon}</span>
+                  <span>{item.navLabel}</span>
                 </Link>
-              ))}
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-neutral-400 hover:text-white transition-colors"
-              aria-label="メニュー"
-            >
-              {isMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          </div>
+              );
+            })}
+          </nav>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-neutral-800 bg-neutral-900/95 backdrop-blur-sm">
-            <nav className="max-w-6xl mx-auto px-4 py-3 grid grid-cols-3 gap-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-xl text-center transition-colors ${
-                    isActive(item.href)
-                      ? "bg-blue-600 text-white"
-                      : "bg-neutral-800/50 text-neutral-400 hover:bg-neutral-800 hover:text-white"
-                  }`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="text-xs font-medium">{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
       </header>
 
       {/* Main Content */}

@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useImageHistory } from "../hooks/use-image-history";
 import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
+import { MakeItTechLoader } from "./make-it-tech-loader";
 
 type OutputFormat = "image/jpeg" | "image/png" | "image/webp";
 
@@ -307,10 +308,7 @@ export function ImageConverter() {
               className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
               {isProcessing ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  変換中...
-                </>
+                <MakeItTechLoader label="変換中..." compact />
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

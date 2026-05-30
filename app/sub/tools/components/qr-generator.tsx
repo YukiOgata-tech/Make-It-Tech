@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import QRCode from "qrcode";
 import { useTextHistory } from "../hooks/use-text-history";
 import { useConsent } from "./cookie-consent";
+import { MakeItTechLoader } from "./make-it-tech-loader";
 
 export function QRGenerator() {
   const [text, setText] = useState("https://make-it-tech.com");
@@ -13,6 +14,7 @@ export function QRGenerator() {
   const [errorLevel, setErrorLevel] = useState<"L" | "M" | "Q" | "H">("M");
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [error, setError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { allowsFunctional } = useConsent();
@@ -26,10 +28,14 @@ export function QRGenerator() {
     }
 
     setError("");
+    setIsProcessing(true);
 
     try {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas) {
+        setIsProcessing(false);
+        return;
+      }
 
       await QRCode.toCanvas(canvas, text, {
         width: size,
@@ -46,6 +52,8 @@ export function QRGenerator() {
     } catch (err) {
       setError("QRコードの生成に失敗しました");
       setQrDataUrl("");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -226,6 +234,12 @@ export function QRGenerator() {
 
             {error && (
               <p className="text-sm text-red-400 mb-4">{error}</p>
+            )}
+
+            {isProcessing && (
+              <div className="mb-4 text-blue-400">
+                <MakeItTechLoader label="生成中..." />
+              </div>
             )}
 
             {qrDataUrl && (

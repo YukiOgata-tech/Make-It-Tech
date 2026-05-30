@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function FaviconPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="tools-page-container">
       <FaviconGenerator />
     </div>
   );
