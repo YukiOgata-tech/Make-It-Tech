@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FileExtensionConverter } from "../components/file-extension-converter";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料拡張子変換ツール - HTML/JS/TS/CSSファイル",
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
     "ファイル形式",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/extension`,
+  },
 };
 
 export default function ExtensionPage() {

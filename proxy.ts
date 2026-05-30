@@ -22,6 +22,13 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (
+    (pathname === "/robots.txt" || pathname === "/sitemap.xml") &&
+    targetBase !== "/sub/tools"
+  ) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith(targetBase)) {
     return NextResponse.next();
   }
@@ -33,6 +40,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };

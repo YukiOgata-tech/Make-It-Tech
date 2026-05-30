@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Base64Converter } from "../components/base64-converter";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料Base64変換ツール - 画像↔Base64",
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
     "オンライン変換",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/base64`,
+  },
 };
 
 export default function Base64Page() {

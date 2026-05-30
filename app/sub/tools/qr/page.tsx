@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { QRGenerator } from "../components/qr-generator";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料QRコード生成ツール - URL/テキスト対応",
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
     "オンライン生成",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/qr`,
+  },
 };
 
 export default function QRPage() {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MarkdownPreview } from "../components/markdown-preview";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料Markdownプレビュー - GFM対応リアルタイムプレビュー",
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
     "オンラインエディタ",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/markdown`,
+  },
 };
 
 export default function MarkdownPage() {

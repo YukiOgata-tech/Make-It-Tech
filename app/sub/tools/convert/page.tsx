@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ImageConverter } from "../components/image-converter";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料画像フォーマット変換 - JPEG/PNG/WebP対応",
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
     "オンライン変換",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/convert`,
+  },
 };
 
 export default function ConvertPage() {

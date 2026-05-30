@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ImageCompressor } from "../components/image-compressor";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料画像圧縮ツール - JPG/PNG/WebP/GIF対応",
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
     "オンライン圧縮",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/compress`,
+  },
 };
 
 export default function CompressPage() {

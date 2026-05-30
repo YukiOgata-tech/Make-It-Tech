@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FaviconGenerator } from "../components/favicon-generator";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料Favicon生成ツール - 各種サイズ一括生成",
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
     "オンライン生成",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/favicon`,
+  },
 };
 
 export default function FaviconPage() {

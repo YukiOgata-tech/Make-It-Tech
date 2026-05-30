@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ImageResizer } from "../components/image-resizer";
+import { toolsBaseUrl } from "../_data/tools";
 
 export const metadata: Metadata = {
   title: "無料画像リサイズツール - サイズ変更・縮小",
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
     "オンラインリサイズ",
     "無料",
   ],
+  alternates: {
+    canonical: `${toolsBaseUrl}/resize`,
+  },
 };
 
 export default function ResizePage() {
