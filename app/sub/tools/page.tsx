@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getToolHref, toolCategories, tools, toolsBaseUrl } from "./_data/tools";
+import { AdsenseAdSlot } from "./components/adsense-ad-slot";
 
 export const metadata: Metadata = {
   title: "無料オンライン開発ツール集",
@@ -141,6 +142,8 @@ export default function ToolsPage() {
           );
         })}
       </div>
+
+      <AdsenseAdSlot className="mx-auto max-w-3xl" minHeight={90} />
 
       <section className="mt-6 rounded-xl border border-neutral-800 bg-neutral-900 p-3 sm:mt-10 sm:p-6">
         <h2 className="text-base font-semibold text-neutral-100 sm:text-xl">
