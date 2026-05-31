@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ToolsShell } from "./components/tools-shell";
 import { toolsBaseUrl } from "./_data/tools";
+
+const adsenseClient = "ca-pub-3927353202195333";
 
 export const metadata: Metadata = {
   metadataBase: new URL(toolsBaseUrl),
@@ -40,5 +43,18 @@ export default function ToolsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ToolsShell>{children}</ToolsShell>;
+  return (
+    <>
+      {process.env.NODE_ENV === "production" ? (
+        <Script
+          id="tools-adsense"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      ) : null}
+      <ToolsShell>{children}</ToolsShell>
+    </>
+  );
 }

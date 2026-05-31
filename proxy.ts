@@ -23,7 +23,9 @@ export function proxy(request: NextRequest) {
   }
 
   if (
-    (pathname === "/robots.txt" || pathname === "/sitemap.xml") &&
+    (pathname === "/robots.txt" ||
+      pathname === "/sitemap.xml" ||
+      pathname === "/ads.txt") &&
     targetBase !== "/sub/tools"
   ) {
     return NextResponse.next();
