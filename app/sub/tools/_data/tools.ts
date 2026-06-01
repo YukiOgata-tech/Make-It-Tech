@@ -68,9 +68,9 @@ export const tools: ToolItem[] = [
     id: "pdf-compress",
     name: "PDF圧縮",
     navLabel: "圧縮",
-    description: "PDFを安全〜できる限り圧縮までローカル処理",
+    description: "PDFの再保存圧縮とスキャンPDFの画像軽量化",
     seoDescription:
-      "PDFをブラウザ上で再保存し、ファイルサイズの軽量化を試せます。資料送付やアップロード前のPDF圧縮に使えます。",
+      "PDFをブラウザ上で再保存し、スキャンPDFは画像として再圧縮できます。資料送付やアップロード前のPDF軽量化に使えます。",
     icon: "📉",
     category: "pdf",
   },
