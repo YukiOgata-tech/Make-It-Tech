@@ -11,8 +11,8 @@ import { GaTracker } from "@/components/analytics/ga-tracker";
 
 export const metadata: Metadata = {
   title: {
-    default: site.name,
-    template: `%s | ${site.name}`,
+    default: site.searchName,
+    template: `%s | ${site.searchName}`,
   },
   description: site.description,
   keywords: site.keywords,
@@ -20,10 +20,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "./",
   },
-  applicationName: site.name,
-  authors: [{ name: site.name, url: site.url }],
-  creator: site.name,
-  publisher: site.name,
+  applicationName: site.searchName,
+  authors: [{ name: site.searchName, url: site.url }],
+  creator: site.searchName,
+  publisher: site.searchName,
   verification: {
     google: "google-site-verification=CODE_TO_REPLACE",
   },
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     apple: "/images/logo-02_MIT-normal.png",
   },
   openGraph: {
-    title: site.name,
+    title: site.searchName,
     description: site.description,
     url: site.url,
-    siteName: site.name,
+    siteName: site.searchName,
     locale: "ja_JP",
     type: "website",
     images: [
@@ -56,13 +56,13 @@ export const metadata: Metadata = {
         url: site.ogImage ?? site.logo,
         width: 768,
         height: 768,
-        alt: site.name,
+        alt: site.searchName,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: site.name,
+    title: site.searchName,
     description: site.description,
     images: [site.ogImage ?? site.logo],
   },
@@ -78,7 +78,8 @@ export default function RootLayout({
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    name: site.name,
+    name: site.searchName,
+    alternateName: [site.name, "Make It Tech", "MIT", "メイクイットテック"],
     url: site.url,
     logo: logoUrl,
     image: ogImageUrl,
@@ -113,9 +114,9 @@ export default function RootLayout({
   const websiteData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: `${site.name} | DX事業`,
+    name: site.searchName,
     url: site.url,
-    alternateName: ["Make It Tech", "MIT", "メイクイットテック"],
+    alternateName: [site.name, "Make It Tech", "MIT", "メイクイットテック"],
   };
 
   return (
@@ -123,12 +124,10 @@ export default function RootLayout({
       <body className="min-h-dvh bg-background text-foreground font-sans antialiased">
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
         />
         <Script
