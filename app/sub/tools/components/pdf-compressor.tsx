@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 
-type CompressionMode = "safe" | "strong" | "scan";
+type CompressionMode = "standard" | "scan";
 
 type CompressedPdf = {
   originalName: string;
@@ -16,8 +16,9 @@ type CompressedPdf = {
 
 const formatSize = (bytes: number) => {
   if (bytes < 1000) return `${bytes} B`;
-  if (bytes < 1000 * 1000) return `${(bytes / 1000).toFixed(1)} KB`;
-  return `${(bytes / (1000 * 1000)).toFixed(2)} MB`;
+  const kilobytes = Math.round(bytes / 1000).toLocaleString("ja-JP");
+  if (bytes < 10 * 1000 * 1000) return `${kilobytes} KB`;
+  return `${(bytes / (1000 * 1000)).toFixed(2)} MB (${kilobytes} KB)`;
 };
 
 const toArrayBuffer = (bytes: Uint8Array) => {
@@ -28,7 +29,7 @@ const toArrayBuffer = (bytes: Uint8Array) => {
 
 export function PdfCompressor() {
   const [files, setFiles] = useState<File[]>([]);
-  const [mode, setMode] = useState<CompressionMode>("safe");
+  const [mode, setMode] = useState<CompressionMode>("standard");
   const [scanScale, setScanScale] = useState(1.5);
   const [jpegQuality, setJpegQuality] = useState(0.68);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,7 +53,7 @@ export function PdfCompressor() {
       for (const file of files) {
         const compressedBytes = mode === "scan"
           ? await compressScannedPdf(file, scanScale, jpegQuality)
-          : await optimizePdfStructure(file, mode);
+          : await optimizePdfStructure(file);
         const blob = new Blob([toArrayBuffer(compressedBytes)], { type: "application/pdf" });
 
         compressedResults.push({
@@ -74,19 +75,16 @@ export function PdfCompressor() {
     }
   };
 
-  const optimizePdfStructure = async (file: File, compressionMode: Exclude<CompressionMode, "scan">) => {
+  const optimizePdfStructure = async (file: File) => {
     const bytes = await file.arrayBuffer();
     const source = await PDFDocument.load(bytes, {
       ignoreEncryption: true,
       updateMetadata: false,
     });
 
-    let outputDoc = source;
-    if (compressionMode === "strong") {
-      outputDoc = await PDFDocument.create();
-      const pages = await outputDoc.copyPages(source, source.getPageIndices());
-      pages.forEach((page) => outputDoc.addPage(page));
-    }
+    const outputDoc = await PDFDocument.create();
+    const pages = await outputDoc.copyPages(source, source.getPageIndices());
+    pages.forEach((page) => outputDoc.addPage(page));
 
     outputDoc.setProducer("Make It Tech DevTools");
     outputDoc.setCreator("Make It Tech DevTools");
@@ -238,25 +236,15 @@ export function PdfCompressor() {
 
           <div className="rounded-lg bg-neutral-800/50 p-4">
             <p className="mb-2 text-sm text-neutral-400">圧縮モード</p>
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2">
               <button
                 type="button"
-                onClick={() => setMode("safe")}
+                onClick={() => setMode("standard")}
                 className={`rounded-lg border p-3 text-left text-sm transition-colors ${
-                  mode === "safe" ? "border-blue-500 bg-blue-600/20" : "border-neutral-700 bg-neutral-900 hover:bg-neutral-800"
+                  mode === "standard" ? "border-blue-500 bg-blue-600/20" : "border-neutral-700 bg-neutral-900 hover:bg-neutral-800"
                 }`}
               >
-                <span className="font-medium">安全</span>
-                <span className="mt-1 block text-xs text-neutral-400">ページ構造を保ったまま再保存します。</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("strong")}
-                className={`rounded-lg border p-3 text-left text-sm transition-colors ${
-                  mode === "strong" ? "border-blue-500 bg-blue-600/20" : "border-neutral-700 bg-neutral-900 hover:bg-neutral-800"
-                }`}
-              >
-                <span className="font-medium">できる限り圧縮</span>
+                <span className="font-medium">通常圧縮</span>
                 <span className="mt-1 block text-xs text-neutral-400">ページを新規PDFへコピーして余分な情報を削ります。</span>
               </button>
               <button
