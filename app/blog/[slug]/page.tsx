@@ -179,12 +179,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
   });
 
   return (
-    <div className="py-8 sm:py-16">
+    <div className="py-6 sm:py-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <article className="mx-auto max-w-[700px] px-4 sm:px-6 lg:px-0">
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
           {record.category ? (
             <Badge variant="secondary" className="rounded-xl">
@@ -199,12 +199,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
           ) : null}
         </div>
 
-        <h1 className="mt-3 text-[1.4rem] font-semibold leading-snug tracking-tight sm:text-4xl">
+        <h1 className="mt-3 text-[1.45rem] font-semibold leading-snug tracking-tight sm:text-[2rem] md:text-[2.15rem]">
           {record.title}
         </h1>
 
         {record.summary ? (
-          <p className="mt-2 text-xs text-muted-foreground sm:text-base">
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-[0.95rem]">
             {record.summary}
           </p>
         ) : null}
@@ -214,7 +214,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
         </div>
 
         {record.coverImage?.url ? (
-          <div className="mt-4 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30 sm:mt-6">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:mt-6">
             <img
               src={record.coverImage.url}
               alt={record.coverImage.alt ?? record.title}
@@ -224,7 +224,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
         ) : null}
 
         {tocItems.length >= 2 ? (
-          <nav className="mt-4 border-t border-border/50 pt-3">
+          <nav className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4">
             <p className="text-xs font-semibold text-muted-foreground sm:text-sm">目次</p>
             <ul className="mt-2 grid gap-2 text-xs sm:text-sm">
               {tocItems.map((item) => (
@@ -248,9 +248,9 @@ export default async function BlogDetailPage({ params }: PageProps) {
           </nav>
         ) : null}
 
-        <Separator className="my-6 sm:my-10" />
+        <Separator className="my-5 sm:my-8" />
 
-        <div className="article-prose prose prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/50 hover:prose-a:decoration-primary prose-img:rounded-2xl sm:prose-lg">
+        <div className="article-prose max-w-none">
           <ReactMarkdown
             remarkPlugins={remarkPlugins}
             rehypePlugins={blogRehypePlugins}
@@ -338,7 +338,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
             ブログ一覧に戻る
           </Link>
         </div>
-      </div>
+      </article>
     </div>
   );
 }
