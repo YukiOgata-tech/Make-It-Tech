@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
 import ReactMarkdown from "react-markdown";
@@ -67,6 +68,13 @@ function getSingleText(children: React.ReactNode) {
   const nodes = React.Children.toArray(children);
   if (nodes.length !== 1) return null;
   return typeof nodes[0] === "string" ? nodes[0] : null;
+}
+
+function getHeadingText(children: React.ReactNode) {
+  return React.Children.toArray(children)
+    .map((child) => (typeof child === "string" ? child : ""))
+    .join("")
+    .trim();
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -156,11 +164,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
     (heading) => heading.level === 2 || heading.level === 3
   );
   const linkLabelMap = buildLinkLabelMap(record.linkLabels);
-  let headingIndex = 0;
-  const nextHeadingId = () => {
-    const entry = headingSequence[headingIndex];
-    headingIndex += 1;
-    return entry?.id;
+  const getHeadingId = (level: number, children: React.ReactNode, fallback?: string) => {
+    const text = getHeadingText(children);
+    const entry = headingSequence.find(
+      (heading) => heading.level === level && heading.text === text
+    );
+    return entry?.id ?? fallback;
   };
 
   const blogRehypePlugins = rehypePlugins.filter((plugin) => {
@@ -173,7 +182,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
     <div className="py-8 sm:py-16">
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
@@ -269,7 +277,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
               },
               table: MarkdownTable,
               h1({ children, ...props }) {
-                const id = nextHeadingId();
+                const id = getHeadingId(1, children, props.id);
                 return (
                   <h1 id={id ?? props.id} {...props}>
                     {children}
@@ -277,7 +285,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 );
               },
               h2({ children, ...props }) {
-                const id = nextHeadingId();
+                const id = getHeadingId(2, children, props.id);
                 return (
                   <h2 id={id ?? props.id} {...props}>
                     {children}
@@ -285,7 +293,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 );
               },
               h3({ children, ...props }) {
-                const id = nextHeadingId();
+                const id = getHeadingId(3, children, props.id);
                 return (
                   <h3 id={id ?? props.id} {...props}>
                     {children}
@@ -293,7 +301,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 );
               },
               h4({ children, ...props }) {
-                const id = nextHeadingId();
+                const id = getHeadingId(4, children, props.id);
                 return (
                   <h4 id={id ?? props.id} {...props}>
                     {children}
@@ -323,12 +331,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
         </div>
 
         <div className="mt-8 text-xs sm:mt-10 sm:text-sm">
-          <a
+          <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-primary underline underline-offset-4"
           >
             ブログ一覧に戻る
-          </a>
+          </Link>
         </div>
       </div>
     </div>
