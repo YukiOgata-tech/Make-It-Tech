@@ -94,14 +94,14 @@ export function GlossaryExplorer({
   }));
 
   return (
-    <div className="mt-4 sm:mt-10 grid gap-8 lg:grid-cols-[260px_1fr]">
+    <div className="mt-4 grid gap-4 sm:mt-10 sm:gap-8 lg:grid-cols-[260px_1fr]">
       {/* Navigation */}
-      <aside className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
-        <Card className="rounded-3xl gap-1">
-          <CardHeader>
-            <CardTitle className="text-base">目次</CardTitle>
+      <aside className="space-y-3 sm:space-y-6 lg:sticky lg:top-24 lg:h-fit">
+        <Card className="gap-1 rounded-2xl sm:rounded-3xl">
+          <CardHeader className="px-3 py-2 sm:px-6 sm:py-4">
+            <CardTitle className="text-sm sm:text-base">目次</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="px-3 pb-3 text-xs text-muted-foreground sm:px-6 sm:pb-6 sm:text-sm">
             <div className="hidden md:grid md:gap-4">
               <Link href="#business-diagnosis" className="hover:underline">
                 業務診断とは
@@ -122,17 +122,17 @@ export function GlossaryExplorer({
               ))}
             </div>
             <div className="md:hidden">
-              <MobileDisclosure summary="目次を開く">
-                <div className="grid gap-4">
+              <MobileDisclosure summary="目次を開く" className="rounded-xl">
+                <div className="grid gap-2 text-xs">
                   <Link href="#business-diagnosis" className="hover:underline">
                     業務診断とは
                   </Link>
                   {tocItems.map((group) => (
-                    <div key={group.id} className="grid gap-2">
+                    <div key={group.id} className="grid gap-1.5">
                       <Link href={`#${group.id}`} className="font-medium hover:underline">
                         {group.title}
                       </Link>
-                      <div className="grid gap-1 text-xs text-muted-foreground">
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
                         {group.terms.map((term) => (
                           <Link key={term.id} href={`#${term.id}`} className="hover:underline">
                             {term.term}
@@ -169,13 +169,13 @@ export function GlossaryExplorer({
       </aside>
 
       {/* Content */}
-      <main className="space-y-10">
-        <div className="rounded-3xl border border-border/60 bg-background/70 p-4 sm:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-1 sm:gap-2 text-sm font-medium">
-              <Search className="h-4 w-4 text-muted-foreground" />
+      <main className="space-y-5 sm:space-y-10">
+        <div className="rounded-2xl border border-border/60 bg-background/70 p-3 sm:rounded-3xl sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <div className="flex items-center gap-1 text-xs font-medium sm:gap-2 sm:text-sm">
+              <Search className="h-3.5 w-3.5 text-muted-foreground sm:h-4 sm:w-4" />
               用語検索
-              <span className="text-xs font-normal text-muted-foreground">
+              <span className="text-[10px] font-normal text-muted-foreground sm:text-xs">
                 {totalTerms}語ヒット
               </span>
             </div>
@@ -183,19 +183,19 @@ export function GlossaryExplorer({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-3 py-1 text-[11px] text-muted-foreground transition hover:border-primary/50 hover:text-foreground"
+                className="inline-flex h-7 items-center gap-1 rounded-full border border-border/60 bg-background px-2.5 text-[10px] text-muted-foreground transition hover:border-primary/50 hover:text-foreground sm:h-auto sm:px-3 sm:py-1 sm:text-[11px]"
               >
                 <X className="h-3 w-3" />
                 クリア
               </button>
             ) : null}
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-1 sm:gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-1 sm:mt-3 sm:gap-2">
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="例: KPI / RPA / SEO"
-              className="h-10 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary/40 sm:max-w-xs"
+              className="h-9 w-full rounded-xl border border-border/70 bg-background px-3 text-xs text-foreground shadow-sm outline-none transition focus:border-primary/40 sm:h-10 sm:max-w-xs sm:text-sm"
             />
           </div>
           <div className="mt-3 hidden flex-wrap gap-2 sm:flex">
@@ -218,9 +218,9 @@ export function GlossaryExplorer({
               );
             })}
           </div>
-          <div className="mt-1 sm:mt-3 sm:hidden">
-            <MobileDisclosure summary="タグ候補を表示" className="border-x-0 rounded-none">
-              <div className="flex flex-wrap gap-2">
+          <div className="mt-1.5 sm:mt-3 sm:hidden">
+            <MobileDisclosure summary="タグ候補を表示" className="rounded-xl border-border/60">
+              <div className="flex flex-wrap gap-1.5">
                 {allTags.map((tag) => {
                   const active = activeTags.includes(tag);
                   return (
@@ -229,7 +229,7 @@ export function GlossaryExplorer({
                       type="button"
                       onClick={() => toggleTag(tag)}
                       className={cn(
-                        "rounded-full border px-3 py-1 text-[11px] transition",
+                        "rounded-full border px-2 py-0.5 text-[10px] transition",
                         active
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-border/60 text-muted-foreground hover:border-primary/40 hover:text-foreground"
@@ -358,47 +358,47 @@ export function GlossaryExplorer({
           </div>
         </section>
 
-        <Separator />
+        <Separator className="my-1 sm:my-0" />
 
         {filteredGroups.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border/60 bg-background/60 px-6 py-2 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border/60 bg-background/60 px-3 py-2 text-xs text-muted-foreground sm:rounded-3xl sm:px-6 sm:text-sm">
             該当する用語が見つかりませんでした。検索キーワードやタグを変更してください。
           </div>
         ) : (
           filteredGroups.map((group) => (
-            <section key={group.id} id={group.id} className="scroll-mt-24 space-y-6">
+            <section key={group.id} id={group.id} className="scroll-mt-20 space-y-2.5 sm:scroll-mt-24 sm:space-y-6">
               <div className="py-0">
-                <h2 className="text-lg sm:text-2xl font-semibold tracking-tight">- {group.title}</h2>
-                <p className="mt-2 text-xs sm:text-sm text-muted-foreground">{group.desc}</p>
+                <h2 className="text-base font-semibold tracking-tight sm:text-2xl">- {group.title}</h2>
+                <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground sm:mt-2 sm:text-sm">{group.desc}</p>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-2 sm:gap-3 md:grid-cols-2">
                 {group.terms.map((term) => (
-                  <Card key={term.id} id={term.id} className="rounded-2xl scroll-mt-24">
-                    <CardHeader className="space-y-1 px-4 pt-1 pb-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <CardTitle className="text-md">{term.term}</CardTitle>
+                  <Card key={term.id} id={term.id} className="scroll-mt-20 rounded-xl sm:scroll-mt-24 sm:rounded-2xl">
+                    <CardHeader className="space-y-1 px-3 pb-0 pt-2 sm:px-4 sm:pt-3">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                        <CardTitle className="text-sm leading-snug sm:text-base">{term.term}</CardTitle>
                         {term.reading ? (
-                          <span className="text-[11px] text-muted-foreground">{term.reading}</span>
+                          <span className="text-[10px] text-muted-foreground sm:text-[11px]">{term.reading}</span>
                         ) : null}
                       </div>
                       {term.tags?.length ? (
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-1">
                           {term.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="rounded-lg px-2 py-0 text-[10px]">
+                            <Badge key={tag} variant="secondary" className="rounded-md px-1.5 py-0 text-[9px] sm:rounded-lg sm:px-2 sm:text-[10px]">
                               {tag}
                             </Badge>
                           ))}
                         </div>
                       ) : null}
                     </CardHeader>
-                    <CardContent className="px-4 pt-0 text-xs text-muted-foreground">
-                      <p className="leading-relaxed">{term.desc}</p>
+                    <CardContent className="px-3 pb-3 pt-1 text-[11px] text-muted-foreground sm:px-4 sm:pb-4 sm:text-xs">
+                      <p className="leading-relaxed sm:leading-relaxed">{term.desc}</p>
                       {term.details?.length ? (
-                        <ul className="mt-2 grid gap-1.5">
+                        <ul className="mt-1.5 grid gap-1 sm:mt-2 sm:gap-1.5">
                           {term.details.map((detail) => (
-                            <li key={detail} className="flex items-start gap-2">
-                              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-primary" />
+                            <li key={detail} className="flex items-start gap-1.5 sm:gap-2">
+                              <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-primary sm:h-3.5 sm:w-3.5" />
                               <span>{detail}</span>
                             </li>
                           ))}

@@ -24,21 +24,21 @@ export default function GlossaryPage() {
   const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
 
   return (
-    <div className="py-8 sm:py-16">
+    <div className="py-6 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="rounded-xl">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <Badge variant="secondary" className="rounded-lg px-2 py-0 text-[10px] sm:rounded-xl sm:text-xs">
             用語集
           </Badge>
-          <Badge variant="outline" className="rounded-xl border-primary/30 text-primary">
+          <Badge variant="outline" className="rounded-lg border-primary/30 px-2 py-0 text-[10px] text-primary sm:rounded-xl sm:text-xs">
             非エンジニア向け
           </Badge>
         </div>
 
-        <h1 className="mt-4 text-xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:mt-4 sm:text-4xl">
           まずは“言葉の壁”をなくすために
         </h1>
-        <p className="mt-1 sm:mt-3 max-w-3xl text-xs sm:text-base text-muted-foreground">
+        <p className="mt-1 max-w-3xl text-xs leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
           相談の場でよく出る言葉を、現場目線でわかりやすく整理しています。
           必要に応じて増やしていけるよう、カテゴリ別にまとめています。
         </p>
