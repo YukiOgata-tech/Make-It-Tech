@@ -74,7 +74,7 @@ export function FAQSection({ className }: { className?: string }) {
         </div>
 
         {/* Category chips */}
-        <div className="hidden sm:block mt-4 grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-4">
+        {/* <div className="hidden sm:block mt-4 grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-4">
           {faqCategoryMeta.map((c, index) => (
             <FadeIn key={c.key} delay={0.05 * index}>
               <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 pr-2 py-0 sm:pr-4">
@@ -88,7 +88,7 @@ export function FAQSection({ className }: { className?: string }) {
               </div>
             </FadeIn>
           ))}
-        </div>
+        </div> */}
 
         <Separator className="my-4 sm:my-8" />
 

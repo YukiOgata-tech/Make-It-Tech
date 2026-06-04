@@ -21,10 +21,10 @@ function WorkPreview({ work }: { work: WorkItem }) {
   return (
     <div className="mx-auto w-full">
       <div className="sm:hidden">
-        <div className="mx-auto w-[210px] max-w-full rounded-[1.6rem] border border-border/70 bg-foreground/10 p-1.5 shadow-sm">
+        <div className="mx-auto w-52.5 max-w-full rounded-[1.6rem] border border-border/70 bg-foreground/10 p-1.5 shadow-sm">
           <div
             className={cn(
-              "relative aspect-[390/844] overflow-hidden rounded-[1.25rem] bg-gradient-to-br",
+              "relative aspect-390/844 overflow-hidden rounded-2xl bg-linear-to-br",
               toneClasses[work.previewTone]
             )}
           >
@@ -57,7 +57,7 @@ function WorkPreview({ work }: { work: WorkItem }) {
         <div className="rounded-2xl border border-border/70 bg-foreground/5 p-2 shadow-sm">
           <div
             className={cn(
-              "relative aspect-[16/10] overflow-hidden rounded-xl bg-gradient-to-br",
+              "relative aspect-16/10 overflow-hidden rounded-xl bg-linear-to-br",
               toneClasses[work.previewTone]
             )}
           >

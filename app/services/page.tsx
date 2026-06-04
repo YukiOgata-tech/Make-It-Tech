@@ -1,21 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { ProcessSection } from "@/components/sections/process-section";
+import { ServiceHeroImage } from "@/components/sections/service-hero-image";
 import { ServiceAreaSwap } from "@/components/sections/service-area-swap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LineButton } from "@/components/ui/line-button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
-  serviceAreas,
-  serviceDeliverables,
   serviceExamples,
   servicePrinciples,
 } from "@/content/pages/services";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
   title: {
@@ -42,69 +41,44 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <Section
-        eyebrow="サービス"
-        title="Web制作から業務改善･DXまで"
-        description="“作る”より先に“整理”。必要なものだけを実装して、現場で運用できる形にします。"
-      >
-        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-          <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
-            現場密着
-          </Badge>
-          <Badge
-            variant="outline"
-            className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
-          >
-            最小構成で実装
-          </Badge>
-        </div>
-
-        <Separator className="my-4 sm:my-10" />
-
-        <ServiceAreaSwap />
-
-        <div className="grid gap-3 md:hidden">
-          {serviceAreas.map((area) => {
-            const Icon = area.icon;
-            return (
-              <div
-                key={area.title}
-                className="relative overflow-hidden rounded-2xl border border-border/60 bg-background/70"
-              >
-                <div
-                  className="pointer-events-none absolute inset-0 bg-cover bg-bottom opacity-30 dark:hidden"
-                  style={{ backgroundImage: "url(/images/bg-3-light.png)" }}
-                />
-                <div
-                  className="pointer-events-none absolute inset-0 hidden bg-cover bg-bottom opacity-30 dark:block"
-                  style={{ backgroundImage: "url(/images/bg-3-dark.png)" }}
-                />
-                <MobileDisclosure
-                  summary={area.title}
-                  className="relative z-10 border-0 bg-transparent"
-                >
-                  <div className="grid gap-2">
-                    <div className="flex items-start gap-3">
-                      <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <p className="text-sm text-muted-foreground">{area.desc}</p>
-                    </div>
-                    <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
-                      {area.items.map((item) => (
-                        <li key={item} className="flex items-start gap-2">
-                          <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </MobileDisclosure>
+      <section className="py-3 sm:py-16">
+        <Container>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+            <div>
+              <div>
+                <p className="text-sm font-medium text-primary/80">-サービス</p>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-3xl">
+                  Web制作からDX支援まで、必要な形で対応します
+                </h2>
+                <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-md">
+                  HP/LP制作、アプリ、社内システム、ツール導入、補助金まわりまで、目的に合わせて支援範囲を組み立てます。
+                </p>
               </div>
-            );
-          })}
-        </div>
-      </Section>
+
+              <div className="mt-3 flex items-end justify-between gap-3 sm:mt-5 sm:block">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                  <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
+                    現場密着
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
+                  >
+                    最小構成で実装
+                  </Badge>
+                </div>
+                <ServiceHeroImage className="aspect-[3/2] w-24 shrink-0 sm:hidden" />
+              </div>
+            </div>
+
+            <ServiceHeroImage className="hidden aspect-[3/2] w-full lg:block" />
+          </div>
+
+          <Separator className="my-4 sm:my-10" />
+
+          <ServiceAreaSwap />
+        </Container>
+      </section>
 
       <Section
         eyebrow="支援スタイル"
@@ -158,50 +132,33 @@ export default function ServicesPage() {
       </Section>
 
       <Section
-        eyebrow="成果物のイメージ"
-        title="対応範囲のイメージを先に共有します"
-        description="案件ごとに違いますが、よく出る成果物を提示してズレを減らします。"
+        eyebrow="制作・支援実績"
+        title="実際の制作・支援内容は実績ページで確認できます"
+        description="サービスの詳細な成果物一覧ではなく、実際にどのような相談・制作・改善に対応しているかを実績として掲載しています。"
       >
-        <div className="hidden gap-6 md:grid md:grid-cols-2">
-          {serviceDeliverables.map((d, index) => {
-            const bgImage =
-              index === 0 ? "/images/bg-design-01.png" : "/images/bg-design-02.png";
-            return (
-              <Card key={d.title} className="relative overflow-hidden rounded-3xl">
-                <div
-                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-25 dark:opacity-15 -z-10"
-                  style={{ backgroundImage: `url(${bgImage})` }}
-                />
-                <CardHeader className="relative mb-0">
-                  <CardTitle className="text-xl font-extrabold">-- {d.title} --</CardTitle>
-                </CardHeader>
-                <CardContent className="relative text-md dark:text-white">
-                  <ul className="grid gap-1">
-                    {d.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-0 h-2 w-2 rounded-full " />
-                        <span className="font-bold">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-        <div className="grid gap-3 md:hidden">
-          {serviceDeliverables.map((d) => (
-            <MobileDisclosure key={d.title} summary={d.title}>
-              <ul className="grid gap-1.5 text-sm leading-snug text-muted-foreground">
-                {d.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </MobileDisclosure>
-          ))}
+        <div className="border-y border-border/70 bg-background/80 p-4 sm:rounded-3xl sm:border sm:p-6">
+          <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+            <div>
+              <p className="text-base font-semibold sm:text-xl">
+                Web制作、システム開発、DX支援の具体例を掲載しています
+              </p>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
+                依頼前にイメージしやすいよう、公開できる範囲で制作・支援実績をまとめています。
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 md:justify-end">
+              <Button asChild className="rounded-xl">
+                <Link href="/works">
+                  実績を見る <ArrowRight className="sm:ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl">
+                <Link href="/contact">
+                  相談する <ExternalLink className="sm:ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </Section>
 

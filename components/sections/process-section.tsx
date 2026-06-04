@@ -163,54 +163,7 @@ export function ProcessSection({ className }: { className?: string }) {
         </div>
 
         {/* Guarantees + CTA */}
-        <div className="mt-10 hidden gap-4 md:grid md:grid-cols-3 md:items-stretch">
-          <div className="grid gap-4 md:col-span-2">
-            {processGuarantees.map((g) => (
-              <Card key={g.title} className="relative overflow-hidden rounded-3xl border bg-card/85 shadow-sm backdrop-blur">
-                <CardBackdrop />
-                <CardContent className="relative p-3 sm:p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                      <g.icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-lg font-medium">{g.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{g.desc}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <Card className="relative overflow-hidden rounded-3xl border bg-card/85 shadow-sm backdrop-blur">
-            <CardBackdrop />
-            <CardContent className="relative p-6 gap-3">
-              <p className="text-sm font-medium">まずはここから</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                現状の困りごとを3つ書ければOK。
-                最短の改善案を作って、必要なら実装まで進めます。
-              </p>
-
-              <div className="mt-5 grid gap-3">
-                <Button asChild className="rounded-xl">
-                  <Link href="/contact">
-                    お問合せ <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <LineButton href="/survey">LINEで相談</LineButton>
-              </div>
-
-              <div className="mt-3 sm:mt-6 rounded-2xl bg-secondary/40 p-4">
-                <p className="text-xs font-medium text-muted-foreground">TIP</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="mt-8 grid gap-3 md:hidden">
+        <div className="mt-4 grid gap-3 md:hidden">
           {processGuarantees.map((g) => (
             <div
               key={g.title}
@@ -248,7 +201,7 @@ export function ProcessSection({ className }: { className?: string }) {
 
               <MobileDisclosure summary="TIP" className="mt-2">
                 <p className="text-sm text-muted-foreground">
-                  “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発しません。
+                  “開発が必要か”から一緒に判断できます。既存ツールで済むなら、開発の必要はありません。
                 </p>
               </MobileDisclosure>
             </div>
@@ -257,7 +210,7 @@ export function ProcessSection({ className }: { className?: string }) {
 
         {/* small note */}
         <div className="mt-4 sm:mt-8 text-xs text-muted-foreground">
-          ※ 具体的な進め方・成果物・範囲は案件により調整します。無理に大きく作らず、最小構成で効果を検証します。
+          ※ 具体的な進め方・成果物・範囲は案件により調整します。最適な構成で効果を検証します。
         </div>
       </div>
     </section>

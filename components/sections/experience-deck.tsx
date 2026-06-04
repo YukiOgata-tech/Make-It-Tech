@@ -240,7 +240,7 @@ export function ExperienceDeck({ className }: { className?: string }) {
       )}
     >
       <div className="relative pt-2 pb-2 sm:pt-6 sm:pb-14">
-        <div className="pointer-events-none absolute inset-0 -z-10 rounded-lg overflow-hidden bg-gradient-to-br from-[#FFE3C8] via-[#F6E9DA] to-[#CFEAE6] dark:from-[#0E1A1F] dark:via-[#142429] dark:to-[#0F1D21]">
+        <div className="pointer-events-none absolute inset-0 -z-10 rounded-lg overflow-hidden bg-linear-to-br from-[#FFE3C8] via-[#F6E9DA] to-[#CFEAE6] dark:from-[#0E1A1F] dark:via-[#142429] dark:to-[#0F1D21]">
           <div className="absolute inset-0 bg-grid opacity-40 dark:opacity-15" />
           <motion.div
             className="absolute -left-24 top-8 h-64 w-64 rounded-full bg-[#FFB47C]/50 blur-[110px] dark:bg-[#37515A]/70"
@@ -404,7 +404,7 @@ export function ExperienceDeck({ className }: { className?: string }) {
                         >
                           <div
                             className={cn(
-                              "absolute inset-0 rounded-[2.2rem] bg-gradient-to-br",
+                              "absolute inset-0 rounded-[2.2rem] bg-linear-to-br",
                               exp.theme.halo
                             )}
                           />

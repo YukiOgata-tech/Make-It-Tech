@@ -4,40 +4,62 @@ import {
   Globe,
   Hammer,
   LineChart,
+  MonitorSmartphone,
   Sparkles,
+  Smartphone,
+  Settings,
   Wrench,
 } from "lucide-react";
 
 export const serviceAreas = [
   {
-    title: "Web制作･導線設計",
-    desc: "新潟の店舗サイト/採用ページなど、目的から逆算して構成を作ります。",
+    title: "HP/LP制作",
+    desc: "SEO、導線設計、公開後の運用まで見据えたWeb制作に対応します。",
     icon: Globe,
-    items: ["構成とデザイン考案･実装", "CTA設計･改善", "管理･運用しやすい設計"],
+    href: "/hp-lp-request",
+    tone: "sky",
   },
   {
-    title: "ITによる業務改善･見える化",
-    desc: "属人化や非効率を整理し、引き継げる運用に。",
-    icon: ClipboardList,
-    items: ["業務フロー整理", "入力ルール整備", "運用の型づくり"],
+    title: "モバイルアプリ制作",
+    desc: "予約、管理、記録、会員向け機能など、用途に合わせて小さく設計します。",
+    icon: Smartphone,
+    href: "/contact?category=モバイルアプリ制作",
+    tone: "violet",
   },
   {
-    title: "ツール導入支援･運用",
-    desc: "LINE/フォーム/シート/通知連携で、最小コストの仕組み化。",
-    icon: Bot,
-    items: ["問い合わせ一元化", "通知･集計の集約と自動化", "運用負担の削減"],
-  },
-  {
-    title: "小規模システム",
-    desc: "必要最小限の機能から。管理画面や簡易DBも対応します。",
+    title: "社内システム開発/相談",
+    desc: "管理画面、簡易DB、権限設計など、業務に合わせた仕組みを相談できます。",
     icon: Wrench,
-    items: ["要件整理･画面設計", "権限設計", "運用導線の整備"],
+    href: "/contact?category=社内システム開発/相談",
+    tone: "emerald",
   },
   {
-    title: "改善伴走･運用支援",
-    desc: "導入して終わりにせず、数字と現場の声で改善します。",
+    title: "DX支援コンサル",
+    desc: "おすすめツールの紹介、導入支援、業務フロー整理まで現場目線で支援します。",
     icon: LineChart,
-    items: ["KPI/導線の改善", "追加修正/改善の継続対応", "優先順位の見直し"],
+    href: "/survey",
+    tone: "amber",
+  },
+  {
+    title: "関連補助金申請補助",
+    desc: "IT導入やWeb制作に関わる補助金の確認、整理、申請準備を補助します。",
+    icon: ClipboardList,
+    href: "/contact?category=関連補助金申請補助",
+    tone: "rose",
+  },
+  {
+    title: "LINE/Googleビジネス支援",
+    desc: "公式LINE、Googleビジネスプロフィールの設定代行と運用補助に対応します。",
+    icon: Bot,
+    href: "/contact?category=LINE/Googleビジネス支援",
+    tone: "lime",
+  },
+  {
+    title: "Workspace設定/運用補助",
+    desc: "Google Workspaceなどの初期設定、権限整理、日常運用の補助を行います。",
+    icon: Settings,
+    href: "/contact?category=Workspace設定/運用補助",
+    tone: "indigo",
   },
 ] as const;
 
@@ -55,7 +77,7 @@ export const servicePrinciples = [
   {
     title: "既存ツールで済むなら作らない",
     desc: "コストと期間を最適化するために“作らない”判断。",
-    icon: ClipboardList,
+    icon: MonitorSmartphone,
   },
 ] as const;
 

@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -195,6 +194,18 @@ export function ContactForm() {
     form.setValue("startedAt", startedAtRef.current, { shouldValidate: false });
   }, [form]);
 
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const category = new URLSearchParams(window.location.search).get("category");
+    if (!category || !(contactCategories as readonly string[]).includes(category)) return;
+
+    const currentCategory = form.getValues("category");
+    if (!currentCategory) {
+      form.setValue("category", category, { shouldValidate: true });
+    }
+  }, [form]);
+
   // ⚠ eslint警告の元。機能的にはOKだが、気になるなら useWatch に変えられる（後述）
   const values = form.watch();
   const hasPhone = Boolean(values.phone?.trim());
@@ -259,7 +270,8 @@ export function ContactForm() {
     }
 
     saveTimeoutRef.current = window.setTimeout(() => {
-      const { startedAt: _startedAt, ...rest } = form.getValues();
+      const { startedAt: omittedStartedAt, ...rest } = form.getValues();
+      void omittedStartedAt;
       const payload = {
         savedAt: Date.now(),
         ttlHours: draftTtlHours,
@@ -576,7 +588,7 @@ export function ContactForm() {
             value={values.category}
             items={contactCategories}
             onChange={(v) => form.setValue("category", v, { shouldValidate: true })}
-            placeholder="例：Web制作 / 業務改善 / 自動化…"
+            placeholder="例：HP/LP制作 / DX支援コンサル…"
             error={formState.errors.category?.message}
           />
 
