@@ -12,6 +12,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const isAdminConsolePath = pathname.startsWith("/sub/admin-console");
   const isAppsPath = pathname === "/apps" || pathname.startsWith("/apps/");
   const isMyLifePath = pathname === "/this-is-my-life";
+  const isFlyerPath = pathname === "/flyer";
   const isToolsHost = hostname.startsWith("tools.");
   const isAdminConsoleHost = hostname.startsWith("admin-console.");
 
@@ -21,6 +22,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     isAdminConsolePath ||
     isAppsPath ||
     isMyLifePath ||
+    isFlyerPath ||
     isToolsHost ||
     isAdminConsoleHost
   ) {
