@@ -71,12 +71,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const record = await fetchAnnouncementBySlug(slug);
   if (!record) {
     return {
-      title: "お知らせ",
-      description: "お知らせの詳細ページです。",
+      title: "お知らせ・メディア掲載・実績情報 | Make It Tech",
+      description:
+        "Make It Tech のお知らせ詳細ページです。新潟のIT・DX支援、Web制作、支援実績、メディア掲載、サービス更新に関する情報を掲載しています。",
     };
   }
 
-  const description = record.summary || "お知らせの詳細ページです。";
+  const description =
+    record.summary ||
+    `${record.title} に関するお知らせです。Make It Tech のIT・DX支援、Web制作、支援実績、サービス更新情報を掲載しています。`;
   const rawCoverUrl = record.coverImage?.url;
   const ogImage = rawCoverUrl
     ? rawCoverUrl.startsWith("http")

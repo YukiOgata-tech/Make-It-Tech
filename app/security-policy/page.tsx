@@ -7,8 +7,9 @@ import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { MobileTocList } from "@/components/navigation/mobile-toc";
 
 export const metadata: Metadata = {
-  title: "情報セキュリティ基本方針",
-  description: "Make It Tech の情報セキュリティ基本方針を掲載しています。",
+  title: "情報セキュリティ基本方針 | 業務データ保護の考え方",
+  description:
+    "Make It Tech の情報セキュリティ基本方針です。DX支援、Web制作、業務改善の相談・開発で扱う情報資産、機密情報、外部委託先、インシデント対応、継続的改善の方針を掲載しています。",
   keywords: [
     "情報セキュリティ",
     "セキュリティポリシー",

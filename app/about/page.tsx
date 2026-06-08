@@ -13,9 +13,9 @@ import {
 } from "@/content/pages/about";
 
 export const metadata: Metadata = {
-  title: "事業所概要 IT事業所",
+  title: "Make It Techの事業所概要と代表プロフィール",
   description:
-    "Make It Tech の事業概要。現在は新潟の中小事業者向けに、ITによるアプローチ、DX・業務支援を行います。",
+    "Make It Tech の事業概要、代表プロフィール、対応実績、活動情報を掲載しています。新潟の中小事業者向けに、ITによる業務改善、DX支援、Web制作、運用改善を実務目線で支援します。",
   keywords: [
     "新潟", "niigata", "新潟市", "地域創生", "就活", "就活NEO", "DX",
     "IT", "業務改善", "LP制作", "信頼", "Web制作", "事業所概要",],

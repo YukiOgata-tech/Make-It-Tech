@@ -23,9 +23,9 @@ import {
 const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
 
 export const metadata: Metadata = {
-  title: "LINEで相談",
+  title: "LINEで無料相談 | 新潟のIT・DX支援",
   description:
-    "LINE公式でチャット相談を受け付けています。アンケートではなく気軽な会話で現状を整理し、無料診断と提案につなげます。",
+    "Make It Tech の公式LINEで、業務改善、DX、Web制作、ITツール導入、自動化の相談を受け付けています。アンケートではなく気軽なチャットで現状を整理し、条件により無料診断と提案につなげます。",
   keywords: [
     "新潟",
     "DX",

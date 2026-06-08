@@ -7,8 +7,9 @@ import { fetchBlogList } from "@/lib/blog-data";
 import { blogCategoryLabelMap } from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "ブログ",
-  description: "事業所の悩みやDX課題を解決するヒントをまとめたブログです。",
+  title: "ブログ | 業務改善・DX・Web活用の実務ヒント",
+  description:
+    "中小事業者や個人事業主の業務改善、DX、ITツール導入、Web制作、補助金活用に役立つ実務目線の記事をまとめています。現場の悩みを整理し、すぐ使える改善の考え方を紹介します。",
   keywords: ["ブログ", "業務改善", "DX", "IT", "補助金", "新潟"],
 };
 

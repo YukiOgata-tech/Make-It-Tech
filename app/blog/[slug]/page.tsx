@@ -83,12 +83,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const record = await fetchBlogBySlug(slug);
   if (!record) {
     return {
-      title: "ブログ",
-      description: "ブログの詳細ページです。",
+      title: "ブログ | 業務改善・DX・Web活用の実務ヒント",
+      description:
+        "Make It Tech のブログ詳細ページです。中小事業者向けに、業務改善、DX、ITツール導入、Web制作、補助金活用など、現場で使える実務情報を紹介します。",
     };
   }
 
-  const description = record.summary || "ブログの詳細ページです。";
+  const description =
+    record.summary ||
+    `${record.title} の記事です。業務改善、DX、ITツール導入、Web制作に関する実務目線の情報を Make It Tech が紹介します。`;
   const rawCoverUrl = record.coverImage?.url;
   const ogImage = rawCoverUrl
     ? rawCoverUrl.startsWith("http")

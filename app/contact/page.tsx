@@ -7,9 +7,9 @@ import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "お問い合わせ",
+  title: "お問い合わせ・無料相談 | 新潟のIT・DX支援",
   description:
-    "新潟のDX・IT支援の相談窓口。現状整理から丁寧に対応し、必要最小限の改善提案を行います。",
+    "新潟のDX・IT支援、Web/LP制作、業務改善、自動化、簡易システム構築に関する相談窓口です。相談内容が固まっていない段階でも、現状整理から丁寧に対応し、必要最小限の改善提案を行います。",
   keywords: [
     "新潟",
     "DX",

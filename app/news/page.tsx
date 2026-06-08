@@ -6,8 +6,9 @@ import { fetchAnnouncementList } from "@/lib/announcements-data";
 import { announcementCategories, categoryLabelMap } from "@/lib/announcements";
 
 export const metadata: Metadata = {
-  title: "お知らせ",
-  description: "Make It Tech のお知らせ・メディア・実績情報を掲載しています。",
+  title: "お知らせ・メディア掲載・実績情報 | Make It Tech",
+  description:
+    "Make It Tech のお知らせ、メディア掲載、支援実績、サービス更新情報を掲載しています。新潟のIT・DX支援やWeb制作に関する最新の動向を確認できます。",
   keywords: ["お知らせ", "メディア", "実績", "DX", "IT", "新潟"],
 };
 

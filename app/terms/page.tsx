@@ -7,8 +7,9 @@ import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { MobileTocList } from "@/components/navigation/mobile-toc";
 
 export const metadata: Metadata = {
-  title: "注意事項（利用規約）",
-  description: "Make It Tech の注意事項（利用規約）を掲載しています。",
+  title: "注意事項・利用規約 | Make It Techのサービス条件",
+  description:
+    "Make It Tech の注意事項・利用規約です。Web制作、DX支援、業務改善、システム開発の対応範囲、見積もり、進行、検収、支払い、キャンセル、免責、禁止事項について説明します。",
   keywords: [
     "利用規約",
     "注意事項",

@@ -4,14 +4,14 @@ import { getToolHref, toolCategories, tools, toolsBaseUrl } from "./_data/tools"
 import { AdsenseAdSlot } from "./components/adsense-ad-slot";
 
 export const metadata: Metadata = {
-  title: "無料オンライン開発ツール集",
+  title: "無料オンライン開発ツール集 | 画像・PDF・データ変換",
   description:
     "画像圧縮、画像変換、PDF圧縮、PDF結合、PDF分割、PDF並び替え、Base64変換、JSON変換、QRコード生成などを無料で使えるオンラインツール集。多くの処理はブラウザ内で完結します。",
   alternates: {
     canonical: toolsBaseUrl,
   },
   openGraph: {
-    title: "無料オンライン開発ツール集 | DevTools",
+    title: "無料オンライン開発ツール集 | 画像・PDF・データ変換",
     description:
       "画像・PDF・テキスト・データ変換に使える無料ツール集。日々の制作、資料作成、開発作業をブラウザで手早く処理できます。",
     url: toolsBaseUrl,

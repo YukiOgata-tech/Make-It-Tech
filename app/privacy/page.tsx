@@ -7,8 +7,9 @@ import { MobileDisclosure } from "@/components/mobile-disclosure";
 import { MobileTocList } from "@/components/navigation/mobile-toc";
 
 export const metadata: Metadata = {
-  title: "プライバシーポリシー",
-  description: "Make It Tech のプライバシーポリシーを掲載しています。",
+  title: "プライバシーポリシー | 個人情報と業務データの取扱い",
+  description:
+    "Make It Tech のプライバシーポリシーです。お問い合わせ、業務診断、Web制作、DX支援で取得する個人情報、業務データ、Cookie、外部サービス利用、保存期間、開示・削除手続きについて説明します。",
   keywords: [
     "プライバシーポリシー", "個人情報", "新潟", "DX", "IT", "業務改善", "Web制作",
     "LP制作", "信頼", "情報保護", "データ管理", "セキュリティ", "利用規約", "niigata",

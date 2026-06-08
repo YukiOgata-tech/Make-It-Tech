@@ -5,8 +5,9 @@ import { Separator } from "@/components/ui/separator";
 import { appCatalog } from "@/content/apps/catalog";
 
 export const metadata: Metadata = {
-  title: "アプリ一覧",
-  description: "Make It Tech が公開しているアプリのサポート・規約ページ一覧です。",
+  title: "公開アプリ一覧・サポート情報 | Make It Tech",
+  description:
+    "Make It Tech が公開しているアプリの一覧ページです。各アプリのサポート窓口、利用規約、プライバシーポリシーなど、利用者向けの公式情報を確認できます。",
 };
 
 export default function AppsPage() {

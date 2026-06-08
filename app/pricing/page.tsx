@@ -30,10 +30,10 @@ import {
 
 export const metadata: Metadata = {
   title: {
-    absolute: "新潟のIT・DX支援 料金 Web/LP制作",
+    absolute: "新潟のIT・DX支援料金とWeb/LP制作の目安 | Make It Tech",
   },
   description:
-    "DX･IT支援に対応した料金目安。固定プランはなく、内容に合わせて柔軟に見積もります。",
+    "新潟のIT・DX支援、Web/LP制作、社内システム開発、自動化、運用伴走の料金目安を掲載しています。固定プランではなく、課題・範囲・納期に合わせて柔軟に見積もります。",
   keywords: [
     "新潟", "新潟市", "長岡市", "上越市", "三条市",
     "DX", "IT", "料金", "地方創生",

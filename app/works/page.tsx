@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "制作・支援実績",
+  title: "制作・支援実績 | Web制作・DX支援の事例",
   description:
-    "Make It TechのWeb制作、LP制作、業務改善、AI活用支援の実績紹介ページです。",
+    "Make It Tech が対応したWeb制作、LP制作、業務システム開発、業務改善、AI活用支援の実績を紹介します。相談前に支援内容や成果物の具体例を確認できます。",
   keywords: ["制作実績", "Web制作", "LP制作", "DX支援", "新潟", "業務改善"],
 };
 
