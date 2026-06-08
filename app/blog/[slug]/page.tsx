@@ -83,7 +83,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const record = await fetchBlogBySlug(slug);
   if (!record) {
     return {
-      title: "ブログ | 業務改善・DX・Web活用の実務ヒント",
+      title: "ブログ | DX・Web/アプリ活用の実務ヒント 業務改善・IT導入なら Make It Tech",
       description:
         "Make It Tech のブログ詳細ページです。中小事業者向けに、業務改善、DX、ITツール導入、Web制作、補助金活用など、現場で使える実務情報を紹介します。",
     };
@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description =
     record.summary ||
-    `${record.title} の記事です。業務改善、DX、ITツール導入、Web制作に関する実務目線の情報を Make It Tech が紹介します。`;
+    `${record.title} の記事です。DX、ITツール導入、Web・アプリ制作に関する実務目線の情報を Make It Tech が紹介します。`;
   const rawCoverUrl = record.coverImage?.url;
   const ogImage = rawCoverUrl
     ? rawCoverUrl.startsWith("http")
@@ -202,12 +202,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
           ) : null}
         </div>
 
-        <h1 className="mt-3 text-[1.45rem] font-semibold leading-snug tracking-tight sm:text-[2rem] md:text-[2.15rem]">
+        <h1 className="mt-3 text-[1.28rem] font-semibold leading-snug tracking-tight sm:text-[2rem] md:text-[2.15rem]">
           {record.title}
         </h1>
 
         {record.summary ? (
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+          <p className="mt-2 text-[0.72rem] leading-relaxed text-muted-foreground sm:text-[0.95rem]">
             {record.summary}
           </p>
         ) : null}

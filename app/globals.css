@@ -612,8 +612,10 @@ body[data-has-breadcrumbs="true"] {
 
 .article-prose {
   color: var(--foreground);
-  line-height: 1.88;
-  font-size: 0.94rem;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    YuGothic, var(--font-body), system-ui, sans-serif;
+  line-height: 1.82;
+  font-size: 0.9rem;
   letter-spacing: 0;
 }
 
@@ -638,17 +640,17 @@ body[data-has-breadcrumbs="true"] {
 }
 
 .article-prose h2 {
-  margin-top: 2.6rem;
+  margin-top: 2.35rem;
   border-left: 4px solid var(--primary);
   padding-left: 0.85rem;
-  font-size: clamp(1.18rem, 1.05rem + 0.7vw, 1.55rem);
+  font-size: clamp(1.14rem, 1.02rem + 0.62vw, 1.48rem);
 }
 
 .article-prose h3 {
-  margin-top: 1.8rem;
-  padding-bottom: 0.35rem;
+  margin-top: 1.55rem;
+  padding-bottom: 0.3rem;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
-  font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);
+  font-size: clamp(1rem, 0.95rem + 0.36vw, 1.18rem);
 }
 
 .article-prose h4 {
@@ -657,7 +659,7 @@ body[data-has-breadcrumbs="true"] {
 }
 
 .article-prose p {
-  margin-top: 0.9rem;
+  margin-top: 0.78rem;
 }
 
 .article-prose p:first-child {
@@ -703,8 +705,8 @@ body[data-has-breadcrumbs="true"] {
 
 .article-prose ul,
 .article-prose ol {
-  margin-top: 0.85rem;
-  margin-bottom: 0.85rem;
+  margin-top: 0.72rem;
+  margin-bottom: 0.72rem;
   padding-left: 1.45rem;
   list-style-position: outside;
 }
@@ -726,7 +728,7 @@ body[data-has-breadcrumbs="true"] {
 }
 
 .article-prose li {
-  margin: 0.28rem 0;
+  margin: 0.22rem 0;
   padding-left: 0.15rem;
 }
 
@@ -736,7 +738,7 @@ body[data-has-breadcrumbs="true"] {
 }
 
 .article-prose li > p {
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
 }
 
 .article-prose blockquote {
@@ -934,27 +936,45 @@ body[data-has-breadcrumbs="true"] {
   }
 
   .article-prose {
-    font-size: 0.86rem;
-    line-height: 1.7;
+    font-size: 0.78rem;
+    line-height: 1.62;
   }
 
   .article-prose h1 {
-    font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.7rem);
+    font-size: clamp(1.18rem, 1.05rem + 0.7vw, 1.45rem);
   }
 
   .article-prose h2 {
-    margin-top: 2rem;
-    padding-left: 0.65rem;
-    font-size: clamp(1.05rem, 0.98rem + 0.6vw, 1.3rem);
+    margin-top: 1.65rem;
+    padding-left: 0.55rem;
+    border-left-width: 3px;
+    font-size: clamp(0.98rem, 0.92rem + 0.45vw, 1.16rem);
   }
 
   .article-prose h3 {
-    margin-top: 1.45rem;
-    font-size: clamp(0.98rem, 0.93rem + 0.5vw, 1.12rem);
+    margin-top: 1.15rem;
+    padding-bottom: 0.22rem;
+    font-size: clamp(0.92rem, 0.88rem + 0.35vw, 1.02rem);
   }
 
   .article-prose h4 {
-    font-size: 0.95rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+  }
+
+  .article-prose p {
+    margin-top: 0.58rem;
+  }
+
+  .article-prose ul,
+  .article-prose ol {
+    margin-top: 0.55rem;
+    margin-bottom: 0.55rem;
+    padding-left: 1.25rem;
+  }
+
+  .article-prose li {
+    margin: 0.16rem 0;
   }
 
   .article-prose blockquote {
