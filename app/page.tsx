@@ -24,9 +24,9 @@ export default function HomePage() {
     <>
       <FloatingContactCta />
       <Hero />
+      <AnnouncementsSection />
       <WorksPreviewSection />
       <HomeCtaSection />
-      <AnnouncementsSection />
       <FAQSection />
     </>
   );
