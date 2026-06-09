@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
-import { publicWorks, workCapabilities, workStats } from "@/content/works";
+import { publicWorks, workStats } from "@/content/works";
 import { WorkCard } from "@/components/works/work-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
