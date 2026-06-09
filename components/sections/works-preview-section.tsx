@@ -18,10 +18,10 @@ export function WorksPreviewSection() {
                 制作・支援実績
               </Badge>
               <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-3xl">
-                事業に合わせて、開発します
+                開発実績
               </h2>
               <p className="mt-1.5 max-w-2xl text-xs leading-5 text-muted-foreground sm:mt-3 sm:text-base sm:leading-7">
-                Web/LP制作、システム開発/導入支援、AI活用まで、支援しています。
+                HP/LP制作、システム開発/導入支援、AI活用まで、支援しています。軽微なページ更新等も含む数を表示しています。
               </p>
             </div>
             <Button asChild size="sm" className="h-9 rounded-xl sm:h-10">
@@ -42,7 +42,7 @@ export function WorksPreviewSection() {
           </div>
 
           <p className="rounded-2xl border border-border/60 bg-background/70 p-3 text-[11px] leading-5 text-muted-foreground sm:text-sm sm:leading-6">
-            掲載している実績は、公開許可をいただいた一部のみです。同業種・近隣エリアでの競合配慮や、業務データ・運用ノウハウの保護のため、企業名・URL・画面の一部を伏せている案件があります。
+            掲載している実績は、公開許可をいただいた一部です。同業種・近隣エリアでの競合配慮や、業務データ・運用の保護のため、企業名・URL・画面の一部を伏せている案件があります。
           </p>
 
           <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0">

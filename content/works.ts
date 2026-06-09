@@ -22,17 +22,9 @@ export type WorkItem = {
 
 export const workStats = [
   { label: "導入・支援先", value: "5+", note: "飲食店4店舗以上 / 学童保育施設" },
-  { label: "制作・改善案件", value: "18+", note: "サイト・LP・業務システム" },
+  { label: "制作・改善案件", value: "22+", note: "サイト・LP・業務システム" },
 ];
 
-export const workCapabilities = [
-  { label: "Web制作", icon: Globe2 },
-  { label: "LP制作", icon: Smartphone },
-  { label: "業務改善", icon: Settings2 },
-  { label: "AI導入", icon: Bot },
-  { label: "導線設計", icon: LineChart },
-  { label: "地域事業支援", icon: Building2 },
-];
 
 export const works: WorkItem[] = [
   {
