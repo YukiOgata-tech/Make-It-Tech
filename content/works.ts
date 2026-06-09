@@ -70,7 +70,7 @@ export const works: WorkItem[] = [
     url: "/",
     summary: "既存サイトに、問い合わせ内容やサイト内の迷いを減らすためのパーソナライズされたAIチャットボットを追加。事業内容に合わせた案内導線を整えました。",
     scope: ["要件整理", "AIボット設計", "サイト組み込み", "案内文調整", "運用改善"],
-    results: ["3つの事業サイトで導入を支援", "このサイト右下のチャットボタンでも同様の機能を運用中"],
+    results: ["このサイトを含む4つの事業サイトで導入を支援", "このサイト右下のチャットボタンでも同様の機能を運用中"],
     previewTone: "coral",
     previewType: "chatbot-images",
     previewDesktopImageUrl: "/images/works/ai-chatbot-desktop.webp",
