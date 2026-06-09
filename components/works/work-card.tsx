@@ -392,7 +392,7 @@ export function WorkCard({ work, compact = false }: { work: WorkItem; compact?: 
               <img
                 src={work.logoUrl}
                 alt={`${work.companyName} ロゴ`}
-                className="h-7 w-auto max-w-[96px] object-contain sm:h-9 sm:max-w-[130px]"
+                className="h-7 w-auto max-w-24 object-contain sm:h-9 sm:max-w-32.5"
                 loading="lazy"
               />
             ) : null}

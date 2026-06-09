@@ -20,7 +20,7 @@ export function MakeItTechLoader({
       >
         <span className="absolute inset-0 rounded-full border-2 border-blue-400/70 border-t-transparent animate-spin" />
         <Image
-          src="/images/logo_MIT_transparent.png"
+          src="/images/logo-02_MIT.png"
           alt=""
           width={compact ? 16 : 20}
           height={compact ? 16 : 20}

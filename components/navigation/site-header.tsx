@@ -121,8 +121,8 @@ export function SiteHeader() {
     <header
       className={cn(
         "relative z-50 w-full border-b border-transparent",
-        "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70",
-        "after:pointer-events-none after:absolute after:inset-x-6 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-primary/50 after:via-accent/40 after:to-secondary/50",
+        "bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/70",
+        "after:pointer-events-none after:absolute after:inset-x-6 after:bottom-0 after:h-px after:bg-linear-to-r after:from-primary/50 after:via-accent/40 after:to-secondary/50",
         scrolled ? "shadow-sm" : "shadow-none"
       )}
     >
