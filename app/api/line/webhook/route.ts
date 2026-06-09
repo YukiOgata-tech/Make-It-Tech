@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
     if (event.type !== "message" || event.message.type !== "text") continue;
 
     if (event.message.text === "実績見せて") {
-      await client.replyMessage(event.replyToken, {
-        type: "text",
-        text: "実績はこちらからご覧いただけます！\nhttps://make-it-tech.com/works",
+      await client.replyMessage({
+        replyToken: event.replyToken,
+        messages: [{ type: "text", text: "実績はこちらからご覧いただけます！\nhttps://make-it-tech.com/works" }],
       });
     }
   }
