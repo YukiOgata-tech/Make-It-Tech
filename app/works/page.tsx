@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { publicWorks, workCapabilities, workStats } from "@/content/works";
 import { WorkCard } from "@/components/works/work-card";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +53,25 @@ export default function WorksPage() {
               </div>
             ))}
           </div>
+
+          <section className="rounded-2xl border border-primary/20 bg-secondary/35 p-4 sm:rounded-3xl sm:p-5">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+                <ShieldCheck className="h-4 w-4" />
+              </span>
+              <div>
+                <h2 className="text-sm font-semibold sm:text-base">
+                  公開している実績について
+                </h2>
+                <p className="mt-1.5 text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
+                  ここに掲載しているのは、公開許可をいただいた実績の一部です。美容室・飲食店・地域サービスなど、同業種や近隣商圏でマーケティング上の競合が起こり得る案件では、クライアント名、サイトURL、画面、具体的な運用内容をあえて掲載していない場合があります。
+                </p>
+                <p className="mt-1.5 text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
+                  非公開案件も含めた対応範囲や近い事例は、守秘に配慮したうえで相談時にお伝えできます。
+                </p>
+              </div>
+            </div>
+          </section>
 
           {digishiftWork ? (
             <section className="rounded-2xl border border-border/60 bg-background/75 p-3 sm:rounded-3xl sm:p-5">

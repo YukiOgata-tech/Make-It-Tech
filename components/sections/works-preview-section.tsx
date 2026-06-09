@@ -41,6 +41,10 @@ export function WorksPreviewSection() {
             ))}
           </div>
 
+          <p className="rounded-2xl border border-border/60 bg-background/70 p-3 text-[11px] leading-5 text-muted-foreground sm:text-sm sm:leading-6">
+            掲載している実績は、公開許可をいただいた一部のみです。同業種・近隣エリアでの競合配慮や、業務データ・運用ノウハウの保護のため、企業名・URL・画面の一部を伏せている案件があります。
+          </p>
+
           <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0">
             {featured.map((work) => (
               <div key={work.id} className="min-w-[74vw] snap-center sm:min-w-0">
