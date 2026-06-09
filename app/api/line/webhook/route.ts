@@ -1,7 +1,7 @@
-import { Client, validateSignature } from "@line/bot-sdk";
+import { messagingApi, validateSignature } from "@line/bot-sdk";
 import { NextRequest } from "next/server";
 
-const client = new Client({
+const client = new messagingApi.MessagingApiClient({
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN!,
 });
 
