@@ -1,5 +1,3 @@
-import { Bot, Building2, Globe2, LineChart, Settings2, Smartphone } from "lucide-react";
-
 export type WorkItem = {
   id: string;
   companyName: string;
