@@ -17,6 +17,7 @@ const toneClasses: Record<WorkItem["previewTone"], string> = {
 function WorkPreview({ work }: { work: WorkItem }) {
   const isLivePreview = work.previewType === "live" && work.previewUrl;
   const isSeatMapPreview = work.previewType === "seat-map";
+  const isChatbotImagePreview = work.previewType === "chatbot-images";
 
   return (
     <div className="mx-auto w-full">
@@ -31,7 +32,13 @@ function WorkPreview({ work }: { work: WorkItem }) {
             <div className="absolute inset-x-0 top-0 z-20 flex h-5 items-center justify-center bg-black/80">
               <span className="h-1.5 w-12 rounded-full bg-white/20" />
             </div>
-            {isSeatMapPreview ? (
+            {isChatbotImagePreview ? (
+              <ImageSlotPreview
+                src={work.previewMobileImageUrl}
+                alt={work.previewImageAlt ?? `${work.companyName} mobile preview`}
+                label="スマホ画面"
+              />
+            ) : isSeatMapPreview ? (
               <StudyRoomPreview />
             ) : isLivePreview ? (
               <>
@@ -67,7 +74,14 @@ function WorkPreview({ work }: { work: WorkItem }) {
               <span className="h-2 w-2 rounded-full bg-green-300" />
               <span className="ml-2 h-3 flex-1 rounded-full bg-muted" />
             </div>
-            {isSeatMapPreview ? (
+            {isChatbotImagePreview ? (
+              <ImageSlotPreview
+                src={work.previewDesktopImageUrl}
+                alt={work.previewImageAlt ?? `${work.companyName} desktop preview`}
+                label="PC画面"
+                desktop
+              />
+            ) : isSeatMapPreview ? (
               <StudyRoomPreview desktop />
             ) : isLivePreview ? (
               <>
@@ -88,6 +102,61 @@ function WorkPreview({ work }: { work: WorkItem }) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ImageSlotPreview({
+  src,
+  alt,
+  label,
+  desktop = false,
+}: {
+  src?: string;
+  alt: string;
+  label: string;
+  desktop?: boolean;
+}) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover",
+          desktop ? "pt-7" : "pt-5"
+        )}
+        loading="lazy"
+      />
+    );
+  }
+
+  return (
+    <div className={cn("absolute inset-0 grid place-items-center", desktop ? "pt-7" : "pt-5")}>
+      {!desktop ? (
+        <div className="relative grid h-full w-full place-items-center overflow-hidden">
+          <div className="absolute inset-0 bg-linear-to-br from-white/45 via-white/20 to-primary/20" />
+          <div className="relative mx-auto grid w-[82%] gap-2 rounded-2xl border border-white/70 bg-white/80 p-3 text-center shadow-sm backdrop-blur">
+            <p className="text-[11px] font-semibold leading-snug text-foreground">
+              右下のチャットボタンを見てください
+            </p>
+            <p className="text-[8px] leading-snug text-muted-foreground">
+              このサイトでも同様のAIチャットを運用中
+            </p>
+          </div>
+          <div className="absolute bottom-3 right-2 flex items-center gap-1 rounded-full bg-[#111827] px-2 py-1 text-[8px] font-semibold text-white shadow-lg">
+            <span className="grid size-5 place-items-center rounded-full bg-white text-[10px]">AI</span>
+            チャット
+          </div>
+        </div>
+      ) : (
+        <div className="grid w-[72%] gap-2 rounded-2xl border border-white/70 bg-white/70 p-3 text-center shadow-sm backdrop-blur">
+          <p className="text-[10px] font-semibold text-foreground sm:text-xs">{label}</p>
+          <p className="text-[8px] leading-snug text-muted-foreground sm:text-[10px]">
+            画像追加予定
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -364,7 +433,7 @@ export function WorkCard({ work, compact = false }: { work: WorkItem; compact?: 
             rel="noreferrer"
             className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-2 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:px-3 sm:text-sm"
           >
-            サイトを見る <ArrowUpRight className="ml-1 size-3.5 sm:size-4" />
+            {work.linkLabel ?? "サイトを見る"} <ArrowUpRight className="ml-1 size-3.5 sm:size-4" />
           </Link>
         ) : (
           <div className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 bg-muted/50 px-2 text-[10px] font-semibold text-muted-foreground sm:h-10 sm:px-3 sm:text-sm">
@@ -375,9 +444,6 @@ export function WorkCard({ work, compact = false }: { work: WorkItem; compact?: 
     </article>
   );
 }
-
-
-
 
 
 
