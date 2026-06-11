@@ -8,7 +8,7 @@ export type WorkItem = {
   scope: string[];
   results: string[];
   previewTone: "coral" | "teal" | "sun" | "ink";
-  previewType?: "mock" | "live" | "seat-map" | "chatbot-images";
+  previewType?: "mock" | "live" | "seat-map" | "chatbot-images" | "site-hero";
   previewUrl?: string;
   previewMobileImageUrl?: string;
   previewDesktopImageUrl?: string;
@@ -66,6 +66,18 @@ export const works: WorkItem[] = [
     previewDesktopImageUrl: "/images/works/ai-chatbot-desktop.webp",
     previewImageAlt: "AIチャットボット導入支援の画面イメージ",
     linkLabel: "このサイトでチャットを見る",
+    isPublic: true,
+  },
+  {
+    id: "hp-lp-production-support",
+    companyName: "店舗・福祉事業向けHP/LP制作",
+    title: "飲食店HP・福祉系人材LPなどの制作支援",
+    category: "HP/LP制作",
+    summary: "飲食店のホームページや、福祉系人材サービスのLPなど、事業の強みと問い合わせ導線が伝わるWebページを制作。公開できない案件も含め、用途に合わせた構成・コピー・実装を支援しています。",
+    scope: ["構成設計", "コピー整理", "デザイン", "実装", "問い合わせ導線"],
+    results: ["店舗・サービスの特徴を伝えるページを制作", "問い合わせや紹介時に共有しやすい導線を整備"],
+    previewTone: "sun",
+    previewType: "site-hero",
     isPublic: true,
   },
   {

@@ -18,6 +18,7 @@ function WorkPreview({ work }: { work: WorkItem }) {
   const isLivePreview = work.previewType === "live" && work.previewUrl;
   const isSeatMapPreview = work.previewType === "seat-map";
   const isChatbotImagePreview = work.previewType === "chatbot-images";
+  const isSiteHeroPreview = work.previewType === "site-hero";
 
   return (
     <div className="mx-auto w-full">
@@ -32,7 +33,9 @@ function WorkPreview({ work }: { work: WorkItem }) {
             <div className="absolute inset-x-0 top-0 z-20 flex h-5 items-center justify-center bg-black/80">
               <span className="h-1.5 w-12 rounded-full bg-white/20" />
             </div>
-            {isChatbotImagePreview ? (
+            {isSiteHeroPreview ? (
+              <SiteHeroPreview />
+            ) : isChatbotImagePreview ? (
               <ImageSlotPreview
                 src={work.previewMobileImageUrl}
                 alt={work.previewImageAlt ?? `${work.companyName} mobile preview`}
@@ -74,7 +77,9 @@ function WorkPreview({ work }: { work: WorkItem }) {
               <span className="h-2 w-2 rounded-full bg-green-300" />
               <span className="ml-2 h-3 flex-1 rounded-full bg-muted" />
             </div>
-            {isChatbotImagePreview ? (
+            {isSiteHeroPreview ? (
+              <SiteHeroPreview desktop />
+            ) : isChatbotImagePreview ? (
               <ImageSlotPreview
                 src={work.previewDesktopImageUrl}
                 alt={work.previewImageAlt ?? `${work.companyName} desktop preview`}
@@ -100,6 +105,91 @@ function WorkPreview({ work }: { work: WorkItem }) {
               <MockPreview desktop />
             )}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SiteHeroPreview({ desktop = false }: { desktop?: boolean }) {
+  if (desktop) {
+    return (
+      <div className="absolute inset-0 overflow-hidden bg-[#fff8ef] pt-7">
+        <div className="absolute -right-8 top-0 h-36 w-36 rounded-full bg-[#cce9e4]/80 blur-xl" />
+        <div className="absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-[#f7d6c9]/80 blur-xl" />
+        <div className="relative grid h-full grid-cols-[1.1fr_0.9fr] gap-3 p-4">
+          <div className="flex flex-col justify-center">
+            <div className="mb-2 flex gap-1">
+              <span className="rounded-full bg-white/80 px-2 py-1 text-[6px] font-semibold text-[#c96d4b] shadow-sm">
+                RESTAURANT
+              </span>
+              <span className="rounded-full bg-white/80 px-2 py-1 text-[6px] font-semibold text-[#2d7c73] shadow-sm">
+                WELFARE LP
+              </span>
+            </div>
+            <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-[#c96d4b]">
+              Website / Landing Page
+            </p>
+            <h3 className="mt-1 text-[18px] font-bold leading-tight text-[#263238]">
+              HP/LP制作
+            </h3>
+            <p className="mt-1 text-[7px] font-semibold leading-snug text-[#56636a]">
+              飲食店HP・福祉系人材LPなど、事業の強みと導線を整理。
+            </p>
+            <div className="mt-3 flex gap-1.5">
+              <span className="rounded-full bg-[#ef633a] px-3 py-1 text-[6px] font-bold text-white shadow-sm">
+                問い合わせ導線
+              </span>
+              <span className="rounded-full border border-[#ef633a]/30 bg-white/75 px-3 py-1 text-[6px] font-bold text-[#263238]">
+                事業紹介
+              </span>
+            </div>
+          </div>
+          <div className="grid content-center gap-2">
+            <div className="rounded-xl border border-white/70 bg-white/75 p-2 shadow-sm">
+              <div className="h-3 w-20 rounded-full bg-[#263238]/20" />
+              <div className="mt-2 h-12 rounded-lg bg-linear-to-br from-[#f7d6c9] to-[#cce9e4]" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-12 rounded-xl border border-white/70 bg-white/65 shadow-sm" />
+              <div className="h-12 rounded-xl border border-white/70 bg-white/65 shadow-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#fff8ef] pt-5">
+      <div className="absolute -right-8 top-10 h-28 w-28 rounded-full bg-[#cce9e4]/80 blur-xl" />
+      <div className="absolute -left-8 bottom-8 h-24 w-24 rounded-full bg-[#f7d6c9]/80 blur-xl" />
+      <div className="relative grid h-full content-center gap-3 p-3">
+        <div className="grid gap-1">
+          <p className="text-[7px] font-semibold uppercase tracking-[0.16em] text-[#c96d4b]">
+            HP / LP
+          </p>
+          <h3 className="text-[19px] font-bold leading-tight text-[#263238]">
+            制作支援
+          </h3>
+          <p className="text-[7px] font-semibold leading-snug text-[#56636a]">
+            飲食店HP・福祉系人材LPの構成と導線を整理。
+          </p>
+        </div>
+        <div className="rounded-2xl border border-white/70 bg-white/75 p-2 shadow-sm">
+          <div className="h-14 rounded-xl bg-linear-to-br from-[#f7d6c9] to-[#cce9e4]" />
+          <div className="mt-2 grid gap-1">
+            <div className="h-2.5 rounded-full bg-[#263238]/20" />
+            <div className="h-2.5 w-2/3 rounded-full bg-[#263238]/15" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 text-[6px] font-bold">
+          <span className="rounded-full bg-[#ef633a] px-2 py-1 text-center text-white">
+            予約・相談
+          </span>
+          <span className="rounded-full bg-white/80 px-2 py-1 text-center text-[#2d7c73]">
+            採用LP
+          </span>
         </div>
       </div>
     </div>
@@ -444,6 +534,5 @@ export function WorkCard({ work, compact = false }: { work: WorkItem; compact?: 
     </article>
   );
 }
-
 
 
