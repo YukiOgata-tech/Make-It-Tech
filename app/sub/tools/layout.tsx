@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+// import Script from "next/script";
 import { ToolsShell } from "./components/tools-shell";
 import { toolsBaseUrl } from "./_data/tools";
 
-const adsenseClient = "ca-pub-3927353202195333";
+// const adsenseClient = "ca-pub-3927353202195333";
 
 export const metadata: Metadata = {
   metadataBase: new URL(toolsBaseUrl),
@@ -45,6 +45,7 @@ export default function ToolsLayout({
 }) {
   return (
     <>
+      {/*
       {process.env.NODE_ENV === "production" ? (
         <Script
           id="tools-adsense"
@@ -54,6 +55,7 @@ export default function ToolsLayout({
           strategy="afterInteractive"
         />
       ) : null}
+      */}
       <ToolsShell>{children}</ToolsShell>
     </>
   );

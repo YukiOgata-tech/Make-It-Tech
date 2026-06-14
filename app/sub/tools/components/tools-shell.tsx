@@ -10,7 +10,7 @@ import {
   toolCategories,
   tools,
 } from "../_data/tools";
-import { AdsenseAdSlot } from "./adsense-ad-slot";
+// import { AdsenseAdSlot } from "./adsense-ad-slot";
 import { CookieConsentBanner } from "./cookie-consent";
 
 export function ToolsShell({ children }: { children: React.ReactNode }) {
@@ -118,7 +118,7 @@ export function ToolsShell({ children }: { children: React.ReactNode }) {
         {children}
         {pathname === "/sub/tools" || pathname === "/" ? null : (
           <div className="tools-page-container pt-0">
-            <AdsenseAdSlot minHeight={100} />
+            {/* <AdsenseAdSlot minHeight={100} /> */}
           </div>
         )}
       </main>
