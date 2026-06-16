@@ -27,6 +27,8 @@ const categoryDescriptions = {
     "PDFの圧縮、結合、分割、ページ整理、画像変換など、資料作成や提出前の調整に使えるツールです。",
   text:
     "Base64、Markdown、JSON、CSV、QRコードなど、開発や運用でよく使うテキスト・データ処理ツールです。",
+  animation:
+    "Lottie JSONやdotLottieファイルなど、Webアニメーション素材を公開前に確認するためのツールです。",
 };
 
 const faqs = [

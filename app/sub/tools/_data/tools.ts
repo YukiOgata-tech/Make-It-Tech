@@ -1,5 +1,5 @@
 export type ToolCategory = {
-  id: "image" | "pdf" | "text";
+  id: "image" | "pdf" | "text" | "animation";
   label: string;
   shortLabel: string;
   icon: string;
@@ -22,6 +22,7 @@ export const toolCategories: ToolCategory[] = [
   { id: "image", label: "画像", shortLabel: "画像", icon: "🖼️" },
   { id: "pdf", label: "PDF", shortLabel: "PDF", icon: "PDF" },
   { id: "text", label: "テキスト・データ", shortLabel: "データ", icon: "{}" },
+  { id: "animation", label: "アニメーション", shortLabel: "アニメ", icon: "Lottie" },
 ];
 
 export const tools: ToolItem[] = [
@@ -170,6 +171,16 @@ export const tools: ToolItem[] = [
     icon: "📱",
     category: "text",
     navPriority: 6,
+  },
+  {
+    id: "lottie",
+    name: "Lottieプレビュー",
+    navLabel: "Lottie確認",
+    description: "Lottie JSON / .lottieをブラウザで再生確認",
+    seoDescription:
+      "Lottie JSONや.lottieファイルをブラウザ上でプレビューできます。アップロードなしでアニメーションの表示、ループ再生、速度、サイズを確認できます。",
+    icon: "▶",
+    category: "animation",
   },
 ];
 

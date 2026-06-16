@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Braces, ChevronDown, FileText, Grid3X3, Home, ImageIcon, ShieldCheck, X } from "lucide-react";
+import { Braces, ChevronDown, FileText, Grid3X3, Home, ImageIcon, PlaySquare, ShieldCheck, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   getToolHref,
@@ -24,6 +24,7 @@ export function ToolsShell({ children }: { children: React.ReactNode }) {
       image: ImageIcon,
       pdf: FileText,
       text: Braces,
+      animation: PlaySquare,
     }),
     []
   );

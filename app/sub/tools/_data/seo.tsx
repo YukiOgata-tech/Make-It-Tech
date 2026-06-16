@@ -65,7 +65,14 @@ export function createToolMetadata({
       description,
     },
     applicationName: "DevTools by Make It Tech",
-    category: tool.category === "pdf" ? "PDF tool" : tool.category === "image" ? "Image tool" : "Developer tool",
+    category:
+      tool.category === "pdf"
+        ? "PDF tool"
+        : tool.category === "image"
+          ? "Image tool"
+          : tool.category === "animation"
+            ? "Animation tool"
+            : "Developer tool",
   };
 }
 
