@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { saveImageFile } from "./save-image-file";
 
 export function Base64Converter() {
   const [mode, setMode] = useState<"toBase64" | "fromBase64">("toBase64");
@@ -107,17 +108,22 @@ export function Base64Converter() {
     }
   };
 
-  const downloadImage = () => {
-    if (!imagePreview) return;
+  const dataUrlToBlob = async (dataUrl: string) => {
+    const response = await fetch(dataUrl);
+    return response.blob();
+  };
 
-    const link = document.createElement("a");
-    link.href = imagePreview;
+  const downloadImage = async () => {
+    if (!imagePreview) return;
 
     // Extract extension from data URL
     const match = imagePreview.match(/data:image\/(\w+);/);
     const ext = match?.[1] || "png";
-    link.download = `image.${ext}`;
-    link.click();
+    await saveImageFile({
+      blob: await dataUrlToBlob(imagePreview),
+      fileName: `image.${ext}`,
+      title: "Base64復元画像",
+    });
   };
 
   const clear = () => {
@@ -268,7 +274,7 @@ export function Base64Converter() {
               </div>
               <div className="flex gap-2 justify-center">
                 <button
-                  onClick={downloadImage}
+                  onClick={() => void downloadImage()}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
                 >
                   画像をダウンロード

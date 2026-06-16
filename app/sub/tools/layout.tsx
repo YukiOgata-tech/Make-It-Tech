@@ -35,6 +35,24 @@ export const metadata: Metadata = {
     url: toolsBaseUrl,
     siteName: "DevTools by Make It Tech",
     type: "website",
+    locale: "ja_JP",
+  },
+  twitter: {
+    card: "summary",
+    title: "無料オンライン開発ツール | DevTools",
+    description:
+      "画像・PDF・テキスト・データ変換に使える無料オンラインツール集。多くの処理はブラウザ内で完結します。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 

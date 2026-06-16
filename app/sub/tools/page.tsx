@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getToolHref, toolCategories, tools, toolsBaseUrl } from "./_data/tools";
+import { getPublicToolHref, toolCategories, tools, toolsBaseUrl } from "./_data/tools";
+import { getToolUrl } from "./_data/seo";
 // import { AdsenseAdSlot } from "./components/adsense-ad-slot";
 
 export const metadata: Metadata = {
@@ -80,6 +81,18 @@ export default function ToolsPage() {
       },
     })),
   };
+  const itemListData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "DevTools by Make It Tech tool list",
+    itemListElement: tools.map((tool, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: tool.name,
+      url: getToolUrl(tool.id),
+      description: tool.seoDescription,
+    })),
+  };
 
   return (
     <div className="tools-page-container">
@@ -90,6 +103,10 @@ export default function ToolsPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListData) }}
       />
       {/* Hero */}
       <section className="text-center py-3 mb-3 sm:py-8 sm:mb-8">
@@ -123,7 +140,7 @@ export default function ToolsPage() {
                 {categoryTools.map((tool) => (
                   <Link
                     key={tool.id}
-                    href={getToolHref(tool.id)}
+                    href={getPublicToolHref(tool.id)}
                     className="group flex min-h-20 items-start gap-2 rounded-xl border border-neutral-800 bg-neutral-900 p-3 transition-all hover:border-blue-500 hover:bg-neutral-800/50 sm:min-h-28 sm:gap-3 sm:p-5"
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-xl sm:h-12 sm:w-12 sm:text-3xl">

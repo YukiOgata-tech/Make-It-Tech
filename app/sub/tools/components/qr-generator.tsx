@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import { useTextHistory } from "../hooks/use-text-history";
 import { useConsent } from "./cookie-consent";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { saveImageFile } from "./save-image-file";
 
 export function QRGenerator() {
   const [text, setText] = useState("https://make-it-tech.com");
@@ -61,7 +62,12 @@ export function QRGenerator() {
     generateQR();
   }, [text, size, bgColor, fgColor, errorLevel]);
 
-  const downloadPNG = () => {
+  const dataUrlToBlob = async (dataUrl: string) => {
+    const response = await fetch(dataUrl);
+    return response.blob();
+  };
+
+  const downloadPNG = async () => {
     if (!qrDataUrl) return;
 
     // Add to history when downloading
@@ -69,10 +75,11 @@ export function QRGenerator() {
       history.addItem(text, { type: "QR", size });
     }
 
-    const link = document.createElement("a");
-    link.href = qrDataUrl;
-    link.download = "qrcode.png";
-    link.click();
+    await saveImageFile({
+      blob: await dataUrlToBlob(qrDataUrl),
+      fileName: "qrcode.png",
+      title: "QRコード",
+    });
   };
 
   const downloadSVG = async () => {
@@ -245,7 +252,7 @@ export function QRGenerator() {
             {qrDataUrl && (
               <div className="flex flex-wrap gap-2 justify-center">
                 <button
-                  onClick={downloadPNG}
+                  onClick={() => void downloadPNG()}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
                 >
                   PNG

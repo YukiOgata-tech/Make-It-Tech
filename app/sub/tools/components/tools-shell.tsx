@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Braces, ChevronDown, FileText, Grid3X3, Home, ImageIcon, ShieldCheck, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
-  getToolCategory,
   getToolHref,
-  type ToolCategory,
+  getPublicToolHref,
   toolCategories,
   tools,
 } from "../_data/tools";
@@ -15,102 +16,210 @@ import { CookieConsentBanner } from "./cookie-consent";
 
 export function ToolsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const activeTool = tools.find((tool) => pathname === getToolHref(tool.id));
-  const activeCategory = activeTool?.category ?? getToolCategory(pathname.replace("/sub/tools/", ""));
-  const [selectedCategory, setSelectedCategory] =
-    useState<ToolCategory["id"]>(activeCategory);
-  const visibleCategory = activeTool ? activeTool.category : selectedCategory;
-  const visibleTools = tools.filter((tool) => tool.category === visibleCategory);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const homeHref = "/";
 
-  const isActive = (href: string) => {
-    if (href === "/sub/tools") {
-      return pathname === "/sub/tools" || pathname === "/";
-    }
-    return pathname.startsWith(href);
+  const categoryIcons = useMemo(
+    () => ({
+      image: ImageIcon,
+      pdf: FileText,
+      text: Braces,
+    }),
+    []
+  );
+
+  const getShellHref = (id: string) => getPublicToolHref(id);
+  const getCategoryMeta = (categoryId: string) =>
+    toolCategories.find((category) => category.id === categoryId);
+  const primaryTools = useMemo(
+    () =>
+      tools
+        .filter((tool) => typeof tool.navPriority === "number")
+        .sort((a, b) => (a.navPriority ?? 999) - (b.navPriority ?? 999))
+        .slice(0, 5),
+    []
+  );
+
+  const isHomeActive = pathname === "/sub/tools" || pathname === "/";
+  const isToolActive = (id: string) => {
+    return pathname === getToolHref(id) || pathname === getPublicToolHref(id);
   };
 
   return (
     <div className="min-h-dvh bg-neutral-950 text-sm text-neutral-100 sm:text-base">
-      <header className="sticky top-0 z-50 border-b border-neutral-800 bg-neutral-900/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 text-neutral-950 shadow-sm backdrop-blur">
         <div className="mx-auto max-w-6xl px-3 sm:px-4">
-          <div className="flex h-12 items-center justify-between sm:h-14">
-            <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-h-16 flex-col gap-2 py-2 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-center justify-between gap-3">
               <Link
-                href="/sub/tools"
-                className="shrink-0 text-base font-semibold tracking-tight sm:text-lg"
-                onClick={() => setSelectedCategory(activeCategory)}
+                href={homeHref}
+                className="group flex min-w-0 items-center gap-2"
+                onClick={() => setMenuOpen(false)}
               >
-                <span className="text-blue-400">Dev</span>Tools
+                <span className="grid h-9 w-9 shrink-0 place-items-center">
+                  <Image
+                    src="/images/logo-02_MIT.png"
+                    alt="Make It Tech logo"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 object-contain"
+                    priority
+                  />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-base font-bold tracking-tight text-[#211f1d] sm:text-lg">
+                    DevTools
+                  </span>
+                  <span className="hidden text-[11px] font-medium text-[#756f67] sm:block">
+                    Make It Tech
+                  </span>
+                </span>
               </Link>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-green-900/50 border border-green-700/50 rounded text-[10px] text-green-400">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                ローカル処理
-              </span>
-            </div>
-            <Link
-              href="/sub/tools"
-              className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
-                isActive("/sub/tools")
-                  ? "bg-blue-600 text-white"
-                  : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
-              }`}
-            >
-              ホーム
-            </Link>
-          </div>
-        </div>
 
-        <div className="border-t border-neutral-800/80">
-          <div className="tools-nav-scroll mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-2 py-1.5 sm:px-4">
-            {toolCategories.map((category) => {
-              const isSelected = category.id === visibleCategory;
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors sm:h-9 sm:px-3.5 sm:text-sm ${
-                    isSelected
-                      ? "border-blue-500 bg-blue-600 text-white"
-                      : "border-neutral-800 bg-neutral-950/60 text-neutral-300 hover:border-neutral-700 hover:bg-neutral-800"
-                  }`}
-                  aria-pressed={isSelected}
-                >
-                  <span className="text-[11px] leading-none sm:text-xs">{category.icon}</span>
-                  <span>{category.shortLabel}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="border-t border-neutral-800/60 bg-neutral-950/55">
-          <nav
-            className="tools-nav-scroll mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-2 py-1.5 sm:px-4 sm:py-2"
-            aria-label="Tools category navigation"
-          >
-            {visibleTools.map((item) => {
-              const href = getToolHref(item.id);
-              return (
+              <div className="flex items-center gap-2">
+                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 sm:inline-flex">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  ローカル処理
+                </span>
                 <Link
-                  key={item.id}
-                  href={href}
-                  onClick={() => setSelectedCategory(item.category)}
-                  className={`flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-xs transition-colors sm:h-10 sm:px-3 sm:text-sm ${
-                    isActive(href)
-                      ? "bg-blue-600 text-white"
-                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  href={homeHref}
+                  onClick={() => setMenuOpen(false)}
+                  className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors ${
+                    isHomeActive
+                      ? "bg-[#e84d3d] text-white shadow-sm"
+                      : "text-[#6e6860] hover:bg-[#f4eee5] hover:text-[#211f1d]"
                   }`}
                 >
-                  <span className="text-sm leading-none sm:text-base">{item.icon}</span>
-                  <span>{item.navLabel}</span>
+                  <Home className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">ホーム</span>
                 </Link>
-              );
-            })}
-          </nav>
+              </div>
+            </div>
+
+            <div className="min-w-0 flex-1 lg:max-w-4xl">
+              <nav
+                className="tools-nav-scroll flex items-center gap-1.5 overflow-x-auto"
+                aria-label="Main tools navigation"
+              >
+                {primaryTools.map((item) => {
+                  const href = getShellHref(item.id);
+                  return (
+                    <Link
+                      key={item.id}
+                      href={href}
+                      onClick={() => setMenuOpen(false)}
+                      className={`inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold transition-colors sm:px-3.5 sm:text-sm ${
+                        isToolActive(item.id)
+                          ? "bg-[#e84d3d] text-white shadow-sm"
+                          : "text-[#5f5a53] hover:bg-[#f7f0e8] hover:text-[#211f1d]"
+                      }`}
+                    >
+                      <span
+                        className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                          isToolActive(item.id)
+                            ? "bg-white/20 text-white"
+                            : "bg-[#f3e7db] text-[#a33a2f]"
+                        }`}
+                      >
+                        {getCategoryMeta(item.category)?.shortLabel ?? item.category}
+                      </span>
+                      <span>{item.navLabel}</span>
+                    </Link>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className={`inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold transition-colors sm:px-3.5 sm:text-sm ${
+                    menuOpen
+                      ? "bg-[#211f1d] text-white"
+                      : "text-[#5f5a53] hover:bg-[#f7f0e8] hover:text-[#211f1d]"
+                  }`}
+                  aria-expanded={menuOpen}
+                  aria-controls="tools-menu-panel"
+                >
+                  <Grid3X3 className="h-3.5 w-3.5" />
+                  <span>すべてのツール</span>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${menuOpen ? "rotate-180" : ""}`} />
+                </button>
+              </nav>
+            </div>
+          </div>
         </div>
+
+        {menuOpen ? (
+          <div className="border-t border-[#eadfd4] bg-[#fffaf4] shadow-lg" id="tools-menu-panel">
+            <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-bold text-[#211f1d]">すべてのツール</p>
+                  <p className="mt-0.5 text-xs text-[#756f67]">
+                    よく使う機能は上部に固定し、追加機能はここから選べます。
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[#6e6860] hover:bg-[#f1e7dc] hover:text-[#211f1d]"
+                  aria-label="ツールメニューを閉じる"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                {toolCategories.map((category) => {
+                  const CategoryIcon = categoryIcons[category.id];
+                  const categoryTools = tools.filter((tool) => tool.category === category.id);
+                  return (
+                    <section key={category.id} className="rounded-2xl border border-[#eadfd4] bg-white p-3">
+                      <div className="mb-2 flex items-center gap-2 px-1">
+                        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#f7f0e8] text-[#e84d3d]">
+                          <CategoryIcon className="h-4 w-4" />
+                        </span>
+                        <h2 className="text-sm font-bold text-[#211f1d]">{category.label}</h2>
+                      </div>
+                      <div className="grid gap-1">
+                        {categoryTools.map((tool) => {
+                          const isPrimary = primaryTools.some((item) => item.id === tool.id);
+                          return (
+                            <Link
+                              key={tool.id}
+                              href={getShellHref(tool.id)}
+                              onClick={() => setMenuOpen(false)}
+                              className={`group flex items-start gap-2 rounded-xl px-2 py-2 transition-colors ${
+                                isToolActive(tool.id)
+                                  ? "bg-[#fff1ee] text-[#b53024]"
+                                  : "text-[#4d4842] hover:bg-[#fff6ef] hover:text-[#211f1d]"
+                              }`}
+                            >
+                              <span className="mt-0.5 rounded-md bg-[#f7f0e8] px-1.5 py-1 text-[10px] font-bold leading-none text-[#a33a2f]">
+                                {category.shortLabel}
+                              </span>
+                              <span className="min-w-0">
+                                <span className="flex items-center gap-1.5 text-sm font-semibold">
+                                  {tool.name}
+                                  {isPrimary ? (
+                                    <span className="rounded-full bg-[#fff1ee] px-1.5 py-0.5 text-[10px] font-bold text-[#d84434]">
+                                      主要
+                                    </span>
+                                  ) : null}
+                                </span>
+                                <span className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-[#756f67]">
+                                  {tool.description}
+                                </span>
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </header>
 
       {/* Main Content */}

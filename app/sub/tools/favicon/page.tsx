@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import { FaviconGenerator } from "../components/favicon-generator";
-import { toolsBaseUrl } from "../_data/tools";
+import { createToolMetadata, ToolStructuredData } from "../_data/seo";
 
-export const metadata: Metadata = {
+export const metadata = createToolMetadata({
+  id: "favicon",
   title: "無料Favicon生成ツール - 各種サイズ一括生成",
   description:
     "画像から16x16、32x32、180x180など各種サイズのfaviconを一括生成。ICO形式対応。ブラウザ上で完結、サーバー送信なし。Webサイト制作に必須。",
@@ -15,14 +15,12 @@ export const metadata: Metadata = {
     "オンライン生成",
     "無料",
   ],
-  alternates: {
-    canonical: `${toolsBaseUrl}/favicon`,
-  },
-};
+});
 
 export default function FaviconPage() {
   return (
     <div className="tools-page-container">
+      <ToolStructuredData id="favicon" />
       <FaviconGenerator />
     </div>
   );

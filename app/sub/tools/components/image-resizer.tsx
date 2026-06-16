@@ -5,6 +5,7 @@ import { useImageHistory } from "../hooks/use-image-history";
 import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { saveImageFile, saveImageFiles } from "./save-image-file";
 
 interface PendingFile {
   file: File;
@@ -215,36 +216,42 @@ export function ImageResizer() {
     e.target.value = "";
   };
 
-  const downloadImage = (image: ResizedImage) => {
-    const link = document.createElement("a");
-    link.href = image.preview;
+  const getOutputFileName = (image: ResizedImage, prefix = "") => {
     const ext = image.original.type === "image/png" ? "png" : "jpg";
     const baseName = image.original.name.replace(/\.[^.]+$/, "");
-    link.download = `${baseName}_${image.newWidth}x${image.newHeight}.${ext}`;
-    link.click();
+    return `${prefix}${baseName}_${image.newWidth}x${image.newHeight}.${ext}`;
+  };
+
+  const downloadImage = async (image: ResizedImage) => {
+    await saveImageFile({
+      blob: image.resized,
+      fileName: getOutputFileName(image),
+      title: "リサイズ画像",
+    });
   };
 
   const downloadAll = async () => {
-    if (images.length === 1) {
-      downloadImage(images[0]);
-      return;
-    }
+    await saveImageFiles(
+      images.map((image, index) => ({
+        blob: image.resized,
+        fileName: getOutputFileName(image, `${index + 1}_`),
+        title: "リサイズ画像",
+      })),
+      async () => {
+        const JSZip = (await import("jszip")).default;
+        const zip = new JSZip();
 
-    const JSZip = (await import("jszip")).default;
-    const zip = new JSZip();
+        images.forEach((image, index) => {
+          zip.file(getOutputFileName(image, `${index + 1}_`), image.resized);
+        });
 
-    images.forEach((image, index) => {
-      const ext = image.original.type === "image/png" ? "png" : "jpg";
-      const baseName = image.original.name.replace(/\.[^.]+$/, "");
-      const name = `${index + 1}_${baseName}_${image.newWidth}x${image.newHeight}.${ext}`;
-      zip.file(name, image.resized);
-    });
-
-    const blob = await zip.generateAsync({ type: "blob" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "resized_images.zip";
-    link.click();
+        const blob = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "resized_images.zip";
+        link.click();
+      }
+    );
   };
 
   const clearAll = () => {
@@ -429,10 +436,10 @@ export function ImageResizer() {
               <h3 className="font-medium">結果 ({images.length}件)</h3>
               <div className="flex gap-2">
                 <button
-                  onClick={downloadAll}
+                  onClick={() => void downloadAll()}
                   className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
                 >
-                  {images.length === 1 ? "ダウンロード" : "すべてダウンロード (ZIP)"}
+                  {images.length === 1 ? "保存" : "まとめて保存"}
                 </button>
                 <button
                   onClick={clearAll}
@@ -461,7 +468,7 @@ export function ImageResizer() {
                     </p>
                   </div>
                   <button
-                    onClick={() => downloadImage(image)}
+                    onClick={() => void downloadImage(image)}
                     className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded text-sm transition-colors"
                   >
                     保存

@@ -1,4 +1,5 @@
 import { type MetadataRoute } from "next";
+import { toolsBaseUrl } from "./sub/tools/_data/tools";
 import { site } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
@@ -12,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         "/this-is-my-life",
       ],
     },
-    sitemap: `${site.url}/sitemap.xml`,
+    sitemap: [`${site.url}/sitemap.xml`, `${toolsBaseUrl}/sitemap.xml`],
   };
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { saveImageFile, saveImageFiles } from "./save-image-file";
 
 type Mode = "imagesToPdf" | "pdfToImages";
 type ImageItem = {
@@ -223,26 +224,32 @@ export function PdfImageConverter() {
     link.click();
   };
 
-  const downloadImage = (page: RenderedPage) => {
-    const link = document.createElement("a");
-    link.href = page.url;
-    link.download = page.name;
-    link.click();
+  const downloadImage = async (page: RenderedPage) => {
+    await saveImageFile({
+      blob: page.blob,
+      fileName: page.name,
+      title: "PDFページ画像",
+    });
   };
 
   const downloadAllImages = async () => {
-    if (renderedPages.length === 1) {
-      downloadImage(renderedPages[0]);
-      return;
-    }
-    const JSZip = (await import("jszip")).default;
-    const zip = new JSZip();
-    renderedPages.forEach((page) => zip.file(page.name, page.blob));
-    const blob = await zip.generateAsync({ type: "blob" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "pdf_images.zip";
-    link.click();
+    await saveImageFiles(
+      renderedPages.map((page) => ({
+        blob: page.blob,
+        fileName: page.name,
+        title: "PDFページ画像",
+      })),
+      async () => {
+        const JSZip = (await import("jszip")).default;
+        const zip = new JSZip();
+        renderedPages.forEach((page) => zip.file(page.name, page.blob));
+        const blob = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "pdf_images.zip";
+        link.click();
+      }
+    );
   };
 
   return (
@@ -387,8 +394,8 @@ export function PdfImageConverter() {
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-medium">変換結果 ({renderedPages.length}ページ)</h3>
-            <button onClick={downloadAllImages} className="tools-secondary-button bg-blue-600 hover:bg-blue-700">
-              {renderedPages.length === 1 ? "ダウンロード" : "すべてダウンロード (ZIP)"}
+            <button onClick={() => void downloadAllImages()} className="tools-secondary-button bg-blue-600 hover:bg-blue-700">
+              {renderedPages.length === 1 ? "保存" : "まとめて保存"}
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -398,7 +405,7 @@ export function PdfImageConverter() {
                 <img src={page.url} alt="" className="aspect-[3/4] w-full rounded bg-white object-contain" />
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <span className="text-xs text-neutral-400">Page {page.page}</span>
-                  <button onClick={() => downloadImage(page)} className="tools-secondary-button">
+                  <button onClick={() => void downloadImage(page)} className="tools-secondary-button">
                     保存
                   </button>
                 </div>

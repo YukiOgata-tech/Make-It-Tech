@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
 import { ImageCompressor } from "../components/image-compressor";
-import { toolsBaseUrl } from "../_data/tools";
+import { createToolMetadata, ToolStructuredData } from "../_data/seo";
 
-export const metadata: Metadata = {
+export const metadata = createToolMetadata({
+  id: "compress",
   title: "無料画像圧縮ツール - JPG/PNG/WebP/GIF対応",
   description:
-    "JPG、PNG、WebP、GIF画像をブラウザ上で高品質圧縮。品質調整・最大幅指定可能。サーバーにアップロードせず完全ローカル処理で安全。複数ファイル一括処理対応。",
+    "JPG、PNG、WebP、GIF画像をブラウザ上で圧縮。元のファイル形式を保ちながら自動で縮小・画質調整し、サーバーにアップロードせずローカル処理で軽量化できます。",
   keywords: [
     "画像圧縮",
     "JPEG圧縮",
@@ -15,14 +15,12 @@ export const metadata: Metadata = {
     "オンライン圧縮",
     "無料",
   ],
-  alternates: {
-    canonical: `${toolsBaseUrl}/compress`,
-  },
-};
+});
 
 export default function CompressPage() {
   return (
     <div className="tools-page-container">
+      <ToolStructuredData id="compress" />
       <ImageCompressor />
     </div>
   );

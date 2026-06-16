@@ -14,6 +14,93 @@ const toneClasses: Record<WorkItem["previewTone"], string> = {
   ink: "from-[#d5dde0] via-[#f8faf9] to-[#ead7c9]",
 };
 
+const ramenPreviewImageUrl = "/images/works/ramen-shop-preview.jpg";
+
+function MosaicStoreName({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className="grid gap-0.5" aria-label="匿名店舗名">
+      <span
+        className={cn(
+          "block bg-[linear-gradient(90deg,#3a2417_0_10%,#d2a15a_10%_18%,#654026_18%_31%,#f0c475_31%_39%,#21150e_39%_50%,#9b6636_50%_63%,#3d2819_63%_78%,#dcb56b_78%_88%,#24160e_88%_100%)] blur-[0.4px]",
+          compact ? "h-2 w-14" : "h-2.5 w-18"
+        )}
+      />
+      <span
+        className={cn(
+          "block bg-[linear-gradient(90deg,#8c5c31_0_16%,#25160d_16%_32%,#dfb76b_32%_45%,#51321d_45%_61%,#bd823f_61%_74%,#2a1a10_74%_100%)] opacity-75 blur-[0.35px]",
+          compact ? "h-1 w-10" : "h-1.5 w-22"
+        )}
+      />
+    </div>
+  );
+}
+
+function MosaicStoreIcon() {
+  return (
+    <span
+      className="block size-5 bg-[linear-gradient(135deg,#c71918_0_18%,#2a140c_18%_34%,#ffd06c_34%_48%,#6b2d1b_48%_63%,#120a06_63%_78%,#d98b32_78%_100%)] blur-[0.45px]"
+      aria-label="匿名店舗アイコン"
+    />
+  );
+}
+
+function RamenSlideshow({ desktop = false }: { desktop?: boolean }) {
+  return (
+    <div className="relative h-full overflow-hidden bg-[#140b07]">
+      <style>
+        {`
+          @keyframes ramen-preview-slide-a {
+            0%, 38% { opacity: 1; transform: scale(1.02) translate3d(0, 0, 0); }
+            48%, 100% { opacity: 0; transform: scale(1.1) translate3d(-2%, 1%, 0); }
+          }
+          @keyframes ramen-preview-slide-b {
+            0%, 30% { opacity: 0; transform: scale(1.08) translate3d(2%, -1%, 0); }
+            42%, 68% { opacity: 1; transform: scale(1.02) translate3d(0, 0, 0); }
+            78%, 100% { opacity: 0; transform: scale(1.09) translate3d(1%, 1%, 0); }
+          }
+          @keyframes ramen-preview-slide-c {
+            0%, 62% { opacity: 0; transform: scale(1.08) translate3d(-1%, 0, 0); }
+            74%, 92% { opacity: 1; transform: scale(1.03) translate3d(0, 0, 0); }
+            100% { opacity: 0; transform: scale(1.06) translate3d(1%, -1%, 0); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .ramen-slide-a, .ramen-slide-b, .ramen-slide-c { animation: none !important; }
+            .ramen-slide-b, .ramen-slide-c { opacity: 0 !important; }
+          }
+        `}
+      </style>
+      <img
+        src={ramenPreviewImageUrl}
+        alt=""
+        draggable={false}
+        className="ramen-slide-a absolute inset-0 h-full w-full object-cover object-[62%_48%] [animation:ramen-preview-slide-a_9s_ease-in-out_infinite]"
+        loading="lazy"
+      />
+      <img
+        src={ramenPreviewImageUrl}
+        alt=""
+        draggable={false}
+        className="ramen-slide-b absolute inset-0 h-full w-full object-cover object-[32%_58%] opacity-0 [animation:ramen-preview-slide-b_9s_ease-in-out_infinite]"
+        loading="lazy"
+      />
+      <img
+        src={ramenPreviewImageUrl}
+        alt=""
+        draggable={false}
+        className="ramen-slide-c absolute inset-0 h-full w-full object-cover object-[74%_42%] opacity-0 saturate-[1.08] [animation:ramen-preview-slide-c_9s_ease-in-out_infinite]"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 bg-linear-to-t from-black/82 via-black/18 to-black/15" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,222,126,0.34),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(50,179,174,0.2),transparent_25%)]" />
+      <div className={cn("absolute flex gap-1", desktop ? "right-3 top-3" : "right-2 top-2")}>
+        <span className="h-1 w-4 rounded-full bg-[#ffd06c]" />
+        <span className="h-1 w-2 rounded-full bg-white/45" />
+        <span className="h-1 w-2 rounded-full bg-white/30" />
+      </div>
+    </div>
+  );
+}
+
 function WorkPreview({ work }: { work: WorkItem }) {
   const isLivePreview = work.previewType === "live" && work.previewUrl;
   const isSeatMapPreview = work.previewType === "seat-map";
@@ -114,46 +201,70 @@ function WorkPreview({ work }: { work: WorkItem }) {
 function SiteHeroPreview({ desktop = false }: { desktop?: boolean }) {
   if (desktop) {
     return (
-      <div className="absolute inset-0 overflow-hidden bg-[#fff8ef] pt-7">
-        <div className="absolute -right-8 top-0 h-36 w-36 rounded-full bg-[#cce9e4]/80 blur-xl" />
-        <div className="absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-[#f7d6c9]/80 blur-xl" />
-        <div className="relative grid h-full grid-cols-[1.1fr_0.9fr] gap-3 p-4">
-          <div className="flex flex-col justify-center">
-            <div className="mb-2 flex gap-1">
-              <span className="rounded-full bg-white/80 px-2 py-1 text-[6px] font-semibold text-[#c96d4b] shadow-sm">
-                RESTAURANT
-              </span>
-              <span className="rounded-full bg-white/80 px-2 py-1 text-[6px] font-semibold text-[#2d7c73] shadow-sm">
-                WELFARE LP
-              </span>
-            </div>
-            <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-[#c96d4b]">
-              Website / Landing Page
-            </p>
-            <h3 className="mt-1 text-[18px] font-bold leading-tight text-[#263238]">
-              HP/LP制作
-            </h3>
-            <p className="mt-1 text-[7px] font-semibold leading-snug text-[#56636a]">
-              飲食店HP・福祉系人材LPなど、事業の強みと導線を整理。
-            </p>
-            <div className="mt-3 flex gap-1.5">
-              <span className="rounded-full bg-[#ef633a] px-3 py-1 text-[6px] font-bold text-white shadow-sm">
-                問い合わせ導線
-              </span>
-              <span className="rounded-full border border-[#ef633a]/30 bg-white/75 px-3 py-1 text-[6px] font-bold text-[#263238]">
-                事業紹介
-              </span>
-            </div>
+      <div className="absolute inset-0 select-none overflow-hidden bg-[#080504] pt-7 text-white">
+        <RamenSlideshow desktop />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88)_0%,rgba(0,0,0,0.54)_34%,rgba(0,0,0,0.08)_68%,rgba(0,0,0,0.42)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(219,30,22,0.34),transparent_22%),radial-gradient(circle_at_80%_18%,rgba(255,214,108,0.18),transparent_24%)]" />
+
+        <header className="absolute left-3 right-3 top-9 z-10 flex items-start justify-between">
+          <div className="flex items-start gap-1.5">
+            <MosaicStoreIcon />
+            <MosaicStoreName />
           </div>
-          <div className="grid content-center gap-2">
-            <div className="rounded-xl border border-white/70 bg-white/75 p-2 shadow-sm">
-              <div className="h-3 w-20 rounded-full bg-[#263238]/20" />
-              <div className="mt-2 h-12 rounded-lg bg-linear-to-br from-[#f7d6c9] to-[#cce9e4]" />
+          <nav className="flex gap-2 border-b border-[#ffd06c]/35 pb-1 text-[5px] font-bold tracking-[0.12em] text-[#f4dfbd]">
+            <span>MENU</span>
+            <span>SHOP</span>
+            <span>NEWS</span>
+          </nav>
+        </header>
+
+        <section className="absolute bottom-15 left-5 z-10 w-[48%]">
+          <p className="mb-1 w-fit bg-[#c71918] px-1.5 py-0.5 text-[5px] font-black tracking-[0.18em] text-white">
+            SUMMER LIMITED
+          </p>
+          <h3 className="text-[22px] font-black leading-[0.88] tracking-tight">
+            冷やしの、
+            <br />
+            余韻まで。
+          </h3>
+          <p className="mt-2 max-w-[9.5rem] text-[6px] font-semibold leading-snug text-[#ead6b5]">
+            透き通る鶏だしに柚子と山椒。暑い日の一杯を、涼しく、香り高く。
+          </p>
+          <div className="mt-2 flex items-center gap-1.5">
+            <span className="bg-[#ffd06c] px-2 py-1 text-[6px] font-black text-[#130b07]">
+              季節のお品書き
+            </span>
+            <span className="border border-[#ffd06c]/55 px-2 py-1 text-[6px] font-bold text-[#ffd06c]">
+              店舗案内
+            </span>
+          </div>
+        </section>
+
+        <aside className="absolute bottom-11 right-4 z-10 grid w-28 gap-1.5">
+          {[
+            ["01", "冷やし香味そば"],
+            ["02", "炙り焼豚"],
+            ["03", "柚子山椒だれ"],
+          ].map(([number, label]) => (
+            <div key={number} className="grid grid-cols-[auto_1fr] items-center gap-2 border-t border-white/25 py-1">
+              <span className="text-[5px] font-black text-[#ffd06c]">{number}</span>
+              <span className="text-[6px] font-black text-white">{label}</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="h-12 rounded-xl border border-white/70 bg-white/65 shadow-sm" />
-              <div className="h-12 rounded-xl border border-white/70 bg-white/65 shadow-sm" />
-            </div>
+          ))}
+        </aside>
+
+        <div className="absolute bottom-0 left-0 right-0 z-10 grid h-9 grid-cols-3 bg-[#0d0907]/88 backdrop-blur-sm">
+          <div className="border-r border-white/10 px-3 py-1.5">
+            <p className="text-[5px] font-black text-[#ffd06c]">OPEN</p>
+            <p className="text-[8px] font-black">11:00-22:00</p>
+          </div>
+          <div className="border-r border-white/10 px-3 py-1.5">
+            <p className="text-[5px] font-black text-[#ffd06c]">ACCESS</p>
+            <p className="text-[8px] font-black">駅徒歩3分</p>
+          </div>
+          <div className="px-3 py-1.5">
+            <p className="text-[5px] font-black text-[#ffd06c]">LIMITED</p>
+            <p className="text-[8px] font-black">昼夜 各20食</p>
           </div>
         </div>
       </div>
@@ -161,36 +272,53 @@ function SiteHeroPreview({ desktop = false }: { desktop?: boolean }) {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#fff8ef] pt-5">
-      <div className="absolute -right-8 top-10 h-28 w-28 rounded-full bg-[#cce9e4]/80 blur-xl" />
-      <div className="absolute -left-8 bottom-8 h-24 w-24 rounded-full bg-[#f7d6c9]/80 blur-xl" />
-      <div className="relative grid h-full content-center gap-3 p-3">
-        <div className="grid gap-1">
-          <p className="text-[7px] font-semibold uppercase tracking-[0.16em] text-[#c96d4b]">
-            HP / LP
-          </p>
-          <h3 className="text-[19px] font-bold leading-tight text-[#263238]">
-            制作支援
-          </h3>
-          <p className="text-[7px] font-semibold leading-snug text-[#56636a]">
-            飲食店HP・福祉系人材LPの構成と導線を整理。
-          </p>
+    <div className="absolute inset-0 select-none overflow-hidden bg-[#080504] pt-5 text-white">
+      <RamenSlideshow />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.28)_0%,rgba(0,0,0,0.2)_36%,rgba(0,0,0,0.86)_100%)]" />
+      <header className="absolute left-2 right-2 top-7 z-10 flex items-start justify-between">
+        <div className="flex items-start gap-1.5">
+          <MosaicStoreIcon />
+          <MosaicStoreName compact />
         </div>
-        <div className="rounded-2xl border border-white/70 bg-white/75 p-2 shadow-sm">
-          <div className="h-14 rounded-xl bg-linear-to-br from-[#f7d6c9] to-[#cce9e4]" />
-          <div className="mt-2 grid gap-1">
-            <div className="h-2.5 rounded-full bg-[#263238]/20" />
-            <div className="h-2.5 w-2/3 rounded-full bg-[#263238]/15" />
+        <span className="border border-[#ffd06c]/45 px-1.5 py-0.5 text-[5px] font-black tracking-[0.14em] text-[#ffd06c]">
+          MENU
+        </span>
+      </header>
+
+      <section className="absolute bottom-16 left-3 right-3 z-10">
+        <p className="mb-1 w-fit bg-[#c71918] px-1.5 py-0.5 text-[5px] font-black tracking-[0.14em]">
+          SUMMER LIMITED
+        </p>
+        <h3 className="text-[23px] font-black leading-[0.88] tracking-tight">
+          冷やしの、
+          <br />
+          余韻まで。
+        </h3>
+        <p className="mt-2 text-[6px] font-semibold leading-snug text-[#ead6b5]">
+          透き通る鶏だしに柚子と山椒。暑い日の一杯を、涼しく、香り高く。
+        </p>
+      </section>
+
+      <div className="absolute bottom-9 left-3 right-3 z-10 grid grid-cols-2 gap-1.5">
+        <span className="bg-[#ffd06c] px-2 py-1 text-center text-[6px] font-black text-[#130b07]">
+          季節のお品書き
+        </span>
+        <span className="border border-[#ffd06c]/55 px-2 py-1 text-center text-[6px] font-bold text-[#ffd06c]">
+          店舗案内
+        </span>
+      </div>
+
+      <div className="absolute bottom-0 left-0 right-0 z-10 grid h-8 grid-cols-3 bg-[#0d0907]/90">
+        {[
+          ["OPEN", "11-22"],
+          ["ACCESS", "駅3分"],
+          ["LIMITED", "20食"],
+        ].map(([label, value]) => (
+          <div key={label} className="border-r border-white/10 px-1.5 py-1">
+            <p className="text-[4px] font-black text-[#ffd06c]">{label}</p>
+            <p className="text-[7px] font-black">{value}</p>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-1.5 text-[6px] font-bold">
-          <span className="rounded-full bg-[#ef633a] px-2 py-1 text-center text-white">
-            予約・相談
-          </span>
-          <span className="rounded-full bg-white/80 px-2 py-1 text-center text-[#2d7c73]">
-            採用LP
-          </span>
-        </div>
+        ))}
       </div>
     </div>
   );
@@ -534,5 +662,3 @@ export function WorkCard({ work, compact = false }: { work: WorkItem; compact?: 
     </article>
   );
 }
-
-

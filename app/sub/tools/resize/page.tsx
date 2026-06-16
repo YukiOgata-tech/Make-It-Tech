@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import { ImageResizer } from "../components/image-resizer";
-import { toolsBaseUrl } from "../_data/tools";
+import { createToolMetadata, ToolStructuredData } from "../_data/seo";
 
-export const metadata: Metadata = {
+export const metadata = createToolMetadata({
+  id: "resize",
   title: "無料画像リサイズツール - サイズ変更・縮小",
   description:
     "画像を指定サイズにリサイズ。アスペクト比維持、カスタムサイズ対応。ブラウザ上で処理、サーバー送信なし。複数ファイル一括リサイズ可能。",
@@ -14,14 +14,12 @@ export const metadata: Metadata = {
     "オンラインリサイズ",
     "無料",
   ],
-  alternates: {
-    canonical: `${toolsBaseUrl}/resize`,
-  },
-};
+});
 
 export default function ResizePage() {
   return (
     <div className="tools-page-container">
+      <ToolStructuredData id="resize" />
       <ImageResizer />
     </div>
   );

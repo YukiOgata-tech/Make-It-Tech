@@ -6,6 +6,7 @@ import { useImageHistory } from "../hooks/use-image-history";
 import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { saveImageFile, saveImageFiles } from "./save-image-file";
 
 interface PendingFile {
   file: File;
@@ -18,14 +19,26 @@ interface CompressedImage {
   originalSize: number;
   compressedSize: number;
   preview: string;
+  outputName: string;
 }
+
+const LOSSY_IMAGE_PROFILES = [
+  { maxSize: 1920, quality: 0.82 },
+  { maxSize: 1600, quality: 0.78 },
+  { maxSize: 1440, quality: 0.74 },
+];
+
+const LOSSLESS_IMAGE_PROFILES = [
+  { maxSize: 1920 },
+  { maxSize: 1600 },
+  { maxSize: 1440 },
+];
 
 export function ImageCompressor() {
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
   const [images, setImages] = useState<CompressedImage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [quality, setQuality] = useState(0.8);
-  const [maxWidth, setMaxWidth] = useState(1920);
+  const [message, setMessage] = useState("");
 
   const { allowsFunctional } = useConsent();
   const history = useImageHistory("compress", allowsFunctional);
@@ -37,6 +50,7 @@ export function ImageCompressor() {
       preview: URL.createObjectURL(file),
     }));
     setPendingFiles((prev) => [...prev, ...newPending]);
+    setMessage("");
   };
 
   const removePendingFile = (index: number) => {
@@ -56,20 +70,16 @@ export function ImageCompressor() {
   const processFiles = async () => {
     if (pendingFiles.length === 0) return;
     setIsProcessing(true);
+    setMessage("");
 
     const results: CompressedImage[] = [];
+    const failedNames: string[] = [];
 
     for (const pending of pendingFiles) {
       try {
-        const options = {
-          maxSizeMB: 10,
-          maxWidthOrHeight: maxWidth,
-          useWebWorker: true,
-          initialQuality: quality,
-        };
-
-        const compressed = await imageCompression(pending.file, options);
+        const compressed = await compressImageAggressively(pending.file);
         const preview = URL.createObjectURL(compressed);
+        const outputName = getOutputName(pending.file);
 
         results.push({
           original: pending.file,
@@ -77,18 +87,20 @@ export function ImageCompressor() {
           originalSize: pending.file.size,
           compressedSize: compressed.size,
           preview,
+          outputName,
         });
 
         // Add to history
         if (allowsFunctional) {
           const reduction = Math.round((1 - compressed.size / pending.file.size) * 100);
           await history.addItem(pending.file, compressed, {
-            quality: Math.round(quality * 100),
+            quality: "auto",
             reduction: `${reduction}%`,
           });
         }
       } catch (error) {
         console.error("Compression failed:", error);
+        failedNames.push(pending.file.name);
       }
     }
 
@@ -97,7 +109,127 @@ export function ImageCompressor() {
     setPendingFiles([]);
 
     setImages((prev) => [...prev, ...results]);
+    if (failedNames.length > 0) {
+      setMessage(`${failedNames.join(", ")} の圧縮に失敗しました。`);
+    }
     setIsProcessing(false);
+  };
+
+  const compressImageAggressively = async (file: File) => {
+    const candidates: Blob[] = [file];
+    const outputType = getSupportedOutputType(file);
+
+    try {
+      const fallback = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        initialQuality: 0.78,
+        alwaysKeepResolution: false,
+      });
+      if (isSameImageType(file.type, fallback.type)) {
+        candidates.push(fallback);
+      }
+    } catch {
+      // Canvas conversion below is the primary path for aggressive compression.
+    }
+
+    let bitmap: ImageBitmap;
+    try {
+      bitmap = await createImageBitmap(file);
+    } catch {
+      const smallestFallback = candidates.reduce((best, next) =>
+        next.size < best.size ? next : best
+      );
+      if (smallestFallback.size <= file.size) {
+        return smallestFallback;
+      }
+      throw new Error("画像の読み込みに失敗しました。");
+    }
+
+    try {
+      const profiles = outputType === "image/png" ? LOSSLESS_IMAGE_PROFILES : LOSSY_IMAGE_PROFILES;
+      for (const profile of profiles) {
+        const scale = Math.min(1, profile.maxSize / Math.max(bitmap.width, bitmap.height));
+        const width = Math.max(1, Math.round(bitmap.width * scale));
+        const height = Math.max(1, Math.round(bitmap.height * scale));
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          continue;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        if (outputType === "image/jpeg") {
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, width, height);
+        } else {
+          ctx.clearRect(0, 0, width, height);
+        }
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(bitmap, 0, 0, width, height);
+
+        const quality = "quality" in profile && typeof profile.quality === "number"
+          ? profile.quality
+          : undefined;
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob(resolve, outputType, quality);
+        });
+
+        if (blob) {
+          candidates.push(blob);
+        }
+
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+    } finally {
+      bitmap.close();
+    }
+
+    const smallest = candidates.reduce<Blob | null>(
+      (best, next) => (!best || next.size < best.size ? next : best),
+      null
+    );
+
+    if (!smallest) {
+      throw new Error("画像の圧縮に失敗しました。");
+    }
+
+    return smallest;
+  };
+
+  const getSupportedOutputType = (file: File) => {
+    const normalizedType = file.type.toLowerCase();
+    if (normalizedType === "image/png" || normalizedType === "image/webp") {
+      return normalizedType;
+    }
+    if (normalizedType === "image/jpeg" || normalizedType === "image/jpg") {
+      return "image/jpeg";
+    }
+    return normalizedType;
+  };
+
+  const isSameImageType = (originalType: string, outputType: string) => {
+    const normalizedOriginal = originalType.toLowerCase();
+    const normalizedOutput = outputType.toLowerCase();
+    const isJpegOriginal = normalizedOriginal === "image/jpeg" || normalizedOriginal === "image/jpg";
+    const isJpegOutput = normalizedOutput === "image/jpeg" || normalizedOutput === "image/jpg";
+    if (isJpegOriginal && isJpegOutput) {
+      return true;
+    }
+    return normalizedOriginal === normalizedOutput;
+  };
+
+  const getOutputName = (file: File) => {
+    const extension = file.name.includes(".")
+      ? file.name.split(".").pop()
+      : file.type.split("/").pop();
+    const baseName = file.name.replace(/\.[^.]+$/, "");
+
+    return extension ? `${baseName}.${extension}` : baseName;
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -112,34 +244,37 @@ export function ImageCompressor() {
     e.target.value = "";
   };
 
-  const downloadImage = (image: CompressedImage) => {
-    const link = document.createElement("a");
-    link.href = image.preview;
-    const ext = image.original.name.split(".").pop() || "jpg";
-    link.download = `compressed_${image.original.name.replace(/\.[^.]+$/, "")}.${ext}`;
-    link.click();
+  const downloadImage = async (image: CompressedImage) => {
+    await saveImageFile({
+      blob: image.compressed,
+      fileName: `compressed_${image.outputName}`,
+      title: "圧縮画像",
+    });
   };
 
   const downloadAll = async () => {
-    if (images.length === 1) {
-      downloadImage(images[0]);
-      return;
-    }
+    await saveImageFiles(
+      images.map((image, index) => ({
+        blob: image.compressed,
+        fileName: `compressed_${index + 1}_${image.outputName}`,
+        title: "圧縮画像",
+      })),
+      async () => {
+        const JSZip = (await import("jszip")).default;
+        const zip = new JSZip();
 
-    const JSZip = (await import("jszip")).default;
-    const zip = new JSZip();
+        images.forEach((image, index) => {
+          const name = `compressed_${index + 1}_${image.outputName}`;
+          zip.file(name, image.compressed);
+        });
 
-    images.forEach((image, index) => {
-      const ext = image.original.name.split(".").pop() || "jpg";
-      const name = `compressed_${index + 1}_${image.original.name.replace(/\.[^.]+$/, "")}.${ext}`;
-      zip.file(name, image.compressed);
-    });
-
-    const blob = await zip.generateAsync({ type: "blob" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "compressed_images.zip";
-    link.click();
+        const blob = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "compressed_images.zip";
+        link.click();
+      }
+    );
   };
 
   const formatSize = (bytes: number) => {
@@ -224,35 +359,11 @@ export function ImageCompressor() {
               ))}
             </div>
 
-            {/* Settings */}
-            <div className="flex flex-wrap gap-4 mb-4 p-4 bg-neutral-800/50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-neutral-400">品質:</label>
-                <input
-                  type="range"
-                  min="0.1"
-                  max="1"
-                  step="0.1"
-                  value={quality}
-                  onChange={(e) => setQuality(parseFloat(e.target.value))}
-                  className="w-24 accent-blue-500"
-                />
-                <span className="text-sm w-10">{Math.round(quality * 100)}%</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-neutral-400">最大幅:</label>
-                <select
-                  value={maxWidth}
-                  onChange={(e) => setMaxWidth(parseInt(e.target.value))}
-                  className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm"
-                >
-                  <option value={640}>640px</option>
-                  <option value={1280}>1280px</option>
-                  <option value={1920}>1920px</option>
-                  <option value={2560}>2560px</option>
-                  <option value={3840}>3840px</option>
-                </select>
-              </div>
+            <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
+              <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
+              <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
+                元のファイル形式を保ったまま、見た目を大きく崩さない範囲で縮小と画質調整を自動で行います。
+              </p>
             </div>
 
             {/* Start Button */}
@@ -275,6 +386,8 @@ export function ImageCompressor() {
           </div>
         )}
 
+        {message ? <p className="mt-4 text-sm text-red-300">{message}</p> : null}
+
         {/* Results */}
         {images.length > 0 && (
           <div className="mt-6">
@@ -282,10 +395,10 @@ export function ImageCompressor() {
               <h3 className="font-medium">結果 ({images.length}件)</h3>
               <div className="flex gap-2">
                 <button
-                  onClick={downloadAll}
+                  onClick={() => void downloadAll()}
                   className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
                 >
-                  {images.length === 1 ? "ダウンロード" : "すべてダウンロード (ZIP)"}
+                  {images.length === 1 ? "保存" : "まとめて保存"}
                 </button>
                 <button
                   onClick={clearAll}
@@ -320,8 +433,8 @@ export function ImageCompressor() {
                         </span>
                       </p>
                     </div>
-                    <button
-                      onClick={() => downloadImage(image)}
+                  <button
+                      onClick={() => void downloadImage(image)}
                       className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded text-sm transition-colors"
                     >
                       保存

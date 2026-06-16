@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import { JsonToTable } from "../components/json-to-table";
-import { toolsBaseUrl } from "../_data/tools";
+import { createToolMetadata, ToolStructuredData } from "../_data/seo";
 
-export const metadata: Metadata = {
+export const metadata = createToolMetadata({
+  id: "json",
   title: "無料JSON↔CSV/Excel変換ツール - 相互変換対応",
   description:
     "JSONをCSV/Excelに変換、またはCSV/ExcelからJSONに変換。双方向変換対応。ブラウザ上で完結、サーバー送信なし。データ変換・分析に最適。",
@@ -16,14 +16,12 @@ export const metadata: Metadata = {
     "オンライン変換",
     "無料",
   ],
-  alternates: {
-    canonical: `${toolsBaseUrl}/json`,
-  },
-};
+});
 
 export default function JsonPage() {
   return (
     <div className="tools-page-container">
+      <ToolStructuredData id="json" />
       <JsonToTable />
     </div>
   );

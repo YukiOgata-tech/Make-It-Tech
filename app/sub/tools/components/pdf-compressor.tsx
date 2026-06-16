@@ -4,8 +4,6 @@ import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 
-type CompressionMode = "standard" | "scan";
-
 type CompressedPdf = {
   originalName: string;
   originalSize: number;
@@ -27,11 +25,14 @@ const toArrayBuffer = (bytes: Uint8Array) => {
   return buffer;
 };
 
+const PDF_RASTER_PROFILES = [
+  { scale: 1.75, jpegQuality: 0.78 },
+  { scale: 1.5, jpegQuality: 0.74 },
+  { scale: 1.35, jpegQuality: 0.7 },
+];
+
 export function PdfCompressor() {
   const [files, setFiles] = useState<File[]>([]);
-  const [mode, setMode] = useState<CompressionMode>("standard");
-  const [scanScale, setScanScale] = useState(1.5);
-  const [jpegQuality, setJpegQuality] = useState(0.68);
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<CompressedPdf[]>([]);
   const [message, setMessage] = useState("");
@@ -51,9 +52,7 @@ export function PdfCompressor() {
       const compressedResults: CompressedPdf[] = [];
 
       for (const file of files) {
-        const compressedBytes = mode === "scan"
-          ? await compressScannedPdf(file, scanScale, jpegQuality)
-          : await optimizePdfStructure(file);
+        const compressedBytes = await compressPdfAggressively(file);
         const blob = new Blob([toArrayBuffer(compressedBytes)], { type: "application/pdf" });
 
         compressedResults.push({
@@ -75,8 +74,27 @@ export function PdfCompressor() {
     }
   };
 
-  const optimizePdfStructure = async (file: File) => {
+  const compressPdfAggressively = async (file: File) => {
     const bytes = await file.arrayBuffer();
+    const originalBytes = new Uint8Array(bytes);
+    const candidates: Uint8Array[] = [originalBytes];
+
+    const optimized = await optimizePdfStructure(bytes).catch(() => null);
+    if (optimized) {
+      candidates.push(optimized);
+    }
+
+    const rasterizedCandidates = await rasterizePdfCandidates(bytes).catch(() => []);
+    for (const rasterized of rasterizedCandidates) {
+      candidates.push(rasterized);
+    }
+
+    return candidates.reduce((smallest, next) =>
+      next.byteLength < smallest.byteLength ? next : smallest
+    );
+  };
+
+  const optimizePdfStructure = async (bytes: ArrayBuffer) => {
     const source = await PDFDocument.load(bytes, {
       ignoreEncryption: true,
       updateMetadata: false,
@@ -97,60 +115,69 @@ export function PdfCompressor() {
     });
   };
 
-  const compressScannedPdf = async (file: File, scale: number, quality: number) => {
+  const rasterizePdfCandidates = async (bytes: ArrayBuffer) => {
     const pdfjsLib = await import("pdfjs-dist");
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
       "pdfjs-dist/build/pdf.worker.mjs",
       import.meta.url
     ).toString();
 
-    const data = await file.arrayBuffer();
-    const source = await pdfjsLib.getDocument({ data }).promise;
-    const outputDoc = await PDFDocument.create();
+    const candidates: Uint8Array[] = [];
 
-    for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber += 1) {
-      const sourcePage = await source.getPage(pageNumber);
-      const pageSize = sourcePage.getViewport({ scale: 1 });
-      const renderViewport = sourcePage.getViewport({ scale });
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("PDFページの描画に失敗しました。");
+    for (const profile of PDF_RASTER_PROFILES) {
+      const source = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+      const outputDoc = await PDFDocument.create();
 
-      canvas.width = Math.floor(renderViewport.width);
-      canvas.height = Math.floor(renderViewport.height);
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      await sourcePage.render({ canvas, canvasContext: ctx, viewport: renderViewport }).promise;
+      for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber += 1) {
+        const sourcePage = await source.getPage(pageNumber);
+        const pageSize = sourcePage.getViewport({ scale: 1 });
+        const renderViewport = sourcePage.getViewport({ scale: profile.scale });
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("PDFページの描画に失敗しました。");
 
-      const jpegBlob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((nextBlob) => {
-          if (nextBlob) resolve(nextBlob);
-          else reject(new Error("PDFページのJPEG化に失敗しました。"));
-        }, "image/jpeg", quality);
-      });
+        canvas.width = Math.max(1, Math.floor(renderViewport.width));
+        canvas.height = Math.max(1, Math.floor(renderViewport.height));
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await sourcePage.render({ canvas, canvasContext: ctx, viewport: renderViewport }).promise;
 
-      const embeddedImage = await outputDoc.embedJpg(await jpegBlob.arrayBuffer());
-      const outputPage = outputDoc.addPage([pageSize.width, pageSize.height]);
-      outputPage.drawImage(embeddedImage, {
-        x: 0,
-        y: 0,
-        width: pageSize.width,
-        height: pageSize.height,
-      });
+        const jpegBlob = await new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob((nextBlob) => {
+            if (nextBlob) resolve(nextBlob);
+            else reject(new Error("PDFページのJPEG化に失敗しました。"));
+          }, "image/jpeg", profile.jpegQuality);
+        });
 
-      canvas.width = 1;
-      canvas.height = 1;
+        const embeddedImage = await outputDoc.embedJpg(await jpegBlob.arrayBuffer());
+        const outputPage = outputDoc.addPage([pageSize.width, pageSize.height]);
+        outputPage.drawImage(embeddedImage, {
+          x: 0,
+          y: 0,
+          width: pageSize.width,
+          height: pageSize.height,
+        });
+
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+
+      outputDoc.setProducer("Make It Tech DevTools");
+      outputDoc.setCreator("Make It Tech DevTools");
+      outputDoc.setModificationDate(new Date());
+
+      candidates.push(
+        await outputDoc.save({
+          useObjectStreams: true,
+          addDefaultPage: false,
+          objectsPerTick: 25,
+        })
+      );
+
+      await source.destroy();
     }
 
-    outputDoc.setProducer("Make It Tech DevTools");
-    outputDoc.setCreator("Make It Tech DevTools");
-    outputDoc.setModificationDate(new Date());
-
-    return outputDoc.save({
-      useObjectStreams: true,
-      addDefaultPage: false,
-      objectsPerTick: 25,
-    });
+    return candidates;
   };
 
   const download = (result: CompressedPdf) => {
@@ -234,68 +261,12 @@ export function PdfCompressor() {
             ))}
           </div>
 
-          <div className="rounded-lg bg-neutral-800/50 p-4">
-            <p className="mb-2 text-sm text-neutral-400">圧縮モード</p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => setMode("standard")}
-                className={`rounded-lg border p-3 text-left text-sm transition-colors ${
-                  mode === "standard" ? "border-blue-500 bg-blue-600/20" : "border-neutral-700 bg-neutral-900 hover:bg-neutral-800"
-                }`}
-              >
-                <span className="font-medium">通常圧縮</span>
-                <span className="mt-1 block text-xs text-neutral-400">ページを新規PDFへコピーして余分な情報を削ります。</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("scan")}
-                className={`rounded-lg border p-3 text-left text-sm transition-colors ${
-                  mode === "scan" ? "border-blue-500 bg-blue-600/20" : "border-neutral-700 bg-neutral-900 hover:bg-neutral-800"
-                }`}
-              >
-                <span className="font-medium">スキャンPDF向け</span>
-                <span className="mt-1 block text-xs text-neutral-400">ページを画像化し、JPEG品質を落として軽量化します。</span>
-              </button>
-            </div>
+          <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
+            <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
+            <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
+              読みやすさを保つ下限を設けたうえで、再保存とページ画像化の候補から最も軽いPDFを自動で選びます。
+            </p>
           </div>
-
-          {mode === "scan" ? (
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
-              <p className="text-sm font-medium text-amber-100">スキャンPDF向け設定</p>
-              <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
-                容量は大きく下がりやすい一方、テキスト選択・検索・リンクは失われます。書類の控えや共有用の軽量版に向いています。
-              </p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-2 block text-sm text-neutral-300">解像度: {scanScale}x</span>
-                  <input
-                    type="range"
-                    min="1"
-                    max="2.5"
-                    step="0.25"
-                    value={scanScale}
-                    onChange={(event) => setScanScale(Number(event.target.value))}
-                    className="w-full accent-blue-500"
-                  />
-                  <span className="mt-1 block text-xs text-neutral-500">低いほど軽量、高いほど文字が読みやすくなります。</span>
-                </label>
-                <label className="block">
-                  <span className="mb-2 block text-sm text-neutral-300">JPEG品質: {Math.round(jpegQuality * 100)}%</span>
-                  <input
-                    type="range"
-                    min="0.45"
-                    max="0.9"
-                    step="0.05"
-                    value={jpegQuality}
-                    onChange={(event) => setJpegQuality(Number(event.target.value))}
-                    className="w-full accent-blue-500"
-                  />
-                  <span className="mt-1 block text-xs text-neutral-500">低いほど軽量、写真や細かい文字は粗くなります。</span>
-                </label>
-              </div>
-            </div>
-          ) : null}
 
           <button
             onClick={processFiles}
