@@ -51,11 +51,11 @@
 
 @layer components {
   .tools-page-container {
-    @apply mx-auto max-w-4xl px-3 py-5 sm:px-4 sm:py-8;
+    @apply mx-auto max-w-4xl overflow-x-hidden px-3 py-5 sm:px-4 sm:py-8;
   }
 
   .tools-panel {
-    @apply rounded-xl border border-neutral-800 bg-neutral-900 p-4 sm:p-6;
+    @apply w-full max-w-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 p-4 sm:p-6;
   }
 
   .tools-dropzone {

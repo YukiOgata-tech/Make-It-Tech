@@ -112,9 +112,9 @@ export default function ToolsPage() {
       />
       {/* Hero */}
       <section className="text-center py-3 mb-3 sm:py-8 sm:mb-8">
-        <h1 className="text-2xl font-bold mb-1.5 sm:text-3xl sm:mb-3">Dev Tools</h1>
+        <h1 className="text-2xl font-bold mb-1.5 sm:text-3xl sm:mb-3">便利 Tools</h1>
         <p className="text-sm text-neutral-400 sm:text-base">
-          開発に必要な各種ツールをブラウザ上で実行
+          レポート作成や開発に必要な各種ツールをブラウザ上で実行
         </p>
         <p className="text-[11px] text-neutral-500 mt-1 sm:mt-2 sm:text-xs">
           ※ すべての処理はローカルで行われます。サーバーへのアップロードはありません。
@@ -166,17 +166,17 @@ export default function ToolsPage() {
 
       <section className="mt-6 rounded-xl border border-neutral-800 bg-neutral-900 p-3 sm:mt-10 sm:p-6">
         <h2 className="text-base font-semibold text-neutral-100 sm:text-xl">
-          Make It Tech DevToolsについて
+          Make It Tech 便利 Toolsについて
         </h2>
         <div className="mt-2 space-y-2 text-xs leading-6 text-neutral-400 sm:mt-3 sm:space-y-3 sm:text-sm sm:leading-7">
           <p>
-            DevTools by Make It Techは、Web制作、資料作成、日々の開発作業で発生しやすい小さな変換作業を、
-            ブラウザ上で素早く処理するための無料ツール集です。画像の圧縮や形式変換、PDFの圧縮・結合・分割、
+            このページは、コーディング、資料作成、日々の開発作業で発生しやすい変換作業を、
+            ブラウザ上で処理するための無料ツール集です。画像の圧縮や形式変換、PDFの圧縮・結合・分割、
             JSONやCSVの変換、QRコード生成など、業務中に何度も発生する作業をまとめています。
           </p>
           <p>
             多くの処理はお使いのブラウザ内で完結します。ファイルを選択しても、処理対象データをMake It Techの
-            サーバーへ保存する設計ではありません。機密性の高い資料を扱う場合は、処理後のファイル内容を必ずご自身で確認してください。
+            サーバーへ保存する設計ではありません。
           </p>
         </div>
       </section>

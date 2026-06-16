@@ -235,9 +235,9 @@ export function LottiePreview() {
   }, [previewFile]);
 
   return (
-    <div className="tools-panel">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+    <div className="tools-panel w-full max-w-full overflow-hidden">
+      <div className="mb-5 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h2 className="text-xl font-semibold">Lottieプレビュー</h2>
           <p className="mt-1 text-sm text-neutral-400">
             Lottie JSON（.json / lottie.json）とdotLottie（.lottie）をブラウザ上で再生確認できます。
@@ -252,7 +252,7 @@ export function LottiePreview() {
       </div>
 
       <label
-        className="tools-dropzone block"
+        className="tools-dropzone block w-full max-w-full"
         onDragOver={(event) => event.preventDefault()}
         onDrop={handleDrop}
       >
@@ -278,44 +278,46 @@ export function LottiePreview() {
       ) : null}
 
       {previewFile ? (
-        <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-3">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <div className="flex min-w-0 items-center gap-2">
+        <div className="mt-5 grid min-w-0 max-w-full gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <section className="min-w-0 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 p-3">
+            <div className="mb-3 flex min-w-0 items-center justify-between gap-2">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-neutral-800 text-blue-300">
                   <FileJson className="h-4 w-4" />
                 </span>
-                <div className="min-w-0">
-                  <h3 className="truncate text-sm font-semibold text-neutral-100">{previewFile.name}</h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="block max-w-full truncate text-sm font-semibold text-neutral-100">{previewFile.name}</h3>
                   <p className="text-xs text-neutral-500">{formatBytes(previewFile.size)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="grid min-h-[320px] place-items-center rounded-lg border border-neutral-800 bg-white p-3 sm:min-h-[420px]">
-              <DotLottieReact
-                key={previewFile.id}
-                data={previewFile.data}
-                autoplay={isPlaying}
-                loop={loop}
-                speed={speed}
-                mode={mode}
-                dotLottieRefCallback={(player) => {
-                  playerRef.current = player;
-                }}
-                className="h-full max-h-[380px] w-full max-w-full"
-              />
+            <div className="grid min-h-[320px] min-w-0 max-w-full place-items-center overflow-hidden rounded-lg border border-neutral-800 bg-white p-2 sm:min-h-[420px] sm:p-3">
+              <div className="grid h-full w-full min-w-0 max-w-full place-items-center overflow-hidden">
+                <DotLottieReact
+                  key={previewFile.id}
+                  data={previewFile.data}
+                  autoplay={isPlaying}
+                  loop={loop}
+                  speed={speed}
+                  mode={mode}
+                  dotLottieRefCallback={(player) => {
+                    playerRef.current = player;
+                  }}
+                  className="block h-full max-h-[380px] w-full min-w-0 max-w-full"
+                />
+              </div>
             </div>
           </section>
 
-          <aside className="space-y-3">
-            <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-3">
+          <aside className="min-w-0 max-w-full space-y-3">
+            <section className="min-w-0 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 p-3">
               <h3 className="mb-3 text-sm font-semibold text-neutral-100">再生設定</h3>
               <div className="space-y-3">
                 <button
                   type="button"
                   onClick={() => setIsPlaying((current) => !current)}
-                  className="tools-primary-button"
+                  className="tools-primary-button min-w-0"
                 >
                   {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   {isPlaying ? "一時停止" : "再生"}
@@ -336,7 +338,7 @@ export function LottiePreview() {
                   <select
                     value={speed}
                     onChange={(event) => setSpeed(Number(event.target.value))}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+                    className="w-full max-w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
                   >
                     <option value={0.5}>0.5x</option>
                     <option value={0.75}>0.75x</option>
@@ -351,7 +353,7 @@ export function LottiePreview() {
                   <select
                     value={mode}
                     onChange={(event) => setMode(event.target.value as LottieMode)}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+                    className="w-full max-w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
                   >
                     <option value="forward">通常</option>
                     <option value="reverse">逆再生</option>
@@ -362,7 +364,7 @@ export function LottiePreview() {
               </div>
             </section>
 
-            <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-3">
+            <section className="min-w-0 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 p-3">
               <h3 className="mb-3 text-sm font-semibold text-neutral-100">ファイル情報</h3>
               <dl className="space-y-2">
                 {statsItems.map(([label, value]) => (

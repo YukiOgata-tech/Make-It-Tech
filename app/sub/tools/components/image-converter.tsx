@@ -339,7 +339,7 @@ export function ImageConverter() {
                   onClick={() => void downloadAll()}
                   className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
                 >
-                  {images.length === 1 ? "保存" : "まとめて保存"}
+                  {images.length === 1 ? "ダウンロード" : "まとめてダウンロード"}
                 </button>
                 <button
                   onClick={clearAll}
@@ -372,7 +372,7 @@ export function ImageConverter() {
                     onClick={() => void downloadImage(image)}
                     className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded text-sm transition-colors"
                   >
-                    保存
+                    ダウンロード
                   </button>
                 </div>
               ))}

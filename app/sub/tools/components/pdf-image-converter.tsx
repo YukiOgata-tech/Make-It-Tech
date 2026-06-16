@@ -395,7 +395,7 @@ export function PdfImageConverter() {
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-medium">変換結果 ({renderedPages.length}ページ)</h3>
             <button onClick={() => void downloadAllImages()} className="tools-secondary-button bg-blue-600 hover:bg-blue-700">
-              {renderedPages.length === 1 ? "保存" : "まとめて保存"}
+              {renderedPages.length === 1 ? "ダウンロード" : "まとめてダウンロード"}
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
