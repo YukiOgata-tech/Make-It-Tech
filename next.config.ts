@@ -6,6 +6,15 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "25mb",
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "make-it-tech.com",
+        pathname: "/images/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

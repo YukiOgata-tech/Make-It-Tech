@@ -59,7 +59,7 @@ export function ToolsShell({ children }: { children: React.ReactNode }) {
               >
                 <span className="grid h-9 w-9 shrink-0 place-items-center">
                   <Image
-                    src="/images/logo-02_MIT.png"
+                    src="https://make-it-tech.com/images/logo-02_MIT.png"
                     alt="Make It Tech logo"
                     width={32}
                     height={32}
