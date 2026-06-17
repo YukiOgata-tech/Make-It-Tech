@@ -292,7 +292,16 @@ export function LottiePreview() {
               </div>
             </div>
 
-            <div className="grid min-h-[320px] min-w-0 max-w-full place-items-center overflow-hidden rounded-lg border border-neutral-800 bg-white p-2 sm:min-h-[420px] sm:p-3">
+            <div
+              className="grid min-h-[320px] min-w-0 max-w-full place-items-center overflow-hidden rounded-lg border border-neutral-800 p-2 sm:min-h-[420px] sm:p-3"
+              style={{
+                backgroundColor: "#f8fafc",
+                backgroundImage:
+                  "linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%)",
+                backgroundPosition: "0 0, 0 8px, 8px -8px, -8px 0",
+                backgroundSize: "16px 16px",
+              }}
+            >
               <div className="grid h-full w-full min-w-0 max-w-full place-items-center overflow-hidden">
                 <DotLottieReact
                   key={previewFile.id}
