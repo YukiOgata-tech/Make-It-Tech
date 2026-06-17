@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPublicToolHref, tools, toolsBaseUrl, type ToolItem } from "./tools";
+import { getPublicToolHref, getToolsMetaImage, tools, toolsBaseUrl, toolsMetaImageUrl, type ToolItem } from "./tools";
 
 type ToolSeoInput = {
   id: string;
@@ -32,6 +32,7 @@ export function createToolMetadata({
 }: ToolSeoInput): Metadata {
   const url = getToolUrl(id);
   const tool = findTool(id);
+  const metaImage = getToolsMetaImage(tool.category);
 
   return {
     title,
@@ -58,11 +59,20 @@ export function createToolMetadata({
       siteName: "DevTools by Make It Tech",
       type: "website",
       locale: "ja_JP",
+      images: [
+        {
+          url: metaImage.url,
+          width: metaImage.width,
+          height: metaImage.height,
+          alt: metaImage.alt,
+        },
+      ],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
       description,
+      images: [metaImage.url],
     },
     applicationName: "DevTools by Make It Tech",
     category:
@@ -79,6 +89,7 @@ export function createToolMetadata({
 export function ToolStructuredData({ id }: { id: string }) {
   const tool = findTool(id);
   const url = getToolUrl(id);
+  const metaImage = getToolsMetaImage(tool.category);
   const data = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -94,10 +105,12 @@ export function ToolStructuredData({ id }: { id: string }) {
       priceCurrency: "JPY",
     },
     description: tool.seoDescription,
+    image: metaImage.url,
     provider: {
       "@type": "Organization",
       name: "Make It Tech",
       url: "https://make-it-tech.com",
+      logo: toolsMetaImageUrl,
     },
   };
 

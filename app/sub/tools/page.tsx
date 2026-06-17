@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getPublicToolHref, toolCategories, tools, toolsBaseUrl } from "./_data/tools";
+import { getPublicToolHref, toolCategories, tools, toolsBaseUrl, toolsDefaultMetaImage } from "./_data/tools";
 import { getToolUrl } from "./_data/seo";
 // import { AdsenseAdSlot } from "./components/adsense-ad-slot";
 
@@ -17,6 +17,21 @@ export const metadata: Metadata = {
       "画像・PDF・テキスト・データ変換に使える無料ツール集。日々の制作、資料作成、開発作業をブラウザで手早く処理できます。",
     url: toolsBaseUrl,
     type: "website",
+    images: [
+      {
+        url: toolsDefaultMetaImage.url,
+        width: toolsDefaultMetaImage.width,
+        height: toolsDefaultMetaImage.height,
+        alt: toolsDefaultMetaImage.alt,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "無料便利ファイル操作ツール | 画像・PDF・データ変換",
+    description:
+      "画像・PDF・テキスト・データ変換に使える無料ツール集。日々の制作、資料作成、開発作業をブラウザで手早く処理できます。",
+    images: [toolsDefaultMetaImage.url],
   },
 };
 

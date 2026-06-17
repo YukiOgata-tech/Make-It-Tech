@@ -16,7 +16,51 @@ export type ToolItem = {
   navPriority?: number;
 };
 
+export type ToolsMetaImage = {
+  url: string;
+  width: number;
+  height: number;
+  alt: string;
+};
+
 export const toolsBaseUrl = "https://tools.make-it-tech.com";
+export const toolsMetaImageUrl = "https://make-it-tech.com/images/logo-02_MIT.png";
+export const toolsDefaultMetaImage: ToolsMetaImage = {
+  url: toolsMetaImageUrl,
+  width: 491,
+  height: 491,
+  alt: "Make It Tech logo",
+};
+export const toolsCategoryMetaImages: Record<ToolCategory["id"], ToolsMetaImage> = {
+  image: {
+    url: "https://make-it-tech.com/images/tools/meta/tools-image-meta.png",
+    width: 1731,
+    height: 909,
+    alt: "画像操作ツール",
+  },
+  pdf: {
+    url: "https://make-it-tech.com/images/tools/meta/tools-pdf-meta.png",
+    width: 1731,
+    height: 909,
+    alt: "PDF操作ツール",
+  },
+  text: {
+    url: "https://make-it-tech.com/images/tools/meta/tools-data-meta.png",
+    width: 1635,
+    height: 962,
+    alt: "データ操作ツール",
+  },
+  animation: {
+    url: "https://make-it-tech.com/images/tools/meta/tools-lottie-meta.png",
+    width: 1635,
+    height: 962,
+    alt: "Lottieプレビューツール",
+  },
+};
+
+export function getToolsMetaImage(category?: ToolCategory["id"]) {
+  return category ? toolsCategoryMetaImages[category] : toolsDefaultMetaImage;
+}
 
 export const toolCategories: ToolCategory[] = [
   { id: "image", label: "画像", shortLabel: "画像", icon: "🖼️" },

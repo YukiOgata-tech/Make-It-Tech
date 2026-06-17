@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 // import Script from "next/script";
 import { ToolsShell } from "./components/tools-shell";
-import { toolsBaseUrl } from "./_data/tools";
+import { toolsBaseUrl, toolsDefaultMetaImage } from "./_data/tools";
 
 // const adsenseClient = "ca-pub-3927353202195333";
 
@@ -36,12 +36,21 @@ export const metadata: Metadata = {
     siteName: "DevTools by Make It Tech",
     type: "website",
     locale: "ja_JP",
+    images: [
+      {
+        url: toolsDefaultMetaImage.url,
+        width: toolsDefaultMetaImage.width,
+        height: toolsDefaultMetaImage.height,
+        alt: toolsDefaultMetaImage.alt,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "無料オンライン開発ツール | DevTools",
     description:
       "画像・PDF・テキスト・データ変換に使える無料オンラインツール集。多くの処理はブラウザ内で完結します。",
+    images: [toolsDefaultMetaImage.url],
   },
   robots: {
     index: true,
