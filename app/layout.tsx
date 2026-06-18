@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import Script from "next/script";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { MainLayout } from "@/components/layout/main-layout";
@@ -8,6 +7,7 @@ import { CookieConsent } from "@/components/layout/cookie-consent";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { GaTracker } from "@/components/analytics/ga-tracker";
+import { ChatWidgetScript } from "@/components/layout/chat-widget-script";
 
 export const metadata: Metadata = {
   title: {
@@ -130,12 +130,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteData) }}
         />
-        <Script
-          src="https://knotic.make-it-tech.com/widget.js"
-          data-bot-id="bot_f3d4b0cc1387"
-          data-widget-token="knotic_wgt_Uxx07R5paLS_46Qyiig4T5OK"
-          strategy="lazyOnload"
-        />
+        <ChatWidgetScript />
         <ThemeProvider>
           <Suspense fallback={null}>
             <GaTracker />

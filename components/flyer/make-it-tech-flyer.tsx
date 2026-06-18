@@ -15,7 +15,7 @@ const concerns = [
   ["管理費や更新費が高い", "月額コストを見直して効率化したい"],
   ["更新方法がわからない", "自分で更新できるサイトにしたい"],
   ["新規事業用を作りたい", "名刺代わり、且つ、魅力を伝えたい"],
-  ["制作会社に相談しづらい", "小さなことも気軽に相談したい"],
+  ["制作会社に相談しづらい", "小さなこともいつでも気軽に相談したい！"],
 ];
 
 const strengths = [
@@ -30,8 +30,8 @@ const supportItems = [
   "サーバー･データベース管理",
   "CMS更新サポート",
   "SEO/MEO/AIO対策･常時コンテンツ最適化",
-  "Google検索状況の分析・改善",
-  "修正･表示確認",
+  "検索状況の分析・改善",
+  "公式LINE経由でのWEB以外のITやDXの相談対応",
   "SNS･Googleマップ連携サポート",
 ];
 
@@ -150,10 +150,11 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
               <div>
                 <p className="text-[0.78rem] font-bold text-[#0b978f]">HP/LP制作</p>
                 <p className="mt-0.5 text-[1.85rem] font-bold text-[#0b978f]">5,000<span className="text-[0.92rem]">円〜</span></p>
-                <p className="text-[0.48rem] text-gray-700">※デザイン等にこだわりがない場合</p>
+                <p className="text-[0.58rem] text-gray-700">※デザイン等にこだわりがない場合</p>
+                <p className="text-[0.58rem] text-gray-700">※ページ数による価格増加なし！</p>
               </div>
               <div>
-                <p className="text-[0.78rem] font-bold text-[#d8901f]">オーダーデザイン・機能追加</p>
+                <p className="text-[0.78rem] font-bold text-[#d8901f]">フルオーダー(機能･デザイン等)</p>
                 <p className="mt-0.5 text-[1.85rem] font-bold text-[#d8901f]">50,000<span className="text-[0.92rem]">円〜</span></p>
               </div>
             </div>
