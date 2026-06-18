@@ -15,23 +15,23 @@ const concerns = [
   ["管理費や更新費が高い", "月額コストを見直して効率化したい"],
   ["更新方法がわからない", "自分で更新できるサイトにしたい"],
   ["新規事業用を作りたい", "名刺代わり、且つ、魅力を伝えたい"],
-  ["制作会社に相談しづらい", "小さなこともいつでも気軽に相談したい！"],
+  ["制作会社に相談しづらい", "相談先が都度バラバラ、管理が分散している"],
 ];
 
 const strengths = [
-  ["開発者と直接コミュニケーション", "いつでも公式LINEから気軽な質問が可能です"],
+  ["開発者と直接コミュニケーション", "公式LINEから気軽な質問が可能！専門用語不要！中継を介さない専門家と直接！"],
   ["要望に応じたCMS設計対応", "お知らせやメニューなど、更新･管理しやすく整えます。"],
   ["安心のサポート体制", "サーバー、データ管理･確認までまとめて支援。"],
-  ["SEO/AIO/MEO対策も", "検索に必要な構成土台の整備と導入サポートも"],
+  ["SEO/AIO/MEO対策も", "検索に必要な構成土台の整備と導入サポートも(丸投げもOK！)"],
   ["改善/修正･更新", "公開後の分析や導線改善も追加で相談できます。"],
 ];
 
 const supportItems = [
   "サーバー･データベース管理",
   "CMS更新サポート",
-  "SEO/MEO/AIO対策･常時コンテンツ最適化",
-  "検索状況の分析・改善",
-  "公式LINE経由でのWEB以外のITやDXの相談対応",
+  "SEO/MEO/AIO対策の土台整備",
+  "検索状況の確認・改善相談",
+  "公式LINE経由での相談対応",
   "SNS･Googleマップ連携サポート",
 ];
 
@@ -65,7 +65,7 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
       </div>
 
       <article className="flyer-sheet relative mx-auto h-362 w-5xl shrink-0 overflow-hidden bg-[#fffdf9] px-9 py-5 shadow-2xl print:shadow-none">
-        <section className="relative min-h-[27%]">
+        <section className="relative min-h-[25%]">
           <div className="absolute -right-6 -top-6 z-0 w-[60%]">
             <div className="absolute -right-8 -top-8 h-60 w-60 rounded-full bg-green-400/60" />
             <div className="relative ml-auto mt-2 w-full overflow-hidden border-none p-0 shadow-none">
@@ -93,21 +93,20 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
               priority
             />
 
-            <p className="mt-2 inline-block -rotate-2 border-b border-[#13233d]/50 pb-1 text-[1.15rem] font-medium tracking-[0.08em]">
-              Webのチカラで、ビジネスを加速する。
+            <p className="mt-2 inline-block border-b border-[#13233d]/50 pb-1 font-serif text-[2.32rem] font-semibold leading-[1.12] tracking-[0.06em] text-black">
+              Web制作･リニューアルから
             </p>
 
-            <h1 className="mt-3 font-serif text-[3.08rem] font-semibold leading-[1.24] tracking-[0.08em] text-black">
-              <span className="text-[#2d8686]">伝わる</span>サイトで、
-              <span className="block bg-white/30">
-                ビジネス<span className="mx-2 text-[#2d9ecb]">チャンス</span>を広げる
+            <h1 className="mt-2 font-serif text-[2.82rem] font-semibold leading-[1.16] tracking-[0.03em] text-black">
+              <span className="inline whitespace-nowrap bg-gray-200/70 box-decoration-clone px-1">
+                <span className="text-[#2d8686]">会社のDX</span>を同時に<span className="text-[#2d9ecb]">進めませんか？</span>
               </span>
             </h1>
 
-            <p className="mt-4 text-[1rem] leading-7">
-              Make It Techは、web制作から業務改善DXを提供し、
+            <p className="mt-4 text-[0.94rem] leading-7">
+              サイトを作る・直すだけで終わらせず、更新体制、顧客や業務データDX、AI活用、業務効率化まで。
               <br />
-              エンジニア目線で現場の課題解決をサポートするパートナーです！
+              Webと社内ITの課題を、同時にまとめて相談/対応まで行えます。
             </p>
           </div>
         </section>
@@ -132,11 +131,13 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
           </h2>
           <div className="mt-2 grid grid-cols-5 divide-x divide-dashed divide-[#0b978f]/50 text-center">
             {strengths.map(([title, body], index) => (
-              <div key={title} className="px-2">
-                <p className="mx-auto mb-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#0b978f] text-[0.88rem] font-bold text-[#0b978f]">
-                  {index + 1}
-                </p>
-                <p className="text-[0.78rem] font-bold leading-4 text-[#07867f]">{title}</p>
+              <div key={title} className="px-2 text-left">
+                <div className="grid grid-cols-[1.65rem_1fr] items-center gap-1.5">
+                  <p className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0b978f] text-[0.78rem] font-bold text-[#0b978f]">
+                    {index + 1}
+                  </p>
+                  <p className="text-[0.74rem] font-bold leading-4 text-[#07867f]">{title}</p>
+                </div>
                 <p className="mt-2 text-[0.58rem] leading-4 text-[#263244]">{body}</p>
               </div>
             ))}
@@ -146,17 +147,24 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
         <section className="mt-4 grid grid-cols-[1.03fr_0.72fr_0.95fr] gap-4">
           <div className="rounded-lg border border-[#bac6d3] bg-white p-4">
             <h2 className="inline-block rounded bg-[#13233d] px-4 py-1 text-[0.92rem] font-bold text-white">料金のご案内</h2>
-            <div className="mt-2 grid grid-cols-2 gap-4 text-center">
-              <div>
-                <p className="text-[0.78rem] font-bold text-[#0b978f]">HP/LP制作</p>
-                <p className="mt-0.5 text-[1.85rem] font-bold text-[#0b978f]">5,000<span className="text-[0.92rem]">円〜</span></p>
-                <p className="text-[0.58rem] text-gray-700">※デザイン等にこだわりがない場合</p>
-                <p className="text-[0.58rem] text-gray-700">※ページ数による価格増加なし！</p>
-              </div>
-              <div>
-                <p className="text-[0.78rem] font-bold text-[#d8901f]">フルオーダー(機能･デザイン等)</p>
-                <p className="mt-0.5 text-[1.85rem] font-bold text-[#d8901f]">50,000<span className="text-[0.92rem]">円〜</span></p>
-              </div>
+            <div className="mt-2 grid gap-1.5">
+              {[
+                ["ライト制作", "10,000", "小規模LP・名刺代わりのページ", "#0b978f"],
+                ["スタンダード制作", "80,000", "CMS対応・複数ページ・問い合わせ導線設計", "#2d9ecb"],
+                ["オーダー制作", "200,000", "予約・会員機能・業務システム連携など", "#d8901f"],
+              ].map(([name, price, note, color]) => (
+                <div key={name} className="grid grid-cols-[6.2rem_1fr] items-center gap-2 rounded-md border border-[#d7e2e6] bg-[#fbfefd] px-2 py-1">
+                  <div>
+                    <p className="text-[0.66rem] font-bold leading-4" style={{ color }}>
+                      {name}
+                    </p>
+                    <p className="text-[1.12rem] font-bold leading-5" style={{ color }}>
+                      {price}<span className="text-[0.58rem]">円〜</span>
+                    </p>
+                  </div>
+                  <p className="text-[0.58rem] font-medium leading-4 text-[#3b4656]">{note}</p>
+                </div>
+              ))}
             </div>
             <div className="mt-1.5 rounded bg-[#c2d9e1]/60 px-3 py-1">
               <p className="text-center text-[0.7rem] font-bold">別途お見積りの例</p>
@@ -175,11 +183,14 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
             <h2 className="bg-[#0b978f] py-2 text-center text-[0.9rem] font-bold text-white rounded-t-lg">月額管理・運用サポート</h2>
             <div className="px-4 py-1">
               <p className="text-center text-[2.05rem] font-bold text-[#0b978f]">9,800<span className="text-[0.92rem]">円〜</span></p>
-              <ul className="mt-3 space-y-1 text-[0.66rem] leading-4">
+              <ul className="mt-2 space-y-1 text-[0.62rem] leading-4">
                 {supportItems.map((item) => (
                   <li key={item}>✓ {item}</li>
                 ))}
               </ul>
+              <p className="mt-2 rounded bg-[#eef7f5] px-2 py-1 text-[0.58rem] font-semibold leading-4 text-[#116f69]">
+                業務改善・AI活用・ツール導入などの伴走支援は内容に応じて別途お見積り
+              </p>
             </div>
           </div>
 
@@ -244,9 +255,8 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
           </div>
         </section>
 
-        <footer className="mt-4 grid grid-cols-[0.82fr_1.25fr_1fr] items-center gap-4">
-          <Image src="/images/title-01_MIT.png" alt="Make It Tech" width={1043} height={491} className="h-auto w-40 object-contain" />
-          <div className="border-l border-[#bac6d3] pl-5 text-[0.82rem] leading-6">
+        <footer className="mt-4 grid grid-cols-[1.25fr_1fr] items-center gap-4 border-t border-[#bac6d3] pt-3">
+          <div className="text-[0.82rem] leading-6">
             <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> info@make-it-tech.com</p>
             <p className="flex items-center gap-2"><Monitor className="h-4 w-4" /> https://make-it-tech.com</p>
           </div>
