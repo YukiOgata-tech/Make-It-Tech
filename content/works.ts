@@ -89,6 +89,7 @@ export const works: WorkItem[] = [
     summary: "飲酒管理機能を中心に、飲み会の幹事やお酒を楽しむ人向けのiOSアプリを開発。飲んだお酒の記録や、現状把握を手助け。",
     scope: ["モバイルアプリ", "ユーザー管理",  "外部API･公開データの活用"],
     results: ["日頃の飲酒管理の記録", "イベント時の飲酒量管理"],
+    previewMobileImageUrl: "/images/works/drinking-mobile.webp",
     previewDesktopImageUrl: "/images/works/DMA-icon.png",
     logoUrl: "/images/works/DMA-icon.png",
     previewImageAlt: "アプリ内UI画像",

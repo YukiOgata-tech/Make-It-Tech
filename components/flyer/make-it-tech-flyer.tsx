@@ -248,7 +248,7 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
           <Image src="/images/title-01_MIT.png" alt="Make It Tech" width={1043} height={491} className="h-auto w-40 object-contain" />
           <div className="border-l border-[#bac6d3] pl-5 text-[0.82rem] leading-6">
             <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> info@make-it-tech.com</p>
-            <p className="flex items-center gap-2"><Monitor className="h-4 w-4" /> https://make-it-tech.com/contact/</p>
+            <p className="flex items-center gap-2"><Monitor className="h-4 w-4" /> https://make-it-tech.com</p>
           </div>
           <p className="text-right font-serif text-[0.96rem] leading-7">
             あなたの想いを、カタチに。
