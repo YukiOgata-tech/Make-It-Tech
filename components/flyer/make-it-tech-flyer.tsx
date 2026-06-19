@@ -183,6 +183,9 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
             <h2 className="bg-[#0b978f] py-2 text-center text-[0.9rem] font-bold text-white rounded-t-lg">月額管理・運用サポート</h2>
             <div className="px-4 py-1">
               <p className="text-center text-[2.05rem] font-bold text-[#0b978f]">9,800<span className="text-[0.92rem]">円〜</span></p>
+              <p className="text-center text-[0.6rem] font-semibold text-[#116f69]">
+                ライトプランは5,000円〜対応可能
+              </p>
               <ul className="mt-2 space-y-1 text-[0.62rem] leading-4">
                 {supportItems.map((item) => (
                   <li key={item}>✓ {item}</li>
