@@ -26,10 +26,10 @@ export type ToolsMetaImage = {
 export const toolsBaseUrl = "https://tools.make-it-tech.com";
 export const toolsMetaImageUrl = "https://make-it-tech.com/images/logo-02_MIT.png";
 export const toolsDefaultMetaImage: ToolsMetaImage = {
-  url: toolsMetaImageUrl,
-  width: 491,
-  height: 491,
-  alt: "Make It Tech logo",
+  url: "https://make-it-tech.com/images/tools/meta/tools-default-meta.jpg",
+  width: 1280,
+  height: 852,
+  alt: "DevTools by Make It Tech",
 };
 export const toolsCategoryMetaImages: Record<ToolCategory["id"], ToolsMetaImage> = {
   image: {
