@@ -9,7 +9,7 @@ export const site = {
     "Web制作", "自動化", "フォーム", "LINE公式", "中小事業者", "個人事業主",
   ],
   logo: "/images/logo-02_MIT.png",
-  ogImage: "/images/logo-02_MIT-normal.png",
+  ogImage: "/images/og/make-it-tech-og.webp",
   url: "https://make-it-tech.com",
   locale: "ja_JP",
   contact: {
