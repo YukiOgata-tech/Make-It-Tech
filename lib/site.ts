@@ -1,6 +1,6 @@
 export const site = {
   name: "Make It Tech",
-  searchName: "IT事業 MAKE IT TECH",
+  searchName: "Make It Tech",
   tagline: "Web制作から業務DXまで。現場で“使える”形に落とし込みます。",
   description:
     "中小事業者・個人事業主向けに、Web制作、業務の見える化、ツール導入、自動化、簡易システム構築まで、低コストでも丁寧・信頼重視で一気通貫支援します。",
