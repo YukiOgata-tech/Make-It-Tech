@@ -91,7 +91,7 @@ export const works: WorkItem[] = [
     scope: ["モバイルアプリ", "ユーザー管理",  "外部API･公開データの活用"],
     results: ["日頃の飲酒管理の記録", "イベント時の飲酒量管理"],
     previewMobileImageUrl: "/images/works/drinking-mobile.webp",
-    previewDesktopImageUrl: "/images/works/DK_pc.jpg", // 反映されていない
+    previewDesktopImageUrl: "/images/works/DK_pc.jpg",
     logoUrl: "/images/works/DMA-icon.png",
     previewImageAlt: "アプリ内UI画像",
     previewTone: "sun",

@@ -107,6 +107,7 @@ function WorkPreview({ work }: { work: WorkItem }) {
   const isChatbotImagePreview = work.previewType === "chatbot-images";
   const isSiteHeroPreview = work.previewType === "site-hero";
   const hasMobileImagePreview = Boolean(work.previewMobileImageUrl);
+  const hasDesktopImagePreview = Boolean(work.previewDesktopImageUrl);
 
   return (
     <div className="mx-auto w-full">
@@ -167,7 +168,7 @@ function WorkPreview({ work }: { work: WorkItem }) {
             </div>
             {isSiteHeroPreview ? (
               <SiteHeroPreview desktop />
-            ) : isChatbotImagePreview ? (
+            ) : isChatbotImagePreview || hasDesktopImagePreview ? (
               <ImageSlotPreview
                 src={work.previewDesktopImageUrl}
                 alt={work.previewImageAlt ?? `${work.companyName} desktop preview`}
