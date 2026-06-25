@@ -19,8 +19,8 @@ export type WorkItem = {
 };
 
 export const workStats = [
-  { label: "導入・支援先", value: "5+", note: "飲食店4店舗以上 / 学童保育施設" },
-  { label: "制作・改善案件", value: "22+", note: "サイト・LP・業務システム" },
+  { label: "システム支援・開発", value: "5+", note: "飲食店4店舗以上 / コワーキング施設" },
+  { label: "制作・改善案件(軽微含む)", value: "22+", note: "HP/LP・LINE/Google Business" },
 ];
 
 

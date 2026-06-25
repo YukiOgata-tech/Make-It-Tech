@@ -22,14 +22,14 @@ const ctaItems = [
 
 export function HomeCtaSection() {
   return (
-    <section className="py-5 sm:py-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <section className="py-4 sm:py-12">
+      <div className="sm:mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 -mx-4">
         <div className="relative overflow-hidden border-y border-border/70 bg-card/75 py-4 shadow-sm backdrop-blur sm:rounded-3xl sm:border sm:p-6">
           <div className="pointer-events-none absolute inset-0 bg-[url('/images/bg-light.png')] bg-cover bg-center opacity-55 dark:bg-[url('/images/bg-dark.png')]" />
           <div className="pointer-events-none absolute inset-0 bg-background/55 dark:bg-background/45" />
           <div className="pointer-events-none absolute -left-1/4 top-0 h-full w-1/2 translate-x-[-20%] rotate-6 bg-white/15 blur-xl hero-sheen" />
 
-          <div className="relative flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="relative flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between px-2">
             <div>
               <Badge variant="secondary" className="rounded-xl text-[10px] sm:text-sm">
                 次に確認する
@@ -43,12 +43,12 @@ export function HomeCtaSection() {
             </p>
           </div>
 
-          <div className="relative mt-3 grid gap-2 sm:mt-5 sm:grid-cols-2 sm:gap-3">
+          <div className="relative mt-3 grid gap-1 sm:mt-5 sm:grid-cols-2 sm:gap-3">
             {ctaItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="group flex items-center gap-3 border border-border/70 bg-background/85 p-3 shadow-sm backdrop-blur transition hover:border-primary/40 hover:bg-background sm:rounded-2xl sm:p-4"
+                className="group flex items-center gap-3 border border-border/90 bg-background/85 p-3 shadow-2xl backdrop-blur transition hover:border-primary/40 hover:bg-background sm:rounded-2xl sm:p-4"
               >
                 <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary sm:h-11 sm:w-11">
                   <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
