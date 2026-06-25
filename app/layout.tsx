@@ -79,7 +79,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     name: site.searchName,
-    alternateName: ["IT事業 MAKE IT TECH", "MIT", "メイクイットテック"],
+    alternateName: site.alternateNames,
     url: site.url,
     logo: logoUrl,
     image: ogImageUrl,
@@ -116,7 +116,7 @@ export default function RootLayout({
     "@type": "WebSite",
     name: site.searchName,
     url: site.url,
-    alternateName: ["IT事業 MAKE IT TECH", "MIT", "メイクイットテック"],
+    alternateName: site.alternateNames,
   };
 
   return (

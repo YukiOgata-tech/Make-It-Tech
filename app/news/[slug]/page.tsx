@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { fetchAnnouncementBySlug } from "@/lib/announcements-data";
 import { categoryLabelMap } from "@/lib/announcements";
+import { buildMetaDescription } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { ShareButton } from "@/components/news/share-button";
@@ -77,9 +78,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const description =
-    record.summary ||
-    `${record.title} に関するお知らせです。Make It Tech のIT・DX支援、Web制作、支援実績、サービス更新情報を掲載しています。`;
+  const description = buildMetaDescription(
+    record.summary,
+    `${record.title}に関するお知らせです。Make It TechのIT・DX支援、Web制作、業務改善、支援実績、メディア掲載、サービス更新に関する詳しい情報を掲載しています。`,
+  );
   const rawCoverUrl = record.coverImage?.url;
   const ogImage = rawCoverUrl
     ? rawCoverUrl.startsWith("http")

@@ -26,7 +26,10 @@ export function SiteFooter() {
                   className="h-9 w-9 rounded-full sm:h-10 sm:w-10"
                 />
 
-              <p className="brand-mark text-base font-semibold sm:text-xl">{brand}</p>
+              <div>
+                <p className="brand-mark text-base font-semibold sm:text-xl">{brand}</p>
+                <p className="text-[10px] text-muted-foreground">{site.nameJa}</p>
+              </div>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
               Web･LP制作/AI導入/DX開発支援など、IT領域全般を柔軟にサポートします。

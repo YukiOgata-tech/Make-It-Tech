@@ -5,7 +5,7 @@ export const metadata = createToolMetadata({
   id: "base64",
   title: "無料Base64変換ツール - 画像↔Base64",
   description:
-    "画像をBase64文字列に変換、またはBase64から画像に復元。Data URI形式対応。ブラウザ上で完結、サーバー送信なし。開発・埋め込み用途に最適。",
+    "画像をBase64文字列やData URI形式へ変換し、Base64データから画像へ復元できる無料オンラインツールです。HTMLやCSSへの画像埋め込み、開発時のデータ確認に利用でき、処理はブラウザ内で完結します。",
   keywords: [
     "Base64変換",
     "Base64エンコード",

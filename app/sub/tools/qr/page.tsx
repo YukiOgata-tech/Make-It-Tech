@@ -5,7 +5,7 @@ export const metadata = createToolMetadata({
   id: "qr",
   title: "無料QRコード生成ツール - URL/テキスト対応",
   description:
-    "URLやテキストからQRコードを無料生成。高解像度PNG出力対応。ブラウザ上で完結、サーバー送信なし。名刺・チラシ・Webサイト用に最適。",
+    "URLや任意のテキストからQRコードを無料で作成できるオンラインツールです。高解像度PNGやSVG形式で保存でき、名刺、チラシ、店頭案内、Webサイトの導線作成に利用できます。生成処理はブラウザ内で完結します。",
   keywords: [
     "QRコード生成",
     "QRコード作成",

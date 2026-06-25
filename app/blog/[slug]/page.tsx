@@ -13,6 +13,7 @@ import { blogCategoryLabelMap } from "@/lib/blog";
 import { fetchBlogBySlug } from "@/lib/blog-data";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { buildHeadingSequence } from "@/lib/markdown-toc";
+import { buildMetaDescription } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -89,9 +90,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const description =
-    record.summary ||
-    `${record.title} の記事です。DX、ITツール導入、Web・アプリ制作に関する実務目線の情報を Make It Tech が紹介します。`;
+  const description = buildMetaDescription(
+    record.summary,
+    `${record.title}について、DX、ITツール導入、Web・アプリ制作、業務改善の観点から、事業者が実務で活用できる考え方や進め方を Make It Tech が解説します。`,
+  );
   const rawCoverUrl = record.coverImage?.url;
   const ogImage = rawCoverUrl
     ? rawCoverUrl.startsWith("http")

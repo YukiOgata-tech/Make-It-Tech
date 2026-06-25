@@ -5,7 +5,7 @@ export const metadata = createToolMetadata({
   id: "json",
   title: "無料JSON↔CSV/Excel変換ツール - 相互変換対応",
   description:
-    "JSONをCSV/Excelに変換、またはCSV/ExcelからJSONに変換。双方向変換対応。ブラウザ上で完結、サーバー送信なし。データ変換・分析に最適。",
+    "JSON、CSV、Excelファイルを相互変換できる無料オンラインツールです。JSONの表形式への変換や、CSV・ExcelからJSONへの書き出しに対応します。データはサーバーへ送信されず、ブラウザ内で処理されます。",
   keywords: [
     "JSON変換",
     "CSV変換",

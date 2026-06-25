@@ -5,7 +5,7 @@ export const metadata = createToolMetadata({
   id: "extension",
   title: "無料拡張子変換ツール - HTML/JS/TS/CSSファイル",
   description:
-    "HTML、JavaScript、TypeScript、CSSなどテキストファイルの拡張子を変換。ブラウザ上で完結、サーバー送信なし。複数ファイル一括変換対応。",
+    "HTML、JavaScript、TypeScript、CSS、JSON、Markdownなど、テキストファイルの拡張子を無料で変更できるオンラインツールです。複数ファイルの一括変換に対応し、内容をサーバーへ送信せずブラウザ内で処理します。",
   keywords: [
     "拡張子変換",
     "ファイル変換",

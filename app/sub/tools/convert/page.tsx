@@ -5,7 +5,7 @@ export const metadata = createToolMetadata({
   id: "convert",
   title: "無料画像フォーマット変換 - JPEG/PNG/WebP対応",
   description:
-    "画像をJPEG、PNG、WebP形式に無料変換。ブラウザ上で完結、サーバー送信なし。複数ファイル一括変換対応。高品質な変換処理。",
+    "画像をJPEG、PNG、WebP形式へ無料で変換できるオンラインツールです。複数ファイルの一括変換に対応し、画質を確認しながら保存形式を変更できます。処理はブラウザ内で完結し、画像はサーバーへ送信されません。",
   keywords: [
     "画像変換",
     "フォーマット変換",
