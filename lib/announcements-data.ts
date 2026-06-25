@@ -155,7 +155,13 @@ export async function fetchLatestAnnouncements() {
       .get();
     return snapshot.docs.map((doc) => normalizeAnnouncementDoc(doc));
   }
-  return getLatestAnnouncements();
+  const records = await getLatestAnnouncements();
+  return records.map((record) => ({
+    ...record,
+    publishedAt: toDate(record.publishedAt),
+    createdAt: toDate(record.createdAt),
+    updatedAt: toDate(record.updatedAt),
+  }));
 }
 
 export async function fetchAnnouncementList() {
@@ -168,7 +174,13 @@ export async function fetchAnnouncementList() {
       .get();
     return snapshot.docs.map((doc) => normalizeAnnouncementDoc(doc));
   }
-  return getAnnouncementList();
+  const records = await getAnnouncementList();
+  return records.map((record) => ({
+    ...record,
+    publishedAt: toDate(record.publishedAt),
+    createdAt: toDate(record.createdAt),
+    updatedAt: toDate(record.updatedAt),
+  }));
 }
 
 export async function fetchAnnouncementBySlug(slug: string) {

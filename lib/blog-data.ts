@@ -165,7 +165,13 @@ export async function fetchBlogList() {
     const records = snapshot.docs.map((doc) => normalizeBlogDoc(doc));
     return records.length > 0 ? records : mockBlogPosts;
   }
-  return getBlogList();
+  const records = await getBlogList();
+  return records.map((record) => ({
+    ...record,
+    publishedAt: toDate(record.publishedAt),
+    createdAt: toDate(record.createdAt),
+    updatedAt: toDate(record.updatedAt),
+  }));
 }
 
 export async function fetchBlogBySlug(slug: string) {
