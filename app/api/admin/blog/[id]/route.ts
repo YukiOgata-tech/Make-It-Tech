@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { blogCategories, blogStatuses } from "@/lib/blog";
@@ -94,6 +94,7 @@ export async function PATCH(
   if (!snapshot.exists) {
     return Response.json({ error: "Not found." }, { status: 404 });
   }
+  const previousSlug = String(snapshot.data()?.slug ?? "");
 
   const slug = normalizeSlug(payload.slug);
   const existing = await firestore
@@ -142,6 +143,12 @@ export async function PATCH(
 
   revalidateTag("public-blog", { expire: 0 });
   revalidateTag("admin-blog", { expire: 0 });
+  revalidatePath("/blog");
+  if (previousSlug) revalidatePath(`/blog/${previousSlug}`);
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/rss.xml");
+  revalidatePath("/atom.xml");
 
   return Response.json({ ok: true });
 }
@@ -164,11 +171,17 @@ export async function DELETE(
   if (!snapshot.exists) {
     return Response.json({ error: "Not found." }, { status: 404 });
   }
+  const slug = String(snapshot.data()?.slug ?? "");
 
   await docRef.delete();
 
   revalidateTag("public-blog", { expire: 0 });
   revalidateTag("admin-blog", { expire: 0 });
+  revalidatePath("/blog");
+  if (slug) revalidatePath(`/blog/${slug}`);
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/rss.xml");
+  revalidatePath("/atom.xml");
 
   return Response.json({ ok: true });
 }

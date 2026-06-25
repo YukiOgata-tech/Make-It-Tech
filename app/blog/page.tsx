@@ -5,12 +5,47 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { fetchBlogList } from "@/lib/blog-data";
 import { blogCategoryLabelMap } from "@/lib/blog";
+import { site } from "@/lib/site";
+
+export const dynamic = "force-static";
+export const revalidate = false;
 
 export const metadata: Metadata = {
-  title: "ブログ | 業務改善・DX・Web活用の実務ヒント",
+  title: "ブログ｜業務改善・DX・Web活用の実務ヒント",
   description:
     "中小事業者や個人事業主の業務改善、DX、ITツール導入、Web制作、補助金活用に役立つ実務目線の記事をまとめています。現場の悩みを整理し、すぐ使える改善の考え方を紹介します。",
   keywords: ["ブログ", "業務改善", "DX", "IT", "補助金", "新潟"],
+  alternates: {
+    canonical: `${site.url}/blog`,
+    types: {
+      "application/rss+xml": `${site.url}/rss.xml`,
+      "application/atom+xml": `${site.url}/atom.xml`,
+    },
+  },
+  openGraph: {
+    title: "ブログ｜業務改善・DX・Web活用の実務ヒント",
+    description:
+      "中小事業者向けに、業務改善、DX、IT導入、Web制作に役立つ実務情報を紹介します。",
+    url: `${site.url}/blog`,
+    siteName: site.searchName,
+    locale: site.locale,
+    type: "website",
+    images: [
+      {
+        url: site.ogImage,
+        width: 1200,
+        height: 630,
+        alt: `${site.name} ブログ`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ブログ｜業務改善・DX・Web活用の実務ヒント",
+    description:
+      "中小事業者向けに、業務改善、DX、IT導入、Web制作に役立つ実務情報を紹介します。",
+    images: [site.ogImage],
+  },
 };
 
 function toDateValue(value: unknown) {
@@ -49,9 +84,42 @@ function formatDate(value?: unknown) {
 
 export default async function BlogPage() {
   const posts = await fetchBlogList();
+  const blogJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${site.url}/blog#blog`,
+    name: `${site.name} ブログ`,
+    description: metadata.description,
+    url: `${site.url}/blog`,
+    inLanguage: "ja-JP",
+    publisher: {
+      "@type": "Organization",
+      "@id": `${site.url}/#organization`,
+      name: site.name,
+      url: site.url,
+      logo: {
+        "@type": "ImageObject",
+        url: new URL(site.logo, site.url).toString(),
+      },
+    },
+    blogPost: posts.slice(0, 20).map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: `${site.url}/blog/${post.slug}`,
+      datePublished: post.publishedAt?.toISOString(),
+      dateModified: post.updatedAt?.toISOString() ?? post.publishedAt?.toISOString(),
+      image: post.coverImage?.url
+        ? new URL(post.coverImage.url, site.url).toString()
+        : new URL(site.ogImage, site.url).toString(),
+    })),
+  };
 
   return (
     <div className="py-10 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+      />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6 sm:mb-10">
           <Badge variant="secondary" className="rounded-xl">

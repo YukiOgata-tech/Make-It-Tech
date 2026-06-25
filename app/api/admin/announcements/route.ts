@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Timestamp } from "firebase-admin/firestore";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { normalizeLinkLabelItems } from "@/lib/link-labels";
@@ -146,6 +146,10 @@ export async function POST(request: Request) {
 
   revalidateTag("public-announcements", { expire: 0 });
   revalidateTag("admin-announcements", { expire: 0 });
+  revalidatePath("/");
+  revalidatePath("/news");
+  revalidatePath(`/news/${slug}`);
+  revalidatePath("/sitemap.xml");
 
   return Response.json({ ok: true, id: docRef.id });
 }

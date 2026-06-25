@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import React from "react";
 import ReactMarkdown from "react-markdown";
@@ -21,6 +22,10 @@ import {
   buildLinkLabelMap,
   normalizeLinkLabelUrl,
 } from "@/lib/link-labels";
+
+export const dynamic = "force-static";
+export const dynamicParams = true;
+export const revalidate = false;
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -72,9 +77,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const record = await fetchAnnouncementBySlug(slug);
   if (!record) {
     return {
-      title: "お知らせ・メディア掲載・実績情報 | Make It Tech",
-      description:
-        "Make It Tech のお知らせ詳細ページです。新潟のIT・DX支援、Web制作、支援実績、メディア掲載、サービス更新に関する情報を掲載しています。",
+      title: "お知らせが見つかりません",
+      description: "指定されたお知らせは見つかりませんでした。",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -92,6 +100,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: record.title,
     description,
+    authors: [{ name: site.name, url: `${site.url}/about` }],
+    creator: site.name,
+    publisher: site.name,
     alternates: {
       canonical: `${site.url}/news/${record.slug}`,
     },
@@ -99,7 +110,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: record.title,
       description,
       url: `${site.url}/news/${record.slug}`,
+      siteName: site.searchName,
+      locale: site.locale,
       type: "article",
+      publishedTime: record.publishedAt?.toISOString(),
+      modifiedTime: record.updatedAt?.toISOString() ?? record.publishedAt?.toISOString(),
+      authors: [`${site.url}/about`],
+      section: categoryLabelMap[record.category] ?? "お知らせ",
       images: [
         {
           url: ogImage,
@@ -121,11 +138,78 @@ export default async function NewsDetailPage({ params }: PageProps) {
   const slug = resolvedParams?.slug ?? "";
   const record = await fetchAnnouncementBySlug(slug);
   if (!record) return notFound();
+  const publishedAtIso = record.publishedAt?.toISOString();
+  const updatedAtIso = record.updatedAt?.toISOString();
+  const showUpdatedAt =
+    Boolean(record.updatedAt && record.publishedAt) &&
+    record.updatedAt!.getTime() > record.publishedAt!.getTime() + 60_000;
 
   const linkMap = new Map(
     (record.links ?? []).map((link) => [link.url, link])
   );
   const linkLabelMap = buildLinkLabelMap(record.linkLabels);
+  const rawCoverUrl = record.coverImage?.url;
+  const articleImage = rawCoverUrl
+    ? rawCoverUrl.startsWith("http")
+      ? rawCoverUrl
+      : new URL(rawCoverUrl, site.url).toString()
+    : new URL(site.ogImage, site.url).toString();
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: record.title,
+    description: record.summary ?? "",
+    image: [articleImage],
+    url: `${site.url}/news/${record.slug}`,
+    inLanguage: "ja-JP",
+    articleSection: categoryLabelMap[record.category] ?? "お知らせ",
+    datePublished: record.publishedAt?.toISOString(),
+    dateModified: record.updatedAt?.toISOString() ?? record.publishedAt?.toISOString(),
+    author: {
+      "@type": "Organization",
+      "@id": `${site.url}/#organization`,
+      name: site.name,
+      url: `${site.url}/about`,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": `${site.url}/#organization`,
+      name: site.name,
+      url: site.url,
+      logo: {
+        "@type": "ImageObject",
+        url: new URL(site.logo, site.url).toString(),
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${site.url}/news/${record.slug}`,
+    },
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "トップ",
+        item: site.url,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "お知らせ",
+        item: `${site.url}/news`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: record.title,
+        item: `${site.url}/news/${record.slug}`,
+      },
+    ],
+  };
 
   const LinkCard = ({ url }: { url: string }) => {
     const data = linkMap.get(url);
@@ -158,8 +242,15 @@ export default async function NewsDetailPage({ params }: PageProps) {
           <p className="mt-2 text-[11px] text-muted-foreground">{host}</p>
         </div>
         {data.image ? (
-          <div className="h-24 w-full overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:h-24 sm:w-32">
-            <img src={data.image} alt={data.title || host} className="h-full w-full object-cover" />
+          <div className="relative h-24 w-full overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:h-24 sm:w-32">
+            <Image
+              src={data.image}
+              alt={data.title || host}
+              fill
+              sizes="(max-width: 640px) 100vw, 128px"
+              className="object-cover"
+              unoptimized={data.image.startsWith("http")}
+            />
           </div>
         ) : null}
       </a>
@@ -168,12 +259,26 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
   return (
     <div className="py-8 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
           <Badge variant="secondary" className="rounded-xl">
             {categoryLabelMap[record.category] ?? "お知らせ"}
           </Badge>
-          <span>{formatDate(record.publishedAt)}</span>
+          {publishedAtIso ? (
+            <time dateTime={publishedAtIso}>公開: {formatDate(record.publishedAt)}</time>
+          ) : null}
+          {showUpdatedAt && updatedAtIso ? (
+            <time dateTime={updatedAtIso}>更新: {formatDate(record.updatedAt)}</time>
+          ) : null}
+          <span>発信: {site.name}</span>
         </div>
 
         <h1 className="mt-3 text-[1.4rem] font-semibold leading-snug tracking-tight sm:text-4xl">
@@ -192,10 +297,15 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
         {record.coverImage?.url ? (
           <div className="mt-4 overflow-hidden rounded-3xl border border-border/60 bg-secondary/30 sm:mt-6">
-            <img
+            <Image
               src={record.coverImage.url}
               alt={record.coverImage.alt ?? record.title}
+              width={1200}
+              height={630}
+              sizes="(max-width: 768px) 100vw, 768px"
               className="h-auto w-full object-cover"
+              priority
+              unoptimized={record.coverImage.url.startsWith("http")}
             />
           </div>
         ) : null}

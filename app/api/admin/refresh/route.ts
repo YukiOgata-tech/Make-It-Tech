@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import {
   ADMIN_SESSION_COOKIE,
   verifyAdminSessionCookie,
@@ -25,6 +25,14 @@ export async function POST(request: Request) {
   revalidateTag("public-announcements", { expire: 0 });
   revalidateTag("admin-blog", { expire: 0 });
   revalidateTag("public-blog", { expire: 0 });
+  revalidatePath("/");
+  revalidatePath("/news");
+  revalidatePath("/news/[slug]", "page");
+  revalidatePath("/blog");
+  revalidatePath("/blog/[slug]", "page");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/rss.xml");
+  revalidatePath("/atom.xml");
 
   return Response.json({ ok: true });
 }

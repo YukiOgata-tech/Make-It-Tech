@@ -2,6 +2,8 @@ import { fetchBlogList } from "@/lib/blog-data";
 import { site } from "@/lib/site";
 
 export const runtime = "nodejs";
+export const dynamic = "force-static";
+export const revalidate = false;
 
 const FEED_LIMIT = 50;
 

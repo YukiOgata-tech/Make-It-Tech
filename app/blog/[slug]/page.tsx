@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
@@ -26,6 +27,10 @@ import {
 } from "@/lib/link-labels";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
+
+export const dynamic = "force-static";
+export const dynamicParams = true;
+export const revalidate = false;
 
 type PageProps = {
   params?: Promise<{ slug: string }>;
@@ -84,9 +89,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const record = await fetchBlogBySlug(slug);
   if (!record) {
     return {
-      title: "ブログ | DX・Web/アプリ活用の実務ヒント 業務改善・IT導入なら Make It Tech",
+      title: "ブログ記事が見つかりません",
       description:
-        "Make It Tech のブログ詳細ページです。中小事業者向けに、業務改善、DX、ITツール導入、Web制作、補助金活用など、現場で使える実務情報を紹介します。",
+        "指定されたブログ記事は見つかりませんでした。",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -104,6 +113,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: record.title,
     description,
+    keywords: record.tags,
+    authors: [{ name: site.name, url: `${site.url}/about` }],
+    creator: site.name,
+    publisher: site.name,
     alternates: {
       canonical: `${site.url}/blog/${record.slug}`,
     },
@@ -111,7 +124,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: record.title,
       description,
       url: `${site.url}/blog/${record.slug}`,
+      siteName: site.searchName,
+      locale: site.locale,
       type: "article",
+      publishedTime: record.publishedAt?.toISOString(),
+      modifiedTime: record.updatedAt?.toISOString() ?? record.publishedAt?.toISOString(),
+      authors: [`${site.url}/about`],
+      section: record.category
+        ? blogCategoryLabelMap[record.category] ?? "ブログ"
+        : "ブログ",
+      tags: record.tags,
       images: [
         {
           url: ogImage,
@@ -133,6 +155,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const slug = resolvedParams?.slug ?? "";
   const record = await fetchBlogBySlug(slug);
   if (!record) return notFound();
+  const publishedAtIso = record.publishedAt?.toISOString();
+  const updatedAtIso = record.updatedAt?.toISOString();
+  const showUpdatedAt =
+    Boolean(record.updatedAt && record.publishedAt) &&
+    record.updatedAt!.getTime() > record.publishedAt!.getTime() + 60_000;
 
   const rawCoverUrl = record.coverImage?.url;
   const ogImage = rawCoverUrl
@@ -147,21 +174,63 @@ export default async function BlogDetailPage({ params }: PageProps) {
     headline: record.title,
     description: record.summary ?? "",
     image: [ogImage],
+    url: `${site.url}/blog/${record.slug}`,
+    inLanguage: "ja-JP",
+    articleSection: record.category
+      ? blogCategoryLabelMap[record.category] ?? "ブログ"
+      : "ブログ",
+    keywords: record.tags?.join(", "),
     datePublished: record.publishedAt?.toISOString(),
     dateModified: record.updatedAt?.toISOString() ?? record.publishedAt?.toISOString(),
     author: {
       "@type": "Organization",
+      "@id": `${site.url}/#organization`,
       name: site.name,
+      url: `${site.url}/about`,
     },
     publisher: {
       "@type": "Organization",
+      "@id": `${site.url}/#organization`,
       name: site.name,
+      url: site.url,
       logo: {
         "@type": "ImageObject",
         url: `${site.url}${site.logo}`,
       },
     },
-    mainEntityOfPage: `${site.url}/blog/${record.slug}`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${site.url}/blog/${record.slug}`,
+    },
+    isPartOf: {
+      "@type": "Blog",
+      "@id": `${site.url}/blog#blog`,
+      name: `${site.name} ブログ`,
+    },
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "トップ",
+        item: site.url,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "ブログ",
+        item: `${site.url}/blog`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: record.title,
+        item: `${site.url}/blog/${record.slug}`,
+      },
+    ],
   };
 
   const headingSequence = buildHeadingSequence(record.content ?? "");
@@ -189,6 +258,10 @@ export default async function BlogDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <article className="mx-auto max-w-[700px] px-4 sm:px-6 lg:px-0">
         <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
           {record.category ? (
@@ -196,7 +269,13 @@ export default async function BlogDetailPage({ params }: PageProps) {
               {blogCategoryLabelMap[record.category] ?? "ブログ"}
             </Badge>
           ) : null}
-          <span>{formatDate(record.publishedAt)}</span>
+          {publishedAtIso ? (
+            <time dateTime={publishedAtIso}>公開: {formatDate(record.publishedAt)}</time>
+          ) : null}
+          {showUpdatedAt && updatedAtIso ? (
+            <time dateTime={updatedAtIso}>更新: {formatDate(record.updatedAt)}</time>
+          ) : null}
+          <span>執筆: {site.name}</span>
           {record.tags?.length ? (
             <span className="text-[10px] text-muted-foreground sm:text-[11px]">
               {record.tags.map((tag) => `#${tag}`).join(" ")}
@@ -220,10 +299,15 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
         {record.coverImage?.url ? (
           <div className="mt-4 overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:mt-6">
-            <img
+            <Image
               src={record.coverImage.url}
               alt={record.coverImage.alt ?? record.title}
+              width={1200}
+              height={630}
+              sizes="(max-width: 700px) 100vw, 700px"
               className="h-auto w-full object-cover"
+              priority
+              unoptimized={record.coverImage.url.startsWith("http")}
             />
           </div>
         ) : null}

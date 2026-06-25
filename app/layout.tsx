@@ -24,9 +24,6 @@ export const metadata: Metadata = {
   authors: [{ name: site.searchName, url: site.url }],
   creator: site.searchName,
   publisher: site.searchName,
-  verification: {
-    google: "google-site-verification=CODE_TO_REPLACE",
-  },
   category: "business",
   robots: {
     index: true,
@@ -78,6 +75,7 @@ export default function RootLayout({
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
+    "@id": `${site.url}/#organization`,
     name: site.searchName,
     alternateName: site.alternateNames,
     url: site.url,
@@ -114,6 +112,7 @@ export default function RootLayout({
   const websiteData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${site.url}/#website`,
     name: site.searchName,
     url: site.url,
     alternateName: site.alternateNames,

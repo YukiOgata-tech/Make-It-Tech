@@ -1,6 +1,10 @@
 import { type MetadataRoute } from "next";
 import { site } from "@/lib/site";
 import { fetchBlogList } from "@/lib/blog-data";
+import { fetchAnnouncementList } from "@/lib/announcements-data";
+
+export const dynamic = "force-static";
+export const revalidate = false;
 
 const routes = [
   "",
@@ -20,7 +24,10 @@ const routes = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const blogPosts = await fetchBlogList().catch(() => []);
+  const [blogPosts, announcements] = await Promise.all([
+    fetchBlogList().catch(() => []),
+    fetchAnnouncementList().catch(() => []),
+  ]);
   const blogRoutes = blogPosts
     .filter((post) => post.slug)
     .map((post) => ({
@@ -29,6 +36,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
+  const announcementRoutes = announcements
+    .filter((announcement) => announcement.slug)
+    .map((announcement) => ({
+      url: `${site.url}/news/${announcement.slug}`,
+      lastModified:
+        announcement.updatedAt ??
+        announcement.publishedAt ??
+        announcement.createdAt ??
+        undefined,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
 
   const staticRoutes: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${site.url}${route}`,
@@ -36,5 +55,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.7,
   }));
 
-  return [...staticRoutes, ...blogRoutes];
+  return [...staticRoutes, ...blogRoutes, ...announcementRoutes];
 }

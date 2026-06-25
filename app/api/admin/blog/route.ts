@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Timestamp } from "firebase-admin/firestore";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { blogCategories, blogStatuses } from "@/lib/blog";
@@ -129,6 +129,11 @@ export async function POST(request: Request) {
 
   revalidateTag("public-blog", { expire: 0 });
   revalidateTag("admin-blog", { expire: 0 });
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/rss.xml");
+  revalidatePath("/atom.xml");
 
   return Response.json({ ok: true, id: docRef.id });
 }
