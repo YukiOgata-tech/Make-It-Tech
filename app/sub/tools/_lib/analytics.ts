@@ -17,6 +17,7 @@ type ToolEventParams = {
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
+    mitAnalyticsConsent?: "accepted" | "declined" | "unset";
   }
 }
 
@@ -27,6 +28,7 @@ function toSafeInteger(value: number | undefined) {
 
 export function trackToolEvent(eventName: ToolEventName, params: ToolEventParams) {
   if (typeof window === "undefined" || typeof window.gtag !== "function") return;
+  if (window.mitAnalyticsConsent !== "accepted") return;
 
   window.gtag("event", eventName, {
     event_category: "tools",

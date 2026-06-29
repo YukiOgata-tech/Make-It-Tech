@@ -11,6 +11,7 @@ declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
+    mitAnalyticsConsent?: ConsentState;
   }
 }
 
@@ -65,6 +66,13 @@ function shouldTrackPath(pathname: string) {
   return true;
 }
 
+function shouldTrackHost() {
+  if (typeof window === "undefined") return true;
+  if (window.location.hostname.startsWith("admin-console.")) return false;
+  if (window.location.hostname.startsWith("lp.")) return false;
+  return true;
+}
+
 export function GaTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -89,6 +97,19 @@ export function GaTracker() {
     };
   }, [pathname]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.mitAnalyticsConsent = consent;
+    if (typeof window.gtag !== "function") return;
+
+    window.gtag("consent", "update", {
+      analytics_storage: consent === "accepted" ? "granted" : "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+    });
+  }, [consent]);
+
   const currentPath = useMemo(() => {
     const query = searchParams.toString();
     return query ? `${pathname}?${query}` : pathname;
@@ -98,8 +119,7 @@ export function GaTracker() {
     if (consent !== "accepted") return;
     if (!shouldTrackPath(pathname)) return;
     if (typeof window === "undefined") return;
-    if (window.location.hostname.startsWith("admin-console.")) return;
-    if (window.location.hostname.startsWith("lp.")) return;
+    if (!shouldTrackHost()) return;
     const sendPageView = () => {
       if (typeof window.gtag !== "function") return false;
       window.gtag("event", "page_view", {
@@ -117,7 +137,7 @@ export function GaTracker() {
     return () => window.clearTimeout(timer);
   }, [consent, pathname, currentPath, measurementId]);
 
-  if (consent !== "accepted") {
+  if (!shouldTrackPath(pathname)) {
     return null;
   }
 
@@ -131,6 +151,12 @@ export function GaTracker() {
         {`
           window.dataLayer = window.dataLayer || [];
           window.gtag = function(){window.dataLayer.push(arguments);};
+          window.gtag('consent', 'default', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied'
+          });
           window.gtag('js', new Date());
           window.gtag('config', '${measurementId}', { send_page_view: false });
         `}

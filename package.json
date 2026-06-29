@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ga:admin": "node scripts/ga-admin.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
