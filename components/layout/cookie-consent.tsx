@@ -48,9 +48,8 @@ export function CookieConsent({ className }: { className?: string }) {
   const isAdminPath = pathname.startsWith("/sub/admin-console");
   const isLpHost = hostname.startsWith("lp.");
   const isLpPath = pathname.startsWith("/sub/lp");
-  const isPublicSubdomain = isToolsHost || isToolsPath;
   const isMyLifePath = pathname === "/this-is-my-life";
-  const privacyHref = isPublicSubdomain ? "https://make-it-tech.com/privacy" : "/privacy";
+  const privacyHref = "/privacy";
 
   React.useEffect(() => {
     const stored = getCookieValue(COOKIE_NAME);
@@ -69,7 +68,7 @@ export function CookieConsent({ className }: { className?: string }) {
 
   const isOpen = consent === "unset";
 
-  if (isAdminHost || isAdminPath || isLpHost || isLpPath || isMyLifePath) {
+  if (isToolsHost || isToolsPath || isAdminHost || isAdminPath || isLpHost || isLpPath || isMyLifePath) {
     return null;
   }
 

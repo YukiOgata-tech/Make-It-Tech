@@ -12,6 +12,7 @@ interface CookieConsent {
 
 const CONSENT_KEY = "devtools_cookie_consent";
 const CONSENT_VERSION = "1.0";
+const GLOBAL_CONSENT_EVENT = "mit-cookie-consent-updated";
 
 export function CookieConsentBanner() {
   const [showBanner, setShowBanner] = useState(false);
@@ -43,6 +44,7 @@ export function CookieConsentBanner() {
     };
     localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
     setShowBanner(false);
+    window.dispatchEvent(new Event(GLOBAL_CONSENT_EVENT));
   };
 
   if (!showBanner) return null;

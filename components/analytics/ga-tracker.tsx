@@ -5,6 +5,7 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 
 type ConsentState = "accepted" | "declined" | "unset";
+type ToolsConsentState = "all" | "necessary" | null;
 
 declare global {
   interface Window {
@@ -15,6 +16,8 @@ declare global {
 
 const COOKIE_NAME = "mit_cookie_consent";
 const CONSENT_EVENT = "mit-cookie-consent-updated";
+const TOOLS_CONSENT_KEY = "devtools_cookie_consent";
+const TOOLS_CONSENT_VERSION = "1.0";
 
 function getCookieValue(name: string) {
   if (typeof document === "undefined") return null;
@@ -25,7 +28,32 @@ function getCookieValue(name: string) {
     ?.split("=")[1];
 }
 
-function getConsentState(): ConsentState {
+function isToolsContext(pathname: string) {
+  if (pathname.startsWith("/sub/tools")) return true;
+  if (typeof window !== "undefined" && window.location.hostname.startsWith("tools.")) return true;
+  return false;
+}
+
+function getToolsConsentState(): ConsentState {
+  if (typeof window === "undefined") return "unset";
+  const stored = window.localStorage.getItem(TOOLS_CONSENT_KEY);
+  if (!stored) return "unset";
+  try {
+    const parsed = JSON.parse(stored) as {
+      type?: ToolsConsentState;
+      version?: string;
+    };
+    if (parsed.version !== TOOLS_CONSENT_VERSION) return "unset";
+    if (parsed.type === "all") return "accepted";
+    if (parsed.type === "necessary") return "declined";
+  } catch {
+    return "unset";
+  }
+  return "unset";
+}
+
+function getConsentState(pathname: string): ConsentState {
+  if (isToolsContext(pathname)) return getToolsConsentState();
   const value = getCookieValue(COOKIE_NAME);
   if (value === "accepted" || value === "declined") return value;
   return "unset";
@@ -53,13 +81,13 @@ export function GaTracker() {
   }, [pathname]);
 
   useEffect(() => {
-    const syncConsent = () => setConsent(getConsentState());
+    const syncConsent = () => setConsent(getConsentState(pathname));
     syncConsent();
     window.addEventListener(CONSENT_EVENT, syncConsent);
     return () => {
       window.removeEventListener(CONSENT_EVENT, syncConsent);
     };
-  }, []);
+  }, [pathname]);
 
   const currentPath = useMemo(() => {
     const query = searchParams.toString();
