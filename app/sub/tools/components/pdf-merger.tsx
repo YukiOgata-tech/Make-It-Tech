@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 type PdfItem = {
   id: string;
@@ -88,6 +89,14 @@ export function PdfMerger() {
       return;
     }
 
+    const inputBytes = items.reduce((sum, item) => sum + item.file.size, 0);
+    trackToolEvent("tool_run", {
+      toolId: "pdf-merge",
+      toolName: "PDF合成",
+      action: "merge",
+      fileCount: items.length,
+      inputBytes,
+    });
     setIsProcessing(true);
     setMessage("");
     try {
@@ -114,7 +123,21 @@ export function PdfMerger() {
       if (outputUrl) URL.revokeObjectURL(outputUrl);
       setOutputUrl(URL.createObjectURL(blob));
       setOutputSize(blob.size);
+      trackToolEvent("tool_success", {
+        toolId: "pdf-merge",
+        toolName: "PDF合成",
+        action: "merge",
+        fileCount: items.length,
+        inputBytes,
+        outputBytes: blob.size,
+      });
     } catch (error) {
+      trackToolEvent("tool_error", {
+        toolId: "pdf-merge",
+        toolName: "PDF合成",
+        action: "merge",
+        fileCount: items.length,
+      });
       setMessage(error instanceof Error ? error.message : "PDFの合成に失敗しました。");
     } finally {
       setIsProcessing(false);
@@ -127,6 +150,13 @@ export function PdfMerger() {
     link.href = outputUrl;
     link.download = "merged.pdf";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-merge",
+      toolName: "PDF合成",
+      action: "download",
+      fileCount: 1,
+      outputBytes: outputSize,
+    });
   };
 
   return (

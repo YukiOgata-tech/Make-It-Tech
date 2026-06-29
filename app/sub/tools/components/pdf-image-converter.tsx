@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { saveImageFile, saveImageFiles } from "./save-image-file";
+import { trackToolEvent } from "../_lib/analytics";
 
 type Mode = "imagesToPdf" | "pdfToImages";
 type ImageItem = {
@@ -136,6 +137,14 @@ export function PdfImageConverter() {
       setMessage("画像を選択してください。");
       return;
     }
+    const inputBytes = images.reduce((sum, image) => sum + image.file.size, 0);
+    trackToolEvent("tool_run", {
+      toolId: "pdf-image",
+      toolName: "画像PDF",
+      action: "images_to_pdf",
+      fileCount: images.length,
+      inputBytes,
+    });
     setIsProcessing(true);
     setMessage("");
     clearOutputs();
@@ -159,7 +168,22 @@ export function PdfImageConverter() {
       const blob = new Blob([toArrayBuffer(bytes)], { type: "application/pdf" });
       setPdfOutputUrl(URL.createObjectURL(blob));
       setPdfOutputSize(blob.size);
+      trackToolEvent("tool_success", {
+        toolId: "pdf-image",
+        toolName: "画像PDF",
+        action: "images_to_pdf",
+        fileCount: images.length,
+        inputBytes,
+        outputBytes: blob.size,
+        outputType: "pdf",
+      });
     } catch (error) {
+      trackToolEvent("tool_error", {
+        toolId: "pdf-image",
+        toolName: "画像PDF",
+        action: "images_to_pdf",
+        fileCount: images.length,
+      });
       setMessage(error instanceof Error ? error.message : "PDFへの変換に失敗しました。");
     } finally {
       setIsProcessing(false);
@@ -171,6 +195,14 @@ export function PdfImageConverter() {
       setMessage("PDFを選択してください。");
       return;
     }
+    trackToolEvent("tool_run", {
+      toolId: "pdf-image",
+      toolName: "画像PDF",
+      action: "pdf_to_images",
+      fileCount: 1,
+      inputBytes: pdfFile.size,
+      outputType: "png",
+    });
     setIsProcessing(true);
     setMessage("");
     clearOutputs();
@@ -209,7 +241,22 @@ export function PdfImageConverter() {
         });
       }
       setRenderedPages(pages);
+      trackToolEvent("tool_success", {
+        toolId: "pdf-image",
+        toolName: "画像PDF",
+        action: "pdf_to_images",
+        fileCount: pages.length,
+        inputBytes: pdfFile.size,
+        outputBytes: pages.reduce((sum, page) => sum + page.blob.size, 0),
+        outputType: "png",
+      });
     } catch (error) {
+      trackToolEvent("tool_error", {
+        toolId: "pdf-image",
+        toolName: "画像PDF",
+        action: "pdf_to_images",
+        fileCount: 1,
+      });
       setMessage(error instanceof Error ? error.message : "PDFから画像への変換に失敗しました。");
     } finally {
       setIsProcessing(false);
@@ -222,6 +269,14 @@ export function PdfImageConverter() {
     link.href = pdfOutputUrl;
     link.download = "images.pdf";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-image",
+      toolName: "画像PDF",
+      action: "download_pdf",
+      fileCount: 1,
+      outputBytes: pdfOutputSize,
+      outputType: "pdf",
+    });
   };
 
   const downloadImage = async (page: RenderedPage) => {
@@ -229,6 +284,14 @@ export function PdfImageConverter() {
       blob: page.blob,
       fileName: page.name,
       title: "PDFページ画像",
+    });
+    trackToolEvent("tool_download", {
+      toolId: "pdf-image",
+      toolName: "画像PDF",
+      action: "download_image",
+      fileCount: 1,
+      outputBytes: page.blob.size,
+      outputType: "png",
     });
   };
 
@@ -250,6 +313,14 @@ export function PdfImageConverter() {
         link.click();
       }
     );
+    trackToolEvent("tool_download", {
+      toolId: "pdf-image",
+      toolName: "画像PDF",
+      action: renderedPages.length === 1 ? "download_image" : "download_all_images",
+      fileCount: renderedPages.length,
+      outputBytes: renderedPages.reduce((sum, page) => sum + page.blob.size, 0),
+      outputType: "png",
+    });
   };
 
   return (

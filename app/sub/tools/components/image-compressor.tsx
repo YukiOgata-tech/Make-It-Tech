@@ -7,6 +7,7 @@ import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { saveImageFile, saveImageFiles } from "./save-image-file";
+import { trackToolEvent } from "../_lib/analytics";
 
 interface PendingFile {
   file: File;
@@ -69,6 +70,14 @@ export function ImageCompressor() {
 
   const processFiles = async () => {
     if (pendingFiles.length === 0) return;
+    const inputBytes = pendingFiles.reduce((sum, pending) => sum + pending.file.size, 0);
+    trackToolEvent("tool_run", {
+      toolId: "compress",
+      toolName: "画像圧縮",
+      action: "compress",
+      fileCount: pendingFiles.length,
+      inputBytes,
+    });
     setIsProcessing(true);
     setMessage("");
 
@@ -109,6 +118,26 @@ export function ImageCompressor() {
     setPendingFiles([]);
 
     setImages((prev) => [...prev, ...results]);
+    if (results.length > 0) {
+      const outputBytes = results.reduce((sum, result) => sum + result.compressedSize, 0);
+      trackToolEvent("tool_success", {
+        toolId: "compress",
+        toolName: "画像圧縮",
+        action: "compress",
+        fileCount: results.length,
+        inputBytes,
+        outputBytes,
+        reductionPercent: inputBytes > 0 ? (1 - outputBytes / inputBytes) * 100 : undefined,
+      });
+    }
+    if (failedNames.length > 0) {
+      trackToolEvent("tool_error", {
+        toolId: "compress",
+        toolName: "画像圧縮",
+        action: "compress",
+        fileCount: failedNames.length,
+      });
+    }
     if (failedNames.length > 0) {
       setMessage(`${failedNames.join(", ")} の圧縮に失敗しました。`);
     }
@@ -250,6 +279,13 @@ export function ImageCompressor() {
       fileName: `compressed_${image.outputName}`,
       title: "圧縮画像",
     });
+    trackToolEvent("tool_download", {
+      toolId: "compress",
+      toolName: "画像圧縮",
+      action: "download_single",
+      fileCount: 1,
+      outputBytes: image.compressedSize,
+    });
   };
 
   const downloadAll = async () => {
@@ -275,6 +311,13 @@ export function ImageCompressor() {
         link.click();
       }
     );
+    trackToolEvent("tool_download", {
+      toolId: "compress",
+      toolName: "画像圧縮",
+      action: images.length === 1 ? "download_single" : "download_all",
+      fileCount: images.length,
+      outputBytes: images.reduce((sum, image) => sum + image.compressedSize, 0),
+    });
   };
 
   const formatSize = (bytes: number) => {

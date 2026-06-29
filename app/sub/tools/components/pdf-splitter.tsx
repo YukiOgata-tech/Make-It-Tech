@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 type SplitMode = "ranges" | "each";
 type SplitResult = {
@@ -86,6 +87,13 @@ export function PdfSplitter() {
 
   const split = async () => {
     if (!file || !pageCount) return;
+    trackToolEvent("tool_run", {
+      toolId: "pdf-split",
+      toolName: "PDF分割",
+      action: mode,
+      fileCount: 1,
+      inputBytes: file.size,
+    });
     setIsProcessing(true);
     setMessage("");
     clearResults();
@@ -123,7 +131,21 @@ export function PdfSplitter() {
       }
 
       setResults(nextResults);
+      trackToolEvent("tool_success", {
+        toolId: "pdf-split",
+        toolName: "PDF分割",
+        action: mode,
+        fileCount: nextResults.length,
+        inputBytes: file.size,
+        outputBytes: nextResults.reduce((sum, result) => sum + result.blob.size, 0),
+      });
     } catch (error) {
+      trackToolEvent("tool_error", {
+        toolId: "pdf-split",
+        toolName: "PDF分割",
+        action: mode,
+        fileCount: 1,
+      });
       setMessage(error instanceof Error ? error.message : "PDFの分割に失敗しました。");
     } finally {
       setIsProcessing(false);
@@ -135,6 +157,13 @@ export function PdfSplitter() {
     link.href = result.url;
     link.download = result.name;
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-split",
+      toolName: "PDF分割",
+      action: "download_single",
+      fileCount: 1,
+      outputBytes: result.blob.size,
+    });
   };
 
   const downloadAll = async () => {
@@ -150,6 +179,13 @@ export function PdfSplitter() {
     link.href = URL.createObjectURL(blob);
     link.download = "split_pdfs.zip";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-split",
+      toolName: "PDF分割",
+      action: "download_all",
+      fileCount: results.length,
+      outputBytes: results.reduce((sum, result) => sum + result.blob.size, 0),
+    });
   };
 
   return (

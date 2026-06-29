@@ -4,6 +4,7 @@ import { useState } from "react";
 import ExcelJS from "exceljs";
 import Papa from "papaparse";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 type ConvertMode = "jsonToTable" | "tableToJson";
 
@@ -164,8 +165,20 @@ export function JsonToTable() {
 
       setColumns(Array.from(allKeys));
       setParsedData(dataArray);
+      trackToolEvent("tool_success", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "json_to_table",
+        fileCount: dataArray.length,
+        inputBytes: new Blob([jsonInput]).size,
+      });
       setIsProcessing(false);
     } catch {
+      trackToolEvent("tool_error", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "json_to_table",
+      });
       setError("JSONの解析に失敗しました。正しい形式か確認してください。");
       setParsedData([]);
       setColumns([]);
@@ -195,6 +208,14 @@ export function JsonToTable() {
     link.href = URL.createObjectURL(blob);
     link.download = "data.csv";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "json",
+      toolName: "JSON CSV Excel変換",
+      action: "download_csv",
+      fileCount: parsedData.length,
+      outputType: "csv",
+      outputBytes: blob.size,
+    });
   };
 
   const downloadExcel = async () => {
@@ -225,6 +246,14 @@ export function JsonToTable() {
       link.href = URL.createObjectURL(blob);
       link.download = "data.xlsx";
       link.click();
+      trackToolEvent("tool_download", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "download_excel",
+        fileCount: parsedData.length,
+        outputType: "xlsx",
+        outputBytes: blob.size,
+      });
     } catch {
       setError("Excelの生成に失敗しました");
     } finally {
@@ -274,7 +303,22 @@ export function JsonToTable() {
       setTableColumns(columns);
       setTableData(data);
       setJsonOutput(JSON.stringify(data, null, 2));
+      trackToolEvent("tool_success", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "table_to_json",
+        fileCount: data.length,
+        inputBytes: file.size,
+        inputType: getFileExtension(file.name),
+        outputType: "json",
+      });
     } catch (err) {
+      trackToolEvent("tool_error", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "table_to_json",
+        inputType: getFileExtension(file.name),
+      });
       setError(err instanceof Error ? err.message : "ファイルの読み込みに失敗しました");
     } finally {
       setIsProcessing(false);
@@ -309,7 +353,22 @@ export function JsonToTable() {
       setTableColumns(columns);
       setTableData(data);
       setJsonOutput(JSON.stringify(data, null, 2));
+      trackToolEvent("tool_success", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "table_to_json",
+        fileCount: data.length,
+        inputBytes: file.size,
+        inputType: getFileExtension(file.name),
+        outputType: "json",
+      });
     } catch (err) {
+      trackToolEvent("tool_error", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "table_to_json",
+        inputType: getFileExtension(file.name),
+      });
       setError(err instanceof Error ? err.message : "ファイルの読み込みに失敗しました");
     } finally {
       setIsProcessing(false);
@@ -319,6 +378,12 @@ export function JsonToTable() {
   const copyJson = async () => {
     try {
       await navigator.clipboard.writeText(jsonOutput);
+      trackToolEvent("tool_success", {
+        toolId: "json",
+        toolName: "JSON CSV Excel変換",
+        action: "copy_json",
+        outputType: "json",
+      });
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -333,6 +398,14 @@ export function JsonToTable() {
     link.href = URL.createObjectURL(blob);
     link.download = "data.json";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "json",
+      toolName: "JSON CSV Excel変換",
+      action: "download_json",
+      fileCount: tableData.length,
+      outputType: "json",
+      outputBytes: blob.size,
+    });
   };
 
   const minifyJson = () => {

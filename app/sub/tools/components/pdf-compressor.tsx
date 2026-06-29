@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 type CompressedPdf = {
   originalName: string;
@@ -45,6 +46,14 @@ export function PdfCompressor() {
 
   const processFiles = async () => {
     if (!files.length) return;
+    const inputBytes = files.reduce((sum, file) => sum + file.size, 0);
+    trackToolEvent("tool_run", {
+      toolId: "pdf-compress",
+      toolName: "PDF圧縮",
+      action: "compress",
+      fileCount: files.length,
+      inputBytes,
+    });
     setIsProcessing(true);
     setMessage("");
 
@@ -66,8 +75,24 @@ export function PdfCompressor() {
 
       results.forEach((result) => URL.revokeObjectURL(result.url));
       setResults(compressedResults);
+      const outputBytes = compressedResults.reduce((sum, result) => sum + result.compressedSize, 0);
+      trackToolEvent("tool_success", {
+        toolId: "pdf-compress",
+        toolName: "PDF圧縮",
+        action: "compress",
+        fileCount: compressedResults.length,
+        inputBytes,
+        outputBytes,
+        reductionPercent: inputBytes > 0 ? (1 - outputBytes / inputBytes) * 100 : undefined,
+      });
       setFiles([]);
     } catch (error) {
+      trackToolEvent("tool_error", {
+        toolId: "pdf-compress",
+        toolName: "PDF圧縮",
+        action: "compress",
+        fileCount: files.length,
+      });
       setMessage(error instanceof Error ? error.message : "PDFの圧縮に失敗しました。");
     } finally {
       setIsProcessing(false);
@@ -185,6 +210,13 @@ export function PdfCompressor() {
     link.href = result.url;
     link.download = `compressed_${result.originalName}`;
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-compress",
+      toolName: "PDF圧縮",
+      action: "download_single",
+      fileCount: 1,
+      outputBytes: result.compressedSize,
+    });
   };
 
   const downloadAll = async () => {
@@ -203,6 +235,13 @@ export function PdfCompressor() {
     link.href = URL.createObjectURL(blob);
     link.download = "compressed_pdfs.zip";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-compress",
+      toolName: "PDF圧縮",
+      action: "download_all",
+      fileCount: results.length,
+      outputBytes: results.reduce((sum, result) => sum + result.compressedSize, 0),
+    });
   };
 
   return (

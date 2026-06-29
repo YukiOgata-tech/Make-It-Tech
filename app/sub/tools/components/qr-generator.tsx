@@ -6,6 +6,7 @@ import { useTextHistory } from "../hooks/use-text-history";
 import { useConsent } from "./cookie-consent";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { saveImageFile } from "./save-image-file";
+import { trackToolEvent } from "../_lib/analytics";
 
 export function QRGenerator() {
   const [text, setText] = useState("https://make-it-tech.com");
@@ -75,10 +76,19 @@ export function QRGenerator() {
       history.addItem(text, { type: "QR", size });
     }
 
+    const blob = await dataUrlToBlob(qrDataUrl);
     await saveImageFile({
-      blob: await dataUrlToBlob(qrDataUrl),
+      blob,
       fileName: "qrcode.png",
       title: "QRコード",
+    });
+    trackToolEvent("tool_download", {
+      toolId: "qr",
+      toolName: "QRコード生成",
+      action: "download_png",
+      fileCount: 1,
+      outputType: "png",
+      outputBytes: blob.size,
     });
   };
 
@@ -107,6 +117,14 @@ export function QRGenerator() {
       link.href = URL.createObjectURL(blob);
       link.download = "qrcode.svg";
       link.click();
+      trackToolEvent("tool_download", {
+        toolId: "qr",
+        toolName: "QRコード生成",
+        action: "download_svg",
+        fileCount: 1,
+        outputType: "svg",
+        outputBytes: blob.size,
+      });
     } catch {
       setError("SVGの生成に失敗しました");
     }

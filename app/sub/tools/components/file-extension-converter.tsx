@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 interface ConvertedFile {
   original: File;
@@ -43,6 +44,14 @@ export function FileExtensionConverter() {
 
   const processFiles = async (inputFiles: File[]) => {
     if (inputFiles.length === 0) return;
+    trackToolEvent("tool_run", {
+      toolId: "extension",
+      toolName: "拡張子変換",
+      action: "convert",
+      fileCount: inputFiles.length,
+      outputType: targetExtension,
+      inputBytes: inputFiles.reduce((sum, file) => sum + file.size, 0),
+    });
     setIsProcessing(true);
 
     const results: ConvertedFile[] = [];
@@ -64,6 +73,15 @@ export function FileExtensionConverter() {
     }
 
     setFiles(prev => [...prev, ...results]);
+    trackToolEvent("tool_success", {
+      toolId: "extension",
+      toolName: "拡張子変換",
+      action: "convert",
+      fileCount: results.length,
+      outputType: targetExtension,
+      inputBytes: inputFiles.reduce((sum, file) => sum + file.size, 0),
+      outputBytes: results.reduce((sum, file) => sum + file.converted.size, 0),
+    });
     setIsProcessing(false);
   };
 
@@ -72,6 +90,14 @@ export function FileExtensionConverter() {
     link.href = URL.createObjectURL(file.converted);
     link.download = file.newName;
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "extension",
+      toolName: "拡張子変換",
+      action: "download_single",
+      fileCount: 1,
+      outputType: getExtension(file.newName),
+      outputBytes: file.converted.size,
+    });
   };
 
   const downloadAll = async () => {
@@ -92,6 +118,14 @@ export function FileExtensionConverter() {
     link.href = URL.createObjectURL(blob);
     link.download = "converted_files.zip";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "extension",
+      toolName: "拡張子変換",
+      action: "download_all",
+      fileCount: files.length,
+      outputType: "zip",
+      outputBytes: blob.size,
+    });
   };
 
   const clearAll = () => {

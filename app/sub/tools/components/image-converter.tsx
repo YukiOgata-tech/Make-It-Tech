@@ -6,6 +6,7 @@ import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { saveImageFile, saveImageFiles } from "./save-image-file";
+import { trackToolEvent } from "../_lib/analytics";
 
 type OutputFormat = "image/jpeg" | "image/png" | "image/webp";
 
@@ -72,6 +73,15 @@ export function ImageConverter() {
 
   const processFiles = async () => {
     if (pendingFiles.length === 0) return;
+    const inputBytes = pendingFiles.reduce((sum, pending) => sum + pending.file.size, 0);
+    trackToolEvent("tool_run", {
+      toolId: "convert",
+      toolName: "フォーマット変換",
+      action: "convert",
+      fileCount: pendingFiles.length,
+      outputType: outputFormat,
+      inputBytes,
+    });
     setIsProcessing(true);
 
     const results: ConvertedImage[] = [];
@@ -136,6 +146,17 @@ export function ImageConverter() {
     setPendingFiles([]);
 
     setImages((prev) => [...prev, ...results]);
+    if (results.length > 0) {
+      trackToolEvent("tool_success", {
+        toolId: "convert",
+        toolName: "フォーマット変換",
+        action: "convert",
+        fileCount: results.length,
+        outputType: outputFormat,
+        inputBytes,
+        outputBytes: results.reduce((sum, result) => sum + result.converted.size, 0),
+      });
+    }
     setIsProcessing(false);
   };
 
@@ -162,6 +183,14 @@ export function ImageConverter() {
       fileName: getOutputFileName(image),
       title: "変換画像",
     });
+    trackToolEvent("tool_download", {
+      toolId: "convert",
+      toolName: "フォーマット変換",
+      action: "download_single",
+      fileCount: 1,
+      outputType: image.format,
+      outputBytes: image.converted.size,
+    });
   };
 
   const downloadAll = async () => {
@@ -186,6 +215,14 @@ export function ImageConverter() {
         link.click();
       }
     );
+    trackToolEvent("tool_download", {
+      toolId: "convert",
+      toolName: "フォーマット変換",
+      action: images.length === 1 ? "download_single" : "download_all",
+      fileCount: images.length,
+      outputType: outputFormat,
+      outputBytes: images.reduce((sum, image) => sum + image.converted.size, 0),
+    });
   };
 
   const formatSize = (bytes: number) => {

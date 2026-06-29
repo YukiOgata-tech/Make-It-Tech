@@ -3,6 +3,7 @@
 import { DotLottieReact, type DotLottie } from "@lottiefiles/dotlottie-react";
 import { AlertCircle, FileJson, Pause, Play, RotateCcw, Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
+import { trackToolEvent } from "../_lib/analytics";
 
 type LottieMode = "forward" | "reverse" | "bounce" | "reverse-bounce";
 
@@ -197,6 +198,13 @@ export function LottiePreview() {
       return;
     }
 
+    trackToolEvent("tool_run", {
+      toolId: "lottie",
+      toolName: "Lottieプレビュー",
+      action: "preview",
+      fileCount: files.length,
+      inputBytes: files.reduce((sum, file) => sum + file.size, 0),
+    });
     const settled = await Promise.allSettled(files.map((file) => parseFile(file)));
     const loaded = settled
       .filter((result): result is PromiseFulfilledResult<PreviewFile> => result.status === "fulfilled")
@@ -219,6 +227,24 @@ export function LottiePreview() {
       )
     );
     setCommonSettings((current) => ({ ...current, isPlaying: true }));
+
+    if (loaded.length) {
+      trackToolEvent("tool_success", {
+        toolId: "lottie",
+        toolName: "Lottieプレビュー",
+        action: "preview",
+        fileCount: loaded.length,
+        inputBytes: loaded.reduce((sum, file) => sum + file.size, 0),
+      });
+    }
+    if (failed.length) {
+      trackToolEvent("tool_error", {
+        toolId: "lottie",
+        toolName: "Lottieプレビュー",
+        action: "preview",
+        fileCount: failed.length,
+      });
+    }
 
     if (failed.length) {
       setError(failed.join("\n"));

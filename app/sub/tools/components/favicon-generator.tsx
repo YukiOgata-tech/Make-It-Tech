@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 interface FaviconSize {
   size: number;
@@ -84,6 +85,14 @@ export function FaviconGenerator() {
   const generateFavicons = async () => {
     if (!sourceImage) return;
 
+    const selectedSizes = sizes.filter((s) => s.selected);
+    trackToolEvent("tool_run", {
+      toolId: "favicon",
+      toolName: "Favicon生成",
+      action: "generate",
+      fileCount: selectedSizes.length,
+      outputType: "png",
+    });
     setIsProcessing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -94,7 +103,7 @@ export function FaviconGenerator() {
     const img = await loadImage(sourceImage);
     const results: GeneratedFavicon[] = [];
 
-    for (const sizeConfig of sizes.filter((s) => s.selected)) {
+    for (const sizeConfig of selectedSizes) {
       canvas.width = sizeConfig.size;
       canvas.height = sizeConfig.size;
       ctx.clearRect(0, 0, sizeConfig.size, sizeConfig.size);
@@ -124,6 +133,14 @@ export function FaviconGenerator() {
     }
 
     setFavicons(results);
+    trackToolEvent("tool_success", {
+      toolId: "favicon",
+      toolName: "Favicon生成",
+      action: "generate",
+      fileCount: results.length,
+      outputType: "png",
+      outputBytes: results.reduce((sum, result) => sum + result.blob.size, 0),
+    });
     setIsProcessing(false);
   };
 
@@ -141,6 +158,14 @@ export function FaviconGenerator() {
     link.href = favicon.preview;
     link.download = favicon.filename;
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "favicon",
+      toolName: "Favicon生成",
+      action: "download_single",
+      fileCount: 1,
+      outputType: "png",
+      outputBytes: favicon.blob.size,
+    });
   };
 
   const downloadAll = async () => {
@@ -182,6 +207,14 @@ export function FaviconGenerator() {
     link.href = URL.createObjectURL(blob);
     link.download = "favicons.zip";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "favicon",
+      toolName: "Favicon生成",
+      action: "download_all",
+      fileCount: favicons.length,
+      outputType: "zip",
+      outputBytes: blob.size,
+    });
   };
 
   const clear = () => {

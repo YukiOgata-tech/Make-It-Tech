@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
+import { trackToolEvent } from "../_lib/analytics";
 
 type PageItem = {
   id: string;
@@ -98,6 +99,13 @@ export function PdfReorder() {
 
   const reorder = async () => {
     if (!file || !pages.length) return;
+    trackToolEvent("tool_run", {
+      toolId: "pdf-reorder",
+      toolName: "PDF並び替え",
+      action: "reorder",
+      fileCount: 1,
+      inputBytes: file.size,
+    });
     setIsProcessing(true);
     setMessage("");
     try {
@@ -119,7 +127,21 @@ export function PdfReorder() {
       if (outputUrl) URL.revokeObjectURL(outputUrl);
       setOutputUrl(URL.createObjectURL(blob));
       setOutputSize(blob.size);
+      trackToolEvent("tool_success", {
+        toolId: "pdf-reorder",
+        toolName: "PDF並び替え",
+        action: "reorder",
+        fileCount: 1,
+        inputBytes: file.size,
+        outputBytes: blob.size,
+      });
     } catch (error) {
+      trackToolEvent("tool_error", {
+        toolId: "pdf-reorder",
+        toolName: "PDF並び替え",
+        action: "reorder",
+        fileCount: 1,
+      });
       setMessage(error instanceof Error ? error.message : "PDFの並び替えに失敗しました。");
     } finally {
       setIsProcessing(false);
@@ -132,6 +154,13 @@ export function PdfReorder() {
     link.href = outputUrl;
     link.download = file ? `reordered_${file.name}` : "reordered.pdf";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "pdf-reorder",
+      toolName: "PDF並び替え",
+      action: "download",
+      fileCount: 1,
+      outputBytes: outputSize,
+    });
   };
 
   return (

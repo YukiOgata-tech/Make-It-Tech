@@ -6,6 +6,7 @@ import { useConsent } from "./cookie-consent";
 import { ImageHistory } from "./image-history";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { saveImageFile, saveImageFiles } from "./save-image-file";
+import { trackToolEvent } from "../_lib/analytics";
 
 interface PendingFile {
   file: File;
@@ -114,6 +115,15 @@ export function ImageResizer() {
 
   const processFiles = async () => {
     if (pendingFiles.length === 0) return;
+    const inputBytes = pendingFiles.reduce((sum, pending) => sum + pending.file.size, 0);
+    trackToolEvent("tool_run", {
+      toolId: "resize",
+      toolName: "リサイズ",
+      action: "resize",
+      fileCount: pendingFiles.length,
+      inputBytes,
+      outputType: `${width}x${height}`,
+    });
     setIsProcessing(true);
 
     const results: ResizedImage[] = [];
@@ -201,6 +211,17 @@ export function ImageResizer() {
     setPendingFiles([]);
 
     setImages((prev) => [...prev, ...results]);
+    if (results.length > 0) {
+      trackToolEvent("tool_success", {
+        toolId: "resize",
+        toolName: "リサイズ",
+        action: "resize",
+        fileCount: results.length,
+        inputBytes,
+        outputBytes: results.reduce((sum, result) => sum + result.resized.size, 0),
+        outputType: `${width}x${height}`,
+      });
+    }
     setIsProcessing(false);
   };
 
@@ -228,6 +249,14 @@ export function ImageResizer() {
       fileName: getOutputFileName(image),
       title: "リサイズ画像",
     });
+    trackToolEvent("tool_download", {
+      toolId: "resize",
+      toolName: "リサイズ",
+      action: "download_single",
+      fileCount: 1,
+      outputBytes: image.resized.size,
+      outputType: `${image.newWidth}x${image.newHeight}`,
+    });
   };
 
   const downloadAll = async () => {
@@ -252,6 +281,13 @@ export function ImageResizer() {
         link.click();
       }
     );
+    trackToolEvent("tool_download", {
+      toolId: "resize",
+      toolName: "リサイズ",
+      action: images.length === 1 ? "download_single" : "download_all",
+      fileCount: images.length,
+      outputBytes: images.reduce((sum, image) => sum + image.resized.size, 0),
+    });
   };
 
   const clearAll = () => {

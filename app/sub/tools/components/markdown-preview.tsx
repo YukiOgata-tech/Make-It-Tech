@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
+import { trackToolEvent } from "../_lib/analytics";
 
 const SAMPLE_MARKDOWN = `# Markdownプレビュー
 
@@ -52,6 +53,14 @@ export function MarkdownPreview() {
       const reader = new FileReader();
       reader.onload = () => {
         setMarkdown(reader.result as string);
+        trackToolEvent("tool_success", {
+          toolId: "markdown",
+          toolName: "Markdownプレビュー",
+          action: "load_file",
+          fileCount: 1,
+          inputBytes: file.size,
+          inputType: file.type || "text/markdown",
+        });
       };
       reader.readAsText(file);
     }
@@ -65,6 +74,14 @@ export function MarkdownPreview() {
       const reader = new FileReader();
       reader.onload = () => {
         setMarkdown(reader.result as string);
+        trackToolEvent("tool_success", {
+          toolId: "markdown",
+          toolName: "Markdownプレビュー",
+          action: "load_file",
+          fileCount: 1,
+          inputBytes: file.size,
+          inputType: file.type || "text/markdown",
+        });
       };
       reader.readAsText(file);
     }
@@ -76,10 +93,24 @@ export function MarkdownPreview() {
     link.href = URL.createObjectURL(blob);
     link.download = "document.md";
     link.click();
+    trackToolEvent("tool_download", {
+      toolId: "markdown",
+      toolName: "Markdownプレビュー",
+      action: "download",
+      fileCount: 1,
+      outputType: "markdown",
+      outputBytes: blob.size,
+    });
   };
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(markdown);
+    trackToolEvent("tool_success", {
+      toolId: "markdown",
+      toolName: "Markdownプレビュー",
+      action: "copy",
+      fileCount: 1,
+    });
   };
 
   const clearContent = () => {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { saveImageFile } from "./save-image-file";
+import { trackToolEvent } from "../_lib/analytics";
 
 export function Base64Converter() {
   const [mode, setMode] = useState<"toBase64" | "fromBase64">("toBase64");
@@ -17,15 +18,37 @@ export function Base64Converter() {
     setError("");
     setFileName(file.name);
     setIsProcessing(true);
+    trackToolEvent("tool_run", {
+      toolId: "base64",
+      toolName: "Base64変換",
+      action: "image_to_base64",
+      fileCount: 1,
+      inputBytes: file.size,
+      inputType: file.type,
+    });
 
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
       setBase64Output(result);
       setImagePreview(result);
+      trackToolEvent("tool_success", {
+        toolId: "base64",
+        toolName: "Base64変換",
+        action: "image_to_base64",
+        fileCount: 1,
+        inputBytes: file.size,
+        inputType: file.type,
+      });
       setIsProcessing(false);
     };
     reader.onerror = () => {
+      trackToolEvent("tool_error", {
+        toolId: "base64",
+        toolName: "Base64変換",
+        action: "image_to_base64",
+        fileCount: 1,
+      });
       setError("ファイルの読み込みに失敗しました");
       setIsProcessing(false);
     };
@@ -119,10 +142,19 @@ export function Base64Converter() {
     // Extract extension from data URL
     const match = imagePreview.match(/data:image\/(\w+);/);
     const ext = match?.[1] || "png";
+    const blob = await dataUrlToBlob(imagePreview);
     await saveImageFile({
-      blob: await dataUrlToBlob(imagePreview),
+      blob,
       fileName: `image.${ext}`,
       title: "Base64復元画像",
+    });
+    trackToolEvent("tool_download", {
+      toolId: "base64",
+      toolName: "Base64変換",
+      action: "download_image",
+      fileCount: 1,
+      outputType: ext,
+      outputBytes: blob.size,
     });
   };
 
