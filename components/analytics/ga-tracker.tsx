@@ -33,16 +33,24 @@ function getConsentState(): ConsentState {
 
 function shouldTrackPath(pathname: string) {
   if (pathname.startsWith("/sub/admin-console")) return false;
-  if (pathname.startsWith("/sub/tools")) return false;
+  if (pathname.startsWith("/sub/lp")) return false;
   return true;
 }
 
 export function GaTracker() {
-  const measurementId =
-    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-VED2GRW1C8";
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [consent, setConsent] = useState<ConsentState>("unset");
+
+  const measurementId = useMemo(() => {
+    const defaultId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-VED2GRW1C8";
+    const toolsId = process.env.NEXT_PUBLIC_TOOLS_GA_MEASUREMENT_ID ?? "G-R9QSFM08R7";
+    if (pathname.startsWith("/sub/tools")) return toolsId;
+    if (typeof window !== "undefined" && window.location.hostname.startsWith("tools.")) {
+      return toolsId;
+    }
+    return defaultId;
+  }, [pathname]);
 
   useEffect(() => {
     const syncConsent = () => setConsent(getConsentState());
@@ -62,6 +70,8 @@ export function GaTracker() {
     if (consent !== "accepted") return;
     if (!shouldTrackPath(pathname)) return;
     if (typeof window === "undefined") return;
+    if (window.location.hostname.startsWith("admin-console.")) return;
+    if (window.location.hostname.startsWith("lp.")) return;
     const sendPageView = () => {
       if (typeof window.gtag !== "function") return false;
       window.gtag("event", "page_view", {
@@ -77,7 +87,7 @@ export function GaTracker() {
       sendPageView();
     }, 250);
     return () => window.clearTimeout(timer);
-  }, [consent, pathname, currentPath]);
+  }, [consent, pathname, currentPath, measurementId]);
 
   if (consent !== "accepted") {
     return null;

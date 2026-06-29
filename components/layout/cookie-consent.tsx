@@ -23,9 +23,18 @@ function getCookieValue(name: string) {
     ?.split("=")[1];
 }
 
+function getCookieDomainAttribute() {
+  if (typeof window === "undefined") return "";
+  const hostname = window.location.hostname;
+  if (hostname === "make-it-tech.com" || hostname.endsWith(".make-it-tech.com")) {
+    return "; domain=.make-it-tech.com";
+  }
+  return "";
+}
+
 function setCookieValue(name: string, value: string) {
   if (typeof document === "undefined") return;
-  document.cookie = `${name}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  document.cookie = `${name}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax${getCookieDomainAttribute()}`;
 }
 
 export function CookieConsent({ className }: { className?: string }) {
@@ -35,7 +44,13 @@ export function CookieConsent({ className }: { className?: string }) {
     typeof window !== "undefined" ? window.location.hostname : "";
   const isToolsHost = hostname.startsWith("tools.");
   const isToolsPath = pathname.startsWith("/sub/tools");
+  const isAdminHost = hostname.startsWith("admin-console.");
+  const isAdminPath = pathname.startsWith("/sub/admin-console");
+  const isLpHost = hostname.startsWith("lp.");
+  const isLpPath = pathname.startsWith("/sub/lp");
+  const isPublicSubdomain = isToolsHost || isToolsPath;
   const isMyLifePath = pathname === "/this-is-my-life";
+  const privacyHref = isPublicSubdomain ? "https://make-it-tech.com/privacy" : "/privacy";
 
   React.useEffect(() => {
     const stored = getCookieValue(COOKIE_NAME);
@@ -54,7 +69,7 @@ export function CookieConsent({ className }: { className?: string }) {
 
   const isOpen = consent === "unset";
 
-  if (isToolsHost || isToolsPath || isMyLifePath) {
+  if (isAdminHost || isAdminPath || isLpHost || isLpPath || isMyLifePath) {
     return null;
   }
 
@@ -92,7 +107,7 @@ export function CookieConsent({ className }: { className?: string }) {
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+              <Link href={privacyHref} className="text-xs text-muted-foreground hover:text-foreground hover:underline">
                 プライバシーポリシーを見る
               </Link>
               <div className="flex flex-wrap gap-2">
