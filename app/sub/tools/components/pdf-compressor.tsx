@@ -27,11 +27,11 @@ const toArrayBuffer = (bytes: Uint8Array) => {
 };
 
 const PDF_RASTER_PROFILES = [
-  { scale: 1.35, jpegQuality: 0.68 },
-  { scale: 1.15, jpegQuality: 0.6 },
-  { scale: 0.95, jpegQuality: 0.52 },
-  { scale: 0.8, jpegQuality: 0.46 },
-  { scale: 0.65, jpegQuality: 0.4 },
+  { scale: 1.35, jpegQuality: 0.72, minBytes: 0 },
+  { scale: 1.15, jpegQuality: 0.64, minBytes: 0 },
+  { scale: 1, jpegQuality: 0.58, minBytes: 3 * 1000 * 1000 },
+  { scale: 0.9, jpegQuality: 0.52, minBytes: 8 * 1000 * 1000 },
+  { scale: 0.8, jpegQuality: 0.48, minBytes: 15 * 1000 * 1000 },
 ];
 
 export function PdfCompressor() {
@@ -151,7 +151,7 @@ export function PdfCompressor() {
 
     const candidates: Uint8Array[] = [];
 
-    for (const profile of PDF_RASTER_PROFILES) {
+    for (const profile of PDF_RASTER_PROFILES.filter((profile) => bytes.byteLength >= profile.minBytes)) {
       const source = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
       const outputDoc = await PDFDocument.create();
 
@@ -305,7 +305,7 @@ export function PdfCompressor() {
           <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
             <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
             <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
-              ページ画像化の解像度とJPEG品質を強めに下げた候補まで作成し、再保存候補を含めて最も軽いPDFを自動で選びます。
+              PDFのサイズに応じて解像度とJPEG品質の候補を段階的に作成し、極端に荒い候補を避けながら軽いPDFを選びます。
             </p>
           </div>
 

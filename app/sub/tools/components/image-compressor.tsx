@@ -23,20 +23,25 @@ interface CompressedImage {
   outputName: string;
 }
 
+type CompressionCandidate = {
+  blob: Blob;
+  psnr: number;
+};
+
 const LOSSY_IMAGE_PROFILES = [
-  { maxSize: 1600, quality: 0.72 },
-  { maxSize: 1280, quality: 0.64 },
-  { maxSize: 1080, quality: 0.56 },
-  { maxSize: 900, quality: 0.5 },
-  { maxSize: 720, quality: 0.44 },
+  { maxSize: 1920, quality: 0.82 },
+  { maxSize: 1600, quality: 0.76 },
+  { maxSize: 1440, quality: 0.7 },
+  { maxSize: 1280, quality: 0.66 },
+  { maxSize: 1080, quality: 0.62 },
 ];
 
 const LOSSLESS_IMAGE_PROFILES = [
+  { maxSize: 1920 },
   { maxSize: 1600 },
+  { maxSize: 1440 },
   { maxSize: 1280 },
   { maxSize: 1080 },
-  { maxSize: 900 },
-  { maxSize: 720 },
 ];
 
 export function ImageCompressor() {
@@ -154,10 +159,10 @@ export function ImageCompressor() {
 
     try {
       const fallback = await imageCompression(file, {
-        maxSizeMB: 0.45,
-        maxWidthOrHeight: 1280,
+        maxSizeMB: getTargetSizeMB(file),
+        maxWidthOrHeight: getTargetMaxDimension(file),
         useWebWorker: true,
-        initialQuality: 0.64,
+        initialQuality: 0.72,
         alwaysKeepResolution: false,
       });
       if (isSameImageType(file.type, fallback.type)) {
@@ -218,20 +223,141 @@ export function ImageCompressor() {
         canvas.width = 1;
         canvas.height = 1;
       }
+
+      const scoredCandidates = await scoreCompressionCandidates(bitmap, candidates, outputType);
+      const selected = selectCompressionCandidate(file, scoredCandidates, bitmap);
+      if (selected) {
+        return selected;
+      }
     } finally {
       bitmap.close();
     }
 
-    const smallest = candidates.reduce<Blob | null>(
-      (best, next) => (!best || next.size < best.size ? next : best),
-      null
-    );
+    const smallest = candidates.reduce<Blob | null>((best, next) => {
+      if (!best) return next;
+      return next.size < best.size ? next : best;
+    }, null);
 
     if (!smallest) {
       throw new Error("画像の圧縮に失敗しました。");
     }
 
     return smallest;
+  };
+
+  const getTargetSizeMB = (file: File) => {
+    if (file.size > 8 * 1024 * 1024) return 0.8;
+    if (file.size > 3 * 1024 * 1024) return 0.65;
+    return 0.5;
+  };
+
+  const getTargetMaxDimension = (file: File) => {
+    if (file.size > 8 * 1024 * 1024) return 1600;
+    if (file.size > 3 * 1024 * 1024) return 1440;
+    return 1280;
+  };
+
+  const scoreCompressionCandidates = async (
+    originalBitmap: ImageBitmap,
+    candidates: Blob[],
+    outputType: string
+  ): Promise<CompressionCandidate[]> => {
+    const scored: CompressionCandidate[] = [];
+
+    for (const blob of candidates) {
+      if (blob === candidates[0]) {
+        scored.push({ blob, psnr: Number.POSITIVE_INFINITY });
+        continue;
+      }
+
+      const psnr = await calculatePsnr(originalBitmap, blob, outputType).catch(() => 0);
+      scored.push({ blob, psnr });
+    }
+
+    return scored;
+  };
+
+  const selectCompressionCandidate = (
+    file: File,
+    candidates: CompressionCandidate[],
+    bitmap: ImageBitmap
+  ) => {
+    const maxDimension = Math.max(bitmap.width, bitmap.height);
+    const minPsnr = file.size > 8 * 1024 * 1024 || maxDimension > 3000 ? 31.5 : 33;
+    const acceptable = candidates
+      .filter((candidate) => candidate.blob.size < file.size && candidate.psnr >= minPsnr)
+      .sort((a, b) => a.blob.size - b.blob.size);
+
+    if (acceptable.length) {
+      return acceptable[0].blob;
+    }
+
+    const fallback = candidates
+      .filter((candidate) => {
+        const reduction = 1 - candidate.blob.size / file.size;
+        return reduction >= 0.15 && candidate.psnr >= 30;
+      })
+      .sort((a, b) => a.blob.size - b.blob.size);
+
+    return fallback[0]?.blob ?? file;
+  };
+
+  const calculatePsnr = async (originalBitmap: ImageBitmap, candidate: Blob, outputType: string) => {
+    const candidateBitmap = await createImageBitmap(candidate);
+    const sampleSize = 192;
+    const originalCanvas = document.createElement("canvas");
+    const candidateCanvas = document.createElement("canvas");
+    originalCanvas.width = sampleSize;
+    originalCanvas.height = sampleSize;
+    candidateCanvas.width = sampleSize;
+    candidateCanvas.height = sampleSize;
+
+    const originalCtx = originalCanvas.getContext("2d");
+    const candidateCtx = candidateCanvas.getContext("2d");
+    if (!originalCtx || !candidateCtx) {
+      candidateBitmap.close();
+      return 0;
+    }
+
+    try {
+      if (outputType === "image/jpeg") {
+        originalCtx.fillStyle = "#fff";
+        originalCtx.fillRect(0, 0, sampleSize, sampleSize);
+        candidateCtx.fillStyle = "#fff";
+        candidateCtx.fillRect(0, 0, sampleSize, sampleSize);
+      }
+
+      originalCtx.imageSmoothingEnabled = true;
+      originalCtx.imageSmoothingQuality = "high";
+      candidateCtx.imageSmoothingEnabled = true;
+      candidateCtx.imageSmoothingQuality = "high";
+      originalCtx.drawImage(originalBitmap, 0, 0, sampleSize, sampleSize);
+      candidateCtx.drawImage(candidateBitmap, 0, 0, sampleSize, sampleSize);
+
+      const originalData = originalCtx.getImageData(0, 0, sampleSize, sampleSize).data;
+      const candidateData = candidateCtx.getImageData(0, 0, sampleSize, sampleSize).data;
+      let mse = 0;
+      for (let index = 0; index < originalData.length; index += 4) {
+        const red = originalData[index] - candidateData[index];
+        const green = originalData[index + 1] - candidateData[index + 1];
+        const blue = originalData[index + 2] - candidateData[index + 2];
+        const alpha = originalData[index + 3] - candidateData[index + 3];
+        mse += red * red + green * green + blue * blue + alpha * alpha;
+      }
+
+      mse /= sampleSize * sampleSize * 4;
+      if (mse <= 0) {
+        return Number.POSITIVE_INFINITY;
+      }
+
+      return 10 * Math.log10((255 * 255) / mse);
+    } finally {
+      candidateBitmap.close();
+      originalCanvas.width = 1;
+      originalCanvas.height = 1;
+      candidateCanvas.width = 1;
+      candidateCanvas.height = 1;
+    }
   };
 
   const getSupportedOutputType = (file: File) => {
@@ -409,7 +535,7 @@ export function ImageCompressor() {
             <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
               <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
               <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
-                元のファイル形式を保ったまま、強めの縮小と画質調整を自動で行います。大きい画像ほどファイルサイズ削減を優先します。
+                元のファイル形式を保ったまま複数候補を作成し、見た目の劣化が大きい候補を避けながらファイルサイズを削減します。
               </p>
             </div>
 

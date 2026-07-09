@@ -6,6 +6,7 @@ import { MakeItTechLoader } from "./make-it-tech-loader";
 import { trackToolEvent } from "../_lib/analytics";
 
 type SplitMode = "ranges" | "each";
+type PdfReadStrategy = "copy" | "raster";
 type SplitResult = {
   name: string;
   blob: Blob;
@@ -23,6 +24,47 @@ const toArrayBuffer = (bytes: Uint8Array) => {
   const buffer = new ArrayBuffer(bytes.byteLength);
   new Uint8Array(buffer).set(bytes);
   return buffer;
+};
+
+const loadPdfWithPdfJs = async (bytes: ArrayBuffer) => {
+  const pdfjsLib = await import("pdfjs-dist");
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.mjs",
+    import.meta.url
+  ).toString();
+  return pdfjsLib.getDocument({ data: bytes }).promise;
+};
+
+const readPdfPageCount = async (file: File): Promise<{ count: number; strategy: PdfReadStrategy }> => {
+  const bytes = await file.arrayBuffer();
+
+  try {
+    const doc = await PDFDocument.load(bytes.slice(0), {
+      ignoreEncryption: true,
+      updateMetadata: false,
+    });
+    return { count: doc.getPageCount(), strategy: "copy" };
+  } catch {
+    const pdf = await loadPdfWithPdfJs(bytes.slice(0));
+    try {
+      return { count: pdf.numPages, strategy: "raster" };
+    } finally {
+      await pdf.destroy();
+    }
+  }
+};
+
+const createResultLabel = (mode: SplitMode, group: number[]) =>
+  mode === "each"
+    ? `page_${String(group[0] + 1).padStart(3, "0")}`
+    : `range_${group[0] + 1}-${group[group.length - 1] + 1}`;
+
+const createPdfReadErrorMessage = (error: unknown) => {
+  const message = error instanceof Error ? error.message : "";
+  if (/password|encrypted|暗号|保護/i.test(message)) {
+    return "パスワード保護または暗号化されたPDFは分割できません。保護を解除したPDFで試してください。";
+  }
+  return "PDFのページ構成を読み取れませんでした。PDFが破損しているか、特殊な形式の可能性があります。";
 };
 
 const parseRanges = (input: string, pageCount: number) => {
@@ -74,6 +116,8 @@ export function PdfSplitter() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<SplitResult[]>([]);
   const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState("");
+  const [readStrategy, setReadStrategy] = useState<PdfReadStrategy | null>(null);
 
   const clearResults = () => {
     results.forEach((result) => URL.revokeObjectURL(result.url));
@@ -83,18 +127,27 @@ export function PdfSplitter() {
   const loadFile = async (nextFile: File) => {
     setIsReading(true);
     setMessage("");
+    setNotice("");
     clearResults();
     try {
-      const doc = await PDFDocument.load(await nextFile.arrayBuffer(), {
-        ignoreEncryption: true,
-        updateMetadata: false,
-      });
-      const count = doc.getPageCount();
+      const { count, strategy } = await readPdfPageCount(nextFile);
+      if (count < 1) {
+        throw new Error("このPDFには分割できるページがありません。");
+      }
       setFile(nextFile);
       setPageCount(count);
+      setReadStrategy(strategy);
+      setNotice(
+        strategy === "raster"
+          ? "このPDFは互換モードで読み込みました。分割時はページを画像化して出力する場合があります。"
+          : ""
+      );
       setRanges(count >= 3 ? "1-3" : "1-1");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "PDFの読み込みに失敗しました。");
+      setFile(null);
+      setPageCount(0);
+      setReadStrategy(null);
+      setMessage(createPdfReadErrorMessage(error));
     } finally {
       setIsReading(false);
     }
@@ -116,52 +169,124 @@ export function PdfSplitter() {
     });
     setIsProcessing(true);
     setMessage("");
+    setNotice("");
     clearResults();
 
     try {
-      const source = await PDFDocument.load(await file.arrayBuffer(), {
-        ignoreEncryption: true,
-        updateMetadata: false,
-      });
-      const actualPageCount = source.getPageCount();
-      if (actualPageCount < 1) {
-        throw new Error("このPDFには分割できるページがありません。");
-      }
-      if (actualPageCount !== pageCount) {
-        setPageCount(actualPageCount);
-      }
-      const groups =
-        mode === "each"
-          ? Array.from({ length: actualPageCount }, (_, index) => [index])
-          : parseRanges(ranges, actualPageCount);
-      validatePageGroups(groups, actualPageCount);
+      const bytes = await file.arrayBuffer();
       const baseName = file.name.replace(/\.pdf$/i, "");
-      const nextResults: SplitResult[] = [];
+      let nextResults: SplitResult[] = [];
+      let outputStrategy: PdfReadStrategy = "copy";
 
-      for (const [groupIndex, group] of groups.entries()) {
-        const output = await PDFDocument.create();
-        const copiedPages = await output.copyPages(source, group);
-        if (copiedPages.length !== group.length || copiedPages.some((page) => !page)) {
-          throw new Error("指定されたページをPDFから取得できませんでした。ページ範囲を確認してください。");
-        }
-        copiedPages.forEach((page) => output.addPage(page));
-        output.setProducer("Make It Tech DevTools");
-        output.setCreator("Make It Tech DevTools");
-        const bytes = await output.save({ useObjectStreams: true, addDefaultPage: false });
-        const blob = new Blob([toArrayBuffer(bytes)], { type: "application/pdf" });
-        const label =
-          mode === "each"
-            ? `page_${String(group[0] + 1).padStart(3, "0")}`
-            : `range_${group[0] + 1}-${group[group.length - 1] + 1}`;
-        nextResults.push({
-          name: `${baseName}_${label}_${groupIndex + 1}.pdf`,
-          blob,
-          url: URL.createObjectURL(blob),
-          pages: group.length,
+      try {
+        const source = await PDFDocument.load(bytes.slice(0), {
+          ignoreEncryption: true,
+          updateMetadata: false,
         });
+        const actualPageCount = source.getPageCount();
+        if (actualPageCount < 1) {
+          throw new Error("このPDFには分割できるページがありません。");
+        }
+        if (actualPageCount !== pageCount) {
+          setPageCount(actualPageCount);
+        }
+        const groups =
+          mode === "each"
+            ? Array.from({ length: actualPageCount }, (_, index) => [index])
+            : parseRanges(ranges, actualPageCount);
+        validatePageGroups(groups, actualPageCount);
+        nextResults = [];
+
+        for (const [groupIndex, group] of groups.entries()) {
+          const output = await PDFDocument.create();
+          const copiedPages = await output.copyPages(source, group);
+          if (copiedPages.length !== group.length || copiedPages.some((page) => !page)) {
+            throw new Error("指定されたページをPDFから取得できませんでした。ページ範囲を確認してください。");
+          }
+          copiedPages.forEach((page) => output.addPage(page));
+          output.setProducer("Make It Tech DevTools");
+          output.setCreator("Make It Tech DevTools");
+          const outputBytes = await output.save({ useObjectStreams: true, addDefaultPage: false });
+          const blob = new Blob([toArrayBuffer(outputBytes)], { type: "application/pdf" });
+          const label = createResultLabel(mode, group);
+          nextResults.push({
+            name: `${baseName}_${label}_${groupIndex + 1}.pdf`,
+            blob,
+            url: URL.createObjectURL(blob),
+            pages: group.length,
+          });
+        }
+      } catch {
+        const pdf = await loadPdfWithPdfJs(bytes.slice(0));
+        outputStrategy = "raster";
+        try {
+          const actualPageCount = pdf.numPages;
+          if (actualPageCount < 1) {
+            throw new Error("このPDFには分割できるページがありません。");
+          }
+          if (actualPageCount !== pageCount) {
+            setPageCount(actualPageCount);
+          }
+          const groups =
+            mode === "each"
+              ? Array.from({ length: actualPageCount }, (_, index) => [index])
+              : parseRanges(ranges, actualPageCount);
+          validatePageGroups(groups, actualPageCount);
+          nextResults = [];
+
+          for (const [groupIndex, group] of groups.entries()) {
+            const output = await PDFDocument.create();
+
+            for (const pageIndex of group) {
+              const page = await pdf.getPage(pageIndex + 1);
+              const pageSize = page.getViewport({ scale: 1 });
+              const renderViewport = page.getViewport({ scale: 1.75 });
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              if (!ctx) throw new Error("PDFページの描画に失敗しました。");
+              canvas.width = Math.floor(renderViewport.width);
+              canvas.height = Math.floor(renderViewport.height);
+              ctx.fillStyle = "#fff";
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              await page.render({ canvas, canvasContext: ctx, viewport: renderViewport }).promise;
+              const imageBlob = await new Promise<Blob>((resolve, reject) => {
+                canvas.toBlob((nextBlob) => {
+                  if (nextBlob) resolve(nextBlob);
+                  else reject(new Error("PDFページの画像化に失敗しました。"));
+                }, "image/jpeg", 0.88);
+              });
+              const image = await output.embedJpg(await imageBlob.arrayBuffer());
+              const outputPage = output.addPage([pageSize.width, pageSize.height]);
+              outputPage.drawImage(image, {
+                x: 0,
+                y: 0,
+                width: pageSize.width,
+                height: pageSize.height,
+              });
+            }
+
+            output.setProducer("Make It Tech DevTools");
+            output.setCreator("Make It Tech DevTools");
+            const outputBytes = await output.save({ useObjectStreams: true, addDefaultPage: false });
+            const blob = new Blob([toArrayBuffer(outputBytes)], { type: "application/pdf" });
+            const label = createResultLabel(mode, group);
+            nextResults.push({
+              name: `${baseName}_${label}_${groupIndex + 1}.pdf`,
+              blob,
+              url: URL.createObjectURL(blob),
+              pages: group.length,
+            });
+          }
+        } finally {
+          await pdf.destroy();
+        }
       }
 
+      setReadStrategy(outputStrategy);
       setResults(nextResults);
+      if (outputStrategy === "raster") {
+        setNotice("このPDFは互換モードで分割しました。ページ内容を画像化して出力しているため、テキスト選択は保持されません。");
+      }
       trackToolEvent("tool_success", {
         toolId: "pdf-split",
         toolName: "PDF分割",
@@ -169,6 +294,7 @@ export function PdfSplitter() {
         fileCount: nextResults.length,
         inputBytes: file.size,
         outputBytes: nextResults.reduce((sum, result) => sum + result.blob.size, 0),
+        outputType: outputStrategy,
       });
     } catch (error) {
       trackToolEvent("tool_error", {
@@ -180,7 +306,7 @@ export function PdfSplitter() {
       const errorMessage = error instanceof Error ? error.message : "";
       setMessage(
         errorMessage.includes("Expected instance")
-          ? "指定されたページをPDFから取得できませんでした。ページ範囲を確認するか、別のPDFで試してください。"
+          ? "このPDFは通常モードで分割できませんでした。互換モードでも処理できないため、PDFが破損しているか保護されている可能性があります。"
           : errorMessage || "PDFの分割に失敗しました。"
       );
     } finally {
@@ -269,7 +395,12 @@ export function PdfSplitter() {
         <div className="mt-5 space-y-4">
           <div className="rounded-lg bg-neutral-800 p-3">
             <p className="truncate text-sm">{file.name}</p>
-            <p className="text-xs text-neutral-500">{pageCount}ページ / {formatSize(file.size)}</p>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-neutral-500">
+              <span>{pageCount}ページ / {formatSize(file.size)}</span>
+              {readStrategy === "raster" ? (
+                <span className="rounded-full bg-amber-500/15 px-2 py-0.5 font-medium text-amber-200">互換モード</span>
+              ) : null}
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -306,6 +437,7 @@ export function PdfSplitter() {
       ) : null}
 
       {message ? <p className="mt-4 text-sm text-red-300">{message}</p> : null}
+      {notice ? <p className="mt-4 text-sm text-amber-200">{notice}</p> : null}
 
       {results.length > 0 ? (
         <div className="mt-6 space-y-3">
