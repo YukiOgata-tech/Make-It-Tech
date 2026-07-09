@@ -24,15 +24,19 @@ interface CompressedImage {
 }
 
 const LOSSY_IMAGE_PROFILES = [
-  { maxSize: 1920, quality: 0.82 },
-  { maxSize: 1600, quality: 0.78 },
-  { maxSize: 1440, quality: 0.74 },
+  { maxSize: 1600, quality: 0.72 },
+  { maxSize: 1280, quality: 0.64 },
+  { maxSize: 1080, quality: 0.56 },
+  { maxSize: 900, quality: 0.5 },
+  { maxSize: 720, quality: 0.44 },
 ];
 
 const LOSSLESS_IMAGE_PROFILES = [
-  { maxSize: 1920 },
   { maxSize: 1600 },
-  { maxSize: 1440 },
+  { maxSize: 1280 },
+  { maxSize: 1080 },
+  { maxSize: 900 },
+  { maxSize: 720 },
 ];
 
 export function ImageCompressor() {
@@ -150,10 +154,10 @@ export function ImageCompressor() {
 
     try {
       const fallback = await imageCompression(file, {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.45,
+        maxWidthOrHeight: 1280,
         useWebWorker: true,
-        initialQuality: 0.78,
+        initialQuality: 0.64,
         alwaysKeepResolution: false,
       });
       if (isSameImageType(file.type, fallback.type)) {
@@ -207,7 +211,7 @@ export function ImageCompressor() {
           canvas.toBlob(resolve, outputType, quality);
         });
 
-        if (blob) {
+        if (blob && isSameImageType(file.type, blob.type)) {
           candidates.push(blob);
         }
 
@@ -405,7 +409,7 @@ export function ImageCompressor() {
             <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
               <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
               <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
-                元のファイル形式を保ったまま、見た目を大きく崩さない範囲で縮小と画質調整を自動で行います。
+                元のファイル形式を保ったまま、強めの縮小と画質調整を自動で行います。大きい画像ほどファイルサイズ削減を優先します。
               </p>
             </div>
 

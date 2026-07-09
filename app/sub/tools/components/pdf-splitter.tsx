@@ -45,6 +45,26 @@ const parseRanges = (input: string, pageCount: number) => {
   });
 };
 
+const validatePageGroups = (groups: number[][], pageCount: number) => {
+  if (!groups.length) {
+    throw new Error("分割対象のページがありません。");
+  }
+
+  for (const group of groups) {
+    if (!group.length) {
+      throw new Error("空のページ範囲は指定できません。");
+    }
+
+    const invalidPage = group.find((pageIndex) =>
+      !Number.isInteger(pageIndex) || pageIndex < 0 || pageIndex >= pageCount
+    );
+
+    if (typeof invalidPage === "number") {
+      throw new Error(`ページ範囲は 1〜${pageCount} の中で指定してください。`);
+    }
+  }
+};
+
 export function PdfSplitter() {
   const [file, setFile] = useState<File | null>(null);
   const [pageCount, setPageCount] = useState(0);
@@ -103,16 +123,27 @@ export function PdfSplitter() {
         ignoreEncryption: true,
         updateMetadata: false,
       });
+      const actualPageCount = source.getPageCount();
+      if (actualPageCount < 1) {
+        throw new Error("このPDFには分割できるページがありません。");
+      }
+      if (actualPageCount !== pageCount) {
+        setPageCount(actualPageCount);
+      }
       const groups =
         mode === "each"
-          ? Array.from({ length: pageCount }, (_, index) => [index])
-          : parseRanges(ranges, pageCount);
+          ? Array.from({ length: actualPageCount }, (_, index) => [index])
+          : parseRanges(ranges, actualPageCount);
+      validatePageGroups(groups, actualPageCount);
       const baseName = file.name.replace(/\.pdf$/i, "");
       const nextResults: SplitResult[] = [];
 
       for (const [groupIndex, group] of groups.entries()) {
         const output = await PDFDocument.create();
         const copiedPages = await output.copyPages(source, group);
+        if (copiedPages.length !== group.length || copiedPages.some((page) => !page)) {
+          throw new Error("指定されたページをPDFから取得できませんでした。ページ範囲を確認してください。");
+        }
         copiedPages.forEach((page) => output.addPage(page));
         output.setProducer("Make It Tech DevTools");
         output.setCreator("Make It Tech DevTools");
@@ -146,7 +177,12 @@ export function PdfSplitter() {
         action: mode,
         fileCount: 1,
       });
-      setMessage(error instanceof Error ? error.message : "PDFの分割に失敗しました。");
+      const errorMessage = error instanceof Error ? error.message : "";
+      setMessage(
+        errorMessage.includes("Expected instance")
+          ? "指定されたページをPDFから取得できませんでした。ページ範囲を確認するか、別のPDFで試してください。"
+          : errorMessage || "PDFの分割に失敗しました。"
+      );
     } finally {
       setIsProcessing(false);
     }

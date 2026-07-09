@@ -27,9 +27,11 @@ const toArrayBuffer = (bytes: Uint8Array) => {
 };
 
 const PDF_RASTER_PROFILES = [
-  { scale: 1.75, jpegQuality: 0.78 },
-  { scale: 1.5, jpegQuality: 0.74 },
-  { scale: 1.35, jpegQuality: 0.7 },
+  { scale: 1.35, jpegQuality: 0.68 },
+  { scale: 1.15, jpegQuality: 0.6 },
+  { scale: 0.95, jpegQuality: 0.52 },
+  { scale: 0.8, jpegQuality: 0.46 },
+  { scale: 0.65, jpegQuality: 0.4 },
 ];
 
 export function PdfCompressor() {
@@ -303,7 +305,7 @@ export function PdfCompressor() {
           <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
             <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
             <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
-              読みやすさを保つ下限を設けたうえで、再保存とページ画像化の候補から最も軽いPDFを自動で選びます。
+              ページ画像化の解像度とJPEG品質を強めに下げた候補まで作成し、再保存候補を含めて最も軽いPDFを自動で選びます。
             </p>
           </div>
 
