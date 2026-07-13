@@ -40,6 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# local prototypes
+/app/scroll-video-test/
+/public/videos/home-scroll/MIT_03.mov
+/public/videos/home-scroll/mit-landscape.mp4
 
 # for me
 docs/

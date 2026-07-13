@@ -1,13 +1,10 @@
+import { HomeScrollVideoIntro } from "@/components/sections/home-scroll-video-intro";
 import { Hero } from "@/components/sections/hero";
 import { FAQSection } from "@/components/sections/faq-section";
 import { FloatingContactCta } from "@/components/sections/floating-contact-cta";
 import { HomeCtaSection } from "@/components/sections/home-cta-section";
 import { AnnouncementsSection } from "@/components/sections/announcements-section";
 import { WorksPreviewSection } from "@/components/sections/works-preview-section";
-import {
-  HomeSplash,
-  HomeSplashDevTrigger,
-} from "@/components/sections/home-splash";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -26,14 +23,15 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <HomeSplash />
-      <HomeSplashDevTrigger />
-      <FloatingContactCta />
-      <Hero />
-      <AnnouncementsSection />
-      <WorksPreviewSection />
-      <HomeCtaSection />
-      <FAQSection />
+      <HomeScrollVideoIntro />
+      <div id="home-content-start">
+        <FloatingContactCta showAfterElementId="home-content-start" />
+        <Hero />
+        <AnnouncementsSection />
+        <WorksPreviewSection />
+        <HomeCtaSection />
+        <FAQSection />
+      </div>
     </>
   );
 }

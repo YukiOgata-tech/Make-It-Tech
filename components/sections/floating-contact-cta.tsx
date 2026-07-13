@@ -2,23 +2,77 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion, type Easing } from "framer-motion";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
 const easeInOut: Easing = [0.45, 0, 0.55, 1];
 
-export function FloatingContactCta({ className }: { className?: string }) {
+export function FloatingContactCta({
+  className,
+  showAfterElementId,
+}: {
+  className?: string;
+  showAfterElementId?: string;
+}) {
   const shouldReduceMotion = useReducedMotion();
+  const [isVisible, setIsVisible] = React.useState(!showAfterElementId);
+
+  React.useEffect(() => {
+    if (!showAfterElementId) {
+      setIsVisible(true);
+      return;
+    }
+
+    let rafId: number | null = null;
+    const update = () => {
+      rafId = null;
+      const target = document.getElementById(showAfterElementId);
+      if (!target) {
+        setIsVisible(true);
+        return;
+      }
+
+      const headerOffset =
+        Number.parseFloat(
+          getComputedStyle(document.body).getPropertyValue("--header-offset")
+        ) || 64;
+      setIsVisible(target.getBoundingClientRect().top <= headerOffset + 16);
+    };
+
+    const requestUpdate = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(update);
+    };
+
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, [showAfterElementId]);
 
   return (
     <motion.div
       className={cn(
         "pointer-events-none fixed left-0 right-0 top-[calc(var(--header-offset)+20px)] z-40",
+        !isVisible && "invisible opacity-0",
         className
       )}
       initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
-      animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+      animate={
+        shouldReduceMotion
+          ? undefined
+          : { opacity: isVisible ? 1 : 0, y: isVisible ? 0 : -8 }
+      }
       transition={shouldReduceMotion ? undefined : { duration: 0.6, ease: easeInOut }}
+      aria-hidden={!isVisible}
     >
       <div className="mx-auto flex max-w-6xl justify-end px-4 sm:px-6 lg:px-8">
         <motion.div
