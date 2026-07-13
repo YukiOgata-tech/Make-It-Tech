@@ -30,10 +30,10 @@ import {
 
 export const metadata: Metadata = {
   title: {
-    absolute: "新潟のIT・DX支援料金とWeb/LP制作の目安 | Make It Tech",
+    absolute: "新潟のIT・DX支援料金とWeb/LP制作の見積もり | Make It Tech",
   },
   description:
-    "新潟のIT・DX支援、Web/LP制作、社内システム開発、自動化、運用伴走の料金目安を掲載しています。固定プランではなく、課題・範囲・納期に合わせて柔軟に見積もります。",
+    "新潟のIT・DX支援、Web/LP制作、社内システム開発、自動化、運用伴走の見積もり方針を掲載しています。固定プランではなく、課題・範囲・納期に合わせて柔軟に見積もります。",
   keywords: [
     "新潟", "新潟市", "長岡市", "上越市", "三条市",
     "DX", "IT", "料金", "地方創生",
@@ -87,8 +87,7 @@ export default function PricingPage() {
             “プラン”ではなく、内容に合わせて見積もります
           </h1>
           <p className="mt-3 max-w-3xl text-sm sm:text-base text-muted-foreground">
-            ITは案件ごとに、
-            「よくある依頼」の価格レンジを表示しています。
+            ITは案件ごとに必要な範囲が変わるため、内容を確認した上で個別に見積もります。
           </p>
 
           <div className="mt-3 sm:mt-6 flex flex-wrap gap-3">
@@ -135,7 +134,7 @@ export default function PricingPage() {
         <section id="examples" className="scroll-mt-24">
           <SectionTitle
             eyebrow="-目安"
-            title="よくある依頼の価格レンジ"
+            title="よくある依頼の見積もり項目"
             desc="内容･期間･素材提供の有無などで変動します。まずは状況を伺って最適案をご提案します。"
           />
 
@@ -171,7 +170,6 @@ export default function PricingPage() {
                       <CardTitle className="text-base sm:text-lg tracking-tight">
                         {ex.title}
                       </CardTitle>
-                      <p className="mt-0.5 sm:mt-2 text-sm font-medium">{ex.range}</p>
                     </div>
 
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
@@ -239,7 +237,7 @@ export default function PricingPage() {
                   </div>
 
                 <p className="text-xs text-muted-foreground">
-                  ※ 上記は目安で、内容合意の上で見積もります。
+                  ※ 内容合意の上で個別に見積もります。
                 </p>
               </CardContent>
             </Card>
