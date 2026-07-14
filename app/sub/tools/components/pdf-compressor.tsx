@@ -5,10 +5,13 @@ import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { trackToolEvent } from "../_lib/analytics";
 
+type CompressionMode = "standard" | "compat";
+
 type CompressedPdf = {
   originalName: string;
   originalSize: number;
   compressedSize: number;
+  mode: CompressionMode;
   url: string;
   blob: Blob;
 };
@@ -36,6 +39,7 @@ const PDF_RASTER_PROFILES = [
 
 export function PdfCompressor() {
   const [files, setFiles] = useState<File[]>([]);
+  const [mode, setMode] = useState<CompressionMode>("standard");
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<CompressedPdf[]>([]);
   const [message, setMessage] = useState("");
@@ -52,7 +56,7 @@ export function PdfCompressor() {
     trackToolEvent("tool_run", {
       toolId: "pdf-compress",
       toolName: "PDF圧縮",
-      action: "compress",
+      action: mode,
       fileCount: files.length,
       inputBytes,
     });
@@ -63,13 +67,14 @@ export function PdfCompressor() {
       const compressedResults: CompressedPdf[] = [];
 
       for (const file of files) {
-        const compressedBytes = await compressPdfAggressively(file);
+        const compressedBytes = await compressPdf(file, mode);
         const blob = new Blob([toArrayBuffer(compressedBytes)], { type: "application/pdf" });
 
         compressedResults.push({
           originalName: file.name,
           originalSize: file.size,
           compressedSize: blob.size,
+          mode,
           blob,
           url: URL.createObjectURL(blob),
         });
@@ -81,7 +86,7 @@ export function PdfCompressor() {
       trackToolEvent("tool_success", {
         toolId: "pdf-compress",
         toolName: "PDF圧縮",
-        action: "compress",
+        action: mode,
         fileCount: compressedResults.length,
         inputBytes,
         outputBytes,
@@ -92,16 +97,21 @@ export function PdfCompressor() {
       trackToolEvent("tool_error", {
         toolId: "pdf-compress",
         toolName: "PDF圧縮",
-        action: "compress",
+        action: mode,
         fileCount: files.length,
       });
-      setMessage(error instanceof Error ? error.message : "PDFの圧縮に失敗しました。");
+      const errorMessage = error instanceof Error ? error.message : "";
+      setMessage(
+        mode === "standard"
+          ? errorMessage || "PDFの通常圧縮に失敗しました。互換モードを試してください。"
+          : errorMessage || "PDFの互換モード圧縮に失敗しました。"
+      );
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const compressPdfAggressively = async (file: File) => {
+  const compressPdf = async (file: File, compressionMode: CompressionMode) => {
     const bytes = await file.arrayBuffer();
     const originalBytes = new Uint8Array(bytes);
     const candidates: Uint8Array[] = [originalBytes];
@@ -111,9 +121,11 @@ export function PdfCompressor() {
       candidates.push(optimized);
     }
 
-    const rasterizedCandidates = await rasterizePdfCandidates(bytes).catch(() => []);
-    for (const rasterized of rasterizedCandidates) {
-      candidates.push(rasterized);
+    if (compressionMode === "compat") {
+      const rasterizedCandidates = await rasterizePdfCandidates(bytes);
+      for (const rasterized of rasterizedCandidates) {
+        candidates.push(rasterized);
+      }
     }
 
     return candidates.reduce((smallest, next) =>
@@ -302,10 +314,42 @@ export function PdfCompressor() {
             ))}
           </div>
 
-          <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
-            <p className="text-sm font-medium text-amber-100">自動圧縮モード</p>
-            <p className="mt-1 text-xs leading-relaxed text-amber-100/70">
-              PDFのサイズに応じて解像度とJPEG品質の候補を段階的に作成し、極端に荒い候補を避けながら軽いPDFを選びます。
+          <div className="space-y-3 rounded-lg bg-neutral-800/50 p-4">
+            <p className="text-sm font-medium text-neutral-200">圧縮方式</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setMode("standard")}
+                className={`rounded-lg border px-3 py-3 text-left transition-colors ${
+                  mode === "standard"
+                    ? "border-blue-500 bg-blue-600/20 text-white"
+                    : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
+                }`}
+              >
+                <span className="block text-sm font-semibold">通常モード</span>
+                <span className="mt-1 block text-xs leading-relaxed text-neutral-400">
+                  画質とテキスト選択を維持して、PDF構造だけを軽量化します。
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("compat")}
+                className={`rounded-lg border px-3 py-3 text-left transition-colors ${
+                  mode === "compat"
+                    ? "border-amber-400 bg-amber-500/15 text-white"
+                    : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
+                }`}
+              >
+                <span className="block text-sm font-semibold">互換モード</span>
+                <span className="mt-1 block text-xs leading-relaxed text-neutral-400">
+                  ページを画像化して再PDF化します。スキャンPDF向けですが画質とテキスト情報は劣化します。
+                </span>
+              </button>
+            </div>
+            <p className={`text-xs leading-relaxed ${mode === "compat" ? "text-amber-100/80" : "text-neutral-500"}`}>
+              {mode === "compat"
+                ? "互換モードは、通常圧縮で小さくならないPDFや構造を読みにくいPDF向けです。画質確認後に利用してください。"
+                : "まずは通常モードを推奨します。画質が荒くなる画像化処理は行いません。"}
             </p>
           </div>
 
@@ -341,6 +385,9 @@ export function PdfCompressor() {
                       {formatSize(result.originalSize)} → {formatSize(result.compressedSize)}
                       <span className={`ml-2 ${reduction > 0 ? "text-green-400" : "text-yellow-400"}`}>
                         {reduction > 0 ? `-${reduction}%` : "サイズ維持"}
+                      </span>
+                      <span className="ml-2 text-neutral-500">
+                        {result.mode === "compat" ? "互換モード" : "通常モード"}
                       </span>
                     </p>
                   </div>
