@@ -5,15 +5,10 @@ import { PDFDocument } from "pdf-lib";
 import { MakeItTechLoader } from "./make-it-tech-loader";
 import { trackToolEvent } from "../_lib/analytics";
 
-type CompressionMode = "standard" | "compat";
-type CompatQuality = "readable" | "balanced" | "compact";
-
 type CompressedPdf = {
   originalName: string;
   originalSize: number;
   compressedSize: number;
-  mode: CompressionMode;
-  compatQuality?: CompatQuality;
   url: string;
   blob: Blob;
 };
@@ -31,16 +26,8 @@ const toArrayBuffer = (bytes: Uint8Array) => {
   return buffer;
 };
 
-const PDF_RASTER_PROFILES: Record<CompatQuality, { label: string; scale: number; jpegQuality: number }> = {
-  readable: { label: "高品質", scale: 2.25, jpegQuality: 0.9 },
-  balanced: { label: "標準", scale: 1.8, jpegQuality: 0.84 },
-  compact: { label: "軽量", scale: 1.5, jpegQuality: 0.78 },
-};
-
 export function PdfCompressor() {
   const [files, setFiles] = useState<File[]>([]);
-  const [mode, setMode] = useState<CompressionMode>("standard");
-  const [compatQuality, setCompatQuality] = useState<CompatQuality>("readable");
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<CompressedPdf[]>([]);
   const [message, setMessage] = useState("");
@@ -54,11 +41,10 @@ export function PdfCompressor() {
   const processFiles = async () => {
     if (!files.length) return;
     const inputBytes = files.reduce((sum, file) => sum + file.size, 0);
-    const action = mode === "compat" ? `compat_${compatQuality}` : "standard";
     trackToolEvent("tool_run", {
       toolId: "pdf-compress",
       toolName: "PDF圧縮",
-      action,
+      action: "standard",
       fileCount: files.length,
       inputBytes,
     });
@@ -69,15 +55,13 @@ export function PdfCompressor() {
       const compressedResults: CompressedPdf[] = [];
 
       for (const file of files) {
-        const compressedBytes = await compressPdf(file, mode, compatQuality);
+        const compressedBytes = await compressPdf(file);
         const blob = new Blob([toArrayBuffer(compressedBytes)], { type: "application/pdf" });
 
         compressedResults.push({
           originalName: file.name,
           originalSize: file.size,
           compressedSize: blob.size,
-          mode,
-          compatQuality: mode === "compat" ? compatQuality : undefined,
           blob,
           url: URL.createObjectURL(blob),
         });
@@ -89,7 +73,7 @@ export function PdfCompressor() {
       trackToolEvent("tool_success", {
         toolId: "pdf-compress",
         toolName: "PDF圧縮",
-        action,
+        action: "standard",
         fileCount: compressedResults.length,
         inputBytes,
         outputBytes,
@@ -100,26 +84,18 @@ export function PdfCompressor() {
       trackToolEvent("tool_error", {
         toolId: "pdf-compress",
         toolName: "PDF圧縮",
-        action,
+        action: "standard",
         fileCount: files.length,
       });
       const errorMessage = error instanceof Error ? error.message : "";
-      setMessage(
-        mode === "standard"
-          ? errorMessage || "PDFの通常圧縮に失敗しました。互換モードを試してください。"
-          : errorMessage || "PDFの互換モード圧縮に失敗しました。"
-      );
+      setMessage(errorMessage || "PDFの圧縮に失敗しました。");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const compressPdf = async (file: File, compressionMode: CompressionMode, quality: CompatQuality) => {
+  const compressPdf = async (file: File) => {
     const bytes = await file.arrayBuffer();
-    if (compressionMode === "compat") {
-      return rasterizePdf(bytes, PDF_RASTER_PROFILES[quality]);
-    }
-
     const originalBytes = new Uint8Array(bytes);
     const optimized = await optimizePdfStructure(bytes).catch(() => null);
     if (!optimized) {
@@ -148,67 +124,6 @@ export function PdfCompressor() {
       addDefaultPage: false,
       objectsPerTick: 50,
     });
-  };
-
-  const rasterizePdf = async (bytes: ArrayBuffer, profile: { scale: number; jpegQuality: number }) => {
-    const pdfjsLib = await import("pdfjs-dist");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-      "pdfjs-dist/build/pdf.worker.mjs",
-      import.meta.url
-    ).toString();
-
-    const source = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
-    const outputDoc = await PDFDocument.create();
-
-    try {
-      for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber += 1) {
-        const sourcePage = await source.getPage(pageNumber);
-        const pageSize = sourcePage.getViewport({ scale: 1 });
-        const renderViewport = sourcePage.getViewport({ scale: profile.scale });
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("PDFページの描画に失敗しました。");
-
-        canvas.width = Math.max(1, Math.floor(renderViewport.width));
-        canvas.height = Math.max(1, Math.floor(renderViewport.height));
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        await sourcePage.render({ canvas, canvasContext: ctx, viewport: renderViewport }).promise;
-
-        const jpegBlob = await new Promise<Blob>((resolve, reject) => {
-          canvas.toBlob((nextBlob) => {
-            if (nextBlob) resolve(nextBlob);
-            else reject(new Error("PDFページのJPEG化に失敗しました。"));
-          }, "image/jpeg", profile.jpegQuality);
-        });
-
-        const embeddedImage = await outputDoc.embedJpg(await jpegBlob.arrayBuffer());
-        const outputPage = outputDoc.addPage([pageSize.width, pageSize.height]);
-        outputPage.drawImage(embeddedImage, {
-          x: 0,
-          y: 0,
-          width: pageSize.width,
-          height: pageSize.height,
-        });
-
-        canvas.width = 1;
-        canvas.height = 1;
-      }
-
-      outputDoc.setProducer("Make It Tech DevTools");
-      outputDoc.setCreator("Make It Tech DevTools");
-      outputDoc.setModificationDate(new Date());
-
-      return outputDoc.save({
-        useObjectStreams: true,
-        addDefaultPage: false,
-        objectsPerTick: 25,
-      });
-    } finally {
-      await source.destroy();
-    }
   };
 
   const download = (result: CompressedPdf) => {
@@ -306,63 +221,10 @@ export function PdfCompressor() {
             ))}
           </div>
 
-          <div className="space-y-3 rounded-lg bg-neutral-800/50 p-4">
-            <p className="text-sm font-medium text-neutral-200">圧縮方式</p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => setMode("standard")}
-                className={`rounded-lg border px-3 py-3 text-left transition-colors ${
-                  mode === "standard"
-                    ? "border-blue-500 bg-blue-600/20 text-white"
-                    : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
-                }`}
-              >
-                <span className="block text-sm font-semibold">通常モード</span>
-                <span className="mt-1 block text-xs leading-relaxed text-neutral-400">
-                  画質とテキスト選択を維持して、PDF構造だけを軽量化します。
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("compat")}
-                className={`rounded-lg border px-3 py-3 text-left transition-colors ${
-                  mode === "compat"
-                    ? "border-amber-400 bg-amber-500/15 text-white"
-                    : "border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-neutral-500"
-                }`}
-              >
-                <span className="block text-sm font-semibold">互換モード</span>
-                <span className="mt-1 block text-xs leading-relaxed text-neutral-400">
-                  ページを画像化して再PDF化します。スキャンPDFや構造を読みにくいPDF向けです。
-                </span>
-              </button>
-            </div>
-            {mode === "compat" ? (
-              <div className="rounded-lg border border-amber-500/20 bg-neutral-900 p-3">
-                <p className="mb-2 text-xs font-medium text-amber-100">互換モードの画質</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["readable", "balanced", "compact"] as const).map((quality) => (
-                    <button
-                      key={quality}
-                      type="button"
-                      onClick={() => setCompatQuality(quality)}
-                      className={`rounded-md px-2 py-2 text-xs font-medium transition-colors ${
-                        compatQuality === quality
-                          ? "bg-amber-500 text-neutral-950"
-                          : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
-                      }`}
-                    >
-                      {PDF_RASTER_PROFILES[quality].label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            <p className={`text-xs leading-relaxed ${mode === "compat" ? "text-amber-100/80" : "text-neutral-500"}`}>
-              {mode === "compat"
-                ? "互換モードは最小サイズより可読性を優先します。高品質で読みにくい場合は、元PDFの解像度や保護状態に依存している可能性があります。"
-                : "まずは通常モードを推奨します。画質が荒くなる画像化処理は行いません。"}
+          <div className="rounded-lg bg-neutral-800/50 p-4">
+            <p className="text-sm font-medium text-neutral-200">画質を落とさないPDF軽量化</p>
+            <p className="mt-1 text-xs leading-relaxed text-neutral-500">
+              ブラウザ版ではページを画像化せず、PDF構造の再保存だけを行います。スキャンPDFや既に最適化済みのPDFはサイズがほぼ変わらない場合があります。
             </p>
           </div>
 
@@ -404,11 +266,6 @@ export function PdfCompressor() {
                       {formatSize(result.originalSize)} → {formatSize(result.compressedSize)}
                       <span className={`ml-2 ${reduction > 0 ? "text-green-400" : "text-yellow-400"}`}>
                         {sizeChangeLabel}
-                      </span>
-                      <span className="ml-2 text-neutral-500">
-                        {result.mode === "compat"
-                          ? `互換モード/${result.compatQuality ? PDF_RASTER_PROFILES[result.compatQuality].label : "高品質"}`
-                          : "通常モード"}
                       </span>
                     </p>
                   </div>
