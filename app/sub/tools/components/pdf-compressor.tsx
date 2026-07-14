@@ -6,12 +6,14 @@ import { MakeItTechLoader } from "./make-it-tech-loader";
 import { trackToolEvent } from "../_lib/analytics";
 
 type CompressionMode = "standard" | "compat";
+type CompatQuality = "readable" | "balanced" | "compact";
 
 type CompressedPdf = {
   originalName: string;
   originalSize: number;
   compressedSize: number;
   mode: CompressionMode;
+  compatQuality?: CompatQuality;
   url: string;
   blob: Blob;
 };
@@ -29,17 +31,16 @@ const toArrayBuffer = (bytes: Uint8Array) => {
   return buffer;
 };
 
-const PDF_RASTER_PROFILES = [
-  { scale: 1.35, jpegQuality: 0.72, minBytes: 0 },
-  { scale: 1.15, jpegQuality: 0.64, minBytes: 0 },
-  { scale: 1, jpegQuality: 0.58, minBytes: 3 * 1000 * 1000 },
-  { scale: 0.9, jpegQuality: 0.52, minBytes: 8 * 1000 * 1000 },
-  { scale: 0.8, jpegQuality: 0.48, minBytes: 15 * 1000 * 1000 },
-];
+const PDF_RASTER_PROFILES: Record<CompatQuality, { label: string; scale: number; jpegQuality: number }> = {
+  readable: { label: "高品質", scale: 2.25, jpegQuality: 0.9 },
+  balanced: { label: "標準", scale: 1.8, jpegQuality: 0.84 },
+  compact: { label: "軽量", scale: 1.5, jpegQuality: 0.78 },
+};
 
 export function PdfCompressor() {
   const [files, setFiles] = useState<File[]>([]);
   const [mode, setMode] = useState<CompressionMode>("standard");
+  const [compatQuality, setCompatQuality] = useState<CompatQuality>("readable");
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<CompressedPdf[]>([]);
   const [message, setMessage] = useState("");
@@ -53,10 +54,11 @@ export function PdfCompressor() {
   const processFiles = async () => {
     if (!files.length) return;
     const inputBytes = files.reduce((sum, file) => sum + file.size, 0);
+    const action = mode === "compat" ? `compat_${compatQuality}` : "standard";
     trackToolEvent("tool_run", {
       toolId: "pdf-compress",
       toolName: "PDF圧縮",
-      action: mode,
+      action,
       fileCount: files.length,
       inputBytes,
     });
@@ -67,7 +69,7 @@ export function PdfCompressor() {
       const compressedResults: CompressedPdf[] = [];
 
       for (const file of files) {
-        const compressedBytes = await compressPdf(file, mode);
+        const compressedBytes = await compressPdf(file, mode, compatQuality);
         const blob = new Blob([toArrayBuffer(compressedBytes)], { type: "application/pdf" });
 
         compressedResults.push({
@@ -75,6 +77,7 @@ export function PdfCompressor() {
           originalSize: file.size,
           compressedSize: blob.size,
           mode,
+          compatQuality: mode === "compat" ? compatQuality : undefined,
           blob,
           url: URL.createObjectURL(blob),
         });
@@ -86,7 +89,7 @@ export function PdfCompressor() {
       trackToolEvent("tool_success", {
         toolId: "pdf-compress",
         toolName: "PDF圧縮",
-        action: mode,
+        action,
         fileCount: compressedResults.length,
         inputBytes,
         outputBytes,
@@ -97,7 +100,7 @@ export function PdfCompressor() {
       trackToolEvent("tool_error", {
         toolId: "pdf-compress",
         toolName: "PDF圧縮",
-        action: mode,
+        action,
         fileCount: files.length,
       });
       const errorMessage = error instanceof Error ? error.message : "";
@@ -111,26 +114,19 @@ export function PdfCompressor() {
     }
   };
 
-  const compressPdf = async (file: File, compressionMode: CompressionMode) => {
+  const compressPdf = async (file: File, compressionMode: CompressionMode, quality: CompatQuality) => {
     const bytes = await file.arrayBuffer();
-    const originalBytes = new Uint8Array(bytes);
-    const candidates: Uint8Array[] = [originalBytes];
-
-    const optimized = await optimizePdfStructure(bytes).catch(() => null);
-    if (optimized) {
-      candidates.push(optimized);
-    }
-
     if (compressionMode === "compat") {
-      const rasterizedCandidates = await rasterizePdfCandidates(bytes);
-      for (const rasterized of rasterizedCandidates) {
-        candidates.push(rasterized);
-      }
+      return rasterizePdf(bytes, PDF_RASTER_PROFILES[quality]);
     }
 
-    return candidates.reduce((smallest, next) =>
-      next.byteLength < smallest.byteLength ? next : smallest
-    );
+    const originalBytes = new Uint8Array(bytes);
+    const optimized = await optimizePdfStructure(bytes).catch(() => null);
+    if (!optimized) {
+      return originalBytes;
+    }
+
+    return optimized.byteLength < originalBytes.byteLength ? optimized : originalBytes;
   };
 
   const optimizePdfStructure = async (bytes: ArrayBuffer) => {
@@ -154,19 +150,17 @@ export function PdfCompressor() {
     });
   };
 
-  const rasterizePdfCandidates = async (bytes: ArrayBuffer) => {
+  const rasterizePdf = async (bytes: ArrayBuffer, profile: { scale: number; jpegQuality: number }) => {
     const pdfjsLib = await import("pdfjs-dist");
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
       "pdfjs-dist/build/pdf.worker.mjs",
       import.meta.url
     ).toString();
 
-    const candidates: Uint8Array[] = [];
+    const source = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+    const outputDoc = await PDFDocument.create();
 
-    for (const profile of PDF_RASTER_PROFILES.filter((profile) => bytes.byteLength >= profile.minBytes)) {
-      const source = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
-      const outputDoc = await PDFDocument.create();
-
+    try {
       for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber += 1) {
         const sourcePage = await source.getPage(pageNumber);
         const pageSize = sourcePage.getViewport({ scale: 1 });
@@ -177,6 +171,8 @@ export function PdfCompressor() {
 
         canvas.width = Math.max(1, Math.floor(renderViewport.width));
         canvas.height = Math.max(1, Math.floor(renderViewport.height));
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
         ctx.fillStyle = "#fff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         await sourcePage.render({ canvas, canvasContext: ctx, viewport: renderViewport }).promise;
@@ -205,18 +201,14 @@ export function PdfCompressor() {
       outputDoc.setCreator("Make It Tech DevTools");
       outputDoc.setModificationDate(new Date());
 
-      candidates.push(
-        await outputDoc.save({
-          useObjectStreams: true,
-          addDefaultPage: false,
-          objectsPerTick: 25,
-        })
-      );
-
+      return outputDoc.save({
+        useObjectStreams: true,
+        addDefaultPage: false,
+        objectsPerTick: 25,
+      });
+    } finally {
       await source.destroy();
     }
-
-    return candidates;
   };
 
   const download = (result: CompressedPdf) => {
@@ -342,13 +334,34 @@ export function PdfCompressor() {
               >
                 <span className="block text-sm font-semibold">互換モード</span>
                 <span className="mt-1 block text-xs leading-relaxed text-neutral-400">
-                  ページを画像化して再PDF化します。スキャンPDF向けですが画質とテキスト情報は劣化します。
+                  ページを画像化して再PDF化します。スキャンPDFや構造を読みにくいPDF向けです。
                 </span>
               </button>
             </div>
+            {mode === "compat" ? (
+              <div className="rounded-lg border border-amber-500/20 bg-neutral-900 p-3">
+                <p className="mb-2 text-xs font-medium text-amber-100">互換モードの画質</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["readable", "balanced", "compact"] as const).map((quality) => (
+                    <button
+                      key={quality}
+                      type="button"
+                      onClick={() => setCompatQuality(quality)}
+                      className={`rounded-md px-2 py-2 text-xs font-medium transition-colors ${
+                        compatQuality === quality
+                          ? "bg-amber-500 text-neutral-950"
+                          : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
+                      }`}
+                    >
+                      {PDF_RASTER_PROFILES[quality].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             <p className={`text-xs leading-relaxed ${mode === "compat" ? "text-amber-100/80" : "text-neutral-500"}`}>
               {mode === "compat"
-                ? "互換モードは、通常圧縮で小さくならないPDFや構造を読みにくいPDF向けです。画質確認後に利用してください。"
+                ? "互換モードは最小サイズより可読性を優先します。高品質で読みにくい場合は、元PDFの解像度や保護状態に依存している可能性があります。"
                 : "まずは通常モードを推奨します。画質が荒くなる画像化処理は行いません。"}
             </p>
           </div>
@@ -376,6 +389,12 @@ export function PdfCompressor() {
           <div className="space-y-2">
             {results.map((result, index) => {
               const reduction = Math.round((1 - result.compressedSize / result.originalSize) * 100);
+              const sizeChangeLabel =
+                reduction > 0
+                  ? `-${reduction}%`
+                  : reduction < 0
+                    ? `+${Math.abs(reduction)}%`
+                    : "サイズ維持";
               return (
                 <div key={`${result.originalName}-${index}`} className="flex items-center gap-3 rounded-lg bg-neutral-800 p-3">
                   <div className="rounded bg-red-500/15 px-2 py-1 text-xs font-semibold text-red-300">PDF</div>
@@ -384,10 +403,12 @@ export function PdfCompressor() {
                     <p className="text-xs text-neutral-400">
                       {formatSize(result.originalSize)} → {formatSize(result.compressedSize)}
                       <span className={`ml-2 ${reduction > 0 ? "text-green-400" : "text-yellow-400"}`}>
-                        {reduction > 0 ? `-${reduction}%` : "サイズ維持"}
+                        {sizeChangeLabel}
                       </span>
                       <span className="ml-2 text-neutral-500">
-                        {result.mode === "compat" ? "互換モード" : "通常モード"}
+                        {result.mode === "compat"
+                          ? `互換モード/${result.compatQuality ? PDF_RASTER_PROFILES[result.compatQuality].label : "高品質"}`
+                          : "通常モード"}
                       </span>
                     </p>
                   </div>
