@@ -1013,6 +1013,34 @@ body[data-has-breadcrumbs="true"] {
   }
 }
 
+/* ===== Flyer sheet + print scaling =====
+ * The flyer is authored on the sheet's fixed canvas: w-5xl x h-362 = 64rem x
+ * 90.5rem, which at the app's 18px root font-size is 1152x1629px (A4 aspect
+ * ratio). It is shown at natural size on screen (it scrolls on narrow viewports).
+ * For print, the SAME canvas is scaled to fill A4 with `transform: scale()`,
+ * which scales the already-laid-out content uniformly WITHOUT reflowing text —
+ * so the PDF is a 1:1 render of what's on screen, just sized to the page.
+ * The frame is the in-flow, page-sized box; the sheet is absolute inside it so
+ * its unscaled layout box is clipped and never affects pagination. The frame is
+ * sized in the same rem units as the sheet so the two always match exactly. */
+.flyer-frame {
+  position: relative;
+  /* --fit-scale (set by useFitScale) shrinks the sheet to fit narrow screens
+     without reflow; the frame reserves the scaled footprint. Defaults to 1. */
+  width: calc(64rem * var(--fit-scale, 1)); /* == w-5xl (sheet width) */
+  height: calc(90.5rem * var(--fit-scale, 1)); /* == h-362 (sheet height) */
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.flyer-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(var(--fit-scale, 1));
+  transform-origin: top left;
+}
+
 @page {
   size: A4 portrait;
   margin: 0;
@@ -1024,46 +1052,114 @@ body[data-has-breadcrumbs="true"] {
     background: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 210mm;
-    height: 297mm;
-    overflow: hidden;
   }
 
-  body:has(.flyer-print-root) * {
-    visibility: hidden;
-  }
-
-  body:has(.flyer-print-root) .flyer-print-root,
-  body:has(.flyer-print-root) .flyer-print-root * {
-    visibility: visible;
-  }
-
-  body:has(.flyer-print-root) .flyer-print-root {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-    background: #ffffff !important;
-    padding: 0 !important;
-  }
-
-  body:has(.flyer-print-root) .print\:hidden {
+  /* On /flyer only the flyer renders (the Cookie banner and chat widget are
+     excluded for this route), so we just drop the on-screen action buttons. */
+  .flyer-print-root .print\:hidden {
     display: none !important;
   }
 
-  .flyer-sheet {
-    position: absolute !important;
-    inset: 0 !important;
-    width: 1024px !important;
-    height: 1448px !important;
+  .flyer-print-root {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .flyer-stage {
+    width: 210mm !important;
     max-width: none !important;
     margin: 0 !important;
+  }
+
+  /* The frame is the in-flow, page-sized box that drives pagination; the sheet
+     is scaled inside it and clipped to A4. No transform reflow -> the PDF is a
+     1:1 render of the preview. Sheet canvas = 64rem = 1152px @18px root;
+     210mm = 793.70px @96dpi; 793.70/1152 = 0.6890 */
+  .flyer-frame {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    break-inside: avoid;
+  }
+
+  .flyer-sheet {
+    transform: scale(0.689) !important;
+    transform-origin: top left !important;
     box-shadow: none !important;
-    transform: none !important;
-    transform-origin: top left;
-    zoom: 0.7754;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ===== Google Review LANDSCAPE flyer =====
+ * Authored on a fixed 1672x941px canvas (16:9, matching the source mockup) so
+ * the reproduction is pixel-faithful. Shown at natural size on screen. For A4
+ * landscape print the canvas is scaled to fill the page WIDTH and centred
+ * vertically (small top/bottom margins) via transform:scale — no reflow, so the
+ * PDF is a 1:1 render. A named @page keeps this landscape without disturbing the
+ * portrait flyer's default @page. */
+.grev-frame {
+  position: relative;
+  /* --fit-scale (set by useFitScale) shrinks the sheet to fit narrow screens
+     without reflow; the frame reserves the scaled footprint. Defaults to 1. */
+  width: calc(1672px * var(--fit-scale, 1));
+  height: calc(941px * var(--fit-scale, 1));
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.grev-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(var(--fit-scale, 1));
+  transform-origin: top left;
+}
+
+/* Landscape @page is injected by the GoogleReviewFlyer component itself (a
+   <style> in the body, which wins over the portrait flyer's default @page). */
+
+@media print {
+  .grev-print-root .print\:hidden {
+    display: none !important;
+  }
+
+  .grev-print-root {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .grev-stage {
+    width: 297mm !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  /* 297mm = 1122.5px @96dpi; 1122.5 / 1672 = 0.6714 */
+  .grev-frame {
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    break-inside: avoid;
+  }
+
+  /* Sheet stays absolute (out of flow) so only the 210mm frame paginates ->
+     single page. Scaled from top-left; the 16:9 canvas fills the page width and
+     is centred vertically via top: (210mm - 941px*0.6714) / 2 = 21.4mm. */
+  .grev-sheet {
+    position: absolute !important;
+    top: 21.4mm !important;
+    left: 0 !important;
+    transform: scale(0.6714) !important;
+    transform-origin: top left !important;
+    box-shadow: none !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }

@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { Download, Mail, Monitor, Printer } from "lucide-react";
+import type { CSSProperties } from "react";
+import { useFitScale } from "@/components/flyer/use-fit-scale";
 
 type MakeItTechFlyerProps = {
   siteQr: string;
@@ -44,9 +46,10 @@ const processItems = [
 ];
 
 export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
+  const { stageRef, sheetRef, scale } = useFitScale();
   return (
     <main className="flyer-print-root min-h-dvh overflow-auto bg-[#edf6f4] px-3 py-4 text-[#13233d] sm:px-6">
-      <div className="mx-auto mb-4 flex w-5xl justify-end gap-2 print:hidden">
+      <div className="mx-auto mb-4 flex w-full max-w-5xl justify-end gap-2 print:hidden">
         <button
           type="button"
           onClick={() => window.print()}
@@ -65,8 +68,14 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
         </button>
       </div>
 
-      <article className="flyer-sheet relative mx-auto h-362 w-5xl shrink-0 overflow-hidden bg-[#fffdf9] px-9 py-5 shadow-2xl print:shadow-none">
-        <section className="relative min-h-[25%]">
+      <div
+        ref={stageRef}
+        className="flyer-stage mx-auto w-full"
+        style={{ "--fit-scale": scale } as CSSProperties}
+      >
+        <div className="flyer-frame">
+          <article ref={sheetRef} className="flyer-sheet h-362 w-5xl overflow-hidden bg-[#fffdf9] px-9 py-5 shadow-2xl print:shadow-none">
+            <section className="relative min-h-[25%]">
           <div className="absolute -right-6 -top-6 z-0 w-[60%]">
             <div className="absolute -right-8 -top-8 h-60 w-60 rounded-full bg-green-400/60" />
             <div className="relative ml-auto mt-2 w-full overflow-hidden border-none p-0 shadow-none">
@@ -270,7 +279,9 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
             一緒に未来をつくりましょう。
           </p>
         </footer>
-      </article>
+          </article>
+        </div>
+      </div>
     </main>
   );
 }

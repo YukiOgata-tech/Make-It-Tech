@@ -49,6 +49,7 @@ export function CookieConsent({ className }: { className?: string }) {
   const isLpHost = hostname.startsWith("lp.");
   const isLpPath = pathname.startsWith("/sub/lp");
   const isMyLifePath = pathname === "/this-is-my-life";
+  const isFlyerPath = pathname === "/flyer" || pathname.startsWith("/flyer-");
   const privacyHref = "/privacy";
 
   React.useEffect(() => {
@@ -68,7 +69,7 @@ export function CookieConsent({ className }: { className?: string }) {
 
   const isOpen = consent === "unset";
 
-  if (isToolsHost || isToolsPath || isAdminHost || isAdminPath || isLpHost || isLpPath || isMyLifePath) {
+  if (isToolsHost || isToolsPath || isAdminHost || isAdminPath || isLpHost || isLpPath || isMyLifePath || isFlyerPath) {
     return null;
   }
 

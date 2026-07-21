@@ -21,8 +21,9 @@ export function ChatWidgetScript() {
   const isMakeItTechSubdomain =
     hostname.endsWith(".make-it-tech.com") && hostname !== "make-it-tech.com";
   const isSubRoute = pathname.startsWith("/sub/");
+  const isFlyerPath = pathname === "/flyer" || pathname.startsWith("/flyer-");
 
-  if (isMakeItTechSubdomain || isSubRoute) {
+  if (isMakeItTechSubdomain || isSubRoute || isFlyerPath) {
     return null;
   }
 
