@@ -49,6 +49,8 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
   const { stageRef, sheetRef, scale } = useFitScale();
   return (
     <main className="flyer-print-root min-h-dvh overflow-auto bg-[#edf6f4] px-3 py-4 text-[#13233d] sm:px-6">
+      {/* Single unambiguous @page for this route so the print dialog defaults to A4 portrait. */}
+      <style>{"@page { size: A4 portrait; margin: 0; }"}</style>
       <div className="mx-auto mb-4 flex w-full max-w-5xl justify-end gap-2 print:hidden">
         <button
           type="button"

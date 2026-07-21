@@ -1041,10 +1041,11 @@ body[data-has-breadcrumbs="true"] {
   transform-origin: top left;
 }
 
-@page {
-  size: A4 portrait;
-  margin: 0;
-}
+/* Each flyer injects its OWN @page (portrait vs landscape) from its component
+   body — see MakeItTechFlyer / GoogleReviewFlyer. Having a single unambiguous
+   @page per route makes the interactive print dialog default to the correct
+   orientation (two conflicting global @page rules made it fall back to
+   portrait, cutting off the landscape flyer). */
 
 @media print {
   html,
@@ -1096,18 +1097,17 @@ body[data-has-breadcrumbs="true"] {
 }
 
 /* ===== Google Review LANDSCAPE flyer =====
- * Authored on a fixed 1672x941px canvas (16:9, matching the source mockup) so
- * the reproduction is pixel-faithful. Shown at natural size on screen. For A4
- * landscape print the canvas is scaled to fill the page WIDTH and centred
- * vertically (small top/bottom margins) via transform:scale — no reflow, so the
- * PDF is a 1:1 render. A named @page keeps this landscape without disturbing the
- * portrait flyer's default @page. */
+ * Authored on a fixed 1672x1182px canvas (A4 landscape ratio, 1.414:1) so it
+ * fills the whole A4 page with no wasted margins. Shown at natural size on
+ * screen. For print the canvas is scaled to fill the page via transform:scale —
+ * no reflow, so the PDF is a 1:1 render. A body-injected @page keeps this
+ * landscape without disturbing the portrait flyer's default @page. */
 .grev-frame {
   position: relative;
   /* --fit-scale (set by useFitScale) shrinks the sheet to fit narrow screens
      without reflow; the frame reserves the scaled footprint. Defaults to 1. */
   width: calc(1672px * var(--fit-scale, 1));
-  height: calc(941px * var(--fit-scale, 1));
+  height: calc(1182px * var(--fit-scale, 1));
   margin-inline: auto;
   overflow: hidden;
 }
@@ -1124,38 +1124,41 @@ body[data-has-breadcrumbs="true"] {
    <style> in the body, which wins over the portrait flyer's default @page). */
 
 @media print {
+  /* Every ancestor is forced to exactly ONE landscape A4 page with overflow
+     clipped, so the scaled flyer can never spill onto a 2nd sheet. */
+  html:has(.grev-print-root),
+  body:has(.grev-print-root) {
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
   .grev-print-root .print\:hidden {
     display: none !important;
   }
 
-  .grev-print-root {
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-  }
-
-  .grev-stage {
-    width: 297mm !important;
-    max-width: none !important;
-    margin: 0 !important;
-  }
-
-  /* 297mm = 1122.5px @96dpi; 1122.5 / 1672 = 0.6714 */
+  .grev-print-root,
+  .grev-stage,
   .grev-frame {
     width: 297mm !important;
     height: 210mm !important;
+    min-height: 0 !important;
+    max-width: none !important;
     margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden !important;
-    break-inside: avoid;
+    background: #ffffff !important;
   }
 
-  /* Sheet stays absolute (out of flow) so only the 210mm frame paginates ->
-     single page. Scaled from top-left; the 16:9 canvas fills the page width and
-     is centred vertically via top: (210mm - 941px*0.6714) / 2 = 21.4mm. */
+  /* The 1672x1182 canvas scaled to fill the 297x210mm page:
+     297mm = 1122.5px; 1122.5 / 1672 = 0.6714. The sheet is absolute (out of
+     flow) and every ancestor is clamped to one page + overflow:hidden, so the
+     unscaled layout box cannot create a second page. */
   .grev-sheet {
     position: absolute !important;
-    top: 21.4mm !important;
+    top: 0 !important;
     left: 0 !important;
     transform: scale(0.6714) !important;
     transform-origin: top left !important;
@@ -1164,3 +1167,4 @@ body[data-has-breadcrumbs="true"] {
     -webkit-print-color-adjust: exact;
   }
 }
+
