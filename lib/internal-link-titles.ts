@@ -6,7 +6,6 @@ const INTERNAL_TITLES: Record<string, string> = {
   "/apps": "アプリ一覧",
   "/blog": "ブログ一覧",
   "/contact": "お問い合わせ",
-  "/glossary": "用語集",
   "/news": "お知らせ",
   "/niigata": "新潟のDX支援",
   "/pricing": "料金",

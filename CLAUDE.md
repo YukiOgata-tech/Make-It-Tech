@@ -73,7 +73,7 @@ Firebase を使用（`firebase-admin`：Auth / Firestore / Storage、`firebase` 
 
 ### ルーティング
 
-- `app/` - メインルート（/, /services, /pricing, /contact, /about, /privacy, /terms, /glossary, /survey, /blog, /news, /works, /apps, /flyer 等）
+- `app/` - メインルート（/, /services, /pricing, /contact, /about, /privacy, /terms, /survey, /blog, /news, /works, /apps, /flyer 等）
 - `app/sub/` - サブドメイン用ページ（lp, admin-console, tools）
 - `app/api/` - API ルート（contact, hp-lp-request, intake, niigata-contact, line/webhook, admin/* の CRUD・画像アップロード・メール送信・セッション）
 

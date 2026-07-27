@@ -19,7 +19,6 @@ const routes = [
   "/privacy",
   "/terms",
   "/security-policy",
-  "/glossary",
   "/niigata",
 ];
 

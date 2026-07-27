@@ -45,7 +45,6 @@ const secondaryNav: NavItem[] = [
   { label: "お問い合わせ", href: "/contact" },
   { label: "LINEで相談", href: "/survey" },
   { label: "業務診断", href: "/#diagnosis" },
-  { label: "用語集", href: "/glossary" },
 ];
 
 export function SiteHeader() {

@@ -29,10 +29,4 @@ export const notFoundLinks = [
     href: "/survey",
     label: "LINEで相談",
   },
-  {
-    title: "用語集",
-    desc: "非エンジニア向けの簡易辞書ページ!",
-    href: "/glossary",
-    label: "用語",
-  },
 ] as const;

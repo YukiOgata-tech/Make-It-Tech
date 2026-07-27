@@ -18,7 +18,6 @@ const labelMap: Record<string, string> = {
   privacy: "プライバシーポリシー",
   terms: "利用規約",
   "security-policy": "情報セキュリティ基本方針",
-  glossary: "用語集",
   sub: "サブページ",
   lp: "LP",
   admin: "管理画面",
