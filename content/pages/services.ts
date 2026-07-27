@@ -1,11 +1,9 @@
 import {
+  BrainCircuit,
   Bot,
   ClipboardList,
   Globe,
-  Hammer,
   LineChart,
-  MonitorSmartphone,
-  Sparkles,
   Smartphone,
   Settings,
   Wrench,
@@ -32,6 +30,13 @@ export const serviceAreas = [
     icon: Wrench,
     href: "/contact?category=社内システム開発/相談",
     tone: "emerald",
+  },
+  {
+    title: "AI導入支援",
+    desc: "生成AI、社内データ活用、AIチャットボットなど、業務に合う使い方から導入を支援します。",
+    icon: BrainCircuit,
+    href: "/contact?category=AI導入支援",
+    tone: "cyan",
   },
   {
     title: "DX支援コンサル",
@@ -63,24 +68,6 @@ export const serviceAreas = [
   },
 ] as const;
 
-export const servicePrinciples = [
-  {
-    title: "作る前に整理",
-    desc: "現状と理想を整理し、必要な範囲だけを見極めます。",
-    icon: Sparkles,
-  },
-  {
-    title: "最小構成で早く動かす",
-    desc: "まず動く状態を作り、効果が見えたら拡張します。",
-    icon: Hammer,
-  },
-  {
-    title: "既存ツールで済むなら作らない",
-    desc: "コストと期間を最適化するために“作らない”判断。",
-    icon: MonitorSmartphone,
-  },
-] as const;
-
 export const serviceDeliverables = [
   {
     title: "Web/LP制作での成果物",
@@ -94,19 +81,27 @@ export const serviceDeliverables = [
 
 export const serviceExamples = [
   {
-    title: "問い合わせが電話とLINEで分散している",
-    desc: "フォーム統一+通知自動化で窓口を一本化。",
+    title: "生成AIを業務に取り入れたいが、使いどころが分からない",
+    desc: "日々の業務を整理し、文章作成、情報検索、問い合わせ対応など、効果が見込める用途から導入を支援します。",
   },
   {
-    title: "手打ちExcelやデータ管理が多い。それを引き継ぐのも難しい。",
-    desc: "既存事項のルール化で運用を標準化。もしくはAIや計算システム込みの自動化。",
+    title: "問い合わせ対応をAIやLINEで効率化したい",
+    desc: "AIチャットボット、公式LINE、フォーム、通知を組み合わせ、対応しやすい窓口を整えます。",
   },
   {
-    title: "Webが古く、問い合わせ導線が弱い",
-    desc: "目的に合わせて構成を再設計し、CTAを強化。もしくは新規WEBのフル制作。",
+    title: "Excel・紙・複数ツールへの転記作業を減らしたい",
+    desc: "現在の流れを確認し、フォーム、管理シート、通知、集計などを自動化します。",
   },
   {
-    title: "業務内で、IT導入したいが何から始めるべきか不明",
-    desc: "現状整理→優先順位→実装の順で提案。同業種での事例も伏せて紹介いたします。",
+    title: "予約・顧客・シフトなどをまとめて管理したい",
+    desc: "業務に合わせた管理画面や社内システムを設計し、分散している情報を一元化します。",
+  },
+  {
+    title: "Webサイトが古く、問い合わせや更新がしづらい",
+    desc: "目的と導線を見直し、スマートフォン対応、SEO、更新運用まで含めて再設計します。",
+  },
+  {
+    title: "新しいアプリや業務ツールのアイデアを形にしたい",
+    desc: "必要な機能を整理し、Webアプリ・モバイルアプリを用途に合う構成で開発します。",
   },
 ] as const;

@@ -10,10 +10,7 @@ import { Button } from "@/components/ui/button";
 import { LineButton } from "@/components/ui/line-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  serviceExamples,
-  servicePrinciples,
-} from "@/content/pages/services";
+import { serviceExamples } from "@/content/pages/services";
 import { ArrowRight, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -21,7 +18,7 @@ export const metadata: Metadata = {
     absolute: "新潟のIT・DX支援・Web制作サービス | Make It Tech",
   },
   description:
-    "新潟の中小事業者向けに、ホームページ・LP制作、業務改善、LINE公式やフォーム活用、社内システム、自動化まで対応します。作る前の整理から運用改善まで必要最小限の範囲で支援します。",
+    "新潟の中小事業者向けに、ホームページ・LP制作、AI導入、業務改善、LINE公式やフォーム活用、社内システム、自動化まで対応します。",
   keywords: [
     "新潟", "niigata","ベンチャー","生成AI","AI","人工知能",
     "DX",
@@ -51,7 +48,7 @@ export default function ServicesPage() {
                   Web制作からDX支援まで、必要な形で対応します
                 </h2>
                 <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-md">
-                  HP/LP制作、アプリ、社内システム、ツール導入、補助金まわりまで、目的に合わせて支援範囲を組み立てます。
+                  HP/LP制作、AI導入、アプリ、社内システム、ツール導入、補助金まわりまで、目的に合わせて支援範囲を組み立てます。
                 </p>
               </div>
 
@@ -79,57 +76,6 @@ export default function ServicesPage() {
           <ServiceAreaSwap />
         </Container>
       </section>
-
-      <Section
-        eyebrow="支援スタイル"
-        title="小さく始めて、成果に寄せる"
-        description="不安になりやすいポイントを先に整理し、ムダな開発を避けます。"
-      >
-        <div className="hidden gap-4 md:grid md:grid-cols-3">
-          {servicePrinciples.map((p) => {
-            const Icon = p.icon;
-            return (
-              <Card key={p.title} className="rounded-3xl">
-                <CardContent className="px-6 py-1">
-                  <div className="flex items-start gap-3">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="grid gap-1">
-                      <p className="text-lg font-medium">{p.title}</p>
-                      <p className="text-sm text-muted-foreground">{p.desc}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-        <div className="md:hidden">
-          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2">
-            {servicePrinciples.map((p) => {
-              const Icon = p.icon;
-              return (
-                <div
-                  key={p.title}
-                  className="min-w-55 snap-center rounded-2xl border border-border/60 bg-background/70 p-4"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="grid gap-1">
-                      <p className="text-sm font-medium">{p.title}</p>
-                      <p className="text-xs leading-snug text-muted-foreground">{p.desc}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">左右にスワイプして確認できます。</p>
-        </div>
-      </Section>
 
       <Section
         eyebrow="制作・支援実績"

@@ -1,15 +1,9 @@
 export const notFoundLinks = [
   {
     title: "サービスを見る",
-    desc: "対応範囲と支援スタイルを確認",
+    desc: "対応範囲と支援内容を確認",
     href: "/services",
     label: "サービス",
-  },
-  {
-    title: "料金の目安",
-    desc: "価格レンジと見積もりの考え方を紹介",
-    href: "/pricing",
-    label: "料金",
   },
   {
     title: "業務診断",

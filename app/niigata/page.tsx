@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { NiigataContactForm } from "@/components/forms/niigata-contact-form";
 import {
@@ -99,7 +99,7 @@ export default function NiigataPage() {
                   </a>
                 </Button>
                 <Button asChild variant="outline" className="rounded-xl">
-                  <Link href="/pricing">料金ページへ</Link>
+                  <Link href="/services">対応サービスを見る</Link>
                 </Button>
               </div>
 

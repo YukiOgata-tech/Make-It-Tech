@@ -4,7 +4,7 @@
 
 ## Project Structure & Module Organization
 
-- `app/`: ルートセグメント、`layout.tsx`、`page.tsx`、`globals.css`、`contact/`・`pricing/`・`blog/`・`news/` などのルートフォルダ。
+- `app/`: ルートセグメント、`layout.tsx`、`page.tsx`、`globals.css`、`contact/`・`services/`・`blog/`・`news/` などのルートフォルダ。
 - `app/sub/`: サブドメイン用ページ（`lp`・`tools`・`admin-console`）。`proxy.ts` がホスト名でここへリライトする。
 - `app/api/`: API ルート（contact / hp-lp-request / intake / niigata-contact / line/webhook / admin の CRUD 等）。
 - `components/`: 共通 UI、セクションコンポーネント、レイアウト部品（ファイル名は kebab-case、export は PascalCase）。

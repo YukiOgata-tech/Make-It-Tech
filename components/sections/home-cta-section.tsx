@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardCheck, ReceiptText } from "lucide-react";
+import { ArrowRight, ClipboardCheck, LayoutGrid } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -12,11 +12,11 @@ const ctaItems = [
     icon: ClipboardCheck,
   },
   {
-    title: "料金の目安を見る",
-    description: "制作・支援の費用感を確認したい方はこちら。",
-    href: "/pricing",
-    buttonLabel: "料金ページへ",
-    icon: ReceiptText,
+    title: "対応サービスを見る",
+    description: "Web制作・IT支援の対応範囲を確認できます。",
+    href: "/services",
+    buttonLabel: "サービスページへ",
+    icon: LayoutGrid,
   },
 ];
 
@@ -39,7 +39,7 @@ export function HomeCtaSection() {
               </h2>
             </div>
             <p className="max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
-              トップページでは要点だけを見せ、診断や料金は興味のある方がすぐ移動できる導線として整理しています。
+              トップページでは要点だけを見せ、相談方法や対応サービスをすぐ確認できる導線として整理しています。
             </p>
           </div>
 

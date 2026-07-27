@@ -9,7 +9,6 @@ export const revalidate = false;
 const routes = [
   "",
   "/services",
-  "/pricing",
   "/about",
   "/contact",
   "/works",

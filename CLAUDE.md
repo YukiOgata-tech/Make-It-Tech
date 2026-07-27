@@ -28,7 +28,7 @@ npm run lint     # ESLint 実行
 
 静的テキストは `content/` に格納し、コンポーネントからインポートして使用：
 - `content/sections/` - セクション用コンテンツ（hero.ts, diagnosis.ts, faq-section.ts 等）
-- `content/pages/` - ページ用コンテンツ（about.ts, pricing.ts, services.ts 等）
+- `content/pages/` - ページ用コンテンツ（about.ts, services.ts, survey.ts 等）
 - `content/privacy.ts`, `content/terms.ts` - 法的文書
 
 コンポーネントはインポートでコンテンツを取得（propsではない）：
@@ -73,7 +73,7 @@ Firebase を使用（`firebase-admin`：Auth / Firestore / Storage、`firebase` 
 
 ### ルーティング
 
-- `app/` - メインルート（/, /services, /pricing, /contact, /about, /privacy, /terms, /survey, /blog, /news, /works, /apps, /flyer 等）
+- `app/` - メインルート（/, /services, /contact, /about, /privacy, /terms, /survey, /blog, /news, /works, /apps, /flyer 等）
 - `app/sub/` - サブドメイン用ページ（lp, admin-console, tools）
 - `app/api/` - API ルート（contact, hp-lp-request, intake, niigata-contact, line/webhook, admin/* の CRUD・画像アップロード・メール送信・セッション）
 

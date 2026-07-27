@@ -39,6 +39,11 @@ const toneClasses = {
     icon: "border-indigo-300/70 bg-indigo-100 text-indigo-700 dark:border-indigo-400/30 dark:bg-indigo-400/15 dark:text-indigo-300",
     arrow: "text-indigo-700 dark:text-indigo-300",
   },
+  cyan: {
+    card: "border-cyan-200/80 bg-cyan-50/70 hover:border-cyan-400/70 dark:border-cyan-500/20 dark:bg-cyan-500/10",
+    icon: "border-cyan-300/70 bg-cyan-100 text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/15 dark:text-cyan-300",
+    arrow: "text-cyan-700 dark:text-cyan-300",
+  },
 } as const;
 
 export function ServiceAreaSwap({ className }: { className?: string }) {
