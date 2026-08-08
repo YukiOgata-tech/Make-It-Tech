@@ -16,9 +16,13 @@ npm run dev
 ```
 
 - ローカル起動: `http://localhost:3000`
-- 本番ビルド: `npm run build`
+- 本番ビルド: `npm run build`（Turbopack ではなく Webpack でビルド）
 - 本番起動: `npm run start`
 - Lint: `npm run lint`
+- 型チェック: `npm run typecheck`
+- GA 運用スクリプト: `npm run ga:admin`
+
+環境変数は `.env.example` を `.env.local` にコピーして設定してください。
 
 ---
 
@@ -75,32 +79,44 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - サービス内容紹介
 - 契約・見積もりに関する注意事項
 - LINEで相談（LINE）
-- お問い合わせ
+- お問い合わせ / HP・LP 制作依頼 / 業務診断フォーム
 - 事業所概要
+- ブログ・お知らせ（Firebase 管理の CMS で更新）
+- 制作実績、提供アプリの案内
 - プライバシーポリシー
-- 注意事項（利用規約）
+- 注意事項（利用規約）、セキュリティポリシー
 
 ---
 
 ## 技術スタック
 
-- Next.js
+- Next.js 16（App Router）/ React 19
 - TypeScript
-- Tailwind CSS
-- Framer Motion
-- Radix UI
+- Tailwind CSS 4 + Shadcn UI（Radix UI ベース）
+- Framer Motion / Lenis / Lottie
+- Firebase（Auth・Firestore・Storage）: CMS とフォーム回答の保存先
+- React Hook Form + Zod: フォーム管理とバリデーション
+- react-markdown + remark/rehype: 公開側の Markdown 描画
+- @mdxeditor/editor: 管理画面のエディタ
+- Resend: メール送信 / LINE Messaging API: LINE 連携
+- Vercel: ホスティング（`proxy.ts` によるサブドメイン運用）
 
 ---
 
 ## ディレクトリ構成（主要）
 
 - `app/`: ルートセグメント、ページ、`layout.tsx`、`globals.css`
+- `app/api/`: API ルート（問い合わせ・申込・LINE Webhook・管理画面の CRUD）
+- `app/sub/`: サブドメイン用ページ（`lp` / `tools` / `admin-console`）
 - `components/`: 共通UI、セクション、レイアウト部品
 - `components/ui/`: ベースUI部品
 - `components/providers/`: アプリ全体のProvider
 - `content/`: 本文データ（`privacy.ts`, `terms.ts` など）
-- `lib/`: ユーティリティ
+- `lib/`: ユーティリティ、Firebase 初期化、管理者認証、Markdown 処理
+- `proxy.ts`: ホスト名によるサブドメインリライト
+- `scripts/`: 運用スクリプト
 - `public/`: 静的アセット（画像、アイコン）
+- `firestore.rules` / `storage.rules`: Firebase セキュリティルール
 
 ---
 
@@ -116,8 +132,12 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 `make-it-tech.com` を正規ドメインとし、将来的なサブドメインは
 同一リポジトリ内で `app/sub/` 配下に配置して管理します。
 
-- 例: `app/sub/lp/page.tsx`, `app/sub/admin/page.tsx`
-- `middleware.ts` で `lp.make-it-tech.com` → `/sub/lp` のようにリライト
+- 例: `app/sub/lp/page.tsx`, `app/sub/tools/page.tsx`
+- Next.js 16 では `middleware.ts` ではなく **`proxy.ts` の `proxy()` 関数**でリライトします
+- 現在の割り当て:
+  - `lp.make-it-tech.com` → `/sub/lp`
+  - `tools.make-it-tech.com` → `/sub/tools`（画像・PDF 変換等のクライアント完結ツール集）
+  - `admin-console.*` → `/sub/admin-console`（管理画面 CMS）
 - Vercel の Domains にサブドメインを追加して運用
 
 ---

@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ただしテンプレートは追跡する（必要な env の一覧をリポジトリに残すため）
+!.env.example
 
 # vercel
 .vercel
@@ -47,5 +49,3 @@ next-env.d.ts
 
 # for me
 docs/
-firestore.rules
-storage.rules

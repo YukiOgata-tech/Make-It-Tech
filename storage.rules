@@ -1,0 +1,38 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && firestore.get(
+          /databases/(default)/documents/adminUsers/$(request.auth.uid)
+        ).data.enabled == true;
+    }
+
+    // 添付ファイル用
+    match /intake/{responseId}/{fileName} {
+      allow read, write: if isAdmin();
+    }
+
+    // お知らせ画像
+    match /announcements/{docId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ブログ画像
+    match /blog/{docId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // その他は拒否
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

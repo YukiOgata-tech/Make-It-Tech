@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function adminDoc() {
+      return get(/databases/$(database)/documents/adminUsers/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return isSignedIn() && adminDoc().data.enabled == true;
+    }
+
+    // 管理者テーブル（通常はサーバー(Admin SDK)のみ作成/更新）
+    match /adminUsers/{uid} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // 業務診断の回答
+    match /intakeResponses/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // お知らせ
+    match /announcements/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // ブログ記事
+    match /blogPosts/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // その他は全て拒否
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
