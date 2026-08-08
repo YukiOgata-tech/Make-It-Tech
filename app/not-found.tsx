@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MainLayout } from "@/components/layout/main-layout";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,9 @@ export const metadata: Metadata = {
 };
 
 export default function NotFound() {
+  // ルート直下にあるためヘッダー・フッターが付かない。ここで明示的に被せる。
   return (
+    <MainLayout>
     <Section
       eyebrow="404"
       title="ページが見つかりません"
@@ -74,5 +77,6 @@ export default function NotFound() {
         </div>
       </div>
     </Section>
+    </MainLayout>
   );
 }
