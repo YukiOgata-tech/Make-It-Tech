@@ -5,7 +5,8 @@
 ## Project Structure & Module Organization
 
 - `app/`: ルートセグメント、`layout.tsx`、`page.tsx`、`globals.css`、`contact/`・`services/`・`blog/`・`news/` などのルートフォルダ。
-- `app/sub/`: サブドメイン用ページ（`lp`・`tools`・`admin-console`）。`proxy.ts` がホスト名でここへリライトする。
+- `app/sub/`: サブドメイン用ページ（`lp`・`tools`・`nfc`・`admin-console`）。`proxy.ts` がホスト名でここへリライトする。
+- `app/sub/nfc/`: NFC 事業（`nfc.make-it-tech.com`）。設定は `content/nfc/site.ts` に集約し、`nfcSite.indexable` で noindex を、`nfcLinks.shopUrl` で Shopify 導線の出し分けを制御する。
 - `app/api/`: API ルート（contact / hp-lp-request / intake / niigata-contact / line/webhook / admin の CRUD 等）。
 - `components/`: 共通 UI、セクションコンポーネント、レイアウト部品（ファイル名は kebab-case、export は PascalCase）。
 - `components/ui/`: ベース UI 部品、`components/providers/`: アプリ全体の Provider、`components/admin/`: 管理画面用。

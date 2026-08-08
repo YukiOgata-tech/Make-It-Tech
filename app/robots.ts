@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         "/sub/admin-console",
         "/sub/admin-console/login",
+        "/sub/nfc",
         "/this-is-my-life",
       ],
     },

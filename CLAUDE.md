@@ -74,7 +74,7 @@ Firebase を使用（`firebase-admin`：Auth / Firestore / Storage、`firebase` 
 ### ルーティング
 
 - `app/` - メインルート（/, /services, /contact, /about, /privacy, /terms, /survey, /blog, /news, /works, /apps, /flyer 等）
-- `app/sub/` - サブドメイン用ページ（lp, admin-console, tools）
+- `app/sub/` - サブドメイン用ページ（lp, admin-console, tools, nfc）
 - `app/api/` - API ルート（contact, hp-lp-request, intake, niigata-contact, line/webhook, admin/* の CRUD・画像アップロード・メール送信・セッション）
 
 ### サブドメインルーティング（proxy.ts）
@@ -83,9 +83,21 @@ Next.js 16 では `middleware` ではなく **`proxy.ts` の `proxy()` 関数**�
 
 - `lp.make-it-tech.com` → `/sub/lp`
 - `tools.make-it-tech.com` → `/sub/tools`（画像/PDF 変換・圧縮、QR、Base64、Favicon、JSON→表、Markdown プレビュー等のクライアント完結ツール）
+- `nfc.make-it-tech.com` → `/sub/nfc`（NFC 事業の LP・カスタマイズ）
 - `admin-console.*`（プレフィックス一致） → `/sub/admin-console`（管理画面 CMS）
 
-`api` / `_next/static` / `_next/image` / `favicon.ico` は matcher で除外。robots.txt / sitemap.xml / ads.txt は tools 以外ではリライトしない。
+`api` / `_next/static` / `_next/image` / `favicon.ico` は matcher で除外。
+
+robots.txt / sitemap.xml / ads.txt は `siteFileRoutes` で**サブドメインごとにファイル単位**で管理する。登録があるものだけサブドメイン配下へリライトし、無いものは本体のルートハンドラに素通しする（例：nfc は robots.txt / sitemap.xml を自前で持ち、ads.txt は本体のものを返す）。サブドメインに新しいサイトファイルを追加したら `siteFileRoutes` にも追記する。
+
+### NFC 事業サブドメイン（app/sub/nfc）
+
+- 設定の単一情報源は `content/nfc/site.ts`。ホスト名、Shopify の URL、OG 情報、サイトマップ対象ルートをここに集約している。
+- `nfcSite.indexable` で noindex を制御する。LP の中身が揃うまで `false`。layout の metadata と `robots.txt` の両方がこの値を見る。
+- `nfcLinks.shopUrl` は Shopify 公開まで空文字。`isShopReady` が false の間、CTA は問い合わせ導線にフォールバックする。
+- 本体の `app/robots.ts` は `/sub/nfc` を disallow している（本体ドメイン経由での重複クロール防止）。
+- セクションコンポーネントは `app/sub/nfc/_components/` に置く。LP のコピーは `content/nfc/lp.ts` に下書き済み（未接続）。
+- 配色はテーマ変数を使わず直接指定する。本体（クリーム基調）と分離し、next-themes の切り替えの影響を受けないようにするため。tools サブドメインと同じ方針。
 
 ### ファイル命名規則
 

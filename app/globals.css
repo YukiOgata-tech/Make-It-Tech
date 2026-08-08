@@ -489,6 +489,48 @@ body[data-has-breadcrumbs="true"] {
       );
   }
 
+  /* ===== NFC subdomain (app/sub/nfc) =====
+   * ヒーローの「かざす」ビジュアル。NFCの読み取り範囲を波紋で表す。 */
+  @keyframes nfc-ripple {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes nfc-phone-nudge {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -7px, 0);
+    }
+  }
+
+  .nfc-ripple {
+    animation: nfc-ripple 3.6s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  }
+
+  .nfc-ripple-delay-1 {
+    animation-delay: 1.2s;
+  }
+
+  .nfc-ripple-delay-2 {
+    animation-delay: 2.4s;
+  }
+
+  .nfc-phone {
+    animation: nfc-phone-nudge 3.6s ease-in-out infinite;
+  }
+
   .font-heading {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
@@ -544,7 +586,9 @@ body[data-has-breadcrumbs="true"] {
   .hero-grid,
   .hero-orb,
   .hero-orb-delayed,
-  .hero-sheen {
+  .hero-sheen,
+  .nfc-ripple,
+  .nfc-phone {
     animation: none !important;
   }
 }

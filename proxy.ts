@@ -1,10 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { nfcSite } from "@/content/nfc/site";
 
 const hostRouteMap: Record<string, string> = {
   "lp.make-it-tech.com": "/sub/lp",
   "tools.make-it-tech.com": "/sub/tools",
+  [nfcSite.host]: nfcSite.basePath,
 };
 const adminConsolePrefix = "admin-console.";
+
+/**
+ * サブドメインが自前で持つサイトファイル。
+ *
+ * ここに登録したパスだけをサブドメイン配下へリライトし、それ以外は本体
+ * （make-it-tech.com）のルートハンドラに素通しする。サブドメインが持っていない
+ * ファイルまでリライトすると 404 になるため、ファイル単位で管理する。
+ */
+const siteFileRoutes: Record<string, ReadonlySet<string>> = {
+  "/sub/tools": new Set(["/robots.txt", "/sitemap.xml", "/ads.txt"]),
+  [nfcSite.basePath]: new Set(["/robots.txt", "/sitemap.xml"]),
+};
+
+const siteFilePaths = new Set(["/robots.txt", "/sitemap.xml", "/ads.txt"]);
 
 function normalizeHost(host: string) {
   return host.toLowerCase().split(":")[0];
@@ -22,12 +38,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (
-    (pathname === "/robots.txt" ||
-      pathname === "/sitemap.xml" ||
-      pathname === "/ads.txt") &&
-    targetBase !== "/sub/tools"
-  ) {
+  if (siteFilePaths.has(pathname) && !siteFileRoutes[targetBase]?.has(pathname)) {
     return NextResponse.next();
   }
 
