@@ -5,7 +5,9 @@ import { nfcSite } from "@/content/nfc/site";
 export const metadata: Metadata = {
   metadataBase: new URL(nfcSite.url),
   title: {
-    default: nfcSite.title,
+    // absolute にしないと、ルートレイアウトの template（"%s | Make It Tech"）が
+    // 重ねて適用されてサイト名が二重になる。template は配下のページに効く。
+    absolute: nfcSite.title,
     template: `%s | ${nfcSite.name}`,
   },
   description: nfcSite.description,
