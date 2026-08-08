@@ -53,7 +53,8 @@ export function NfcAppLauncher({
   }, [appUrl, webUrl]);
 
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-6 py-16 text-center">
+    // 遷移専用のためヘッダー・フッターを持たない。全画面を自前で塗る。
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-[#101c20] px-6 py-16 text-center text-[#f2ece2]">
       <div
         aria-hidden
         className="relative grid h-20 w-20 place-items-center rounded-full border border-[#32454d]"

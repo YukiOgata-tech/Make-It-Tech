@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock, Smartphone } from "lucide-react";
-import { NfcSection } from "../_components/nfc-section";
+import { NfcSection } from "../../_components/nfc-section";
 import { nfcDemoLink, resolveSlot, getJstHour } from "@/content/nfc/redirects";
 import { nfcHref, nfcLinks, nfcSite } from "@/content/nfc/site";
 

@@ -1,9 +1,9 @@
-import { NfcHero } from "./_components/nfc-hero";
-import { NfcProblems, NfcUseCases } from "./_components/nfc-value";
-import { NfcProducts, NfcDesignTiers, NfcBundle } from "./_components/nfc-lineup";
-import { NfcScope, NfcFlow } from "./_components/nfc-support";
-import { NfcAdvanced, NfcCorporate } from "./_components/nfc-extras";
-import { NfcFaq, NfcCta } from "./_components/nfc-closing";
+import { NfcHero } from "../_components/nfc-hero";
+import { NfcProblems, NfcUseCases } from "../_components/nfc-value";
+import { NfcProducts, NfcDesignTiers, NfcBundle } from "../_components/nfc-lineup";
+import { NfcScope, NfcFlow } from "../_components/nfc-support";
+import { NfcAdvanced, NfcCorporate } from "../_components/nfc-extras";
+import { NfcFaq, NfcCta } from "../_components/nfc-closing";
 
 /**
  * NFC事業LP。

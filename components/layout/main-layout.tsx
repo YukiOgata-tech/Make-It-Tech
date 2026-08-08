@@ -10,21 +10,26 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const hostname = typeof window !== "undefined" ? window.location.hostname : "";
   const isToolsPath = pathname.startsWith("/sub/tools");
   const isAdminConsolePath = pathname.startsWith("/sub/admin-console");
+  const isNfcPath = pathname.startsWith("/sub/nfc");
   const isAppsPath = pathname === "/apps" || pathname.startsWith("/apps/");
   const isMyLifePath = pathname === "/this-is-my-life";
   const isFlyerPath = pathname === "/flyer" || pathname.startsWith("/flyer-");
   const isToolsHost = hostname.startsWith("tools.");
   const isAdminConsoleHost = hostname.startsWith("admin-console.");
+  const isNfcHost = hostname.startsWith("nfc.");
 
-  // ツール/管理画面は独自レイアウトを使用
+  // ツール/管理画面/サブドメインは独自レイアウトを使用。
+  // サブドメインを追加したら、そのパスとホストをここにも足すこと。
   if (
     isToolsPath ||
     isAdminConsolePath ||
+    isNfcPath ||
     isAppsPath ||
     isMyLifePath ||
     isFlyerPath ||
     isToolsHost ||
-    isAdminConsoleHost
+    isAdminConsoleHost ||
+    isNfcHost
   ) {
     return <>{children}</>;
   }

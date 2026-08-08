@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
-import { NfcShell } from "./_components/nfc-shell";
 import { nfcSite } from "@/content/nfc/site";
 
+/**
+ * NFCサブドメイン全体の metadata を持つだけのレイアウト。
+ *
+ * ヘッダー・フッターはここに置かない。中間URL（/r/[slug]）は「かざしたら
+ * すぐ行き先へ送る」ためのページで、一瞬でも余計な要素が出ると邪魔になる。
+ * 画面の枠が必要なページだけ (site) グループの中に置き、そちらの layout で
+ * シェルを被せている。今後の中間URLも (site) の外に置くこと。
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(nfcSite.url),
   title: {
@@ -46,5 +53,5 @@ export const metadata: Metadata = {
 };
 
 export default function NfcLayout({ children }: { children: React.ReactNode }) {
-  return <NfcShell>{children}</NfcShell>;
+  return children;
 }
