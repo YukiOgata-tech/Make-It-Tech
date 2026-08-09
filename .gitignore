@@ -48,7 +48,10 @@ next-env.d.ts
 /public/videos/home-scroll/mit-landscape.mp4
 
 # for me
-docs/
+# docs は追跡する。ただし顧客資料・契約書・別事業の資料は追跡しない
+docs/AI-bot-service/
+docs/HP_creation/
+docs/related-to-apps/
 
 # Claude Code のローカル設定（許可リスト等。共有しない）
 .claude/settings.local.json
