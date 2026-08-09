@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { NfcSection } from "./nfc-section";
 import { nfcFaq, nfcCta, nfcNotes } from "@/content/nfc/lp";
 import { nfcLinks, isShopReady } from "@/content/nfc/site";
@@ -7,20 +7,30 @@ import { nfcLinks, isShopReady } from "@/content/nfc/site";
 export function NfcFaq() {
   return (
     <NfcSection id="faq" eyebrow={nfcFaq.eyebrow} title={nfcFaq.title}>
-      <div className="grid gap-3">
-        {nfcFaq.items.map((item) => (
+      <div>
+        {nfcFaq.items.map((item, index) => (
           <details
             key={item.q}
-            className="group rounded-xl border border-[#32454d] bg-[#16262b] px-5 py-4"
+            className="group py-5"
+            style={{
+              borderTop: index === 0 ? "1px solid var(--nfc-line)" : undefined,
+              borderBottom: "1px solid var(--nfc-line)",
+            }}
           >
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-[#f2ece2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]">
+            <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-sm sm:text-base">
               {item.q}
-              <ChevronDown
+              <Plus
                 aria-hidden
-                className="h-4 w-4 shrink-0 text-[#7d8f96] transition-transform group-open:rotate-180"
+                className="mt-0.5 h-4 w-4 shrink-0 transition-transform group-open:rotate-45"
+                style={{ color: "var(--nfc-signal)" }}
               />
             </summary>
-            <p className="mt-3 text-sm leading-relaxed text-[#b0c0c6]">{item.a}</p>
+            <p
+              className="mt-4 max-w-3xl text-sm leading-relaxed"
+              style={{ color: "var(--nfc-dim)" }}
+            >
+              {item.a}
+            </p>
           </details>
         ))}
       </div>
@@ -31,46 +41,56 @@ export function NfcFaq() {
 /** 最終CTAと注記。 */
 export function NfcCta() {
   return (
-    <NfcSection tone="surface">
-      <div className="rounded-3xl border border-[#32454d] bg-[#101c20] p-7 sm:p-10">
-        <h2 className="font-heading text-xl font-bold leading-snug tracking-tight sm:text-2xl">
-          {nfcCta.title}
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#b0c0c6]">
-          {nfcCta.description}
-        </p>
+    <NfcSection>
+      <h2 className="nfc-display max-w-3xl text-2xl leading-[1.25] sm:text-4xl">
+        {nfcCta.title}
+      </h2>
+      <p
+        className="mt-5 max-w-2xl text-sm leading-relaxed"
+        style={{ color: "var(--nfc-dim)" }}
+      >
+        {nfcCta.description}
+      </p>
 
-        <div className="mt-7 flex flex-wrap gap-3">
-          {isShopReady ? (
-            <a
-              href={nfcLinks.shopUrl}
-              className="inline-flex h-12 items-center rounded-xl bg-[#e2673d] px-6 text-sm font-semibold text-[#fff8f2] transition-colors hover:bg-[#c9552e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-            >
-              {nfcCta.primary}
-            </a>
-          ) : null}
+      <div className="mt-10 flex flex-wrap gap-3">
+        {isShopReady ? (
           <a
-            href={nfcLinks.contactUrl}
-            className="inline-flex h-12 items-center rounded-xl border border-[#32454d] px-6 text-sm font-semibold text-[#f2ece2] transition-colors hover:border-[#f2c56b] hover:text-[#f2c56b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+            href={nfcLinks.shopUrl}
+            className="nfc-display inline-flex h-13 items-center px-8 py-4 text-sm transition-opacity hover:opacity-85"
+            style={{
+              backgroundColor: "var(--nfc-signal)",
+              color: "var(--nfc-void)",
+            }}
           >
-            {nfcCta.secondary}
+            {nfcCta.primary}
           </a>
-          <a
-            href={nfcLinks.lineUrl}
-            className="inline-flex h-12 items-center rounded-xl border border-[#32454d] px-6 text-sm font-semibold text-[#f2ece2] transition-colors hover:border-[#2a9d91] hover:text-[#2a9d91] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-          >
-            LINEで相談
-          </a>
-        </div>
-
-        <ul className="mt-8 grid gap-1.5 border-t border-[#32454d] pt-6">
-          {nfcNotes.map((note) => (
-            <li key={note} className="text-[11px] leading-relaxed text-[#7d8f96]">
-              ※ {note}
-            </li>
-          ))}
-        </ul>
+        ) : null}
+        <a
+          href={nfcLinks.contactUrl}
+          className="nfc-display inline-flex items-center px-8 py-4 text-sm"
+          style={{ border: "1px solid var(--nfc-line-bright)" }}
+        >
+          {nfcCta.secondary}
+        </a>
+        <a
+          href={nfcLinks.lineUrl}
+          className="nfc-display inline-flex items-center px-8 py-4 text-sm"
+          style={{ border: "1px solid var(--nfc-line)", color: "var(--nfc-dim)" }}
+        >
+          LINEで相談
+        </a>
       </div>
+
+      <ul
+        className="mt-16 grid gap-2 pt-8"
+        style={{ borderTop: "1px solid var(--nfc-line)" }}
+      >
+        {nfcNotes.map((note) => (
+          <li key={note} className="nfc-label leading-relaxed">
+            {note}
+          </li>
+        ))}
+      </ul>
     </NfcSection>
   );
 }

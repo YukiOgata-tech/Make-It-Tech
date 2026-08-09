@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { NfcEmitter } from "./nfc-emitter";
 
 /**
  * アプリを開き、入っていなければWeb版に落とす。
@@ -9,6 +10,8 @@ import { useEffect, useState } from "react";
  * 開こうとし、一定時間たっても画面が表示されたまま（＝アプリに切り替わって
  * いない）ならWeb版へ移動する、という手順を踏む。アプリが起動した端末では
  * ページが背面に回るので、visibilitychange を見てWeb版への移動を取り消す。
+ *
+ * かざした直後に一瞬だけ見える画面なので、ヘッダー・フッターは持たない。
  */
 export function NfcAppLauncher({
   label,
@@ -53,35 +56,31 @@ export function NfcAppLauncher({
   }, [appUrl, webUrl]);
 
   return (
-    // 遷移専用のためヘッダー・フッターを持たない。全画面を自前で塗る。
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-[#101c20] px-6 py-16 text-center text-[#f2ece2]">
-      <div
-        aria-hidden
-        className="relative grid h-20 w-20 place-items-center rounded-full border border-[#32454d]"
-      >
-        <span className="nfc-ripple absolute h-full w-full rounded-full border border-[#f2c56b]" />
-        <span className="nfc-ripple nfc-ripple-delay-1 absolute h-full w-full rounded-full border border-[#f2c56b]" />
-        <span className="font-heading text-[10px] font-bold tracking-widest text-[#f2c56b]">
-          NFC
-        </span>
-      </div>
+    <div className="flex min-h-dvh flex-col items-center justify-center px-6 py-16 text-center">
+      <NfcEmitter size="md" />
 
+      <p className="nfc-label mt-10">Connecting</p>
       <p
-        className="mt-6 font-heading text-lg font-bold"
+        className="nfc-display mt-3 text-xl"
         role="status"
         aria-live="polite"
       >
         {label}を開いています
       </p>
-      <p className="mt-2 text-sm leading-relaxed text-[#b0c0c6]">
+      <p
+        className="mt-4 max-w-xs text-xs leading-relaxed"
+        style={{ color: "var(--nfc-dim)" }}
+      >
         アプリが入っていない場合は、そのままWeb版に移動します。
       </p>
 
       <a
         href={webUrl}
-        className={`mt-8 inline-flex h-11 items-center rounded-xl border border-[#32454d] px-5 text-sm font-semibold text-[#f2ece2] transition-opacity hover:border-[#f2c56b] hover:text-[#f2c56b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b] ${
-          fallbackVisible ? "opacity-100" : "opacity-0"
-        }`}
+        className="nfc-display mt-10 inline-flex h-11 items-center px-5 text-xs transition-opacity"
+        style={{
+          border: "1px solid var(--nfc-line-bright)",
+          opacity: fallbackVisible ? 1 : 0,
+        }}
         aria-hidden={!fallbackVisible}
         tabIndex={fallbackVisible ? undefined : -1}
       >

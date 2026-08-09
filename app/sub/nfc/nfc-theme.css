@@ -1,0 +1,248 @@
+/* ===========================================================================
+ * NFCサブドメイン専用テーマ
+ *
+ * 本体サイト（クリーム地・コーラル・丸み）とは意図的に対極に振っている。
+ * 寒色・ほぼ黒・直線・細い罫線。ブランドトークン（--brand-*）は使わない。
+ *
+ * すべて .nfc-root の中でだけ効くようにスコープしているので、本体サイトの
+ * 見た目には影響しない。
+ * ======================================================================== */
+
+.nfc-root {
+  --nfc-void: #05070d;
+  --nfc-surface: #0b1017;
+  --nfc-raised: #111823;
+  --nfc-line: #1d2836;
+  --nfc-line-bright: #2c3d50;
+  --nfc-text: #e9eff6;
+  --nfc-dim: #8496a8;
+  --nfc-faint: #5a6b7d;
+  /* 読み取りの信号を表す色。本体のコーラル/サンとは重ならないように選んでいる */
+  --nfc-signal: #00e5c7;
+  --nfc-pulse: #4d7cff;
+  --nfc-alert: #ff6b5a;
+
+  position: relative;
+  min-height: 100dvh;
+  background-color: var(--nfc-void);
+  color: var(--nfc-text);
+  font-feature-settings: "palt" 1;
+}
+
+/* --- タイポグラフィ ------------------------------------------------------ */
+
+/* 見出しと数値。本体の Outfit（丸い幾何学）に対して、角のある技術寄りの書体 */
+.nfc-display {
+  font-family: var(--font-nfc-display), "Zen Kaku Gothic New", system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+/* 計器のラベルのような極小の見出し */
+.nfc-label {
+  font-family: var(--font-nfc-display), system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--nfc-faint);
+}
+
+/* 数値を等幅で並べ、桁が動いても揺れないようにする */
+.nfc-numeric {
+  font-family: var(--font-nfc-display), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+/* --- 面と罫線 ------------------------------------------------------------ */
+
+.nfc-panel {
+  background-color: var(--nfc-surface);
+  border: 1px solid var(--nfc-line);
+}
+
+.nfc-hairline {
+  border-color: var(--nfc-line);
+}
+
+/* セクションの境界。角丸を使わず、細い線だけで構造を示す */
+.nfc-divide {
+  border-top: 1px solid var(--nfc-line);
+}
+
+/* --- 背景の「場」 -------------------------------------------------------- */
+
+/*
+ * ポインタ（またはタッチ）の位置を中心に、読み取り範囲のような光をにじませる。
+ * 座標は NfcField が --nfc-px / --nfc-py に流し込む。指定がないときは中央上寄り。
+ */
+.nfc-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      42rem 42rem at var(--nfc-px, 50%) var(--nfc-py, 28%),
+      rgb(0 229 199 / 0.1),
+      transparent 62%
+    ),
+    radial-gradient(
+      34rem 34rem at calc(100% - var(--nfc-px, 50%)) calc(100% - var(--nfc-py, 28%)),
+      rgb(77 124 255 / 0.08),
+      transparent 60%
+    );
+  transition: background 400ms ease-out;
+}
+
+/* 細いグリッド。製品の精度感を出すための下地 */
+.nfc-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(233 239 246 / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(233 239 246 / 0.028) 1px, transparent 1px);
+  background-size: 5rem 5rem;
+  mask-image: radial-gradient(75rem 50rem at 50% 0%, #000 30%, transparent 78%);
+}
+
+.nfc-above {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- 読み取りリング ------------------------------------------------------ */
+
+@keyframes nfc-emit {
+  0% {
+    transform: scale(0.35);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+}
+
+.nfc-emit {
+  animation: nfc-emit 3.4s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+}
+
+.nfc-emit-1 {
+  animation-delay: 1.13s;
+}
+
+.nfc-emit-2 {
+  animation-delay: 2.26s;
+}
+
+/* --- 走査線 -------------------------------------------------------------- */
+
+@keyframes nfc-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(2000%);
+    opacity: 0;
+  }
+}
+
+.nfc-scan {
+  animation: nfc-scan 5.5s linear infinite;
+}
+
+/* --- 信号の明滅（生きている表示に使う） ---------------------------------- */
+
+@keyframes nfc-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.nfc-blink {
+  animation: nfc-blink 2s ease-in-out infinite;
+}
+
+/* --- スタンプ獲得時のチャージ -------------------------------------------- */
+
+@keyframes nfc-charge {
+  from {
+    stroke-dashoffset: var(--nfc-dash, 264);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.nfc-charge {
+  animation: nfc-charge 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes nfc-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.nfc-pop {
+  animation: nfc-pop 620ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* --- 入場（スクロール連動ではなく読み込み順の演出） ---------------------- */
+
+@keyframes nfc-rise {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.nfc-rise {
+  animation: nfc-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* --- 動きを減らす設定への対応 -------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .nfc-root *,
+  .nfc-emit,
+  .nfc-scan,
+  .nfc-blink,
+  .nfc-charge,
+  .nfc-pop,
+  .nfc-rise {
+    animation: none !important;
+  }
+
+  .nfc-field {
+    transition: none !important;
+  }
+}

@@ -49,48 +49,59 @@ export default async function NfcCardPage() {
 
   return (
     <>
-      {/* 回数表示 */}
-      <NfcSection eyebrow={stampContent.eyebrow} title={stampContent.title}>
-        <div className="rounded-3xl border border-[#32454d] bg-[#16262b] p-7 sm:p-10">
-          {count === 0 ? (
-            <div className="text-center">
-              <p className="text-sm leading-relaxed text-[#b0c0c6]">
+      <NfcSection divide={false} eyebrow={stampContent.eyebrow} title={stampContent.title}>
+        <div className="px-6 py-12 sm:px-10 sm:py-16" style={{ border: "1px solid var(--nfc-line)" }}>
+          {/* 回数 */}
+          <div className="text-center">
+            {count === 0 ? (
+              <p className="text-sm leading-relaxed" style={{ color: "var(--nfc-dim)" }}>
                 まだ数えていません。下のボタンから、かざしたときの動きを試せます。
               </p>
-            </div>
-          ) : (
-            <div className="text-center">
-              <p className="font-heading text-6xl font-bold leading-none text-[#f2c56b] sm:text-7xl">
-                {count}
-                <span className="ml-2 align-baseline text-2xl font-bold text-[#b0c0c6] sm:text-3xl">
-                  {stampContent.progress.unit}
-                </span>
-              </p>
-              <p className="mt-4 text-sm text-[#b0c0c6]">
-                {reached
-                  ? stampContent.progress.goalLabel
-                  : stampContent.progress.remainingLabel(remaining)}
-              </p>
-            </div>
-          )}
+            ) : (
+              <>
+                <p className="nfc-label">Count</p>
+                <p
+                  className="nfc-numeric nfc-pop mt-3 text-7xl leading-none sm:text-8xl"
+                  style={{ color: "var(--nfc-signal)" }}
+                  key={count}
+                >
+                  {count}
+                  <span className="nfc-label ml-3 align-super">
+                    {stampContent.progress.unit}
+                  </span>
+                </p>
+                <p className="nfc-label mt-6">
+                  {reached
+                    ? stampContent.progress.goalLabel
+                    : stampContent.progress.remainingLabel(remaining)}
+                </p>
+              </>
+            )}
+          </div>
 
           {/* スタンプ */}
-          <ul className="mt-8 flex items-center justify-center gap-4">
+          <ul className="mt-12 flex items-center justify-center gap-5 sm:gap-8">
             {Array.from({ length: goal }, (_, index) => {
               const filled = index < Math.min(count, goal);
+              const isLatest = index === Math.min(count, goal) - 1;
               return (
                 <li
                   key={index}
-                  className={`grid h-16 w-16 place-items-center rounded-full border-2 transition-colors sm:h-20 sm:w-20 ${
-                    filled
-                      ? "border-[#f2c56b] bg-[#f2c56b] text-[#101c20]"
-                      : "border-dashed border-[#32454d] text-[#4a5f68]"
+                  className={`grid h-20 w-20 place-items-center rounded-full sm:h-24 sm:w-24 ${
+                    filled && isLatest ? "nfc-pop" : ""
                   }`}
+                  style={{
+                    border: `1px ${filled ? "solid" : "dashed"} ${
+                      filled ? "var(--nfc-signal)" : "var(--nfc-line-bright)"
+                    }`,
+                    backgroundColor: filled ? "var(--nfc-signal)" : "transparent",
+                    color: filled ? "var(--nfc-void)" : "var(--nfc-faint)",
+                  }}
                 >
                   {filled ? (
-                    <Check className="h-7 w-7" aria-hidden />
+                    <Check className="h-8 w-8" aria-hidden />
                   ) : (
-                    <span className="font-heading text-lg font-bold">{index + 1}</span>
+                    <span className="nfc-numeric text-lg">{index + 1}</span>
                   )}
                   <span className="sr-only">
                     {index + 1}個目のスタンプ{filled ? "（獲得済み）" : "（未獲得）"}
@@ -102,28 +113,41 @@ export default async function NfcCardPage() {
 
           {/* 特典 */}
           {reached && (
-            <div className="mt-8 rounded-2xl border-2 border-[#e2673d] bg-[#101c20] p-6 text-center">
-              <p className="font-heading text-[11px] font-bold tracking-widest text-[#e2673d]">
+            <div
+              className="nfc-pop mt-12 p-7 text-center sm:p-9"
+              style={{ border: "1px solid var(--nfc-signal)" }}
+            >
+              <p className="nfc-label" style={{ color: "var(--nfc-signal)" }}>
                 {stampContent.reward.couponLabel}
               </p>
-              <p className="mt-3 font-heading text-xl font-bold sm:text-2xl">
+              <p className="nfc-display mt-4 text-xl sm:text-2xl">
                 {stampContent.reward.couponText}
               </p>
-              <p className="mt-4 text-sm leading-relaxed text-[#b0c0c6]">
+              <p
+                className="mt-5 text-sm leading-relaxed"
+                style={{ color: "var(--nfc-dim)" }}
+              >
                 {stampContent.reward.body}
               </p>
-              <p className="mt-4 border-t border-[#32454d] pt-4 text-xs leading-relaxed text-[#7d8f96]">
+              <p
+                className="nfc-label mt-6 pt-5 leading-relaxed"
+                style={{ borderTop: "1px solid var(--nfc-line)" }}
+              >
                 {stampContent.reward.note}
               </p>
             </div>
           )}
 
           {/* 操作 */}
-          <div className="mt-8 flex flex-col items-center gap-4">
+          <div className="mt-12 flex flex-col items-center gap-5">
             {/* /tap は Route Handler なので Link ではなく通常のリンクで遷移する */}
             <a
               href={nfcHref("/tap")}
-              className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#e2673d] px-6 text-sm font-semibold text-[#fff8f2] transition-colors hover:bg-[#c9552e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+              className="nfc-display inline-flex h-12 items-center gap-2 px-7 text-sm transition-opacity hover:opacity-85"
+              style={{
+                backgroundColor: "var(--nfc-signal)",
+                color: "var(--nfc-void)",
+              }}
             >
               <Smartphone className="h-4 w-4" aria-hidden />
               {count === 0 ? "かざしてみる" : "もう一度かざす"}
@@ -132,69 +156,71 @@ export default async function NfcCardPage() {
             <form action={resetStamp}>
               <button
                 type="submit"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-[#7d8f96] transition-colors hover:text-[#b0c0c6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+                className="nfc-label inline-flex items-center gap-1.5 py-2 transition-opacity hover:opacity-70"
               >
-                <RotateCcw className="h-3.5 w-3.5" aria-hidden />
+                <RotateCcw className="h-3 w-3" aria-hidden />
                 {stampContent.reset.label}
               </button>
             </form>
           </div>
         </div>
 
-        <p className="mt-4 text-center text-xs text-[#7d8f96]">
-          {stampContent.reset.note}
-        </p>
+        <p className="nfc-label mt-5 text-center">{stampContent.reset.note}</p>
 
         {/* 集計 */}
         {stats && (
-          <div className="mt-6 rounded-2xl border border-[#32454d] bg-[#16262b] p-5">
-            <div className="flex flex-wrap items-baseline justify-center gap-x-8 gap-y-2 text-center">
-              <p className="text-sm text-[#b0c0c6]">
-                {stampContent.stats.label}
-                <span className="ml-2 font-heading text-xl font-bold text-[#2a9d91]">
-                  {stats.total.toLocaleString("ja-JP")}
-                </span>
-              </p>
-              <p className="text-sm text-[#b0c0c6]">
-                {stampContent.stats.devicesLabel}
-                <span className="ml-2 font-heading text-xl font-bold text-[#2a9d91]">
-                  {stats.devices.toLocaleString("ja-JP")}
-                </span>
+          <div
+            className="mt-8 grid gap-px sm:grid-cols-2"
+            style={{ backgroundColor: "var(--nfc-line)" }}
+          >
+            <div className="px-6 py-7 text-center" style={{ backgroundColor: "var(--nfc-void)" }}>
+              <p className="nfc-label">{stampContent.stats.label}</p>
+              <p className="nfc-numeric mt-3 text-3xl" style={{ color: "var(--nfc-pulse)" }}>
+                {stats.total.toLocaleString("ja-JP")}
               </p>
             </div>
-            <p className="mt-3 text-center text-xs text-[#7d8f96]">
-              {stampContent.stats.note}
-            </p>
+            <div className="px-6 py-7 text-center" style={{ backgroundColor: "var(--nfc-void)" }}>
+              <p className="nfc-label">{stampContent.stats.devicesLabel}</p>
+              <p className="nfc-numeric mt-3 text-3xl" style={{ color: "var(--nfc-pulse)" }}>
+                {stats.devices.toLocaleString("ja-JP")}
+              </p>
+            </div>
           </div>
         )}
+        {stats && <p className="nfc-label mt-4 text-center">{stampContent.stats.note}</p>}
       </NfcSection>
 
       {/* 経営者向けの説明 */}
-      <NfcSection tone="surface" title={stampContent.explain.title}>
-        <ul className="grid gap-4 sm:grid-cols-2">
+      <NfcSection eyebrow="For owners" title={stampContent.explain.title}>
+        <ul className="grid gap-px sm:grid-cols-2" style={{ backgroundColor: "var(--nfc-line)" }}>
           {stampContent.explain.items.map((item) => (
-            <li
-              key={item.title}
-              className="rounded-2xl border border-[#32454d] bg-[#101c20] p-5"
-            >
-              <h3 className="font-heading text-sm font-bold">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#b0c0c6]">
+            <li key={item.title} className="p-7" style={{ backgroundColor: "var(--nfc-void)" }}>
+              <h3 className="nfc-display text-sm">{item.title}</h3>
+              <p
+                className="mt-3 text-sm leading-relaxed"
+                style={{ color: "var(--nfc-dim)" }}
+              >
                 {item.body}
               </p>
             </li>
           ))}
         </ul>
 
-        <div className="mt-6 rounded-2xl border border-[#32454d] bg-[#101c20] p-6">
-          <h3 className="font-heading text-sm font-bold text-[#f2c56b]">
+        <div className="mt-12">
+          <p className="nfc-label" style={{ color: "var(--nfc-alert)" }}>
             {stampContent.limits.title}
-          </h3>
-          <ul className="mt-3 grid gap-2">
+          </p>
+          <ul className="mt-5 grid gap-3">
             {stampContent.limits.items.map((item) => (
-              <li key={item} className="flex gap-2.5 text-sm text-[#b0c0c6]">
+              <li
+                key={item}
+                className="flex gap-3 text-sm"
+                style={{ color: "var(--nfc-dim)" }}
+              >
                 <span
                   aria-hidden
-                  className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#7d8f96]"
+                  className="mt-2 h-px w-3 shrink-0"
+                  style={{ backgroundColor: "var(--nfc-line-bright)" }}
                 />
                 {item}
               </li>
@@ -205,36 +231,45 @@ export default async function NfcCardPage() {
 
       {/* CTA */}
       <NfcSection>
-        <div className="rounded-3xl border border-[#32454d] bg-[#16262b] p-7 sm:p-10">
-          <h2 className="font-heading text-xl font-bold leading-snug sm:text-2xl">
-            {stampContent.cta.title}
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#b0c0c6]">
-            {stampContent.cta.body}
-          </p>
+        <h2 className="nfc-display max-w-3xl text-2xl leading-[1.25] sm:text-3xl">
+          {stampContent.cta.title}
+        </h2>
+        <p
+          className="mt-5 max-w-2xl text-sm leading-relaxed"
+          style={{ color: "var(--nfc-dim)" }}
+        >
+          {stampContent.cta.body}
+        </p>
 
-          <div className="mt-7 flex flex-wrap gap-3">
-            <a
-              href={nfcLinks.contactUrl}
-              className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#e2673d] px-6 text-sm font-semibold text-[#fff8f2] transition-colors hover:bg-[#c9552e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-            >
-              {stampContent.cta.primary}
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </a>
-            <Link
-              href={nfcHref("/")}
-              className="inline-flex h-12 items-center rounded-xl border border-[#32454d] px-6 text-sm font-semibold text-[#f2ece2] transition-colors hover:border-[#f2c56b] hover:text-[#f2c56b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-            >
-              {stampContent.cta.secondary}
-            </Link>
-          </div>
-
-          <p className="mt-8 border-t border-[#32454d] pt-6 text-[11px] leading-relaxed text-[#7d8f96]">
-            ※ このページは仕組みを体験してもらうためのデモです。実際のお店では、
-            同じ日に何度かざしても1回だけ数える、特典を使い切りにするなどの調整を行います。
-            NFCタグに書き込むURLは {nfcSite.host}/tap です。
-          </p>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <a
+            href={nfcLinks.contactUrl}
+            className="nfc-display inline-flex h-12 items-center gap-2 px-7 text-sm transition-opacity hover:opacity-85"
+            style={{
+              backgroundColor: "var(--nfc-signal)",
+              color: "var(--nfc-void)",
+            }}
+          >
+            {stampContent.cta.primary}
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </a>
+          <Link
+            href={nfcHref("/")}
+            className="nfc-display inline-flex h-12 items-center px-7 text-sm"
+            style={{ border: "1px solid var(--nfc-line-bright)" }}
+          >
+            {stampContent.cta.secondary}
+          </Link>
         </div>
+
+        <p
+          className="nfc-label mt-16 max-w-3xl pt-8 leading-relaxed"
+          style={{ borderTop: "1px solid var(--nfc-line)" }}
+        >
+          このページは仕組みを体験してもらうためのデモです。実際のお店では、
+          同じ日に何度かざしても1回だけ数える、特典を使い切りにするなどの調整を行います。
+          NFCタグに書き込むURLは {nfcSite.host}/tap です。
+        </p>
       </NfcSection>
     </>
   );

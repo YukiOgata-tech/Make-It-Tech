@@ -1,5 +1,6 @@
 import { NfcHero } from "../_components/nfc-hero";
-import { NfcProblems, NfcUseCases } from "../_components/nfc-value";
+import { NfcProblems } from "../_components/nfc-value";
+import { NfcUseCases } from "../_components/nfc-use-cases";
 import { NfcProducts, NfcDesignTiers, NfcBundle } from "../_components/nfc-lineup";
 import { NfcScope, NfcFlow } from "../_components/nfc-support";
 import { NfcAdvanced, NfcCorporate } from "../_components/nfc-extras";

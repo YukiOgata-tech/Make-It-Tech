@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
 /**
- * NFCサブドメイン内のセクション共通レイアウト。
- * 見出しの階層と余白をここに集約し、各セクションは中身だけを持つ。
+ * セクション共通レイアウト。
+ * 面ではなく罫線で区切り、見出しは計器のラベルのように小さく置く。
  */
 export function NfcSection({
   id,
@@ -11,7 +11,7 @@ export function NfcSection({
   description,
   children,
   className,
-  tone = "base",
+  divide = true,
 }: {
   id?: string;
   eyebrow?: string;
@@ -19,33 +19,27 @@ export function NfcSection({
   description?: string;
   children?: React.ReactNode;
   className?: string;
-  /** surface は一段明るい面。セクションの区切りを色で示したいときに使う。 */
-  tone?: "base" | "surface";
+  divide?: boolean;
 }) {
   return (
     <section
       id={id}
-      className={cn(
-        "scroll-mt-20 px-4 py-14 sm:px-6 sm:py-20",
-        tone === "surface" && "bg-[#16262b]",
-        className
-      )}
+      className={cn("scroll-mt-16 px-5 py-16 sm:px-8 sm:py-24", divide && "nfc-divide", className)}
     >
       <div className="mx-auto max-w-6xl">
         {(eyebrow || title || description) && (
-          <div className="mb-8 sm:mb-12">
-            {eyebrow && (
-              <p className="text-xs font-semibold tracking-wide text-[#f2c56b] sm:text-sm">
-                -{eyebrow}
-              </p>
-            )}
+          <div className="mb-10 sm:mb-14">
+            {eyebrow && <p className="nfc-label">{eyebrow}</p>}
             {title && (
-              <h2 className="mt-2 font-heading text-xl font-bold leading-snug tracking-tight sm:text-3xl">
+              <h2 className="nfc-display mt-3 text-2xl leading-[1.2] sm:text-4xl">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#b0c0c6]">
+              <p
+                className="mt-4 max-w-2xl text-sm leading-relaxed"
+                style={{ color: "var(--nfc-dim)" }}
+              >
                 {description}
               </p>
             )}

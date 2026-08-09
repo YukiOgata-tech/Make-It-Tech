@@ -1,82 +1,122 @@
 import Link from "next/link";
-import Image from "next/image";
-import { nfcSite, nfcLinks, nfcHref, isShopReady } from "@/content/nfc/site";
+import { nfcLinks, nfcHref, isShopReady } from "@/content/nfc/site";
 
 /**
- * NFCサブドメインの外枠。
+ * ヘッダーとフッター。
  *
- * 本体サイト（クリーム基調）とは別の見た目にするため、テーマ変数ではなく
- * 色を直接指定している。tools サブドメインと同じ考え方で、next-themes の
- * ライト/ダーク切り替えの影響を受けずに常に同じ見た目になる。
+ * 本体サイトのように面や影で区切らず、細い罫線だけで構造を示す。
+ * 中身の邪魔をせず、背景の「場」が主役に見えるよう最小限にしている。
  */
 export function NfcShell({ children }: { children: React.ReactNode }) {
-  const primaryCta = isShopReady
-    ? { href: nfcLinks.shopUrl, label: "商品を見る", external: true }
-    : { href: nfcLinks.contactUrl, label: "相談する", external: true };
+  const primary = isShopReady
+    ? { href: nfcLinks.shopUrl, label: "購入する" }
+    : { href: nfcLinks.contactUrl, label: "相談する" };
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[#101c20] text-[#f2ece2]">
-      <header className="sticky top-0 z-50 border-b border-[#32454d] bg-[#101c20]/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Link href={nfcHref("/")} className="flex min-w-0 items-center gap-2.5">
-            <Image
-              src={nfcSite.logo}
-              alt=""
-              width={32}
-              height={32}
-              className="h-8 w-8 shrink-0 object-contain"
-              priority
+    <>
+      <header
+        className="sticky top-0 z-50 backdrop-blur"
+        style={{
+          borderBottom: "1px solid var(--nfc-line)",
+          backgroundColor: "rgb(5 7 13 / 0.72)",
+        }}
+      >
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
+          <Link href={nfcHref("/")} className="group flex items-center gap-3">
+            <span
+              className="nfc-blink block h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{ backgroundColor: "var(--nfc-signal)" }}
+              aria-hidden
             />
             <span className="min-w-0">
-              <span className="block truncate font-heading text-base font-bold tracking-tight sm:text-lg">
-                NFCスタンド・プレート
+              <span className="nfc-display block truncate text-[0.95rem] leading-none">
+                NFC FIELD
               </span>
-              <span className="hidden text-[11px] text-[#b0c0c6] sm:block">
-                Make It Tech
-              </span>
+              <span className="nfc-label mt-1 block">Make It Tech</span>
             </span>
           </Link>
 
-          <a
-            href={primaryCta.href}
-            className="inline-flex h-10 shrink-0 items-center rounded-xl bg-[#e2673d] px-4 text-sm font-semibold text-[#fff8f2] transition-colors hover:bg-[#c9552e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-          >
-            {primaryCta.label}
-          </a>
+          <nav className="flex items-center gap-1 sm:gap-3">
+            <Link
+              href={nfcHref("/demo")}
+              className="hidden px-3 py-2 text-xs font-medium transition-colors sm:block"
+              style={{ color: "var(--nfc-dim)" }}
+            >
+              できること
+            </Link>
+            <a
+              href={primary.href}
+              className="nfc-display inline-flex h-9 shrink-0 items-center px-4 text-xs transition-opacity hover:opacity-85"
+              style={{
+                backgroundColor: "var(--nfc-signal)",
+                color: "var(--nfc-void)",
+              }}
+            >
+              {primary.label}
+            </a>
+          </nav>
         </div>
       </header>
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-[#32454d] px-4 py-8 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="font-heading text-sm font-bold">Make It Tech</p>
-            <p className="mt-1 text-xs leading-relaxed text-[#b0c0c6]">
-              新潟県内を中心に、Web制作と業務改善を支援しています。
-            </p>
+      <footer style={{ borderTop: "1px solid var(--nfc-line)" }}>
+        <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="nfc-display text-sm leading-none">NFC FIELD</p>
+              <p className="nfc-label mt-2">Make It Tech / Niigata</p>
+              <p
+                className="mt-4 max-w-xs text-xs leading-relaxed"
+                style={{ color: "var(--nfc-dim)" }}
+              >
+                かざすだけで、見てほしいページへつなぐ。設定まで済ませてお届けします。
+              </p>
+            </div>
+
+            <nav className="grid gap-2.5 text-xs">
+              {[
+                { href: nfcHref("/"), label: "商品について", internal: true },
+                { href: nfcHref("/demo"), label: "できること", internal: true },
+                { href: nfcLinks.contactUrl, label: "お問い合わせ", internal: false },
+                { href: nfcLinks.parentUrl, label: "Make It Tech 本体", internal: false },
+                {
+                  href: `${nfcLinks.parentUrl}/privacy`,
+                  label: "プライバシーポリシー",
+                  internal: false,
+                },
+              ].map((item) =>
+                item.internal ? (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="transition-colors hover:opacity-80"
+                    style={{ color: "var(--nfc-dim)" }}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="transition-colors hover:opacity-80"
+                    style={{ color: "var(--nfc-dim)" }}
+                  >
+                    {item.label}
+                  </a>
+                )
+              )}
+            </nav>
           </div>
 
-          <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#b0c0c6]">
-            <a href={nfcLinks.parentUrl} className="hover:text-[#f2ece2]">
-              Make It Tech 本体サイト
-            </a>
-            <a href={nfcLinks.contactUrl} className="hover:text-[#f2ece2]">
-              お問い合わせ
-            </a>
-            <a href={`${nfcLinks.parentUrl}/privacy`} className="hover:text-[#f2ece2]">
-              プライバシーポリシー
-            </a>
-            <a href={`${nfcLinks.parentUrl}/terms`} className="hover:text-[#f2ece2]">
-              利用規約
-            </a>
-          </nav>
+          <p
+            className="nfc-label mt-10"
+            style={{ borderTop: "1px solid var(--nfc-line)", paddingTop: "1.25rem" }}
+          >
+            © {new Date().getFullYear()} Make It Tech
+          </p>
         </div>
-
-        <p className="mx-auto mt-6 max-w-6xl text-[11px] text-[#7d8f96]">
-          © {new Date().getFullYear()} Make It Tech
-        </p>
       </footer>
-    </div>
+    </>
   );
 }

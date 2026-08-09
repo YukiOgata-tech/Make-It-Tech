@@ -1,14 +1,26 @@
 import type { Metadata } from "next";
+import { Space_Grotesk } from "next/font/google";
+import { NfcField } from "./_components/nfc-field";
 import { nfcSite } from "@/content/nfc/site";
+import "./nfc-theme.css";
 
 /**
- * NFCサブドメイン全体の metadata を持つだけのレイアウト。
+ * NFCサブドメイン全体の外枠。
  *
- * ヘッダー・フッターはここに置かない。中間URL（/r/[slug]）は「かざしたら
- * すぐ行き先へ送る」ためのページで、一瞬でも余計な要素が出ると邪魔になる。
- * 画面の枠が必要なページだけ (site) グループの中に置き、そちらの layout で
- * シェルを被せている。今後の中間URLも (site) の外に置くこと。
+ * ヘッダー・フッターはここに置かない。中間URL（/r/[slug]）や /tap の遷移先は
+ * 「かざしたらすぐ行き先へ送る」ためのページで、一瞬でも余計な要素が出ると
+ * 邪魔になる。画面の枠が必要なページだけ (site) グループに入れている。
+ *
+ * 一方、配色・書体・背景の「場」はタグ先すべてで共通にしたいので、この階層で
+ * 適用している。本体サイトとは別の見た目にするため、テーマ変数には依存しない。
  */
+const nfcDisplay = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-nfc-display",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(nfcSite.url),
   title: {
@@ -53,5 +65,10 @@ export const metadata: Metadata = {
 };
 
 export default function NfcLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <div className={`nfc-root ${nfcDisplay.variable}`}>
+      <NfcField />
+      <div className="nfc-above flex min-h-dvh flex-col">{children}</div>
+    </div>
+  );
 }

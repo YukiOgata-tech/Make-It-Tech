@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Clock, Smartphone } from "lucide-react";
+import { ArrowRight, Smartphone } from "lucide-react";
 import { NfcSection } from "../../_components/nfc-section";
+import { NfcEmitter } from "../../_components/nfc-emitter";
 import { nfcDemoLink, resolveSlot, getJstHour } from "@/content/nfc/redirects";
 import { nfcHref, nfcLinks, nfcSite } from "@/content/nfc/site";
 
@@ -9,9 +10,9 @@ import { nfcHref, nfcLinks, nfcSite } from "@/content/nfc/site";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "時間帯で行き先が変わるNFC（デモ）",
+  title: "できること（デモ）",
   description:
-    "同じNFCスタンドでも、かざした時刻によって開くページが変わる仕組みのデモです。日中はd-miseのアプリ紹介、夜間はChatGPTを開きます。",
+    "かざした時刻で行き先が変わる、来店回数を数えて特典を出す。NFCで実際に動かせる仕組みのデモです。",
   robots: { index: false, follow: false },
 };
 
@@ -22,99 +23,145 @@ export default function NfcDemoPage() {
   const now = new Date();
   const hour = getJstHour(now);
   const activeSlot = resolveSlot(nfcDemoLink, now);
-  const redirectPath = nfcHref(`/r/${nfcDemoLink.slug}`);
+  const active = activeSlot?.target ?? nfcDemoLink.fallback;
 
   return (
     <>
+      {/* 事例1：時間帯で切り替わる */}
       <NfcSection
-        eyebrow="カスタマイズNFC デモ"
+        divide={false}
+        eyebrow="Case 01 / 時間帯で切り替える"
         title={nfcDemoLink.name}
         description={nfcDemoLink.description}
       >
-        {/* 現在の判定結果 */}
-        <div className="rounded-2xl border border-[#2a9d91]/50 bg-[#16262b] p-6 sm:p-8">
-          <p className="flex items-center gap-2 text-xs text-[#7d8f96]">
-            <Clock className="h-3.5 w-3.5" aria-hidden />
-            日本時間 {hour}時台のいま
-          </p>
+        <div className="grid gap-px lg:grid-cols-[1fr_22rem]" style={{ backgroundColor: "var(--nfc-line)" }}>
+          {/* 現在の判定 */}
+          <div className="p-7 sm:p-10" style={{ backgroundColor: "var(--nfc-void)" }}>
+            <p className="nfc-label">
+              <span
+                className="nfc-blink mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle"
+                style={{ backgroundColor: "var(--nfc-signal)" }}
+                aria-hidden
+              />
+              Live / 日本時間 {hour}時台
+            </p>
 
-          <p className="mt-3 font-heading text-xl font-bold sm:text-2xl">
-            {activeSlot ? activeSlot.label : "時間帯の指定なし"}
-          </p>
+            <p className="nfc-display mt-6 text-2xl sm:text-3xl">
+              {activeSlot ? activeSlot.label : "時間帯の指定なし"}
+            </p>
 
-          <p className="mt-2 text-sm text-[#b0c0c6]">
-            かざすと開くページ：
-            <span className="ml-1 font-semibold text-[#f2c56b]">
-              {activeSlot
-                ? targetName(activeSlot.target.kind, activeSlot.target.label)
-                : targetName(nfcDemoLink.fallback.kind, nfcDemoLink.fallback.label)}
-            </span>
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href={redirectPath}
-              prefetch={false}
-              className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#e2673d] px-6 text-sm font-semibold text-[#fff8f2] transition-colors hover:bg-[#c9552e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+            <p className="nfc-label mt-8">いまかざすと開くページ</p>
+            <p
+              className="nfc-display mt-2 text-lg"
+              style={{ color: "var(--nfc-signal)" }}
             >
-              <Smartphone className="h-4 w-4" aria-hidden />
-              かざしたときと同じ動きを試す
-            </Link>
+              {targetName(active.kind, active.label)}
+            </p>
+
+            <div className="mt-10">
+              <Link
+                href={nfcHref(`/r/${nfcDemoLink.slug}`)}
+                prefetch={false}
+                className="nfc-display inline-flex h-12 items-center gap-2 px-6 text-sm transition-opacity hover:opacity-85"
+                style={{
+                  backgroundColor: "var(--nfc-signal)",
+                  color: "var(--nfc-void)",
+                }}
+              >
+                <Smartphone className="h-4 w-4" aria-hidden />
+                かざしたときと同じ動きを試す
+              </Link>
+              <p className="nfc-label mt-4">
+                スマートフォンで開くと、アプリへの切り替えまで確認できます
+              </p>
+            </div>
           </div>
 
-          <p className="mt-4 text-xs leading-relaxed text-[#7d8f96]">
-            スマートフォンで開くと、アプリへの切り替えまで確認できます。
-          </p>
-        </div>
-
-        {/* 時間帯の設定 */}
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[30rem] border-collapse text-sm">
-            <caption className="pb-3 text-left text-xs text-[#7d8f96]">
-              このタグに設定されている切り替えルール
-            </caption>
-            <thead>
-              <tr className="border-b border-[#32454d] text-left text-xs text-[#7d8f96]">
-                <th scope="col" className="py-2 pr-4 font-medium">
-                  時間帯
-                </th>
-                <th scope="col" className="py-2 pr-4 font-medium">
-                  開くページ
-                </th>
-                <th scope="col" className="py-2 font-medium">
-                  いまの状態
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {nfcDemoLink.slots.map((slot) => {
+          {/* ルール */}
+          <div className="p-7 sm:p-9" style={{ backgroundColor: "var(--nfc-void)" }}>
+            <p className="nfc-label">設定されている切り替えルール</p>
+            <ul className="mt-6">
+              {nfcDemoLink.slots.map((slot, index) => {
                 const isActive = activeSlot?.label === slot.label;
                 return (
-                  <tr key={slot.label} className="border-b border-[#32454d]/60">
-                    <td className="py-3 pr-4 text-[#f2ece2]">{slot.label}</td>
-                    <td className="py-3 pr-4 text-[#b0c0c6]">
-                      {targetName(slot.target.kind, slot.target.label)}
-                    </td>
-                    <td className="py-3">
-                      {isActive ? (
-                        <span className="rounded-full bg-[#2a9d91] px-2.5 py-1 text-[11px] font-bold text-[#08201e]">
+                  <li
+                    key={slot.label}
+                    className="py-5"
+                    style={{
+                      borderTop: index === 0 ? undefined : "1px solid var(--nfc-line)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span
+                        className="nfc-display text-sm"
+                        style={{
+                          color: isActive ? "var(--nfc-signal)" : "var(--nfc-dim)",
+                        }}
+                      >
+                        {slot.label}
+                      </span>
+                      {isActive && (
+                        <span
+                          className="nfc-label"
+                          style={{ color: "var(--nfc-signal)" }}
+                        >
                           適用中
                         </span>
-                      ) : (
-                        <span className="text-[11px] text-[#7d8f96]">待機</span>
                       )}
-                    </td>
-                  </tr>
+                    </div>
+                    <p
+                      className="mt-2 text-xs"
+                      style={{ color: "var(--nfc-faint)" }}
+                    >
+                      {targetName(slot.target.kind, slot.target.label)}
+                    </p>
+                  </li>
                 );
               })}
-            </tbody>
-          </table>
+            </ul>
+          </div>
+        </div>
+      </NfcSection>
+
+      {/* 事例2：回数を数える */}
+      <NfcSection
+        eyebrow="Case 02 / 回数を数える"
+        title="かざした回数を数えて、特典を出す"
+        description="同じ札にかざすたびに回数が増え、3回目で特典が出ます。アプリのダウンロードも会員登録も必要ありません。その場で試せます。"
+      >
+        <div
+          className="flex flex-col items-center px-6 py-12 text-center"
+          style={{ border: "1px solid var(--nfc-line)" }}
+        >
+          <NfcEmitter size="md" />
+
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            {/* /tap は Route Handler なので Link ではなく通常のリンクで遷移する */}
+            <a
+              href={nfcHref("/tap")}
+              className="nfc-display inline-flex h-12 items-center gap-2 px-6 text-sm transition-opacity hover:opacity-85"
+              style={{
+                backgroundColor: "var(--nfc-signal)",
+                color: "var(--nfc-void)",
+              }}
+            >
+              <Smartphone className="h-4 w-4" aria-hidden />
+              スタンプカードを試す
+            </a>
+            <Link
+              href={nfcHref("/card")}
+              className="nfc-display inline-flex h-12 items-center px-6 text-sm"
+              style={{ border: "1px solid var(--nfc-line-bright)" }}
+            >
+              数えずに見るだけ
+            </Link>
+          </div>
         </div>
       </NfcSection>
 
       {/* 仕組み */}
-      <NfcSection tone="surface" eyebrow="仕組み" title="タグには行き先そのものを書きません">
-        <ol className="grid gap-4 md:grid-cols-3">
+      <NfcSection eyebrow="Mechanism" title="タグには行き先そのものを書きません">
+        <ol className="grid gap-px md:grid-cols-3" style={{ backgroundColor: "var(--nfc-line)" }}>
           {[
             {
               title: "タグには中間URLを書く",
@@ -122,85 +169,70 @@ export default function NfcDemoPage() {
             },
             {
               title: "かざされた時点で判定する",
-              body: "アクセスされた時刻を日本時間で見て、設定したルールのどれに当てはまるかを決めます。",
+              body: "アクセスされた時刻や回数を見て、設定したルールのどれに当てはまるかを決めます。",
             },
             {
               title: "決まった行き先へ送る",
               body: "通常のページはそのまま開き、アプリを指定した場合はアプリを起動します。入っていなければWeb版に切り替えます。",
             },
           ].map((step, index) => (
-            <li
-              key={step.title}
-              className="rounded-2xl border border-[#32454d] bg-[#101c20] p-5"
-            >
-              <span className="font-heading text-xs font-bold text-[#e2673d]">
+            <li key={step.title} className="p-7" style={{ backgroundColor: "var(--nfc-void)" }}>
+              <span
+                className="nfc-numeric block text-2xl"
+                style={{ color: "var(--nfc-signal)" }}
+              >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="mt-2 font-heading text-sm font-bold">{step.title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#b0c0c6]">{step.body}</p>
+              <h3 className="nfc-display mt-4 text-sm">{step.title}</h3>
+              <p
+                className="mt-3 text-xs leading-relaxed"
+                style={{ color: "var(--nfc-dim)" }}
+              >
+                {step.body}
+              </p>
             </li>
           ))}
         </ol>
 
-        <div className="mt-6 rounded-2xl border border-[#32454d] bg-[#101c20] p-6">
-          <h3 className="font-heading text-sm font-bold">この方式でできること</h3>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        <div className="mt-12">
+          <p className="nfc-label">この方式でできること</p>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
             {[
               "タグを作り直さずに行き先を変更する",
               "曜日や期間で切り替える",
               "キャンペーン中だけ別ページに送る",
               "かざされた回数を数える",
             ].map((item) => (
-              <li key={item} className="flex gap-2.5 text-sm text-[#b0c0c6]">
+              <li
+                key={item}
+                className="flex gap-3 text-sm"
+                style={{ color: "var(--nfc-dim)" }}
+              >
                 <span
                   aria-hidden
-                  className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#f2c56b]"
+                  className="mt-2 h-px w-3 shrink-0"
+                  style={{ backgroundColor: "var(--nfc-signal)" }}
                 />
                 {item}
               </li>
             ))}
           </ul>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-10 flex flex-wrap gap-3">
             <a
               href={nfcLinks.contactUrl}
-              className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#32454d] px-5 text-sm font-semibold text-[#f2ece2] transition-colors hover:border-[#f2c56b] hover:text-[#f2c56b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+              className="nfc-display inline-flex h-12 items-center gap-2 px-6 text-sm"
+              style={{ border: "1px solid var(--nfc-line-bright)" }}
             >
               こういう仕組みを相談する
               <ArrowRight className="h-4 w-4" aria-hidden />
             </a>
             <Link
               href={nfcHref("/")}
-              className="inline-flex h-11 items-center rounded-xl border border-[#32454d] px-5 text-sm font-semibold text-[#b0c0c6] transition-colors hover:text-[#f2ece2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+              className="nfc-display inline-flex h-12 items-center px-6 text-sm"
+              style={{ border: "1px solid var(--nfc-line)", color: "var(--nfc-dim)" }}
             >
               商品の説明に戻る
-            </Link>
-          </div>
-        </div>
-      </NfcSection>
-
-      {/* もう一つの事例 */}
-      <NfcSection eyebrow="もう一つの事例" title="かざした回数を数えて、特典を出す">
-        <div className="rounded-2xl border border-[#32454d] bg-[#16262b] p-6 sm:p-8">
-          <p className="text-sm leading-relaxed text-[#b0c0c6]">
-            同じ札にかざすたびに回数が増え、3回目で特典が出るスタンプカードです。
-            アプリのダウンロードも会員登録も必要ありません。その場で試せます。
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            {/* /tap は Route Handler なので Link ではなく通常のリンクで遷移する */}
-            <a
-              href={nfcHref("/tap")}
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#2a9d91] px-5 text-sm font-semibold text-[#08201e] transition-colors hover:bg-[#248b80] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-            >
-              <Smartphone className="h-4 w-4" aria-hidden />
-              スタンプカードを試す
-            </a>
-            <Link
-              href={nfcHref("/card")}
-              className="inline-flex h-11 items-center rounded-xl border border-[#32454d] px-5 text-sm font-semibold text-[#b0c0c6] transition-colors hover:text-[#f2ece2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
-            >
-              数えずに見るだけ
             </Link>
           </div>
         </div>
