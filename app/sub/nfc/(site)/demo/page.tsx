@@ -178,6 +178,33 @@ export default function NfcDemoPage() {
           </div>
         </div>
       </NfcSection>
+
+      {/* もう一つの事例 */}
+      <NfcSection eyebrow="もう一つの事例" title="かざした回数を数えて、特典を出す">
+        <div className="rounded-2xl border border-[#32454d] bg-[#16262b] p-6 sm:p-8">
+          <p className="text-sm leading-relaxed text-[#b0c0c6]">
+            同じ札にかざすたびに回数が増え、3回目で特典が出るスタンプカードです。
+            アプリのダウンロードも会員登録も必要ありません。その場で試せます。
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            {/* /tap は Route Handler なので Link ではなく通常のリンクで遷移する */}
+            <a
+              href={nfcHref("/tap")}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#2a9d91] px-5 text-sm font-semibold text-[#08201e] transition-colors hover:bg-[#248b80] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+            >
+              <Smartphone className="h-4 w-4" aria-hidden />
+              スタンプカードを試す
+            </a>
+            <Link
+              href={nfcHref("/card")}
+              className="inline-flex h-11 items-center rounded-xl border border-[#32454d] px-5 text-sm font-semibold text-[#b0c0c6] transition-colors hover:text-[#f2ece2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c56b]"
+            >
+              数えずに見るだけ
+            </Link>
+          </div>
+        </div>
+      </NfcSection>
     </>
   );
 }
