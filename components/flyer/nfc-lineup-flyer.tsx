@@ -237,17 +237,25 @@ function GlobeIcon({ className, style }: IconProps) {
 function StandProductIcon({ className, style }: IconProps) {
   return (
     <svg
-      viewBox="0 0 100 100"
+      viewBox="0 0 100 132"
       className={className} style={style}
       fill="none"
       stroke="currentColor"
-      strokeWidth="3.4"
+      strokeWidth="5"
       strokeLinejoin="round"
+      strokeLinecap="round"
       aria-hidden
     >
-      <path d="M26 5 78 11 72 83 10 92Z" />
-      <path d="M78 11 86 15 80 87 72 83" />
-      <path d="M50 79 96 86 88 97 40 89Z" />
+      {/* Front panel, leaning back in a 3/4 view. */}
+      <path d="M24 3 88 10 68 118 3 111Z" />
+      {/* Panel thickness, visible down the right edge. */}
+      <path d="M88 10 95 15 74 114 68 118" />
+      {/* The L-foot, drawn as its visible outline only (no fills here, so the
+          part hidden behind the panel is simply not drawn): a wedge poking out
+          past the right edge, then the plate's front edge running back left to
+          the panel's bottom-left corner. That trailing line is what makes the
+          panel read as standing ON something rather than floating. */}
+      <path d="M72 96 96 103 79 124 3 111" />
     </svg>
   );
 }
@@ -260,8 +268,9 @@ function PlateProductIcon({ className, style }: IconProps) {
       className={className} style={style}
       fill="none"
       stroke="currentColor"
-      strokeWidth="3.4"
+      strokeWidth="3.8"
       strokeLinejoin="round"
+      strokeLinecap="round"
       aria-hidden
     >
       <path d="M36 20 96 44 64 76 4 52Z" />
