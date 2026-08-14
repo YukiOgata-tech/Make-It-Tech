@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { StoreButtons } from "@/components/works/store-buttons";
 import type { WorkItem } from "@/content/works";
 
 const toneClasses: Record<WorkItem["previewTone"], string> = {
@@ -646,15 +647,20 @@ export function WorkCard({ work, compact = false }: { work: WorkItem; compact?: 
           </ul>
         ) : null}
 
-        {work.url ? (
-          <Link
-            href={work.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-2 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:px-3 sm:text-sm"
-          >
-            {work.linkLabel ?? "サイトを見る"} <ArrowUpRight className="ml-1 size-3.5 sm:size-4" />
-          </Link>
+        {work.url || work.stores ? (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {work.url ? (
+              <Link
+                href={work.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-2 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:px-3 sm:text-sm"
+              >
+                {work.linkLabel ?? "サイトを見る"} <ArrowUpRight className="ml-1 size-3.5 sm:size-4" />
+              </Link>
+            ) : null}
+            <StoreButtons links={work.stores} />
+          </div>
         ) : (
           <div className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 bg-muted/50 px-2 text-[10px] font-semibold text-muted-foreground sm:h-10 sm:px-3 sm:text-sm">
             非公開システム

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { publicWorks, workStats } from "@/content/works";
 import { WorkCard } from "@/components/works/work-card";
+import { StoreButtons } from "@/components/works/store-buttons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -75,19 +76,22 @@ export default function WorksPage() {
                     </h2>
                   </div>
                   <p className="mt-1.5 max-w-3xl text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
-                    飲食店や学童保育施設向けに、シフト希望の回収から作成・共有・打刻までを一元化したWebシステムです。
+                    飲食店や学童保育施設向けに、シフト希望の回収から作成・共有・打刻までを一元化したWebシステムです。スタッフがシフト確認・希望提出・打刻をスマホから行えるアプリも公開しています。
                   </p>
                 </div>
-                {digishiftWork.url ? (
-                  <Link
-                    href={digishiftWork.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-3 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:text-sm"
-                  >
-                    サイトを見る <ArrowRight className="ml-1 size-3.5 sm:size-4" />
-                  </Link>
-                ) : null}
+                <div className="flex flex-wrap items-center gap-1.5 sm:justify-end">
+                  {digishiftWork.url ? (
+                    <Link
+                      href={digishiftWork.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-8 items-center justify-center rounded-xl border border-border/70 px-3 text-[10px] font-semibold transition hover:bg-muted sm:h-10 sm:text-sm"
+                    >
+                      サイトを見る <ArrowRight className="ml-1 size-3.5 sm:size-4" />
+                    </Link>
+                  ) : null}
+                  <StoreButtons links={digishiftWork.stores} />
+                </div>
               </div>
             </section>
           ) : null}

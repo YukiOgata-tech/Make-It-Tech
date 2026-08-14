@@ -1,9 +1,22 @@
+/**
+ * App store destinations, kept separate from `url` so a work can link to its
+ * website AND its store pages at once (Dミセ has both).
+ * `androidComingSoon` is opt-in: a work with only an iOS build and no Android
+ * plans should leave it off rather than advertise a release that isn't coming.
+ */
+export type StoreLinks = {
+  ios?: string;
+  android?: string;
+  androidComingSoon?: boolean;
+};
+
 export type WorkItem = {
   id: string;
   companyName: string;
   title: string;
   category: string;
   url?: string;
+  stores?: StoreLinks;
   summary: string;
   scope: string[];
   results: string[];
@@ -28,16 +41,25 @@ export const works: WorkItem[] = [
   {
     id: "digishift",
     companyName: "Dミセ",
-    title: "店舗・施設向けシフト管理Webシステム",
-    category: "Webシステム開発",
-    url: "https://d-mise.make-it-tech.com",
-    summary: "希望シフト提出、シフト作成、共有、打刻管理、CSV・画像出力、給与計算サポートまでを一元化するWebシフト管理システムを開発。",
-    scope: ["要件整理", "UI設計", "Webアプリ開発", "勤怠管理", "出力機能", "運用支援"],
-    results: ["飲食店4店舗以上と学童保育施設で利用(2026/6時点)", "LINE・紙・Excelによる希望回収や転記作業を削減"],
+    title: "店舗・施設向けシフト管理Webシステム / スタッフ向けモバイルアプリ",
+    category: "Webシステム・アプリ開発",
+    url: "https://d-mise.com",
+    stores: {
+      ios: "https://apps.apple.com/app/id6796619371",
+      androidComingSoon: true,
+    },
+    summary:
+      "希望シフト提出、シフト作成、共有、打刻管理、CSV・画像出力、給与計算サポートまでを一元化するWebシフト管理システムを開発。スタッフがシフト確認・希望提出・打刻をスマートフォンから行えるiOSアプリも公開しています。",
+    scope: ["要件整理", "Webアプリ開発", "モバイルアプリ開発", "UI設計", "勤怠管理", "出力機能", "運用支援"],
+    results: [
+      "飲食店4店舗以上と学童保育施設で利用(2026/6時点)",
+      "LINE・紙・Excelによる希望回収や転記作業を削減",
+      "スタッフ向けiOSアプリを公開し、シフト確認・希望提出・打刻をスマホで完結",
+    ],
     previewTone: "teal",
     previewType: "live",
-    previewUrl: "https://d-mise.make-it-tech.com",
-    logoUrl: "https://d-mise.make-it-tech.com/images/dmise-logo-trans.png",
+    previewUrl: "https://d-mise.com",
+    logoUrl: "https://d-mise.com/images/dmise-logo-trans.png",
     isPublic: true,
   },
   {
@@ -86,7 +108,7 @@ export const works: WorkItem[] = [
     companyName: "ドリンKing iOS",
     title: "iOSドリンク管理アプリ「ドリンKing」",
     category: "モバイルアプリ制作",
-    url: "https://apps.apple.com/app/id6758897415",
+    stores: { ios: "https://apps.apple.com/app/id6758897415" },
     summary: "飲酒管理機能を中心に、飲み会の幹事やお酒を楽しむ人向けのiOSアプリを開発。飲んだお酒の記録や、現状把握を手助け。",
     scope: ["モバイルアプリ", "ユーザー管理",  "外部API･公開データの活用"],
     results: ["日頃の飲酒管理の記録", "イベント時の飲酒量管理"],
@@ -95,7 +117,6 @@ export const works: WorkItem[] = [
     logoUrl: "/images/works/DMA-icon.png",
     previewImageAlt: "アプリ内UI画像",
     previewTone: "sun",
-    linkLabel: "App Storeで見る",
     isPublic: true,
   },
 ];
