@@ -63,6 +63,31 @@ const features = [
   { Icon: Settings, color: "#8b3fd6", title: "事前設定も\nおまかせ", note: "NFC・QRの\n事前設定も対応" },
 ];
 
+/** Pricing per `docs/make_it_tech_nfc_business_master.md` §8. Kept in sync with
+ *  the NFC lineup flyer — both sheets quote the same product line. */
+const priceCards = [
+  {
+    plan: "標準デザイン",
+    color: "#2f7cf0",
+    left: 54,
+    width: 300,
+    rows: [
+      { label: "スタンド型", price: "4,980" },
+      { label: "プレート型", price: "4,980" },
+    ],
+  },
+  {
+    plan: "オリジナルデザイン",
+    color: "#f5920b",
+    left: 368,
+    width: 300,
+    rows: [
+      { label: "スタンド型", price: "11,980" },
+      { label: "プレート型", price: "9,980" },
+    ],
+  },
+];
+
 const steps = [
   { n: 1, Icon: MessagesSquare, title: "ご相談", note: "ご要望や使用環境を\nヒアリングします" },
   { n: 2, Icon: MonitorCheck, title: "デザイン確認", note: "テンプレ/オリジナル/依頼\nを選択します" },
@@ -201,35 +226,65 @@ export function GoogleReviewFlyer() {
               <div className="absolute -bottom-[9px] left-10 h-4 w-4 rotate-45 border-b border-r border-[#e3e8f0] bg-white" />
             </div>
 
-            {/* ---- pricing boxes ---- */}
-            {/* 標準デザイン */}
-            <div className="absolute left-12 top-[652px] z-10 flex h-[142px] w-[280px] flex-col items-center justify-center rounded-2xl border-2 bg-white" style={{ borderColor: "#2f7cf0" }}>
-              <p className="text-[22px] font-bold" style={{ color: "#2f7cf0" }}>標準デザイン</p>
-              <p className="mt-1 leading-none" style={{ color: "#2f7cf0" }}>
-                <span className="text-[52px] font-extrabold">4,000</span>
-                <span className="text-[26px] font-bold">円</span>
-                <span className="ml-1 text-[15px] font-semibold text-[#64748b]">(税込)</span>
-              </p>
-            </div>
-            {/* オリジナルデザイン */}
-            <div className="absolute left-[344px] top-[652px] z-10 flex h-[142px] w-[334px] flex-col items-center justify-center rounded-2xl border-2 bg-white" style={{ borderColor: "#f5920b" }}>
-              <p className="text-[22px] font-bold" style={{ color: "#f5920b" }}>オリジナルデザイン</p>
-              <p className="mt-1 leading-none" style={{ color: "#f5920b" }}>
-                <span className="text-[52px] font-extrabold">10,000</span>
-                <span className="text-[26px] font-bold">円〜</span>
-                <span className="ml-1 text-[15px] font-semibold text-[#64748b]">(税込)</span>
-              </p>
-            </div>
-            {/* 大量オーダー */}
-            <div className="absolute left-[712px] top-[652px] z-10 flex h-[142px] w-[334px] flex-col overflow-hidden rounded-2xl border-2 border-[#e8412e] bg-white">
-              <p className="bg-[#e8412e] py-1.5 text-center text-[19px] font-bold text-white">大量オーダー受付中！</p>
-              <div className="flex flex-1 items-center justify-center gap-3 px-4">
-                <Gift className="h-10 w-10 shrink-0" style={{ color: "#e8412e" }} />
+            {/* ---- pricing ----
+                 Two plan cards (each carrying スタンド型 / プレート型) + the bulk
+                 discount, then a full-width option strip. The row stops at
+                 y=792 so it clears the NFC/QR badge at y=828. */}
+            {priceCards.map((card) => (
+              <div
+                key={card.plan}
+                className="absolute top-[640px] z-10 flex h-[152px] flex-col overflow-hidden rounded-2xl border-2 bg-white"
+                style={{ left: card.left, width: card.width, borderColor: card.color }}
+              >
+                <p
+                  className="py-[7px] text-center text-[20px] font-bold text-white"
+                  style={{ background: card.color }}
+                >
+                  {card.plan}
+                </p>
+                <div className="flex flex-1 flex-col px-[13px] pb-[4px]">
+                  {card.rows.map((row, i) => (
+                    <div
+                      key={row.label}
+                      className="flex flex-1 items-center"
+                      style={i === 1 ? { borderTop: `2px dashed ${card.color}55` } : undefined}
+                    >
+                      <span className="text-[19px] font-bold" style={{ color: navy }}>
+                        {row.label}
+                      </span>
+                      <span className="ml-auto leading-none" style={{ color: card.color }}>
+                        <span className="text-[34px] font-extrabold">{row.price}</span>
+                        <span className="ml-[1px] text-[17px] font-bold">円</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* まとめ買い割引 */}
+            <div className="absolute left-[682px] top-[640px] z-10 flex h-[152px] w-[364px] flex-col overflow-hidden rounded-2xl border-2 border-[#e8412e] bg-white">
+              <p className="bg-[#e8412e] py-[7px] text-center text-[20px] font-bold text-white">まとめ買い割引</p>
+              <div className="flex flex-1 items-center justify-center gap-4 px-4">
+                <Gift className="h-11 w-11 shrink-0" style={{ color: "#e8412e" }} />
                 <p className="leading-tight">
-                  <span className="block text-[16px] font-semibold text-[#475569]">5個〜のご注文で</span>
-                  <span className="block text-[22px] font-extrabold text-[#e8412e]">1個分無料（4+1制度）</span>
+                  <span className="block text-[18px] font-semibold text-[#475569]">5個ごとに</span>
+                  <span className="block text-[30px] font-extrabold text-[#e8412e]">1個分お得</span>
                 </p>
               </div>
+            </div>
+
+            {/* デザイン制作オプション */}
+            <div className="absolute left-[54px] top-[798px] z-10 flex h-[34px] w-[904px] items-center gap-3 rounded-xl border border-[#dbe2ee] bg-[#f5f8fd] px-4">
+              <span className="shrink-0 rounded-full bg-[#f5920b] px-2 py-[2px] text-[13px] font-bold leading-tight text-white">
+                オプション
+              </span>
+              <span className="whitespace-nowrap text-[17px] font-bold" style={{ color: navy }}>
+                デザイン制作のご依頼 <span className="text-[#f5920b]">+5,000円</span>
+              </span>
+              <span className="whitespace-nowrap text-[15px] font-medium text-[#64748b]">
+                完成データ支給なら追加制作費なし
+              </span>
             </div>
 
             {/* ---- AIO callout (fills the space + ties reviews to AI-search optimization) ---- */}
