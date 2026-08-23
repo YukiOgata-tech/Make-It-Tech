@@ -183,8 +183,24 @@ const designs: { caption: string; shot: Shot }[] = [
   },
 ];
 
-const qrSlots = [
-  { left: 721, color: C.blueDeep, border: "#133ba3", label: "ECサイト" },
+/** `qr` set = the real code is in; otherwise the dashed placeholder stays. */
+const qrSlots: {
+  left: number;
+  color: string;
+  border: string;
+  label: string;
+  qr?: { src: string; alt: string };
+}[] = [
+  {
+    left: 721,
+    color: C.blueDeep,
+    border: "#133ba3",
+    label: "ECサイト",
+    qr: {
+      src: "/images/flyer/shop/qr-shop.png",
+      alt: "ECサイト（shop.make-it-tech.com）のQRコード",
+    },
+  },
   { left: 925, color: "#439c9b", border: C.tealDeep, label: "活用例・NFC記事" },
 ];
 
@@ -560,10 +576,23 @@ export function ShopFlyer() {
 
             {qrSlots.map((slot) => (
               <div key={slot.label} className="absolute top-[1405px] z-10 w-[168px]" style={{ left: slot.left }}>
-                <div
-                  className="h-[148px] w-full rounded-[12px] bg-white"
-                  style={{ border: `2px dashed ${slot.border}` }}
-                />
+                {slot.qr ? (
+                  <div className="flex h-[148px] w-full items-center justify-center">
+                    <Image
+                      src={slot.qr.src}
+                      alt={slot.qr.alt}
+                      width={148}
+                      height={148}
+                      className="block"
+                      style={{ width: 148, height: 148 }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="h-[148px] w-full rounded-[12px] bg-white"
+                    style={{ border: `2px dashed ${slot.border}` }}
+                  />
+                )}
                 <p
                   className="mt-[12px] whitespace-nowrap text-center text-[18px] font-bold"
                   style={{ color: slot.color }}
