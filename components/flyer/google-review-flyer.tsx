@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { CSSProperties } from "react";
+import { GoogleWord } from "@/components/flyer/brand";
 import { useFitScale } from "@/components/flyer/use-fit-scale";
 import {
   Bot,
@@ -34,27 +35,6 @@ const G = {
 };
 
 const navy = "#1b2a45";
-
-// "Google" in its brand colours.
-function GoogleWord({ size }: { size: number }) {
-  const letters: [string, string][] = [
-    ["G", G.blue],
-    ["o", G.red],
-    ["o", G.yellow],
-    ["g", G.blue],
-    ["l", G.green],
-    ["e", G.red],
-  ];
-  return (
-    <span style={{ fontSize: size, fontWeight: 800, letterSpacing: "-0.01em" }}>
-      {letters.map(([ch, color], i) => (
-        <span key={i} style={{ color }}>
-          {ch}
-        </span>
-      ))}
-    </span>
-  );
-}
 
 const features = [
   { Icon: Nfc, color: "#2f7cf0", title: "スマホを\nタッチするだけ", note: "NFC / QRで簡単アクセス" },

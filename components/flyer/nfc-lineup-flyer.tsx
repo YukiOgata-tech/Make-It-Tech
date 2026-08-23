@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Fragment } from "react";
 import type { ComponentType, CSSProperties, ReactNode } from "react";
 import { Download, Printer } from "lucide-react";
+import { brandMark } from "@/components/flyer/brand";
 import { useFitScale } from "@/components/flyer/use-fit-scale";
 
 const standsPhoto = "/images/flyer/nfc-stand-lineup.webp";
@@ -31,19 +32,6 @@ const C = {
   accent: "#c2410c",
   marker: "#ffd98a",
 } as const;
-
-/** The site header wordmark (`.brand-mark`), pinned to its light-theme values so
- *  the printed sheet never follows next-themes into the dark palette. */
-const brandMark: CSSProperties = {
-  fontFamily: "var(--font-display)",
-  fontWeight: 600,
-  letterSpacing: "0.18em",
-  textTransform: "uppercase",
-  backgroundImage: "linear-gradient(120deg,rgb(28 44 52),rgb(226 103 61),rgb(42 157 145))",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  color: "transparent",
-};
 
 /** 蛍光ペン風の強調。色帯＋文字色の二段構えで、印刷に落としても目に入る。 */
 function Marker({ children }: { children: ReactNode }) {
