@@ -64,11 +64,12 @@ Firebase を使用（`firebase-admin`：Auth / Firestore / Storage、`firebase` 
 - 公開側（`/blog`、`/news` 等）は Markdown を `react-markdown` + remark/rehype プラグイン群で描画（`lib/markdown.ts`、`lib/markdown-toc.ts`）。
 - RSS / Atom フィード、サイトマップ、robots は `app/` 配下の route / 関数で動的生成。
 
-### ブログ画像の方針
+### 画像の方針
 
 - **Vercel の画像最適化は使わない。** 配信するファイルそのものを最終寸法・最終品質で用意する。ブログの `next/image` には `unoptimized` を付けている。
 - ラスター画像は **WebP に統一**する（`sharp` で変換）。PNG / JPG は置かない。
-- カバー画像は `public/images/blog/<slug>-cover.webp`、**1200×630 / q82**。この寸法は OGP と揃えてある。
+- **管理画面からのアップロードはサーバー側で自動変換される。** 検証と変換は `lib/image-upload.ts` の `prepareImageUpload()` に集約し、blog / announcements / my-life の各 upload ルートが共通で使う。`purpose: "cover"` は 1200×630 に切り出し、それ以外は幅1600を上限に縮小のみ（拡大しない）。アニメーションGIFはコマを保持したまま WebP 化する。
+- カバー画像を手で置く場合は `public/images/blog/<slug>-cover.webp`、**1200×630 / q82**。この寸法は OGP と揃えてある。
 - カバーはそのまま OG画像になる（`lib/seo.ts` の `resolveOgImage`）。**SVG は主要SNSで描画されない**ため、SVGを指定した場合は既定のOG画像へ自動でフォールバックする。
 - 図解は SVG のままでよい。ベクターなので拡大に強く、`MarkdownImage` が素の `<img>` で描画するため最適化を経由しない。
 - `coverImage.alt` は管理画面API（`z.string().max(140)`）に合わせ **140字以内**にする。
