@@ -593,37 +593,46 @@ body[data-has-breadcrumbs="true"] {
   }
 }
 
+/*
+ * highlight.js のトークン配色。
+ *
+ * 色はサイトのテーマ変数から取るが、変数は rgb() 形式で定義されているため
+ * hsl() で包んではいけない。hsl(rgb(...)) は不正な色として宣言ごと破棄され、
+ * ハイライトが無効化される（以前はこれで全トークンが素の文字色だった）。
+ *
+ * 枠・余白・背景は .article-prose pre 側が持つ。ここでは色だけを扱う。
+ */
 .hljs {
   display: block;
   overflow-x: auto;
-  padding: 0.85rem 1rem;
-  border-radius: 0.9rem;
-  background: hsl(var(--card));
-  color: hsl(var(--foreground));
+  color: inherit;
+  background: transparent;
 }
 
 .hljs-comment,
 .hljs-quote {
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
+  font-style: italic;
 }
 
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-type {
-  color: hsl(var(--primary));
+  color: var(--chart-1);
+  font-weight: 600;
 }
 
 .hljs-literal,
 .hljs-number,
 .hljs-symbol,
 .hljs-bullet {
-  color: hsl(var(--secondary-foreground));
+  color: var(--chart-3);
 }
 
 .hljs-string,
 .hljs-doctag,
 .hljs-addition {
-  color: hsl(var(--accent-foreground));
+  color: var(--chart-2);
 }
 
 .hljs-title,
@@ -632,13 +641,18 @@ body[data-has-breadcrumbs="true"] {
 .hljs-name,
 .hljs-selector-id,
 .hljs-selector-class {
-  color: hsl(var(--chart-2));
+  color: var(--chart-3);
+  font-weight: 600;
 }
 
 .hljs-attr,
 .hljs-variable,
 .hljs-template-variable {
-  color: hsl(var(--chart-3));
+  color: var(--chart-2);
+}
+
+.hljs-deletion {
+  color: var(--destructive);
 }
 
 .hljs-emphasis {
@@ -647,11 +661,6 @@ body[data-has-breadcrumbs="true"] {
 
 .hljs-strong {
   font-weight: 700;
-}
-
-.prose pre code.hljs {
-  background: transparent;
-  padding: 0;
 }
 
 .article-prose {
@@ -794,72 +803,229 @@ body[data-has-breadcrumbs="true"] {
 }
 
 .article-prose blockquote {
-  margin-top: 1.2rem;
+  margin: 1.35rem 0;
   border-left: 3px solid var(--primary);
-  padding: 0.65rem 0.9rem;
-  background: color-mix(in srgb, var(--secondary) 40%, transparent);
+  border-radius: 0 0.9rem 0.9rem 0;
+  padding: 0.8rem 1rem;
+  background: color-mix(in srgb, var(--secondary) 35%, transparent);
   color: var(--foreground);
-  border-radius: 0.9rem;
+}
+
+.article-prose blockquote > :first-child {
+  margin-top: 0;
 }
 
 .article-prose hr {
-  margin: 1.8rem 0;
+  margin: 2rem 0;
   border: none;
-  border-top: 1px solid rgb(0 0 0 / 0.08);
+  border-top: 1px solid var(--border);
 }
 
-.dark .article-prose hr {
-  border-top-color: rgb(255 255 255 / 0.18);
+.article-prose del {
+  color: var(--muted-foreground);
+  text-decoration-thickness: 1px;
+}
+
+/*
+ * 表。
+ *
+ * 方針:
+ * - 罫線は「外周＋横罫」を主役にし、縦罫は薄く落とす。全セルを同じ太さの罫線で
+ *   囲むと升目が主張しすぎ、横に読むべき行を目が追えなくなるため。
+ * - 偶数行に地色を敷く。列数が多い表で行を見失わないための保険。
+ * - 収まらない表は横スクロールさせ、右端にフェードを重ねて「まだ右がある」ことを
+ *   示す（詳細は .article-table-frame::after のコメント）。
+ * - 文字サイズは本文よりわずかに小さく、数字は等幅（tabular-nums）にして
+ *   金額や件数の桁を縦に揃える。
+ */
+.article-table-frame {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.article-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background-color: var(--card);
+}
+
+.article-table-wrap:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/*
+ * 横スクロールできることを示す右端のフェード。
+ *
+ * スクロール量に応じて出し入れする定番の背景グラデーション（Lea Verou の
+ * scrolling shadows）は、ここでは使えない。表側がヘッダー背景とゼブラ地色を
+ * 塗るため、スクロール領域の背景に置いた影が中身に覆い隠されるため。
+ * そのため外側の枠に重ねて描いている。
+ *
+ * 出すのは lg 未満だけ。記事カラムが 820px ある PC では表はほぼ収まるので、
+ * 常時表示すると「まだ右がある」という誤った合図になる。
+ */
+@media (max-width: 1023px) {
+  .article-table-frame::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    width: 2rem;
+    border-radius: 0 0.85rem 0.85rem 0;
+    background: linear-gradient(
+      to left,
+      var(--card),
+      color-mix(in srgb, var(--card) 55%, transparent) 45%,
+      transparent
+    );
+    pointer-events: none;
+  }
 }
 
 .article-prose table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
-  font-size: 0.95rem;
+  margin: 1.5rem 0;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  font-variant-numeric: tabular-nums;
 }
 
-.article-table-wrap {
-  margin-top: 1rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* wrap が余白と枠を持つので、中の表からは打ち消す。 */
+.article-table-wrap > .article-table {
+  margin: 0;
+  /* root font-size は 18px なので 18rem = 324px。スマホの本文幅にほぼ収まり、
+     2〜3列の表はスクロールなしで読める。列が多い表は中身が押し広げるので、
+     ここを大きくしなくても自然にスクロールへ回る。 */
+  min-width: 18rem;
 }
 
-.article-table-wrap .article-table {
-  min-width: 520px;
+.article-prose caption {
+  caption-side: bottom;
+  padding: 0.6rem 0.8rem 0;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  text-align: left;
 }
 
 .article-prose th,
 .article-prose td {
-  border: 1px solid rgb(0 0 0 / 0.08);
-  padding: 0.6rem 0.7rem;
+  padding: 0.62rem 0.8rem;
   text-align: left;
+  vertical-align: top;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+  overflow-wrap: break-word;
 }
 
-.article-prose th {
-  background: color-mix(in srgb, var(--secondary) 60%, transparent);
+.article-prose th:last-child,
+.article-prose td:last-child {
+  border-right: 0;
+}
+
+.article-prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.article-prose thead th {
+  background: color-mix(in srgb, var(--secondary) 55%, var(--card));
+  color: var(--foreground);
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  border-bottom: 2px solid color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+
+.article-prose tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--muted) 45%, transparent);
+}
+
+@media (hover: hover) {
+  .article-prose tbody tr:hover {
+    background: color-mix(in srgb, var(--secondary) 32%, transparent);
+  }
+}
+
+/* 1列目は見出し的に使われることが多いので少しだけ強くする。 */
+.article-prose tbody td:first-child {
   font-weight: 600;
 }
 
+/* セル内に段落やリストが来ても行間が崩れないようにする。 */
+.article-prose td > :first-child,
+.article-prose th > :first-child {
+  margin-top: 0;
+}
+
+.article-prose td :is(ul, ol) {
+  margin: 0.2rem 0;
+  padding-left: 1.1rem;
+}
+
 .article-prose code:not(pre code) {
-  padding: 0.15rem 0.4rem;
+  padding: 0.1rem 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-radius: 0.4rem;
-  background: color-mix(in srgb, var(--secondary) 60%, transparent);
-  font-size: 0.9em;
+  background: color-mix(in srgb, var(--muted) 55%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  overflow-wrap: break-word;
 }
 
 .article-prose pre {
-  margin-top: 1.2rem;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
   border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--secondary) 40%, transparent);
-  padding: 1rem 1.1rem;
+  background: var(--card);
+  padding: 0.95rem 1.05rem;
   overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.75;
+}
+
+.article-prose pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: inherit;
+}
+
+/* GFM のチェックリスト。マーカーとチェックボックスの二重表示を防ぐ。 */
+.article-prose li:has(> input[type="checkbox"]) {
+  list-style: none;
+  margin-left: -1.15rem;
+}
+
+.article-prose input[type="checkbox"] {
+  margin-right: 0.45rem;
+  accent-color: var(--primary);
+}
+
+/* GFM の脚注。本文と地続きに見えないよう区切って落とす。 */
+.article-prose .footnotes {
+  margin-top: 2.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+}
+
+.article-prose .footnotes h2 {
+  margin-top: 0;
+  border-left: 0;
+  padding-left: 0;
+  font-size: 0.9rem;
 }
 
 .article-prose img {
   margin-top: 1.2rem;
   border-radius: 0.85rem;
-  border: 1px solid rgb(0 0 0 / 0.08);
+  border: 1px solid var(--border);
 }
 
 .article-prose figure {
@@ -920,8 +1086,9 @@ body[data-has-breadcrumbs="true"] {
   color: inherit;
 }
 
-.app-docs .article-table-wrap {
+.app-docs .article-table-frame {
   margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
 }
 
 .app-docs .article-table {

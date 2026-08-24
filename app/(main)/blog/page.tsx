@@ -156,7 +156,9 @@ export default async function BlogPage() {
                           fill
                           sizes="(max-width: 640px) 80px, (max-width: 768px) 160px, 33vw"
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                          unoptimized={post.coverImage.url.startsWith("http")}
+                          // カバー画像は WebP で最終寸法まで書き出したものを配信する。
+                          // Vercel の画像最適化は通さない（変換済みのものを再変換させない）。
+                          unoptimized
                         />
                       ) : (
                         <div className="h-full w-full bg-linear-to-br from-primary/10 via-background/60 to-secondary/40" />

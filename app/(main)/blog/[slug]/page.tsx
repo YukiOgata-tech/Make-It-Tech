@@ -332,7 +332,9 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   sizes="(max-width: 1023px) 100vw, 820px"
                   className="h-auto w-full object-cover"
                   priority
-                  unoptimized={record.coverImage.url.startsWith("http")}
+                  // カバー画像は WebP で最終寸法まで書き出したものを配信する。
+                  // Vercel の画像最適化は通さない（変換済みのものを再変換させない）。
+                  unoptimized
                 />
               </div>
             ) : null}

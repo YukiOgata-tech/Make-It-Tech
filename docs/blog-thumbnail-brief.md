@@ -1,12 +1,14 @@
 # ブログサムネイル制作ブリーフ（MEO/AIOシリーズ）
 
-画像生成用のまとめ。5本とも公開済み。
+画像生成用のまとめ。4本とも公開済み。
 
 ## 共通仕様
 
 - **サイズ: 1200 × 630 px**（記事ページのカバーはこの比率で描画される）
-- **形式: PNG / JPG / WebP**。カバー画像はそのまま OG画像（SNS共有時のサムネイル）になる。
-  **SVG は X・Facebook・LINE で描画されないので不可**（SVGの場合は既定のOG画像に自動で差し替わる）
+- **形式: WebP。** Vercel の画像最適化は使わない方針なので、配信するファイルそのものを
+  最終寸法・最終品質で用意する。入稿は PNG / JPG でよく、`sharp` で WebP へ変換して配置する。
+  カバー画像はそのまま OG画像（SNS共有時のサムネイル）になるため、
+  **SVG は不可**（X・Facebook・LINE で描画されない。SVGの場合は既定のOG画像に自動で差し替わる）
 - 配置先: `public/images/blog/`
 - ブランド配色: 濃紺 `#1C2C34` / コーラル `#E2673D` / ティール `#2A9D91` / 生成り `#F7F3EA`
 - 日本語テキストを画像に入れる場合、生成AIは崩れやすいので短い単語のみ推奨
@@ -25,19 +27,7 @@
 
 ---
 
-## 2. 基準値
-
-**タイトル**: Googleの口コミは何点・何件あればいいのか｜調査データで見る基準値
-
-**slug**: `google-review-benchmark`
-
-**概要**: 星は4.0以上、件数はまず10件・目標30件、鮮度は3ヶ月以内。国内外の調査データから、消費者が「選ぶ／避ける」を分けている具体的なラインを数字で示す。
-
-**画像に入れたい要素**: 星4.0、数字、メーターやゲージ。データ寄りの見た目に。
-
----
-
-## 3. AIO編
+## 2. AIO編
 
 **タイトル**: AIが店を薦めるとき、何を見ているのか｜AIO対策の実際
 
@@ -45,11 +35,11 @@
 
 **概要**: 生成AIで店を探す人は1年で6%から45%に増加。AIはGoogleビジネスプロフィール・口コミ・自社サイトを読んで店を推薦しており、MEO対策がそのままAIO対策になることを解説する。
 
-**画像に入れたい要素**: チャット風のUI、AIの回答吹き出し、店舗アイコン。5本の中で唯一テック寄りのトーン。
+**画像に入れたい要素**: チャット風のUI、AIの回答吹き出し、店舗アイコン。4本の中で唯一テック寄りのトーン。
 
 ---
 
-## 4. 口コミの集め方
+## 3. 口コミの集め方
 
 **タイトル**: Googleの口コミを増やす、違反にならない方法
 
@@ -61,7 +51,7 @@
 
 ---
 
-## 5. サイトアクセス
+## 4. サイトアクセス
 
 **タイトル**: サイトへのアクセスを増やすことが、そのままMEO対策になる
 
@@ -73,18 +63,19 @@
 
 ---
 
-## 差し替え手順
+## 現在のカバー画像（差し替え済み）
 
-画像ができたら `public/images/blog/` に置き、各記事の `coverImage.url` を差し替える。
+命名規則は `<slug>-cover.webp`。すべて 1200×630 / WebP q82。
 
-現在は記事内で使っている図解SVGがそのままカバー画像になっている状態:
-
-| slug | 現在のカバー |
+| slug | カバー |
 | --- | --- |
-| `meo-aio-google-review` | `/images/blog/local-ranking-three-factors.svg` |
-| `google-review-benchmark` | `/images/blog/review-benchmark.svg` |
-| `ai-search-local-recommendation` | `/images/blog/ai-search-source-flow.svg` |
-| `how-to-get-google-reviews` | `/images/blog/review-tap-count.svg` |
-| `site-access-meo` | `/images/blog/store-to-web-funnel.svg` |
+| `meo-aio-google-review` | `meo-aio-google-review-cover.webp` |
+| `ai-search-local-recommendation` | `ai-search-local-recommendation-cover.webp` |
+| `how-to-get-google-reviews` | `how-to-get-google-reviews-cover.webp` |
+| `site-access-meo` | `site-access-meo-cover.webp` |
+| `what-is-dx` | `what-is-dx-cover.webp` |
+| `cms-partial-update-website` | `cms-partial-update-website-cover.webp` |
+| `why-i-started` | `why-i-started-cover.webp` |
 
-差し替え後は admin-console の「最新に更新」を押すこと。
+新しい記事を追加するときも同じ手順で、`public/images/blog/` に WebP を置いてから
+`coverImage.url` を設定する。差し替え後は admin-console の「最新に更新」を押すこと。
