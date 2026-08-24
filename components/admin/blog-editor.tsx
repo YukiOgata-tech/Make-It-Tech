@@ -73,10 +73,10 @@ const MAX_COVER_IMAGE_PX = 2200;
 const MAX_INLINE_IMAGE_PX = 1600;
 const VIEW_MODES = ["edit", "preview", "split"] as const;
 type ViewMode = (typeof VIEW_MODES)[number];
+// カバー画像はアップロード時にサーバー側で 1200x630 の WebP に正規化される
+// （app/api/admin/blog/upload/route.ts）。ここで別の幅を選べるようにすると
+// 実際の保存結果と食い違うので、OGP と同じ寸法だけを提示する。
 const COVER_PRESETS = [
-  { label: "幅1200", width: 1200 },
-  { label: "幅1600", width: 1600 },
-  { label: "幅1920", width: 1920 },
   { label: "OGP 1200×630", width: 1200, height: 630, keepAspect: false },
 ] as const;
 
@@ -1030,7 +1030,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-medium">リサイズ設定</p>
                   <span className="text-[11px] text-muted-foreground">
-                    最大 {MAX_COVER_IMAGE_PX}px
+                    保存時に 1200×630 の WebP へ変換されます
                   </span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-[160px,1fr]">
