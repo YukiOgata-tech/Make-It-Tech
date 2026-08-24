@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 430" width="800" height="430" role="img" aria-labelledby="t d">
+  <title id="t">店内の接点からWebへつなぐ導線</title>
+  <desc id="d">レジ横や卓上などの接点にNFCやQRを置き、Googleレビュー、自社サイト、メニュー、予約、SNSへ接続する。その結果アクセスと行動シグナルが増える。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .box { fill: #FFFFFF; stroke: #E2D6C5; stroke-width: 1.5; }
+    .mid { fill: #FFFFFF; stroke: #E2673D; stroke-width: 2.5; }
+    .h { font: 600 25px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .col { font: 600 15px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #5A6B73; }
+    .lbl { font: 600 16px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .midt { font: 600 19px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #E2673D; }
+    .res { font: 600 16px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .flow { fill: none; stroke: #2A9D91; stroke-width: 2; }
+  </style>
+  <defs>
+    <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A9D91"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="800" height="430" rx="18"/>
+  <text class="h" x="40" y="52">店内の接点を、そのままWebの入口にする</text>
+
+  <text class="col" x="40" y="88">店内の接点</text>
+  <rect class="box" x="40" y="100" width="180" height="44" rx="12"/>
+  <text class="lbl" x="60" y="128">レジ横・会計時</text>
+  <rect class="box" x="40" y="152" width="180" height="44" rx="12"/>
+  <text class="lbl" x="60" y="180">卓上・テーブル</text>
+  <rect class="box" x="40" y="204" width="180" height="44" rx="12"/>
+  <text class="lbl" x="60" y="232">入口・待合</text>
+  <rect class="box" x="40" y="256" width="180" height="44" rx="12"/>
+  <text class="lbl" x="60" y="284">名刺・ショップカード</text>
+
+  <path class="flow" d="M 228 122 L 268 186" marker-end="url(#a3)"/>
+  <path class="flow" d="M 228 174 L 268 194" marker-end="url(#a3)"/>
+  <path class="flow" d="M 228 226 L 268 206" marker-end="url(#a3)"/>
+  <path class="flow" d="M 228 278 L 268 214" marker-end="url(#a3)"/>
+
+  <rect class="mid" x="276" y="164" width="148" height="72" rx="16"/>
+  <text class="midt" x="350" y="194" text-anchor="middle">NFC / QR</text>
+  <text class="cap" x="350" y="218" text-anchor="middle">かざす・読み取る</text>
+
+  <path class="flow" d="M 432 200 L 472 200" marker-end="url(#a3)"/>
+
+  <text class="col" x="482" y="88">リンク先</text>
+  <rect class="box" x="482" y="100" width="278" height="44" rx="12"/>
+  <text class="lbl" x="502" y="128">Googleレビュー投稿画面</text>
+  <rect class="box" x="482" y="152" width="278" height="44" rx="12"/>
+  <text class="lbl" x="502" y="180">自社サイト・デジタルメニュー</text>
+  <rect class="box" x="482" y="204" width="278" height="44" rx="12"/>
+  <text class="lbl" x="502" y="232">予約ページ・LINE公式</text>
+  <rect class="box" x="482" y="256" width="278" height="44" rx="12"/>
+  <text class="lbl" x="502" y="284">Instagram・SNS</text>
+
+  <rect x="40" y="326" width="720" height="60" rx="12" fill="#CEEDE4"/>
+  <rect x="40" y="326" width="5" height="60" rx="2.5" fill="#2A9D91"/>
+  <text class="res" x="66" y="352">口コミ数が増える ＋ サイトへのアクセスが増える</text>
+  <text class="res" x="66" y="376">→ Googleが見ている「知名度」と行動シグナルの両方が積み上がる</text>
+
+  <text class="cap" x="40" y="412">プロフィールの閲覧・クリック・経路検索・電話といった行動もローカル検索の評価対象になる。</text>
+</svg>

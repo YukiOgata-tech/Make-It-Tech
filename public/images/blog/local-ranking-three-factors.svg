@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" width="800" height="380" role="img" aria-labelledby="t d">
+  <title id="t">Googleがローカル検索順位を決める3つの要素</title>
+  <desc id="d">関連性・距離・知名度の3要素。うち知名度に口コミの数と評価が含まれる。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .card { fill: #FFFFFF; stroke: #E2D6C5; stroke-width: 1.5; }
+    .cardhi { fill: #FFFFFF; stroke: #E2673D; stroke-width: 2.5; }
+    .h { font: 600 26px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .lbl { font: 600 21px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .sub { font: 400 15px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #5A6B73; }
+    .tag { font: 600 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #FFFFFF; }
+    .note { font: 600 16px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #E2673D; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+  </style>
+  <rect class="bg" width="800" height="380" rx="18"/>
+  <text class="h" x="40" y="56">Googleがローカル検索順位を決める3つの要素</text>
+
+  <rect class="card" x="40" y="88" width="230" height="150" rx="14"/>
+  <circle cx="70" cy="122" r="14" fill="#2A9D91"/>
+  <text class="tag" x="70" y="127" text-anchor="middle">1</text>
+  <text class="lbl" x="96" y="128">関連性</text>
+  <text class="sub" x="64" y="166">検索語句とビジネス</text>
+  <text class="sub" x="64" y="190">プロフィールが</text>
+  <text class="sub" x="64" y="214">合致する度合い</text>
+
+  <rect class="card" x="285" y="88" width="230" height="150" rx="14"/>
+  <circle cx="315" cy="122" r="14" fill="#2A9D91"/>
+  <text class="tag" x="315" y="127" text-anchor="middle">2</text>
+  <text class="lbl" x="341" y="128">距離</text>
+  <text class="sub" x="309" y="166">検索しているユーザー</text>
+  <text class="sub" x="309" y="190">から各ビジネス</text>
+  <text class="sub" x="309" y="214">拠点までの距離</text>
+
+  <rect class="cardhi" x="530" y="88" width="230" height="150" rx="14"/>
+  <circle cx="560" cy="122" r="14" fill="#E2673D"/>
+  <text class="tag" x="560" y="127" text-anchor="middle">3</text>
+  <text class="lbl" x="586" y="128">知名度</text>
+  <text class="sub" x="554" y="166">ビジネスがどれだけ</text>
+  <text class="sub" x="554" y="190">広く知られているか</text>
+  <text class="note" x="554" y="218">← 口コミが効く</text>
+
+  <rect x="40" y="266" width="720" height="72" rx="12" fill="#CEEDE4"/>
+  <rect x="40" y="266" width="5" height="72" rx="2.5" fill="#2A9D91"/>
+  <text class="lbl" x="66" y="300">「クチコミ数が多く評価の高いビジネスは、</text>
+  <text class="lbl" x="66" y="328">ローカル検索結果のランキングが高くなります」</text>
+
+  <text class="cap" x="40" y="362">出典: Google ヘルプ「ローカル検索結果の掲載順位を改善する方法」</text>
+</svg>

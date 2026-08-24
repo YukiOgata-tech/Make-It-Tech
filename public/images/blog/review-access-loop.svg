@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="800" height="520" role="img" aria-labelledby="t d">
+  <title id="t">口コミとサイトアクセスが互いを強め合う循環</title>
+  <desc id="d">口コミが増えると順位が上がり、表示回数が増え、来店とサイトアクセスが増え、さらに口コミが増える循環。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .box { fill: #FFFFFF; stroke: #E2D6C5; stroke-width: 1.5; }
+    .boxhi { fill: #FFFFFF; stroke: #E2673D; stroke-width: 2.5; }
+    .h { font: 600 26px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .lbl { font: 600 19px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .core { font: 600 17px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #2A9D91; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .arc { fill: none; stroke: #2A9D91; stroke-width: 2.5; }
+  </style>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A9D91"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="800" height="520" rx="18"/>
+  <text class="h" x="40" y="54">口コミとアクセスは、互いを強め合う</text>
+
+  <path class="arc" d="M 505 120 Q 610 130 655 210" marker-end="url(#ar)"/>
+  <path class="arc" d="M 655 300 Q 610 380 505 392" marker-end="url(#ar)"/>
+  <path class="arc" d="M 295 392 Q 190 380 145 300" marker-end="url(#ar)"/>
+  <path class="arc" d="M 145 210 Q 190 130 295 120" marker-end="url(#ar)"/>
+
+  <rect class="boxhi" x="290" y="86" width="220" height="62" rx="14"/>
+  <text class="lbl" x="400" y="124" text-anchor="middle">口コミが増える</text>
+
+  <rect class="box" x="560" y="224" width="215" height="62" rx="14"/>
+  <text class="lbl" x="667" y="262" text-anchor="middle">検索順位が上がる</text>
+
+  <rect class="box" x="290" y="364" width="220" height="62" rx="14"/>
+  <text class="lbl" x="400" y="402" text-anchor="middle">来店・アクセスが増える</text>
+
+  <rect class="box" x="25" y="224" width="215" height="62" rx="14"/>
+  <text class="lbl" x="132" y="262" text-anchor="middle">表示回数が増える</text>
+
+  <text class="core" x="400" y="248" text-anchor="middle">この循環に入るまでが</text>
+  <text class="core" x="400" y="274" text-anchor="middle">いちばん時間がかかる</text>
+
+  <text class="cap" x="40" y="490">口コミと自社サイトへのアクセスは、どちらか一方ではなく両方が循環の入口になる。</text>
+</svg>

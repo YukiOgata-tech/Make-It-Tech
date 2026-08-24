@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="800" height="420" role="img" aria-labelledby="t d">
+  <title id="t">AIが店舗を推薦するときに読んでいる情報</title>
+  <desc id="d">Googleビジネスプロフィール、口コミ、自社サイト、地図やディレクトリの情報をAIが読み取り、利用者への推薦を生成する流れ。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .box { fill: #FFFFFF; stroke: #E2D6C5; stroke-width: 1.5; }
+    .ai { fill: #1C2C34; }
+    .out { fill: #FFFFFF; stroke: #E2673D; stroke-width: 2.5; }
+    .h { font: 600 25px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .col { font: 600 15px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #5A6B73; }
+    .lbl { font: 600 16px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .aitx { font: 600 20px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #FFFFFF; }
+    .aisub { font: 400 13px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #CEEDE4; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .flow { fill: none; stroke: #2A9D91; stroke-width: 2; }
+  </style>
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2A9D91"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="800" height="420" rx="18"/>
+  <text class="h" x="40" y="52">AIが店舗を薦めるとき、読んでいるもの</text>
+
+  <text class="col" x="40" y="90">お店が出している情報</text>
+  <rect class="box" x="40" y="102" width="215" height="50" rx="12"/>
+  <text class="lbl" x="60" y="133">Googleビジネスプロフィール</text>
+  <rect class="box" x="40" y="162" width="215" height="50" rx="12"/>
+  <text class="lbl" x="60" y="193">Googleの口コミ</text>
+  <rect class="box" x="40" y="222" width="215" height="50" rx="12"/>
+  <text class="lbl" x="60" y="253">自社サイト</text>
+  <rect class="box" x="40" y="282" width="215" height="50" rx="12"/>
+  <text class="lbl" x="60" y="313">地図・ディレクトリ・SNS</text>
+
+  <path class="flow" d="M 262 127 L 322 200" marker-end="url(#a2)"/>
+  <path class="flow" d="M 262 187 L 322 208" marker-end="url(#a2)"/>
+  <path class="flow" d="M 262 247 L 322 228" marker-end="url(#a2)"/>
+  <path class="flow" d="M 262 307 L 322 236" marker-end="url(#a2)"/>
+
+  <rect class="ai" x="332" y="168" width="160" height="100" rx="16"/>
+  <text class="aitx" x="412" y="206" text-anchor="middle">AI</text>
+  <text class="aisub" x="412" y="230" text-anchor="middle">ChatGPT / Gemini</text>
+  <text class="aisub" x="412" y="250" text-anchor="middle">AI Overviews</text>
+
+  <path class="flow" d="M 500 218 L 552 218" marker-end="url(#a2)"/>
+
+  <text class="col" x="562" y="90">利用者が受け取るもの</text>
+  <rect class="out" x="562" y="150" width="198" height="136" rx="14"/>
+  <text class="lbl" x="582" y="186">「この辺なら</text>
+  <text class="lbl" x="582" y="214">◯◯がおすすめです」</text>
+  <line x1="582" y1="234" x2="740" y2="234" stroke="#E2D6C5" stroke-width="1.5"/>
+  <text class="lbl" x="582" y="264">という数店舗の名指し</text>
+
+  <rect x="40" y="352" width="720" height="36" rx="10" fill="#CEEDE4"/>
+  <text class="lbl" x="60" y="376">AIの回答が引用する情報の約77%は、自社サイトの外側にある情報だった</text>
+
+  <text class="cap" x="40" y="408">出典: Omniscient Digital によるAI引用23,000件超の分析</text>
+</svg>

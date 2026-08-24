@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-labelledby="t d">
+  <title id="t">生成AIで店舗を探す消費者の割合は1年で6%から45%へ</title>
+  <desc id="d">米国成人消費者のうち、ローカルビジネスの推薦に生成AIを使う人は2025年の6パーセントから2026年は45パーセントに増加した。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .h { font: 600 25px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .axis { stroke: #E2D6C5; stroke-width: 1.5; }
+    .xl { font: 600 17px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #5A6B73; }
+    .val { font: 700 26px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #1C2C34; }
+    .note { font: 600 17px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #E2673D; }
+    .desc { font: 400 16px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+  </style>
+  <defs>
+    <marker id="up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#E2673D"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="800" height="360" rx="18"/>
+  <text class="h" x="40" y="52">店舗探しに生成AIを使う人の割合</text>
+
+  <line class="axis" x1="60" y1="286" x2="420" y2="286"/>
+
+  <rect x="110" y="266" width="86" height="20" rx="4" fill="#2A9D91"/>
+  <text class="val" x="153" y="256" text-anchor="middle">6%</text>
+  <text class="xl" x="153" y="310" text-anchor="middle">2025年</text>
+
+  <rect x="284" y="136" width="86" height="150" rx="4" fill="#E2673D"/>
+  <text class="val" x="327" y="126" text-anchor="middle">45%</text>
+  <text class="xl" x="327" y="310" text-anchor="middle">2026年</text>
+
+  <path d="M 205 240 Q 245 180 275 150" fill="none" stroke="#E2673D" stroke-width="2.5" marker-end="url(#up)"/>
+  <text class="note" x="196" y="212">7.5倍</text>
+
+  <line class="axis" x1="460" y1="100" x2="460" y2="300"/>
+  <text class="desc" x="490" y="140">1年で7.5倍。</text>
+  <text class="desc" x="490" y="170">店舗を探す入口が</text>
+  <text class="desc" x="490" y="200">検索窓からAIの</text>
+  <text class="desc" x="490" y="230">回答へ移りつつある。</text>
+
+  <text class="cap" x="40" y="342">出典: BrightLocal「Local Consumer Review Survey 2026」米国成人1,002名・2026年2月公開</text>
+</svg>
