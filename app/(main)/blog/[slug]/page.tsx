@@ -10,11 +10,12 @@ import { ShareButton } from "@/components/news/share-button";
 import { MarkdownImage } from "@/components/content/markdown-image";
 import { MarkdownLink } from "@/components/content/markdown-link";
 import { MarkdownTable } from "@/components/content/markdown-table";
+import { ArticleToc } from "@/components/content/article-toc";
 import { blogCategoryLabelMap } from "@/lib/blog";
 import { fetchBlogBySlug } from "@/lib/blog-data";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { buildHeadingSequence } from "@/lib/markdown-toc";
-import { buildMetaDescription } from "@/lib/seo";
+import { buildMetaDescription, resolveOgImage } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
@@ -103,12 +104,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     record.summary,
     `${record.title}について、DX、ITツール導入、Web・アプリ制作、業務改善の観点から、事業者が実務で活用できる考え方や進め方を Make It Tech が解説します。`,
   );
-  const rawCoverUrl = record.coverImage?.url;
-  const ogImage = rawCoverUrl
-    ? rawCoverUrl.startsWith("http")
-      ? rawCoverUrl
-      : `${site.url}${rawCoverUrl.startsWith("/") ? "" : "/"}${rawCoverUrl}`
-    : `${site.url}${site.ogImage}`;
+  const { url: ogImage, isFallback: ogImageIsFallback } = resolveOgImage(
+    record.coverImage?.url
+  );
 
   return {
     title: record.title,
@@ -138,6 +136,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         {
           url: ogImage,
           alt: record.coverImage?.alt ?? record.title,
+          // 既定のOG画像だけは寸法が確定しているので明示する。
+          // カバー画像は入稿サイズが一定しないため、誤った寸法を伝えないよう省略する。
+          ...(ogImageIsFallback ? { width: 1200, height: 630 } : {}),
         },
       ],
     },
@@ -161,12 +162,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
     Boolean(record.updatedAt && record.publishedAt) &&
     record.updatedAt!.getTime() > record.publishedAt!.getTime() + 60_000;
 
-  const rawCoverUrl = record.coverImage?.url;
-  const ogImage = rawCoverUrl
-    ? rawCoverUrl.startsWith("http")
-      ? rawCoverUrl
-      : `${site.url}${rawCoverUrl.startsWith("/") ? "" : "/"}${rawCoverUrl}`
-    : `${site.url}${site.ogImage}`;
+  const { url: ogImage } = resolveOgImage(record.coverImage?.url);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -237,6 +233,9 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const tocItems = headingSequence.filter(
     (heading) => heading.level === 2 || heading.level === 3
   );
+  // 見出しが1つだけの記事にサイドバーを出しても余白が目立つだけなので、
+  // 2つ以上あるときだけ2カラムにする。
+  const hasToc = tocItems.length >= 2;
   const linkLabelMap = buildLinkLabelMap(record.linkLabels);
   const getHeadingId = (level: number, children: React.ReactNode, fallback?: string) => {
     const text = getHeadingText(children);
@@ -253,7 +252,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   });
 
   return (
-    <div className="py-6 sm:py-14">
+    <div className="py-6 sm:py-10 lg:py-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -262,172 +261,200 @@ export default async function BlogDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <article className="mx-auto max-w-[700px] px-4 sm:px-6 lg:px-0">
-        <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
-          {record.category ? (
-            <Badge variant="secondary" className="rounded-xl">
-              {blogCategoryLabelMap[record.category] ?? "ブログ"}
-            </Badge>
+      <div
+        className={cn(
+          "mx-auto w-full",
+          hasToc
+            ? "max-w-6xl px-4 sm:px-6 lg:px-8"
+            : "max-w-[700px] px-4 sm:px-6 lg:px-0"
+        )}
+      >
+        <div
+          className={cn(
+            hasToc &&
+              "lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-10 xl:grid-cols-[16rem_minmax(0,1fr)] xl:gap-14"
+          )}
+        >
+          {hasToc ? (
+            <aside className="hidden lg:sticky lg:top-[calc(var(--header-offset)+2rem)] lg:block lg:self-start">
+              <ArticleToc items={tocItems} />
+            </aside>
           ) : null}
-          {publishedAtIso ? (
-            <time dateTime={publishedAtIso}>公開: {formatDate(record.publishedAt)}</time>
-          ) : null}
-          {showUpdatedAt && updatedAtIso ? (
-            <time dateTime={updatedAtIso}>更新: {formatDate(record.updatedAt)}</time>
-          ) : null}
-          <span>執筆: {site.name}</span>
-          {record.tags?.length ? (
-            <span className="text-[10px] text-muted-foreground sm:text-[11px]">
-              {record.tags.map((tag) => `#${tag}`).join(" ")}
-            </span>
-          ) : null}
-        </div>
 
-        <h1 className="mt-3 text-[1.28rem] font-semibold leading-snug tracking-tight sm:text-[2rem] md:text-[2.15rem]">
-          {record.title}
-        </h1>
-
-        {record.summary ? (
-          <p className="mt-2 text-[0.72rem] leading-relaxed text-muted-foreground sm:text-[0.95rem]">
-            {record.summary}
-          </p>
-        ) : null}
-
-        <div className="mt-3">
-          <ShareButton url={`${site.url}/blog/${record.slug}`} title={record.title} />
-        </div>
-
-        {record.coverImage?.url ? (
-          <div className="mt-4 overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:mt-6">
-            <Image
-              src={record.coverImage.url}
-              alt={record.coverImage.alt ?? record.title}
-              width={1200}
-              height={630}
-              sizes="(max-width: 700px) 100vw, 700px"
-              className="h-auto w-full object-cover"
-              priority
-              unoptimized={record.coverImage.url.startsWith("http")}
-            />
-          </div>
-        ) : null}
-
-        {tocItems.length >= 2 ? (
-          <nav className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4">
-            <p className="text-xs font-semibold text-muted-foreground sm:text-sm">目次</p>
-            <ul className="mt-2 grid gap-2 text-xs sm:text-sm">
-              {tocItems.map((item) => (
-                <li
-                  key={item.id}
-                  className={cn(
-                    "flex items-start gap-2 leading-snug",
-                    item.level === 3 ? "pl-3 text-[11px] sm:text-xs" : ""
-                  )}
-                >
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground/70" />
-                  <a
-                    href={`#${item.id}`}
-                    className="article-link article-link--internal no-underline hover:underline"
-                  >
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ) : null}
-
-        <Separator className="my-5 sm:my-8" />
-
-        <div className="article-prose max-w-none">
-          <ReactMarkdown
-            remarkPlugins={remarkPlugins}
-            rehypePlugins={blogRehypePlugins}
-            components={{
-              img: MarkdownImage,
-              a({ href = "", children, ...props }) {
-                const childText = getSingleText(children);
-                const normalizedInternal = normalizeInternalHref(href);
-                const labelOverride = linkLabelMap.get(
-                  normalizeLinkLabelUrl(href)
-                );
-                const internalTitle = resolveInternalLinkTitle(href);
-                const replacement = labelOverride ?? internalTitle;
-                const shouldReplace =
-                  Boolean(childText) &&
-                  (childText === href ||
-                    (normalizedInternal && childText === normalizedInternal) ||
-                    childText === href.replace(/^https?:\/\//, ""));
-                return (
-                  <MarkdownLink href={href} {...props}>
-                    {shouldReplace && replacement ? replacement : children}
-                  </MarkdownLink>
-                );
-              },
-              table: MarkdownTable,
-              h1({ children, ...props }) {
-                const id = getHeadingId(1, children, props.id);
-                return (
-                  <h1 id={id ?? props.id} {...props}>
-                    {children}
-                  </h1>
-                );
-              },
-              h2({ children, ...props }) {
-                const id = getHeadingId(2, children, props.id);
-                return (
-                  <h2 id={id ?? props.id} {...props}>
-                    {children}
-                  </h2>
-                );
-              },
-              h3({ children, ...props }) {
-                const id = getHeadingId(3, children, props.id);
-                return (
-                  <h3 id={id ?? props.id} {...props}>
-                    {children}
-                  </h3>
-                );
-              },
-              h4({ children, ...props }) {
-                const id = getHeadingId(4, children, props.id);
-                return (
-                  <h4 id={id ?? props.id} {...props}>
-                    {children}
-                  </h4>
-                );
-              },
-              p({ children }) {
-                const nodes = React.Children.toArray(children).filter((node) => {
-                  if (typeof node === "string") {
-                    return node.trim().length > 0;
-                  }
-                  return true;
-                });
-                if (
-                  nodes.length === 1 &&
-                  React.isValidElement(nodes[0]) &&
-                  nodes[0].type === MarkdownImage
-                ) {
-                  return <>{nodes[0]}</>;
-                }
-                return <p>{children}</p>;
-              },
-            }}
+          <article
+            className={cn(
+              "min-w-0",
+              hasToc &&
+                "max-w-[820px] lg:border-l lg:border-border/60 lg:pl-10 xl:pl-14"
+            )}
           >
-            {record.content || "本文は準備中です。"}
-          </ReactMarkdown>
-        </div>
+            <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
+              {record.category ? (
+                <Badge variant="secondary" className="rounded-xl">
+                  {blogCategoryLabelMap[record.category] ?? "ブログ"}
+                </Badge>
+              ) : null}
+              {publishedAtIso ? (
+                <time dateTime={publishedAtIso}>公開: {formatDate(record.publishedAt)}</time>
+              ) : null}
+              {showUpdatedAt && updatedAtIso ? (
+                <time dateTime={updatedAtIso}>更新: {formatDate(record.updatedAt)}</time>
+              ) : null}
+              <span>執筆: {site.name}</span>
+              {record.tags?.length ? (
+                <span className="text-[10px] text-muted-foreground sm:text-[11px]">
+                  {record.tags.map((tag) => `#${tag}`).join(" ")}
+                </span>
+              ) : null}
+            </div>
 
-        <div className="mt-8 text-xs sm:mt-10 sm:text-sm">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-primary underline underline-offset-4"
-          >
-            ブログ一覧に戻る
-          </Link>
+            <h1 className="mt-3 text-[1.28rem] font-semibold leading-snug tracking-tight sm:text-[2rem] md:text-[2.15rem]">
+              {record.title}
+            </h1>
+
+            {record.summary ? (
+              <p className="mt-2 text-[0.72rem] leading-relaxed text-muted-foreground sm:text-[0.95rem]">
+                {record.summary}
+              </p>
+            ) : null}
+
+            <div className="mt-3">
+              <ShareButton url={`${site.url}/blog/${record.slug}`} title={record.title} />
+            </div>
+
+            {record.coverImage?.url ? (
+              <div className="mt-4 overflow-hidden rounded-2xl border border-border/60 bg-secondary/30 sm:mt-6">
+                <Image
+                  src={record.coverImage.url}
+                  alt={record.coverImage.alt ?? record.title}
+                  width={1200}
+                  height={630}
+                  sizes="(max-width: 1023px) 100vw, 820px"
+                  className="h-auto w-full object-cover"
+                  priority
+                  unoptimized={record.coverImage.url.startsWith("http")}
+                />
+              </div>
+            ) : null}
+
+            {tocItems.length >= 2 ? (
+              <nav className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4 lg:hidden">
+                <p className="text-xs font-semibold text-muted-foreground sm:text-sm">目次</p>
+                <ul className="mt-2 grid gap-2 text-xs sm:text-sm">
+                  {tocItems.map((item) => (
+                    <li
+                      key={item.id}
+                      className={cn(
+                        "flex items-start gap-2 leading-snug",
+                        item.level === 3 ? "pl-3 text-[11px] sm:text-xs" : ""
+                      )}
+                    >
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground/70" />
+                      <a
+                        href={`#${item.id}`}
+                        className="article-link article-link--internal no-underline hover:underline"
+                      >
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ) : null}
+
+            <Separator className="my-5 sm:my-8" />
+
+            <div className="article-prose max-w-none">
+              <ReactMarkdown
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={blogRehypePlugins}
+                components={{
+                  img: MarkdownImage,
+                  a({ href = "", children, ...props }) {
+                    const childText = getSingleText(children);
+                    const normalizedInternal = normalizeInternalHref(href);
+                    const labelOverride = linkLabelMap.get(
+                      normalizeLinkLabelUrl(href)
+                    );
+                    const internalTitle = resolveInternalLinkTitle(href);
+                    const replacement = labelOverride ?? internalTitle;
+                    const shouldReplace =
+                      Boolean(childText) &&
+                      (childText === href ||
+                        (normalizedInternal && childText === normalizedInternal) ||
+                        childText === href.replace(/^https?:\/\//, ""));
+                    return (
+                      <MarkdownLink href={href} {...props}>
+                        {shouldReplace && replacement ? replacement : children}
+                      </MarkdownLink>
+                    );
+                  },
+                  table: MarkdownTable,
+                  h1({ children, ...props }) {
+                    const id = getHeadingId(1, children, props.id);
+                    return (
+                      <h1 id={id ?? props.id} {...props}>
+                        {children}
+                      </h1>
+                    );
+                  },
+                  h2({ children, ...props }) {
+                    const id = getHeadingId(2, children, props.id);
+                    return (
+                      <h2 id={id ?? props.id} {...props}>
+                        {children}
+                      </h2>
+                    );
+                  },
+                  h3({ children, ...props }) {
+                    const id = getHeadingId(3, children, props.id);
+                    return (
+                      <h3 id={id ?? props.id} {...props}>
+                        {children}
+                      </h3>
+                    );
+                  },
+                  h4({ children, ...props }) {
+                    const id = getHeadingId(4, children, props.id);
+                    return (
+                      <h4 id={id ?? props.id} {...props}>
+                        {children}
+                      </h4>
+                    );
+                  },
+                  p({ children }) {
+                    const nodes = React.Children.toArray(children).filter((node) => {
+                      if (typeof node === "string") {
+                        return node.trim().length > 0;
+                      }
+                      return true;
+                    });
+                    if (
+                      nodes.length === 1 &&
+                      React.isValidElement(nodes[0]) &&
+                      nodes[0].type === MarkdownImage
+                    ) {
+                      return <>{nodes[0]}</>;
+                    }
+                    return <p>{children}</p>;
+                  },
+                }}
+              >
+                {record.content || "本文は準備中です。"}
+              </ReactMarkdown>
+            </div>
+
+            <div className="mt-8 text-xs sm:mt-10 sm:text-sm">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-primary underline underline-offset-4"
+              >
+                ブログ一覧に戻る
+              </Link>
+            </div>
+          </article>
         </div>
-      </article>
+      </div>
     </div>
   );
 }

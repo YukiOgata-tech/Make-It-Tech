@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { fetchBlogList } from "@/lib/blog-data";
 import { blogCategoryLabelMap } from "@/lib/blog";
+import { resolveOgImage } from "@/lib/seo";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -108,9 +109,7 @@ export default async function BlogPage() {
       url: `${site.url}/blog/${post.slug}`,
       datePublished: post.publishedAt?.toISOString(),
       dateModified: post.updatedAt?.toISOString() ?? post.publishedAt?.toISOString(),
-      image: post.coverImage?.url
-        ? new URL(post.coverImage.url, site.url).toString()
-        : new URL(site.ogImage, site.url).toString(),
+      image: resolveOgImage(post.coverImage?.url).url,
     })),
   };
 

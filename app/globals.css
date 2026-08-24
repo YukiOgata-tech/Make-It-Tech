@@ -663,6 +663,14 @@ body[data-has-breadcrumbs="true"] {
   letter-spacing: 0;
 }
 
+/*
+ * 目次のリンクで飛んだときに、見出しが固定ヘッダーの下へ潜らないようにする。
+ * サイドバー目次のハイライト判定もこの値を読むので、両者の基準が必ず揃う。
+ */
+.article-prose :is(h1, h2, h3, h4)[id] {
+  scroll-margin-top: calc(var(--header-offset) + 1.25rem);
+}
+
 .article-prose h2,
 .article-prose h3,
 .article-prose h4 {
