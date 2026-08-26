@@ -49,7 +49,8 @@ export function CookieConsent({ className }: { className?: string }) {
   const isLpHost = hostname.startsWith("lp.");
   const isLpPath = pathname.startsWith("/sub/lp");
   const isMyLifePath = pathname === "/this-is-my-life";
-  const isFlyerPath = pathname === "/flyer" || pathname.startsWith("/flyer-");
+  // /flyer, /flyer-nfc, /flyer02 ... all print sheets render without site chrome
+  const isFlyerPath = /^\/flyer($|[-\d])/.test(pathname);
   const privacyHref = "/privacy";
 
   React.useEffect(() => {

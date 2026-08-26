@@ -1405,7 +1405,8 @@ body[data-has-breadcrumbs="true"] {
  * predates this pattern and is left alone; new portrait flyers should use this
  * one, which clamps every ancestor to exactly one page so the scaled sheet can
  * never spill onto a second sheet. */
-.shopf-frame {
+.shopf-frame,
+.webf-frame {
   position: relative;
   width: calc(1182px * var(--fit-scale, 1));
   height: calc(1672px * var(--fit-scale, 1));
@@ -1413,7 +1414,8 @@ body[data-has-breadcrumbs="true"] {
   overflow: hidden;
 }
 
-.shopf-sheet {
+.shopf-sheet,
+.webf-sheet {
   position: absolute;
   top: 0;
   left: 0;
@@ -1423,7 +1425,9 @@ body[data-has-breadcrumbs="true"] {
 
 @media print {
   html:has(.shopf-print-root),
-  body:has(.shopf-print-root) {
+  body:has(.shopf-print-root),
+  html:has(.webf-print-root),
+  body:has(.webf-print-root) {
     width: 210mm !important;
     height: 297mm !important;
     margin: 0 !important;
@@ -1431,13 +1435,17 @@ body[data-has-breadcrumbs="true"] {
     overflow: hidden !important;
   }
 
-  .shopf-print-root .print\:hidden {
+  .shopf-print-root .print\:hidden,
+  .webf-print-root .print\:hidden {
     display: none !important;
   }
 
   .shopf-print-root,
   .shopf-stage,
-  .shopf-frame {
+  .shopf-frame,
+  .webf-print-root,
+  .webf-stage,
+  .webf-frame {
     width: 210mm !important;
     height: 297mm !important;
     min-height: 0 !important;
@@ -1449,7 +1457,8 @@ body[data-has-breadcrumbs="true"] {
   }
 
   /* 210mm = 793.70px @96dpi; 793.70 / 1182 = 0.6715 */
-  .shopf-sheet {
+  .shopf-sheet,
+  .webf-sheet {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;

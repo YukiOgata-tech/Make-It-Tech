@@ -28,13 +28,39 @@ const strengths = [
   ["改善/修正･更新", "公開後の分析や導線改善も追加で相談できます。"],
 ];
 
+/* 料金は docs 側の企画（web-service.md）に合わせる。制作費は一律で、規模別の
+   段階料金は持たない。高度な機能は「別途お見積りの例」へ寄せる。 */
+const priceItems: [string, string, string, string, string][] = [
+  ["初期費用", "0", "円", "※独自ドメインの取得・更新費は別途", "#0b978f"],
+  ["Webサイト制作費", "9,800", "円", "CMSを備えた、運用できるサイトとして制作", "#2d9ecb"],
+];
+
+const quoteItems = [
+  "予約・会員機能",
+  "LINE連携・自動応答",
+  "顧客管理・マイページ",
+  "スタンプ・クーポン",
+  "決済機能・ECサイト",
+  "業務システム開発",
+];
+
+/* NFC連携は差別化の中核なので、月額欄の注記ではなく独立した帯で見せる。
+   詳細な活用例は3枚目のチラシへ譲り、ここは代表的な4例に絞る。 */
+const nfcItems = [
+  "レジ前 → Googleレビュー獲得",
+  "店舗入口 → サイト・予約・メニュー",
+  "昼はランチ / 夜はディナーへ自動切替",
+  "管理画面から遷移先をいつでも変更",
+];
+
+/* 月額は保守費ではなく「運用・改善・Webマーケティング継続支援費」という位置づけ。 */
 const supportItems = [
-  "サーバー･データベース管理",
-  "CMS更新サポート",
-  "SEO/MEO/AIO対策の土台整備",
-  "検索状況の確認・改善相談",
-  "公式LINE経由での相談対応",
-  "SNS･Googleマップ連携サポート",
+  "サーバー･ドメインの継続運用",
+  "修正･情報更新･構成改善",
+  "SEO/MEO/AIO の継続施策",
+  "Googleレビュー獲得の支援",
+  "公式LINEでの相談対応",
+  "検索動向に応じた新施策の提案",
 ];
 
 const processItems = [
@@ -160,52 +186,45 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
           <div className="rounded-lg border border-[#bac6d3] bg-white p-4">
             <h2 className="inline-block rounded bg-[#13233d] px-4 py-1 text-[0.92rem] font-bold text-white">料金のご案内</h2>
             <div className="mt-2 grid gap-1.5">
-              {[
-                ["ライト制作", "10,000", "小規模LP・名刺代わりのページ", "#0b978f"],
-                ["スタンダード制作", "80,000", "CMS対応・複数ページ・問い合わせ導線設計", "#2d9ecb"],
-                ["オーダー制作", "200,000", "予約・会員機能・業務システム連携など", "#d8901f"],
-              ].map(([name, price, note, color]) => (
-                <div key={name} className="grid grid-cols-[6.2rem_1fr] items-center gap-2 rounded-md border border-[#d7e2e6] bg-[#fbfefd] px-2 py-1">
+              {priceItems.map(([name, price, unit, note, color]) => (
+                <div key={name} className="grid grid-cols-[7.4rem_1fr] items-center gap-2 rounded-md border border-[#d7e2e6] bg-[#fbfefd] px-2.5 py-1.5">
                   <div>
-                    <p className="text-[0.66rem] font-bold leading-4" style={{ color }}>
+                    <p className="text-[0.72rem] font-bold leading-4" style={{ color }}>
                       {name}
                     </p>
-                    <p className="text-[1.12rem] font-bold leading-5" style={{ color }}>
-                      {price}<span className="text-[0.58rem]">円〜</span>
+                    <p className="text-[1.85rem] font-bold leading-8" style={{ color }}>
+                      {price}<span className="text-[0.8rem]">{unit}</span>
                     </p>
                   </div>
-                  <p className="text-[0.58rem] font-medium leading-4 text-[#3b4656]">{note}</p>
+                  <p className="text-[0.62rem] font-medium leading-4 text-[#3b4656]">{note}</p>
                 </div>
               ))}
             </div>
+            <p className="mt-1.5 rounded bg-[#eef7f5] px-2 py-1 text-center text-[0.64rem] font-bold leading-4 text-[#116f69]">
+              完成したデザインを確認してから、継続契約をご判断いただけます
+            </p>
             <div className="mt-1.5 rounded bg-[#c2d9e1]/60 px-3 py-1">
               <p className="text-center text-[0.7rem] font-bold">別途お見積りの例</p>
               <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 text-[0.64rem] leading-4">
-                <p>✓ 予約・会員機能</p>
-                <p>✓ LINE連携・自動応答</p>
-                <p>✓ 顧客管理・マイページ</p>
-                <p>✓ 多言語対応</p>
-                <p>✓ 決済機能・ECサイト</p>
-                <p>✓ 業務システム開発</p>
+                {quoteItems.map((item) => (
+                  <p key={item}>✓ {item}</p>
+                ))}
               </div>
             </div>
           </div>
 
           <div className="rounded-lg border border-[#0b978f] bg-white">
-            <h2 className="bg-[#0b978f] py-2 text-center text-[0.9rem] font-bold text-white rounded-t-lg">月額管理・運用サポート</h2>
+            <h2 className="bg-[#0b978f] py-2 text-center text-[0.9rem] font-bold text-white rounded-t-lg">月額Web運用プラン</h2>
             <div className="px-4 py-1">
-              <p className="text-center text-[2.05rem] font-bold text-[#0b978f]">9,800<span className="text-[0.92rem]">円〜</span></p>
-              <p className="text-center text-[0.6rem] font-semibold text-[#116f69]">
-                ライトプランは5,000円〜対応可能
+              <p className="text-center text-[2.7rem] font-bold leading-12 text-[#0b978f]">24,980<span className="text-[1.05rem]">円</span></p>
+              <p className="text-center text-[0.64rem] font-semibold text-[#116f69]">
+                運用・改善・Webマーケティング継続支援
               </p>
-              <ul className="mt-2 space-y-1 text-[0.62rem] leading-4">
+              <ul className="mt-2.5 space-y-1.5 text-[0.66rem] leading-4">
                 {supportItems.map((item) => (
                   <li key={item}>✓ {item}</li>
                 ))}
               </ul>
-              <p className="mt-2 rounded bg-[#eef7f5] px-2 py-1 text-[0.58rem] font-semibold leading-4 text-[#116f69]">
-                業務改善・AI活用・ツール導入などの伴走支援は内容に応じて別途お見積り
-              </p>
             </div>
           </div>
 
@@ -227,6 +246,28 @@ export function MakeItTechFlyer({ siteQr, worksQr }: MakeItTechFlyerProps) {
               仮公開後に
               <br />
               判断OK
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-3 overflow-hidden rounded-xl border-2 border-[#d8901f]">
+          <div className="grid grid-cols-[14.5rem_1fr] items-stretch">
+            <div className="bg-[#d8901f] px-4 py-2 text-white">
+              <p className="text-[0.76rem] font-bold leading-4">NFC高度活用オプション</p>
+              <p className="text-[1.9rem] font-bold leading-9">
+                ＋15,000<span className="text-[0.8rem]">円/月</span>
+              </p>
+              <p className="text-[0.58rem] leading-4">合計 39,980円/月　※NFC本体は別売</p>
+            </div>
+            <div className="bg-[#fffaf0] px-4 py-2">
+              <p className="text-[0.92rem] font-bold leading-5 text-[#a76d12]">
+                店舗の「かざす」を、そのままMEO・AIO施策に。
+              </p>
+              <div className="mt-1.5 grid grid-cols-2 gap-x-5 gap-y-1 text-[0.66rem] leading-4">
+                {nfcItems.map((item) => (
+                  <p key={item}>✓ {item}</p>
+                ))}
+              </div>
             </div>
           </div>
         </section>

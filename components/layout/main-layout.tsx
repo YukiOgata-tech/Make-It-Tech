@@ -13,7 +13,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const isNfcPath = pathname.startsWith("/sub/nfc");
   const isAppsPath = pathname === "/apps" || pathname.startsWith("/apps/");
   const isMyLifePath = pathname === "/this-is-my-life";
-  const isFlyerPath = pathname === "/flyer" || pathname.startsWith("/flyer-");
+  // /flyer, /flyer-nfc, /flyer02 ... all print sheets render without site chrome
+  const isFlyerPath = /^\/flyer($|[-\d])/.test(pathname);
   const isToolsHost = hostname.startsWith("tools.");
   const isAdminConsoleHost = hostname.startsWith("admin-console.");
   const isNfcHost = hostname.startsWith("nfc.");
