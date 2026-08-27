@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" width="800" height="380" role="img" aria-labelledby="t d">
+  <title id="t">第20回でウェブサイト関連費の上限が12.5万円から30万円に変わった</title>
+  <desc id="d">交付申請額50万円の場合、第19回までは4分の1ルールでウェブサイト関連費に12.5万円までしか充てられなかったが、第20回では上限30万円まで充てられる。どちらの回もウェブサイト関連費だけの申請はできない。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .h { font: 600 25px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .rowlbl { font: 600 19px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .inbar { font: 700 18px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #FFFFFF; }
+    .inbar2 { font: 600 17px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #5A6B73; }
+    .lg { font: 500 15px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #5A6B73; }
+    .sub { font: 500 15px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .note { font: 600 17px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #E2673D; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .bar { fill: #FFFFFF; stroke: #E2D6C5; stroke-width: 1.5; }
+    .web { fill: #E2673D; }
+  </style>
+  <rect class="bg" width="800" height="380" rx="18"/>
+  <text class="h" x="40" y="50">ウェブサイト関連費に充てられる額</text>
+
+  <rect x="40" y="70" width="15" height="15" rx="3" class="web"/>
+  <text class="lg" x="63" y="83">ウェブサイト関連費</text>
+  <rect x="212" y="70" width="15" height="15" rx="3" class="bar"/>
+  <text class="lg" x="235" y="83">その他の経費（広報費・機械装置等費など）</text>
+
+  <text class="rowlbl" x="40" y="146">第19回まで</text>
+  <rect class="bar" x="176" y="118" width="560" height="44" rx="6"/>
+  <rect class="web" x="176" y="118" width="140" height="44" rx="6"/>
+  <text class="inbar" x="246" y="146" text-anchor="middle">12.5万円</text>
+  <text class="inbar2" x="526" y="146" text-anchor="middle">37.5万円</text>
+  <text class="sub" x="176" y="186">交付申請額の4分の1まで</text>
+
+  <text class="rowlbl" x="40" y="242">第20回</text>
+  <rect class="bar" x="176" y="214" width="560" height="44" rx="6"/>
+  <rect class="web" x="176" y="214" width="336" height="44" rx="6"/>
+  <text class="inbar" x="344" y="242" text-anchor="middle">30万円</text>
+  <text class="inbar2" x="624" y="242" text-anchor="middle">20万円</text>
+  <text class="sub" x="176" y="282">4分の1ルールが廃止され、上限30万円（税込）に一本化</text>
+
+  <rect x="40" y="304" width="4" height="24" rx="2" fill="#E2673D"/>
+  <text class="note" x="58" y="322">どちらの回も、ウェブサイト関連費だけの申請はできません</text>
+
+  <text class="cap" x="40" y="358">交付申請額50万円の場合。出典: 小規模事業者持続化補助金＜一般型・通常枠＞第20回公募要領（2026年5月27日公開）</text>
+</svg>

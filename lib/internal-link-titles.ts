@@ -53,8 +53,19 @@ export function normalizeInternalHref(rawHref?: string) {
   return "";
 }
 
-export function resolveInternalLinkTitle(rawHref?: string) {
+/**
+ * 内部リンクのURLを、そのページの名前に置き換えるために引く。
+ *
+ * extraTitles は記事のように増えていくページ用。呼び出し側が
+ * `/blog/<slug>` → 記事タイトルのマップを渡す。静的な INTERNAL_TITLES より優先する
+ * （記事タイトルの方が具体的で、リンク先を言い当てているため）。
+ * 管理画面のプレビューのように一覧を持てない場所は、渡さなければ従来どおり動く。
+ */
+export function resolveInternalLinkTitle(
+  rawHref?: string,
+  extraTitles?: ReadonlyMap<string, string>
+) {
   const normalized = normalizeInternalHref(rawHref);
   if (!normalized) return null;
-  return INTERNAL_TITLES[normalized] ?? null;
+  return extraTitles?.get(normalized) ?? INTERNAL_TITLES[normalized] ?? null;
 }

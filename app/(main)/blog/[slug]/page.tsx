@@ -12,7 +12,9 @@ import { MarkdownLink } from "@/components/content/markdown-link";
 import { MarkdownTable } from "@/components/content/markdown-table";
 import { ArticleToc } from "@/components/content/article-toc";
 import { blogCategoryLabelMap } from "@/lib/blog";
-import { fetchBlogBySlug } from "@/lib/blog-data";
+import { fetchBlogBySlug, fetchBlogList, fetchBlogSlugs } from "@/lib/blog-data";
+import { buildBlogTitleMap, selectRelatedPosts } from "@/lib/blog-related";
+import { RelatedPosts } from "@/components/blog/related-posts";
 import { rehypePlugins, remarkPlugins } from "@/lib/markdown";
 import { buildHeadingSequence } from "@/lib/markdown-toc";
 import { buildMetaDescription, resolveOgImage } from "@/lib/seo";
@@ -36,6 +38,19 @@ export const revalidate = false;
 type PageProps = {
   params?: Promise<{ slug: string }>;
 };
+
+/**
+ * 公開済み記事はビルド時に生成しておく。クローラや初回訪問者に
+ * Firestore の往復を待たせないため。
+ *
+ * dynamicParams = true なので、ここに載らない記事（ビルド後に公開したもの）は
+ * 初回アクセス時に生成される。ビルド時に一覧が引けなくても記事ページは
+ * 動くべきなので、失敗しても空で返してビルドは通す。
+ */
+export async function generateStaticParams() {
+  const slugs = await fetchBlogSlugs().catch(() => []);
+  return slugs.map((slug) => ({ slug }));
+}
 
 function toDateValue(value: unknown) {
   if (!value) return undefined;
@@ -229,6 +244,13 @@ export default async function BlogDetailPage({ params }: PageProps) {
     ],
   };
 
+  // 一覧は unstable_cache の public-blog タグで記事本体と同じタイミングに再検証されるので、
+  // ここで取り直しても記事と関連記事の内容がずれない。
+  const allPosts = await fetchBlogList().catch(() => []);
+  const relatedPosts = selectRelatedPosts(record, allPosts);
+  // 本文中の /blog/<slug> を記事タイトルで表示するための対応表。
+  const blogTitleMap = buildBlogTitleMap(allPosts);
+
   const headingSequence = buildHeadingSequence(record.content ?? "");
   const tocItems = headingSequence.filter(
     (heading) => heading.level === 2 || heading.level === 3
@@ -378,7 +400,10 @@ export default async function BlogDetailPage({ params }: PageProps) {
                     const labelOverride = linkLabelMap.get(
                       normalizeLinkLabelUrl(href)
                     );
-                    const internalTitle = resolveInternalLinkTitle(href);
+                    const internalTitle = resolveInternalLinkTitle(
+                      href,
+                      blogTitleMap
+                    );
                     const replacement = labelOverride ?? internalTitle;
                     const shouldReplace =
                       Boolean(childText) &&
@@ -445,6 +470,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 {record.content || "本文は準備中です。"}
               </ReactMarkdown>
             </div>
+
+            <RelatedPosts posts={relatedPosts} />
 
             <div className="mt-8 text-xs sm:mt-10 sm:text-sm">
               <Link

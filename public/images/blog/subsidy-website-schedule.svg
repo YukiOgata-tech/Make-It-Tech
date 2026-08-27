@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400" role="img" aria-labelledby="t d">
+  <title id="t">第20回のスケジュール。申請締切の11日前に様式4の発行受付締切がある</title>
+  <desc id="d">申請受付開始は2026年11月5日、様式4の発行受付締切は12月4日、申請締切は12月15日17時、採択発表は2027年3月頃。様式4の締切は申請締切の11日前にある。</desc>
+  <style>
+    .bg { fill: #F7F3EA; }
+    .h { font: 600 25px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .date { font: 700 19px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #1C2C34; }
+    .lbl { font: 500 16px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #5A6B73; }
+    .hidate { font: 700 20px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #E2673D; }
+    .hilbl { font: 600 17px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #1C2C34; }
+    .hisub { font: 400 14px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .gap { font: 700 18px 'Outfit','Zen Kaku Gothic New',system-ui,sans-serif; fill: #E2673D; }
+    .note { font: 600 17px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #E2673D; }
+    .cap { font: 400 13px 'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif; fill: #8A9299; }
+    .axis { stroke: #E2D6C5; stroke-width: 2; }
+    .lead { fill: none; stroke: #E2673D; stroke-width: 1.5; }
+    .hibox { fill: #FFFFFF; stroke: #E2673D; stroke-width: 2.5; }
+  </style>
+  <rect class="bg" width="800" height="400" rx="18"/>
+  <text class="h" x="40" y="50">締切の11日前に、もうひとつの締切がある</text>
+
+  <rect class="hibox" x="110" y="86" width="310" height="86" rx="12"/>
+  <text class="hidate" x="132" y="118">12月4日（金）</text>
+  <text class="hilbl" x="132" y="144">様式4 発行受付締切</text>
+  <text class="hisub" x="132" y="164">商工会議所・商工会の窓口で発行してもらう</text>
+  <path class="lead" d="M 420 130 L 448 130 L 468 202"/>
+
+  <line class="axis" x1="80" y1="216" x2="600" y2="216"/>
+  <line class="axis" x1="600" y1="216" x2="736" y2="216" stroke-dasharray="6 7"/>
+
+  <path class="lead" d="M 468 198 L 468 190 L 600 190 L 600 198"/>
+  <text class="gap" x="534" y="182" text-anchor="middle">11日</text>
+
+  <circle cx="120" cy="216" r="7" fill="#2A9D91"/>
+  <circle cx="468" cy="216" r="9" fill="#E2673D"/>
+  <circle cx="600" cy="216" r="7" fill="#1C2C34"/>
+  <circle cx="736" cy="216" r="7" fill="#8A9299"/>
+
+  <text class="date" x="120" y="252" text-anchor="middle">11月5日（木）</text>
+  <text class="lbl" x="120" y="276" text-anchor="middle">申請受付 開始</text>
+
+  <text class="date" x="600" y="252" text-anchor="middle">12月15日（火）17:00</text>
+  <text class="lbl" x="600" y="276" text-anchor="middle">申請締切</text>
+
+  <text class="date" x="760" y="318" text-anchor="end">2027年3月頃</text>
+  <text class="lbl" x="760" y="342" text-anchor="end">採択発表 → 交付決定</text>
+
+  <rect x="40" y="330" width="4" height="24" rx="2" fill="#E2673D"/>
+  <text class="note" x="58" y="348">逆算すると、10月中には計画の相談を始めたい</text>
+
+  <text class="cap" x="40" y="380">出典: 商工会議所地区 小規模事業者持続化補助金＜一般型・通常枠＞事務局サイト（2026年8月時点）</text>
+</svg>
