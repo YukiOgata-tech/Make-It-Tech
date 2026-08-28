@@ -117,7 +117,7 @@ type Shot = { src: string; alt: string; left: number; top: number; width: number
 
 const heroShot: Shot = {
   src: "hero-stand",
-  alt: "オリジナルデザインのNFCスタンド設置イメージ",
+  alt: "店舗カウンターに設置したオリジナルデザインのNFCスタンド",
   left: 667,
   top: 20,
   width: 500,
@@ -136,14 +136,14 @@ const productTypes: {
     color: C.blue,
     sub: "レジ横・カウンター・卓上に",
     center: 140,
-    shot: { src: "type-stand", alt: "NFCスタンドの製品写真", left: 45, top: 915, width: 183, height: 254 },
+    shot: { src: "type-stand", alt: "Make It Techのロゴを印刷したNFCスタンド", left: 28, top: 953, width: 227, height: 225 },
   },
   {
     title: "NFCプレート",
     color: "#449b9b",
     sub: "壁面・テーブル・省スペースに",
     center: 382,
-    shot: { src: "type-plate", alt: "NFCプレートの製品写真", left: 272, top: 915, width: 223, height: 263 },
+    shot: { src: "type-plate", alt: "デザイン入稿に対応したNFCプレートと貼り付け用テープ", left: 270, top: 963, width: 227, height: 215 },
   },
 ];
 
@@ -279,6 +279,7 @@ function Shot({ shot, priority = false }: { shot: Shot; priority?: boolean }) {
       width={shot.width}
       height={shot.height}
       priority={priority}
+      unoptimized
       className="absolute z-10 block"
       style={{ left: shot.left, top: shot.top, width: shot.width, height: shot.height }}
     />
@@ -347,6 +348,7 @@ export function ShopFlyer() {
                 width={226}
                 height={226}
                 priority
+                unoptimized
                 className="h-[113px] w-[117px]"
               />
               <span
@@ -406,7 +408,8 @@ export function ShopFlyer() {
               SNS、メニュー、予約ページなどへスムーズに案内できます。
             </p>
 
-            {/* 暫定素材。本番用の高解像度写真が届いたら同じファイル名で差し替える。 */}
+            {/* 1080x1115 = 印刷時309dpi。unoptimized なので原寸のまま配信される。
+                四辺のアルファは画像側でぼかしてあり、白地に溶けて境界が出ない。 */}
             <Shot shot={heroShot} priority />
 
             {/* ========================================= 2. features ==== */}
@@ -583,6 +586,7 @@ export function ShopFlyer() {
                       alt={slot.qr.alt}
                       width={148}
                       height={148}
+                      unoptimized
                       className="block"
                       style={{ width: 148, height: 148 }}
                     />
