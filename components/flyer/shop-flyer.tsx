@@ -201,7 +201,16 @@ const qrSlots: {
       alt: "ECサイト（shop.make-it-tech.com）のQRコード",
     },
   },
-  { left: 925, color: "#439c9b", border: C.tealDeep, label: "活用例・NFC記事" },
+  {
+    left: 925,
+    color: "#439c9b",
+    border: C.tealDeep,
+    label: "活用例・NFC記事",
+    qr: {
+      src: "/images/flyer/shop/qr-article.png",
+      alt: "NFCの活用例・基礎知識をまとめた記事のQRコード",
+    },
+  },
 ];
 
 /* ---------------------------------------------------------------- pieces --- */
@@ -341,7 +350,7 @@ export function ShopFlyer() {
             className="shopf-sheet h-[1672px] w-[1182px] overflow-hidden bg-white shadow-2xl print:shadow-none"
           >
             {/* =========================================== 1. header ==== */}
-            <div className="absolute left-[70px] top-[34px] z-10 flex items-center gap-[24px]">
+            <div className="absolute left-[50px] top-[34px] z-10 flex items-center gap-[24px]">
               <Image
                 src={logo}
                 alt="Make It Tech"
@@ -352,25 +361,25 @@ export function ShopFlyer() {
                 className="h-[113px] w-[117px]"
               />
               <span
-                className="text-[60px] font-bold leading-none tracking-tight"
+                className="text-[60px] font-semibold leading-none tracking-tight"
                 style={{ ...brandGradientText, fontFamily: "var(--font-display)" }}
               >
-                Make It Tech
+                Make It Tech <span className="text-[40px]"> -nfc-</span>
               </span>
             </div>
 
             <h1
-              className="absolute left-[44px] top-[163px] z-10 whitespace-nowrap text-[62px] font-bold leading-none tracking-tight"
+              className="absolute left-[44px] top-[163px] z-10 whitespace-nowrap text-[56px] font-bold leading-none tracking-tight"
               style={{ color: C.blue }}
             >
               <GoogleWord />
-              レビュー・
+              <span className="text-[36px]">レビュー･</span>SNS<span className="text-[36px]">への導線を</span>
             </h1>
             <p
               className="absolute left-[43px] top-[258px] z-10 whitespace-nowrap text-[58px] font-bold leading-none tracking-tight"
               style={{ color: C.ink }}
             >
-              サイト導線を、
+              
               <span
                 style={{
                   backgroundImage: `linear-gradient(100deg,${C.coralWarm},${C.coral})`,
@@ -379,7 +388,7 @@ export function ShopFlyer() {
                   color: "transparent",
                 }}
               >
-                置くだけ。
+                NFCで構築しませんか？
               </span>
             </p>
 
@@ -388,7 +397,7 @@ export function ShopFlyer() {
               style={{ color: C.ink }}
             >
               レビューやサイトアクセスは、
-              <span style={{ color: C.blueDeep }}>MEO・AIO対策</span>
+              <span style={{ color: C.blueDeep }}>MEO･AIO対策</span>
               の重要な接点。
               <br />
               客観的な評価指標として、
@@ -525,7 +534,7 @@ export function ShopFlyer() {
               <FlowStep
                 n={3}
                 color="#ed7d65"
-                lines={["レビュー・", "アクセスに", "つながる"]}
+                lines={["レビュー・", "アクセスに"]}
                 Icon={TbMessageStar}
                 iconSize={64}
               />
@@ -618,7 +627,7 @@ export function ShopFlyer() {
                 <TbWorld style={{ width: 34, height: 34 }} />
                 <span className="text-[27px] font-bold tracking-tight">shop.make-it-tech.com</span>
               </span>
-              <span className="h-[30px] w-px bg-white/60" />
+              <span className="h-[30px] w-px bg-white/90" />
               <span className="text-[23px] font-medium">お店の「伝える」を、もっとスマートに。</span>
             </div>
           </article>
