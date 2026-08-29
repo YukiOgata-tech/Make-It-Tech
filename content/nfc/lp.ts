@@ -82,11 +82,11 @@ export const nfcProducts = {
       id: "stand",
       name: "スタンド型",
       summary: "卓上に自立するタイプ",
-      size: "表示面 約12cm × 約7.3cm",
-      sizeConfirmed: true,
+      specLabel: "ラインナップ",
+      spec: "複数の形状・サイズをご用意しています",
       places: ["レジ横", "受付カウンター", "客席テーブル", "待合スペース"],
       description:
-        "自立するので、置くだけで設置が終わります。目線に入りやすく、お客様に声をかけながら使う場面に向いています。",
+        "形状やサイズの異なる複数種類をご用意しています。自立するので置くだけで設置でき、目線に入りやすい場所でのご利用に向いています。",
       image: {
         src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-default-thumbnail.jpg?v=1786792389&width=1000",
         alt: "GoogleレビューやSNS向けのデフォルトNFCスタンド商品画像",
@@ -96,8 +96,8 @@ export const nfcProducts = {
       id: "plate",
       name: "平面プレート型",
       summary: "貼り付けて使う正方形タイプ",
-      size: "正方形（寸法は確定次第ご案内します）",
-      sizeConfirmed: false,
+      specLabel: "寸法",
+      spec: "約10cm × 約10cm（正方形）",
       places: ["壁面", "テーブル天板", "カウンター", "レジ周辺"],
       description:
         "厚みがないので、テーブルや壁面に貼り付けて使えます。設置場所を固定したい場合や、席ごとに複数置きたい場合に向いています。",
@@ -219,8 +219,8 @@ export const nfcFlow = {
     },
   ],
   visual: {
-    src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-type-c-main.jpg?v=1786990213&width=1000",
-    alt: "届いたら置くだけで利用できるNFCスタンド型Cの商品画像",
+    src: "/images/nfc/nfc-flow-ready.webp",
+    alt: "オリジナル印刷とNFC設定を済ませて届くNFCスタンドの利用イメージ",
   },
   lineSupport: {
     eyebrow: "OFFICIAL LINE SUPPORT",

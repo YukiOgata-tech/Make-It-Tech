@@ -55,17 +55,9 @@ export function NfcProducts() {
 
               <dl className="mt-8 grid gap-5">
                 <div>
-                  <dt className="nfc-label">寸法</dt>
+                  <dt className="nfc-label">{item.specLabel}</dt>
                   <dd className="nfc-numeric mt-2 text-base">
-                    {item.size}
-                    {!item.sizeConfirmed && (
-                      <span
-                        className="nfc-label ml-3"
-                        style={{ color: "var(--nfc-alert)" }}
-                      >
-                        確定前
-                      </span>
-                    )}
+                    {item.spec}
                   </dd>
                 </div>
                 <div>
