@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { NfcActionButton } from "./nfc-action-button";
 import { NfcSection } from "./nfc-section";
 import { nfcFaq, nfcCta, nfcNotes } from "@/content/nfc/lp";
 import { nfcLinks, isShopReady } from "@/content/nfc/site";
@@ -54,27 +55,17 @@ export function NfcCta() {
 
       <div className="mt-10 flex flex-wrap gap-3">
         {isShopReady ? (
-          <a
+          <NfcActionButton
             href={nfcLinks.shopUrl}
-            className="nfc-display inline-flex h-13 items-center px-8 py-4 text-sm transition-opacity hover:opacity-85"
-            style={{
-              backgroundColor: "var(--nfc-signal)",
-              color: "var(--nfc-void)",
-            }}
-          >
-            {nfcCta.primary}
-          </a>
+            kind="shop"
+            label={nfcCta.primary}
+          />
         ) : null}
-        <a
+        <NfcActionButton
           href={nfcLinks.lineUrl}
-          className="nfc-display inline-flex items-center px-8 py-4 text-sm"
-          style={{
-            backgroundColor: "var(--nfc-signal)",
-            color: "var(--nfc-void)",
-          }}
-        >
-          {nfcCta.secondary}
-        </a>
+          kind="line"
+          label={nfcCta.secondary}
+        />
       </div>
 
       <ul

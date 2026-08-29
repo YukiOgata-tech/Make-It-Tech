@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { NfcActionButton } from "./nfc-action-button";
 import { NfcEmitter } from "./nfc-emitter";
 import { NfcSection } from "./nfc-section";
 import { nfcAdvanced } from "@/content/nfc/lp";
@@ -60,13 +61,11 @@ export function NfcAdvanced() {
               動くデモを見る
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
-            <a
+            <NfcActionButton
               href={nfcLinks.lineUrl}
-              className="nfc-display inline-flex h-12 items-center px-6 text-sm"
-              style={{ border: "1px solid var(--nfc-line-bright)" }}
-            >
-              {nfcAdvanced.cta}
-            </a>
+              kind="line"
+              label={nfcAdvanced.cta}
+            />
           </div>
 
           <p className="nfc-label mt-8 leading-relaxed">{nfcAdvanced.note}</p>

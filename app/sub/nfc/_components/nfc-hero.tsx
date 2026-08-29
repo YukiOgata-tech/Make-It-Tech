@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ArrowDown } from "lucide-react";
+import { NfcActionButton } from "./nfc-action-button";
 import { NfcEmitter } from "./nfc-emitter";
 import { nfcHero } from "@/content/nfc/lp";
 import { nfcLinks, isShopReady } from "@/content/nfc/site";
@@ -130,27 +131,17 @@ export function NfcHero() {
           style={{ animationDelay: "360ms" }}
         >
           {isShopReady ? (
-            <a
+            <NfcActionButton
               href={nfcLinks.shopUrl}
-              className="nfc-display inline-flex h-12 items-center px-7 text-sm transition-opacity hover:opacity-85"
-              style={{
-                backgroundColor: "var(--nfc-signal)",
-                color: "var(--nfc-void)",
-              }}
-            >
-              購入する
-            </a>
+              kind="shop"
+              label="商品を見る"
+            />
           ) : null}
-          <a
+          <NfcActionButton
             href={nfcLinks.lineUrl}
-            className="nfc-display inline-flex h-12 items-center px-7 text-sm transition-colors"
-            style={{
-              border: "1px solid var(--nfc-line-bright)",
-              color: "var(--nfc-text)",
-            }}
-          >
-            LINEで相談する
-          </a>
+            kind="line"
+            label="公式LINEで相談する"
+          />
         </div>
 
         <p

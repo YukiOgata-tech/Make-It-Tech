@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { ArrowRight, MessageCircleMore } from "lucide-react";
+import { MessageCircleMore } from "lucide-react";
+import { NfcActionButton } from "./nfc-action-button";
 import { NfcSection } from "./nfc-section";
 import { nfcFlow } from "@/content/nfc/lp";
 import { nfcLinks } from "@/content/nfc/site";
@@ -107,17 +108,11 @@ export function NfcFlow() {
           </p>
         </div>
 
-        <a
+        <NfcActionButton
           href={nfcLinks.lineUrl}
-          className="nfc-display inline-flex h-12 shrink-0 items-center justify-center gap-2 px-6 text-sm transition-opacity hover:opacity-85"
-          style={{
-            backgroundColor: "var(--nfc-signal)",
-            color: "var(--nfc-void)",
-          }}
-        >
-          {nfcFlow.lineSupport.cta}
-          <ArrowRight className="h-4 w-4" aria-hidden />
-        </a>
+          kind="line"
+          label={nfcFlow.lineSupport.cta}
+        />
       </div>
     </NfcSection>
   );
