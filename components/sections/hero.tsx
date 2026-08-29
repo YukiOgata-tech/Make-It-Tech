@@ -34,14 +34,7 @@ const contentVariants = {
   },
 };
 
-const listVariants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
+
 
 function Glow() {
   return (
@@ -138,14 +131,7 @@ export function Hero({ className }: { className?: string }) {
     },
   };
 
-  const listItemVariants: Variants = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 8 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.35, ease: easeOut },
-    },
-  };
+
 
   const floatAnimation = shouldReduceMotion
     ? { y: 0, rotate: 0 }
