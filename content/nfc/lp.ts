@@ -47,7 +47,7 @@ export const nfcProblems = {
 
 export const nfcUseCases = {
   eyebrow: "つなげられるページ",
-  title: "URLがあるページなら、だいたいつなげられます",
+  title: "自社のHPやレビュー、SNSのアクセスに繋げましょう！",
   description:
     "すでにお持ちのページへの導線をつくるサービスです。リンク先そのものの制作は含みません。",
   visual: {

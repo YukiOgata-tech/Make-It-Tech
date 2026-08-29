@@ -14,9 +14,9 @@
   --nfc-raised: #111823;
   --nfc-line: #1d2836;
   --nfc-line-bright: #2c3d50;
-  --nfc-text: #e9eff6;
-  --nfc-dim: #8496a8;
-  --nfc-faint: #5a6b7d;
+  --nfc-text: #f4f8fc;
+  --nfc-dim: #b8c6d6;
+  --nfc-faint: #8ea1b5;
   /* 読み取りの信号を表す色。本体のコーラル/サンとは重ならないように選んでいる */
   --nfc-signal: #00e5c7;
   --nfc-pulse: #4d7cff;
@@ -42,7 +42,7 @@
 .nfc-label {
   font-family: var(--font-nfc-display), system-ui, sans-serif;
   font-size: 0.62rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--nfc-faint);
