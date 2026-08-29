@@ -24,6 +24,7 @@ export function NfcFlow() {
             fill
             sizes="(max-width: 1024px) 100vw, 45vw"
             className="object-cover"
+            unoptimized
           />
           <div
             className="absolute inset-0"

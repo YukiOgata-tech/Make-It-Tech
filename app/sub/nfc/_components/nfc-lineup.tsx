@@ -23,6 +23,7 @@ export function NfcProducts() {
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-transform duration-500 hover:scale-[1.02]"
+                unoptimized
               />
               <div
                 className="absolute inset-x-0 bottom-0 h-24"
@@ -96,6 +97,7 @@ export function NfcDesignTiers() {
                 fill
                 sizes="(max-width: 640px) 33vw, 24rem"
                 className="object-cover"
+                unoptimized
               />
             </div>
             <figcaption className="nfc-label px-3 py-3 sm:px-5">

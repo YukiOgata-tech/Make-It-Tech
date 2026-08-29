@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         hostname: "make-it-tech.com",
         pathname: "/images/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+        pathname: "/s/files/**",
+      },
     ],
   },
 };

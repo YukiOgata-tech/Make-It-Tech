@@ -15,6 +15,10 @@ export const nfcHero = {
   titleAccent: "見てほしいページへ。",
   lead: "Googleレビュー、Instagram、メニュー、予約ページ。お店で一番見てほしいページを、スマホをかざすだけで開けるようにします。リンクの設定まで済ませてお届けするので、届いたその日から使えます。",
   badges: ["リンク設定まで込み", "1個から注文できます", "5個ごとに1個分お得"],
+  visual: {
+    src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-original-custom-main-square_c92c4d72-1d2c-4684-8dfe-8bd57164db22.jpg?v=1786843000&width=1200",
+    alt: "NFCスタンドのオリジナルデザイン商品画像",
+  },
   /** ヒーローのビジュアルで順に切り替わるリンク先。用途セクションの予告を兼ねる。 */
   rotation: [
     { label: "Googleレビュー", tone: "sun" },
@@ -50,8 +54,8 @@ export const nfcUseCases = {
   description:
     "すでにお持ちのページへの導線をつくるサービスです。リンク先そのものの制作は含みません。",
   visual: {
-    src: "/images/flyer/google-review-stands.webp",
-    alt: "Googleレビューへ案内するNFCスタンドの設置イメージ",
+    src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-type-b-example-instagram-white.jpg?v=1786987911&width=800",
+    alt: "Instagramへ案内するNFCスタンド型Bの商品画像",
   },
   items: [
     { label: "Googleレビュー", note: "投稿画面を直接開きます" },
@@ -84,8 +88,8 @@ export const nfcProducts = {
       description:
         "自立するので、置くだけで設置が終わります。目線に入りやすく、お客様に声をかけながら使う場面に向いています。",
       image: {
-        src: "/images/flyer/shop/type-stand.webp",
-        alt: "卓上に自立するNFCスタンド型",
+        src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-default-thumbnail.jpg?v=1786792389&width=1000",
+        alt: "GoogleレビューやSNS向けのデフォルトNFCスタンド商品画像",
       },
     },
     {
@@ -98,8 +102,8 @@ export const nfcProducts = {
       description:
         "厚みがないので、テーブルや壁面に貼り付けて使えます。設置場所を固定したい場合や、席ごとに複数置きたい場合に向いています。",
       image: {
-        src: "/images/flyer/shop/type-plate.webp",
-        alt: "テーブルや壁面に設置するNFC平面プレート型",
+        src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-plate-default-featured-square_6086ed25-e106-4aba-8555-2e276f0241a2.jpg?v=1786861875&width=1000",
+        alt: "GoogleレビューやSNS向けのデフォルトNFCプレート商品画像",
       },
     },
   ],
@@ -158,18 +162,18 @@ export const nfcDesignTiers = {
   },
   gallery: [
     {
-      src: "/images/flyer/shop/design-cafe.webp",
-      alt: "カフェ向けNFCスタンドのデザイン例",
+      src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-design-example-cafe-labeled_50ced426-0a12-4dd2-82a9-90c6737b99b2.jpg?v=1786843000&width=640",
+      alt: "カフェ向けNFCスタンドの登録商品デザイン例",
       label: "CAFE",
     },
     {
-      src: "/images/flyer/shop/design-washoku.webp",
-      alt: "和食店向けNFCスタンドのデザイン例",
-      label: "WASHOKU",
+      src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-type-b-example-bhouse-black.jpg?v=1786987876&width=640",
+      alt: "店舗向けブラックNFCスタンド型Bの登録商品デザイン例",
+      label: "SHOP",
     },
     {
-      src: "/images/flyer/shop/design-ramen.webp",
-      alt: "ラーメン店向けNFCスタンドのデザイン例",
+      src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-design-example-ramen-labeled_8378774d-54f4-4ea6-91a4-d5e5015ade18.jpg?v=1786843001&width=640",
+      alt: "ラーメン店向けNFCスタンドの登録商品デザイン例",
       label: "RAMEN",
     },
   ],
@@ -215,8 +219,8 @@ export const nfcFlow = {
     },
   ],
   visual: {
-    src: "/images/flyer/shop/hero-stand.webp",
-    alt: "届いたら置くだけで利用できるNFCスタンド",
+    src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-type-c-main.jpg?v=1786990213&width=1000",
+    alt: "届いたら置くだけで利用できるNFCスタンド型Cの商品画像",
   },
   lineSupport: {
     eyebrow: "OFFICIAL LINE SUPPORT",

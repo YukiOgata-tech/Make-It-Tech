@@ -64,6 +64,7 @@ export function NfcUseCases() {
               fill
               sizes="(max-width: 1024px) 100vw, 23rem"
               className="object-cover"
+              unoptimized
             />
             <div
               className="absolute inset-0"

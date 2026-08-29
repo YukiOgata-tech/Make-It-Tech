@@ -76,11 +76,12 @@ export function NfcHero() {
 
           <div className="nfc-panel relative aspect-[4/3] overflow-hidden text-left">
             <Image
-              src="/images/flyer/shop/hero-stand.webp"
-              alt="テーブルやレジに置いて使えるNFCスタンド"
+              src={nfcHero.visual.src}
+              alt={nfcHero.visual.alt}
               fill
               sizes="(max-width: 1024px) 100vw, 32rem"
               className="object-cover"
+              unoptimized
               priority
             />
             <div
