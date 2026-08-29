@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LineButton } from "@/components/ui/line-button";
 import { nfcLinks, nfcHref, isShopReady } from "@/content/nfc/site";
 
 /**
@@ -8,10 +9,6 @@ import { nfcLinks, nfcHref, isShopReady } from "@/content/nfc/site";
  * 中身の邪魔をせず、背景の「場」が主役に見えるよう最小限にしている。
  */
 export function NfcShell({ children }: { children: React.ReactNode }) {
-  const primary = isShopReady
-    ? { href: nfcLinks.shopUrl, label: "購入する" }
-    : { href: nfcLinks.lineUrl, label: "LINEで相談" };
-
   return (
     <>
       <header
@@ -36,24 +33,34 @@ export function NfcShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          <nav className="flex items-center gap-1 sm:gap-3">
+          <nav className="flex items-center gap-2 sm:gap-3">
             <Link
               href={nfcHref("/demo")}
-              className="hidden px-3 py-2 text-xs font-medium transition-colors sm:block"
+              className="hidden px-3 py-2 text-xs font-medium transition-colors md:block"
               style={{ color: "var(--nfc-dim)" }}
             >
               できること
             </Link>
-            <a
-              href={primary.href}
-              className="nfc-display inline-flex h-9 shrink-0 items-center px-4 text-xs transition-opacity hover:opacity-85"
-              style={{
-                backgroundColor: "var(--nfc-signal)",
-                color: "var(--nfc-void)",
-              }}
+            {isShopReady ? (
+              <a
+                href={nfcLinks.shopUrl}
+                className="nfc-display hidden h-9 shrink-0 items-center px-4 text-xs transition-opacity hover:opacity-85 sm:inline-flex"
+                style={{
+                  backgroundColor: "var(--nfc-signal)",
+                  color: "var(--nfc-void)",
+                }}
+              >
+                商品を見る
+              </a>
+            ) : null}
+            <LineButton
+              href={nfcLinks.lineUrl}
+              size="sm"
+              className="h-9 shrink-0 rounded-lg px-3 text-xs"
             >
-              {primary.label}
-            </a>
+              <span className="sm:hidden">LINE</span>
+              <span className="hidden sm:inline">LINEで相談</span>
+            </LineButton>
           </nav>
         </div>
       </header>
