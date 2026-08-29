@@ -44,6 +44,11 @@ next-env.d.ts
 
 # local prototypes
 /app/(main)/scroll-video-test/
+
+# /flyer-nfc は公開しない。ローカルには残すが追跡しない
+/app/(main)/flyer-nfc/
+/components/flyer/nfc-lineup-flyer.tsx
+/public/images/flyer/nfc-stand-lineup.webp
 /public/videos/home-scroll/MIT_03.mov
 /public/videos/home-scroll/mit-landscape.mp4
 
