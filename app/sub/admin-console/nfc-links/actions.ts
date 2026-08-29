@@ -22,11 +22,6 @@ export type NfcLinkFormState = {
   message: string;
 };
 
-export const initialNfcLinkFormState: NfcLinkFormState = {
-  status: "idle",
-  message: "",
-};
-
 export async function saveNfcLink(
   _previousState: NfcLinkFormState,
   formData: FormData
