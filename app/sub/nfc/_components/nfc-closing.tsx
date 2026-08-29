@@ -42,7 +42,7 @@ export function NfcFaq() {
 export function NfcCta() {
   return (
     <NfcSection>
-      <h2 className="nfc-display max-w-3xl text-2xl leading-[1.25] sm:text-4xl">
+      <h2 className="nfc-display max-w-3xl text-2xl leading-tight sm:text-4xl">
         {nfcCta.title}
       </h2>
       <p

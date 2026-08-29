@@ -46,27 +46,29 @@ export function NfcFlow() {
           {nfcFlow.steps.map((step, index) => (
             <li
               key={step.title}
-              className="grid gap-5 p-7 sm:grid-cols-[4rem_1fr] sm:p-9"
+              className="p-7 sm:p-9"
               style={{
                 borderTop: index === 0 ? undefined : "1px solid var(--nfc-line)",
               }}
             >
-              <span
-                className="nfc-numeric text-4xl"
-                style={{ color: "var(--nfc-signal)" }}
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <p className="nfc-label">{step.label}</p>
-                <h3 className="nfc-display mt-3 text-xl">{step.title}</h3>
-                <p
-                  className="mt-4 text-sm leading-relaxed"
-                  style={{ color: "var(--nfc-dim)" }}
+              <div className="flex items-center gap-4 sm:gap-5">
+                <span
+                  className="nfc-numeric shrink-0 text-4xl"
+                  style={{ color: "var(--nfc-signal)" }}
                 >
-                  {step.body}
-                </p>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="nfc-display text-xl">{step.title}</h3>
+                  <p className="nfc-label mt-1.5">{step.label}</p>
+                </div>
               </div>
+              <p
+                className="mt-5 text-sm leading-relaxed sm:pl-20"
+                style={{ color: "var(--nfc-dim)" }}
+              >
+                {step.body}
+              </p>
             </li>
           ))}
         </ol>

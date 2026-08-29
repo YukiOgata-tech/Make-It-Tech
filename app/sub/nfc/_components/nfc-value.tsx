@@ -6,17 +6,17 @@ export function NfcProblems() {
   return (
     <NfcSection eyebrow={nfcProblems.eyebrow} title={nfcProblems.title}>
       <div className="overflow-x-auto border" style={{ borderColor: "var(--nfc-line)" }}>
-        <table className="w-full min-w-[42rem] border-collapse text-left">
+        <table className="w-full min-w-2xl border-collapse text-left">
           <thead>
             <tr style={{ backgroundColor: "var(--nfc-raised)" }}>
-              <th className="nfc-label w-14 px-5 py-4" scope="col">
+              <th className="nfc-label w-10 px-3 py-2 sm:px-5 sm:py-4" scope="col">
                 No.
               </th>
-              <th className="nfc-label px-5 py-4" scope="col">
+              <th className="nfc-label px-3 py-2 sm:px-5 sm:py-4" scope="col">
                 これまで
               </th>
               <th
-                className="nfc-label px-5 py-4"
+                className="nfc-label px-3 py-2 sm:px-5 sm:py-4"
                 style={{ color: "var(--nfc-signal)" }}
                 scope="col"
               >

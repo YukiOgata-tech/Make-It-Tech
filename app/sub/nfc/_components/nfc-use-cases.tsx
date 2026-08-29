@@ -57,7 +57,7 @@ export function NfcUseCases() {
 
         {/* 選んだ結果 */}
         <div className="nfc-panel overflow-hidden">
-          <div className="relative aspect-[4/3] overflow-hidden">
+          <div className="relative aspect-4/3 overflow-hidden">
             <Image
               src={nfcUseCases.visual.src}
               alt={nfcUseCases.visual.alt}

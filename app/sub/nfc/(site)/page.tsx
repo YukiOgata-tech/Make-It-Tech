@@ -3,7 +3,7 @@ import { NfcProblems } from "../_components/nfc-value";
 import { NfcUseCases } from "../_components/nfc-use-cases";
 import { NfcProducts, NfcDesignTiers } from "../_components/nfc-lineup";
 import { NfcFlow } from "../_components/nfc-support";
-import { NfcAdvanced, NfcCorporate } from "../_components/nfc-extras";
+import { NfcAdvanced } from "../_components/nfc-extras";
 import { NfcFaq, NfcCta } from "../_components/nfc-closing";
 
 /**
@@ -20,7 +20,6 @@ export default function NfcHomePage() {
       <NfcDesignTiers />
       <NfcFlow />
       <NfcAdvanced />
-      <NfcCorporate />
       <NfcFaq />
       <NfcCta />
     </>

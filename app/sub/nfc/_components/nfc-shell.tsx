@@ -15,7 +15,7 @@ export function NfcShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <header
-        className="sticky top-0 z-50 backdrop-blur"
+        className="fixed inset-x-0 top-0 z-50 backdrop-blur"
         style={{
           borderBottom: "1px solid var(--nfc-line)",
           backgroundColor: "rgb(5 7 13 / 0.72)",
@@ -58,7 +58,7 @@ export function NfcShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pt-16">{children}</main>
 
       <footer style={{ borderTop: "1px solid var(--nfc-line)" }}>
         <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">

@@ -21,6 +21,7 @@ const siteFileRoutes: Record<string, ReadonlySet<string>> = {
 };
 
 const siteFilePaths = new Set(["/robots.txt", "/sitemap.xml", "/ads.txt"]);
+const sharedPublicPathPrefixes = ["/images/"];
 
 function normalizeHost(host: string) {
   return host.toLowerCase().split(":")[0];
@@ -35,6 +36,12 @@ export function proxy(request: NextRequest) {
     : hostRouteMap[host];
 
   if (!targetBase) {
+    return NextResponse.next();
+  }
+
+  // `public/images` is shared by the main site and every subdomain. Rewriting
+  // these requests would turn `/images/...` into `/sub/*/images/...` and 404.
+  if (sharedPublicPathPrefixes.some((prefix) => pathname.startsWith(prefix))) {
     return NextResponse.next();
   }
 

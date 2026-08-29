@@ -200,7 +200,7 @@ export function Hero({ className }: { className?: string }) {
 
           <motion.p
             variants={itemVariants}
-            className="mt-4 max-w-xl text-xs sm:text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg"
+            className="mt-4 max-w-xl text-xs leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg"
           >
             {site.description}
           </motion.p>

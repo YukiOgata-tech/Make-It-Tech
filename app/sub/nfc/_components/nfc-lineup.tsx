@@ -16,7 +16,7 @@ export function NfcProducts() {
       <div className="grid gap-5 md:grid-cols-2">
         {nfcProducts.items.map((item) => (
           <article key={item.id} className="nfc-panel overflow-hidden">
-            <div className="relative aspect-[16/10] overflow-hidden">
+            <div className="relative aspect-16/10 overflow-hidden">
               <Image
                 src={item.image.src}
                 alt={item.image.alt}
@@ -82,7 +82,7 @@ export function NfcDesignTiers() {
       <div className="mb-12 grid grid-cols-3 gap-2 sm:gap-4">
         {nfcDesignTiers.gallery.map((image) => (
           <figure key={image.src} className="nfc-panel overflow-hidden">
-            <div className="relative aspect-[4/3]">
+            <div className="relative aspect-4/3">
               <Image
                 src={image.src}
                 alt={image.alt}
@@ -155,7 +155,7 @@ export function NfcDesignTiers() {
       </div>
 
       <div className="mt-12 overflow-x-auto border" style={{ borderColor: "var(--nfc-line)" }}>
-        <table className="w-full min-w-[44rem] border-collapse text-left">
+        <table className="w-full min-w-176 border-collapse text-left">
           <thead>
             <tr style={{ backgroundColor: "var(--nfc-raised)" }}>
               <th className="nfc-label w-40 px-5 py-4" scope="col">

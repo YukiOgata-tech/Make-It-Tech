@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { NfcEmitter } from "./nfc-emitter";
 import { NfcSection } from "./nfc-section";
-import { nfcAdvanced, nfcCorporate } from "@/content/nfc/lp";
+import { nfcAdvanced } from "@/content/nfc/lp";
 import { nfcHref, nfcLinks } from "@/content/nfc/site";
 
 /**
@@ -90,60 +90,6 @@ export function NfcAdvanced() {
           ))}
         </ul>
         </div>
-      </div>
-    </NfcSection>
-  );
-}
-
-/** 法人・大量導入。 */
-export function NfcCorporate() {
-  return (
-    <NfcSection
-      eyebrow={nfcCorporate.eyebrow}
-      title={nfcCorporate.title}
-      description={nfcCorporate.description}
-    >
-      <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr]">
-        <ul className="grid gap-px sm:grid-cols-2" style={{ backgroundColor: "var(--nfc-line)" }}>
-          {nfcCorporate.targets.map((target, index) => (
-            <li
-              key={target}
-              className="min-h-32 p-6"
-              style={{ backgroundColor: "var(--nfc-surface)" }}
-            >
-              <span
-                className="nfc-numeric text-xs"
-                style={{ color: "var(--nfc-signal)" }}
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <p className="nfc-display mt-7 text-sm leading-relaxed">{target}</p>
-            </li>
-          ))}
-        </ul>
-
-        <aside className="nfc-panel flex flex-col justify-between p-7 sm:p-9">
-          <div>
-            <p className="nfc-label" style={{ color: "var(--nfc-signal)" }}>
-              Multi location
-            </p>
-            <p className="nfc-numeric mt-4 text-5xl">BULK</p>
-            <p className="mt-6 text-sm leading-relaxed" style={{ color: "var(--nfc-dim)" }}>
-              {nfcCorporate.note}
-            </p>
-          </div>
-          <a
-            href={nfcLinks.lineUrl}
-            className="nfc-display mt-8 inline-flex h-12 items-center justify-center gap-2 px-6 text-sm transition-opacity hover:opacity-85"
-            style={{
-              backgroundColor: "var(--nfc-signal)",
-              color: "var(--nfc-void)",
-            }}
-          >
-            {nfcCorporate.cta}
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </a>
-        </aside>
       </div>
     </NfcSection>
   );

@@ -1,14 +1,8 @@
 import { stampConfig } from "@/content/nfc/stamp";
 
 /**
- * 来店回数を端末に持たせるための Cookie 操作。
- *
- * サーバー側で読み書きするため、判定のために画面を表示する必要がない。
- * localStorage だと JS の実行を待つあいだ中間ページが見えてしまう。
- *
- * デモ用のため署名は付けていない。実運用で特典に価値を持たせる場合は
- * HMAC を付けて改ざんを検知する必要がある（ただし端末側の記録である以上、
- * 消してやり直すことは原理的に防げない）。
+ * 来店回数を端末に持たせるための Cookie 操作
+ * サーバー側で読み書きするため、判定のために画面を表示する必要がなし
  */
 
 export const STAMP_COOKIE = "mit_nfc_card";
@@ -17,7 +11,7 @@ export const STAMP_MAX_AGE = 60 * 60 * 24 * stampConfig.retentionDays;
 export type StampState = {
   /** 出会った回数 */
   count: number;
-  /** 端末を区別するための匿名ID。集計にのみ使い、個人は特定しない。 */
+  /** 端末を区別するための匿名ID。集計にのみ。 */
   deviceId: string;
   /** 初回にかざした日（JST の YYYY-MM-DD） */
   firstAt: string;

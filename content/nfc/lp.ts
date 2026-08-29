@@ -247,21 +247,6 @@ export const nfcAdvanced = {
   cta: "カスタマイズを相談する",
 } as const;
 
-export const nfcCorporate = {
-  eyebrow: "法人・大量導入",
-  title: "複数店舗への一括導入にも対応します",
-  description:
-    "チェーン店舗への展開や、クライアント向けにNFC商品を提供したい事業者様からのご相談も承ります。",
-  targets: [
-    "複数店舗を運営する法人",
-    "経営コンサルティング会社",
-    "MEO・Web・マーケティング支援会社",
-    "店舗支援事業者・広告代理店",
-  ],
-  note: "一定数量以上は通常価格と分けて個別にお見積りします。まずは想定数量をお知らせください。",
-  cta: "大量注文について問い合わせる",
-} as const;
-
 export const nfcFaq = {
   eyebrow: "よくある質問",
   title: "購入前に確認されることをまとめました",

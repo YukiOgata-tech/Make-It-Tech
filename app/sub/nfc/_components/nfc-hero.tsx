@@ -8,11 +8,7 @@ import { nfcHero } from "@/content/nfc/lp";
 import { nfcLinks, isShopReady } from "@/content/nfc/site";
 
 /**
- * ヒーロー。
- *
- * このサイトで動きを集中させている場所。読み取りリングの中で行き先が
- * 入れ替わり続けることで、「1台でいろいろなページにつなげられる」ことを
- * 説明文より先に見せる。色は増やさず、切り替わるのは言葉だけにしている。
+ * ヒーロー
  */
 export function NfcHero() {
   const [index, setIndex] = useState(0);
@@ -74,7 +70,7 @@ export function NfcHero() {
             </div>
           </div>
 
-          <div className="nfc-panel relative aspect-[4/3] overflow-hidden text-left">
+          <div className="nfc-panel relative aspect-4/3 overflow-hidden text-left">
             <Image
               src={nfcHero.visual.src}
               alt={nfcHero.visual.alt}
