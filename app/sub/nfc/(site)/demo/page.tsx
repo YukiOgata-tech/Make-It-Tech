@@ -135,25 +135,21 @@ export default function NfcDemoPage() {
         >
           <NfcEmitter size="md" />
 
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {/* /tap は Route Handler なので Link ではなく通常のリンクで遷移する */}
-            <a
-              href={nfcHref("/tap")}
-              className="nfc-display inline-flex h-12 items-center gap-2 px-6 text-sm transition-opacity hover:opacity-85"
-              style={{
-                backgroundColor: "var(--nfc-signal)",
-                color: "var(--nfc-void)",
-              }}
-            >
-              <Smartphone className="h-4 w-4" aria-hidden />
-              スタンプカードを試す
-            </a>
+          <p className="mt-8 max-w-lg text-sm leading-relaxed" style={{ color: "var(--nfc-dim)" }}>
+            回数はNFCタグを実際にタップして、この端末で
+            <span className="nfc-display mx-1" style={{ color: "var(--nfc-signal)" }}>
+              {nfcSite.host}/tap
+            </span>
+            を開いたときだけ増えます。
+          </p>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href={nfcHref("/card")}
               className="nfc-display inline-flex h-12 items-center px-6 text-sm"
               style={{ border: "1px solid var(--nfc-line-bright)" }}
             >
-              数えずに見るだけ
+              現在のスタンプを確認
             </Link>
           </div>
         </div>

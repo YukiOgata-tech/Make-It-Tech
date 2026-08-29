@@ -66,6 +66,23 @@ export default async function AdminConsoleIndexPage() {
           </CardContent>
         </Card>
 
+        <Card className="rounded-2xl gap-2 border-cyan-500/20 py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">NFCリンク設定</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              NFCタグの固定URLから開く遷移先を変更します。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              custom-test 開発者プレビュー
+            </span>
+            <Button asChild className="rounded-xl bg-cyan-600 text-white hover:bg-cyan-700">
+              <Link href="/sub/admin-console/nfc-links">設定する</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className="rounded-2xl gap-2 py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
           <CardHeader>
             <CardTitle className="text-base">お知らせ 投稿管理</CardTitle>

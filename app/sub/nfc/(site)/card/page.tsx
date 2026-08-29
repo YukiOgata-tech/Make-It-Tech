@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { ArrowRight, Check, RotateCcw, Smartphone } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { NfcSection } from "../../_components/nfc-section";
 import { STAMP_COOKIE, parseStamp } from "../../_lib/stamp";
-import { resetStamp } from "./actions";
 import { stampConfig, stampContent } from "@/content/nfc/stamp";
 import { nfcHref, nfcLinks, nfcSite } from "@/content/nfc/site";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
@@ -55,7 +54,7 @@ export default async function NfcCardPage() {
           <div className="text-center">
             {count === 0 ? (
               <p className="text-sm leading-relaxed" style={{ color: "var(--nfc-dim)" }}>
-                まだ数えていません。下のボタンから、かざしたときの動きを試せます。
+                まだ数えていません。NFCタグをタップすると最初の1回が記録されます。
               </p>
             ) : (
               <>
@@ -138,34 +137,10 @@ export default async function NfcCardPage() {
             </div>
           )}
 
-          {/* 操作 */}
-          <div className="mt-12 flex flex-col items-center gap-5">
-            {/* /tap は Route Handler なので Link ではなく通常のリンクで遷移する */}
-            <a
-              href={nfcHref("/tap")}
-              className="nfc-display inline-flex h-12 items-center gap-2 px-7 text-sm transition-opacity hover:opacity-85"
-              style={{
-                backgroundColor: "var(--nfc-signal)",
-                color: "var(--nfc-void)",
-              }}
-            >
-              <Smartphone className="h-4 w-4" aria-hidden />
-              {count === 0 ? "かざしてみる" : "もう一度かざす"}
-            </a>
-
-            <form action={resetStamp}>
-              <button
-                type="submit"
-                className="nfc-label inline-flex items-center gap-1.5 py-2 transition-opacity hover:opacity-70"
-              >
-                <RotateCcw className="h-3 w-3" aria-hidden />
-                {stampContent.reset.label}
-              </button>
-            </form>
-          </div>
+          <p className="nfc-label mt-12 text-center leading-relaxed">
+            次の回数は、この端末でNFCタグをもう一度タップしたときに加算されます
+          </p>
         </div>
-
-        <p className="nfc-label mt-5 text-center">{stampContent.reset.note}</p>
 
         {/* 集計 */}
         {stats && (

@@ -13,6 +13,7 @@
 |---|---|
 | `content/nfc/site.ts` | ホスト名・Shopify URL・OG・サイトマップ対象。**設定の唯一の情報源** |
 | `content/nfc/redirects.ts` | 中間URLのリンク定義（時間帯ルール等） |
+| `lib/nfc-managed-links.ts` | Firestoreで管理する契約者向けリンクの取得・URL検証 |
 | `content/nfc/stamp.ts` | スタンプカードの設定と文言 |
 | `content/nfc/lp.ts` | LPの文言・価格 |
 | `app/sub/nfc/_components/` | セクション部品 |
@@ -33,6 +34,7 @@ app/sub/nfc/
     demo/           事例集
     card/           スタンプ表示
   r/[slug]/         中間URL（シェルなし）
+  [slug]/            管理画面で遷移先を変えるリンク（シェルなし）
   tap/route.ts      スタンプの入口（シェルなし）
   not-found.tsx     404（シェルなし）
 ```
@@ -57,6 +59,23 @@ app/sub/nfc/
 ---
 
 ## 3. 新しい中間URLを足すとき
+
+### 管理画面で遷移先を変えるリンク
+
+`nfcManagedLinks/{slug}` に保存した設定は `app/sub/nfc/[slug]/page.tsx` が読み込む。
+最初の開発者確認用リンクは `https://nfc.make-it-tech.com/custom-test`。
+
+- 設定画面：`/sub/admin-console/nfc-links`
+- 設定変更は既存の管理者認証で保護する
+- 公開URLは固定し、Firestoreの `destinationUrl` だけを変更する
+- 遷移前にNFC専用のローディング画面を表示する
+- 遷移先は `https://` のみ許可し、NFCサイト自身への循環は拒否する
+- `organizationId` と `ownerId` は将来の契約者・組織単位の権限管理用
+
+公開側も管理画面側も Admin SDK からFirestoreを読むため、クライアントへ
+Firebaseの書き込み権限を開放しない。
+
+### コードで条件分岐するリンク
 
 1. `content/nfc/redirects.ts` の `nfcLinkRegistry` に追加
 2. 表示を伴うなら `(site)` の外にページを作る
@@ -114,6 +133,8 @@ Cookie を書けるのは Route Handler / Server Action / proxy に限られる�
 - Cookie の署名（改ざん検知）
 
 商談中に1→2→3と進められないとデモにならないため、この割り切りをしている。
+画面上に `/tap` を開く加算ボタンは置かない。実機のNFCタグに `/tap` を書き込み、
+実際にスマートフォンをかざしたときだけ回数が増える体験にする。
 
 ### 実運用で必ず問題になること
 

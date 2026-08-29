@@ -74,6 +74,12 @@ export function AdminHeader() {
             回答一覧
           </Link>
           <Link
+            href="/sub/admin-console/nfc-links"
+            className="rounded-xl border border-cyan-300/60 bg-cyan-50/80 px-2.5 py-1.5 text-[11px] font-medium text-cyan-700 transition hover:border-cyan-400 hover:text-cyan-800 dark:border-cyan-700/60 dark:bg-cyan-950/40 dark:text-cyan-300 dark:hover:border-cyan-500 sm:px-3 sm:py-2 sm:text-xs"
+          >
+            NFC設定
+          </Link>
+          <Link
             href="/sub/admin-console/create-email"
             className="rounded-xl border border-orange-300/60 bg-orange-50/80 px-2.5 py-1.5 text-[11px] font-medium text-orange-600 transition hover:border-orange-400 hover:text-orange-700 dark:border-orange-700/60 dark:bg-orange-950/40 dark:text-orange-400 dark:hover:border-orange-500 sm:px-3 sm:py-2 sm:text-xs"
           >
