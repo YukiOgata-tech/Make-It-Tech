@@ -1,7 +1,7 @@
 /**
  * NFC事業LPのコンテンツ定義（下書き）。
  *
- * まだ画面には接続していない。LP を組み立てる段でここから読み込む。
+ * 各セクションはこのファイルから文言・価格・画像パスを読み込む。
  * サブドメインの設定・リンクは `content/nfc/site.ts` を参照。
  *
  * 価格・仕様は docs/make_it_tech_nfc_business_master.md を正とする。
@@ -49,6 +49,10 @@ export const nfcUseCases = {
   title: "URLがあるページなら、だいたいつなげられます",
   description:
     "すでにお持ちのページへの導線をつくるサービスです。リンク先そのものの制作は含みません。",
+  visual: {
+    src: "/images/flyer/google-review-stands.webp",
+    alt: "Googleレビューへ案内するNFCスタンドの設置イメージ",
+  },
   items: [
     { label: "Googleレビュー", note: "投稿画面を直接開きます" },
     { label: "Googleマップ", note: "店舗情報・経路案内へ" },
@@ -79,6 +83,10 @@ export const nfcProducts = {
       places: ["レジ横", "受付カウンター", "客席テーブル", "待合スペース"],
       description:
         "自立するので、置くだけで設置が終わります。目線に入りやすく、お客様に声をかけながら使う場面に向いています。",
+      image: {
+        src: "/images/flyer/shop/type-stand.webp",
+        alt: "卓上に自立するNFCスタンド型",
+      },
     },
     {
       id: "plate",
@@ -89,6 +97,10 @@ export const nfcProducts = {
       places: ["壁面", "テーブル天板", "カウンター", "レジ周辺"],
       description:
         "厚みがないので、テーブルや壁面に貼り付けて使えます。設置場所を固定したい場合や、席ごとに複数置きたい場合に向いています。",
+      image: {
+        src: "/images/flyer/shop/type-plate.webp",
+        alt: "テーブルや壁面に設置するNFC平面プレート型",
+      },
     },
   ],
 } as const;
@@ -140,86 +152,78 @@ export const nfcDesignTiers = {
       {
         label: "デザイン制作を依頼する場合",
         value: "+5,000円",
-        note: "メールまたはLINEでご要望をうかがい、1案を制作します",
+        note: "公式LINEでご要望をうかがい、1案を制作します",
       },
     ],
   },
-} as const;
-
-export const nfcBundle = {
-  eyebrow: "まとめ買い",
-  title: "5個ごとに、1個分お得になります",
-  description:
-    "複数の席やレジに置きたい場合、5個単位でまとめてご注文いただくと1個分の価格が差し引かれます。オリジナル印刷は同じデザインの場合が対象です。",
-  rows: [
-    { qty: 5, label: "5個", effect: "4個分の価格" },
-    { qty: 10, label: "10個", effect: "8個分の価格" },
-    { qty: 15, label: "15個", effect: "12個分の価格" },
+  gallery: [
+    {
+      src: "/images/flyer/shop/design-cafe.webp",
+      alt: "カフェ向けNFCスタンドのデザイン例",
+      label: "CAFE",
+    },
+    {
+      src: "/images/flyer/shop/design-washoku.webp",
+      alt: "和食店向けNFCスタンドのデザイン例",
+      label: "WASHOKU",
+    },
+    {
+      src: "/images/flyer/shop/design-ramen.webp",
+      alt: "ラーメン店向けNFCスタンドのデザイン例",
+      label: "RAMEN",
+    },
   ],
-  example: {
-    title: "デフォルトデザインを10個の場合",
-    normal: 49800,
-    discounted: 39840,
-  },
-  note: "割引条件やクーポンとの併用可否は、確定次第ご案内します。",
-} as const;
-
-export const nfcScope = {
-  eyebrow: "サポート範囲",
-  title: "どこまでやるかを、先にはっきりさせます",
-  description:
-    "デフォルトデザイン・オリジナル印刷では、リンクの設定と動作確認までを価格に含みます。",
-  included: {
-    title: "価格に含みます",
-    items: [
-      "ご指定URLの確認",
-      "NFCへのリンク書き込み",
-      "読み取りの確認",
-      "発送前の動作チェック",
-    ],
-  },
-  excluded: {
-    title: "含みません",
-    items: [
-      "Googleビジネスプロフィールの新規登録",
-      "Googleマップ掲載のための設定",
-      "SNSアカウントの開設",
-      "LINE公式アカウントの開設・構築",
-      "Webサイト・LPの制作",
-      "デジタルメニューそのものの制作",
-      "MEO・SNS・広告の運用",
-    ],
-  },
-  fallback:
-    "リンク先のページがまだない場合や、その制作からご相談されたい場合は、Make It Tech本体で対応できます。",
+  comparisonRows: [
+    {
+      label: "デザイン",
+      default: "用意されたデザインから選択",
+      original: "店舗ロゴやブランドに合わせて印刷",
+    },
+    {
+      label: "入稿データ",
+      default: "不要",
+      original: "完成データを入稿、または制作を依頼",
+    },
+    {
+      label: "デザイン制作",
+      default: "不要",
+      original: "+5,000円で1案制作",
+    },
+    {
+      label: "おすすめ",
+      default: "早く、手軽に導入したい店舗",
+      original: "店内やブランドの世界観を揃えたい店舗",
+    },
+  ],
 } as const;
 
 export const nfcFlow = {
   eyebrow: "ご利用の流れ",
-  title: "注文から利用開始まで",
+  title: "デザインを選んで、届いたら置くだけ",
+  description:
+    "NFCの書き込みや細かな設定はMake It Tech側で行います。お客様側で専用アプリを入れたり、機器を設定したりする必要はありません。",
   steps: [
     {
-      title: "商品を選んで注文",
-      body: "形状・デザイン・数量を選んでご注文いただきます。",
+      title: "デザインを選択",
+      body: "既製デザインから選ぶか、店舗ロゴに合わせたオリジナル印刷を選択します。デザイン制作のご依頼も可能です。",
+      label: "SELECT DESIGN",
     },
     {
-      title: "リンク先の情報を送信",
-      body: "つなげたいページのURLや、印刷するデザインのデータをお送りいただきます。",
-    },
-    {
-      title: "印刷と設定",
-      body: "印刷とリンクの書き込みを行い、実際に読み取れるか確認します。",
-    },
-    {
-      title: "発送",
-      body: "動作確認を済ませた状態でお届けします。",
-    },
-    {
-      title: "置いて、使いはじめる",
-      body: "設定は済んでいるので、置くだけで使えます。",
+      title: "届いたら設置",
+      body: "リンク設定と読み取り確認を済ませてお届けします。商品が届いたら、テーブルやレジ、受付に置くだけで利用開始です。",
+      label: "PLACE & START",
     },
   ],
-  note: "納期は確定次第ご案内します。お急ぎの場合はご相談ください。",
+  visual: {
+    src: "/images/flyer/shop/hero-stand.webp",
+    alt: "届いたら置くだけで利用できるNFCスタンド",
+  },
+  lineSupport: {
+    eyebrow: "OFFICIAL LINE SUPPORT",
+    title: "細かなご要望も、購入前の相談も公式LINEへ",
+    body: "デザインのご希望、リンク先の確認、設置場所や注文数のご相談まで、公式LINEで常時受け付けています。決まっていない段階でもお気軽にご連絡ください。",
+    cta: "公式LINEで相談する",
+  },
 } as const;
 
 export const nfcAdvanced = {
@@ -280,7 +284,7 @@ export const nfcFaq = {
     },
     {
       q: "ロゴのデータがなくても、オリジナル印刷を頼めますか？",
-      a: "頼めます。デザイン制作を+5,000円で承ります。メールまたはLINEでご要望をうかがい、1案を制作します。",
+      a: "頼めます。デザイン制作を+5,000円で承ります。公式LINEでご要望をうかがい、1案を制作します。",
     },
   ],
 } as const;
@@ -290,7 +294,7 @@ export const nfcCta = {
   description:
     "Googleレビューを増やしたい、SNSを見てもらいたい、メニューをデジタルにしたい。目的が決まっていれば、あとはこちらで形にします。",
   primary: "商品を見る",
-  secondary: "相談する",
+  secondary: "公式LINEで相談する",
 } as const;
 
 export const nfcNotes = [

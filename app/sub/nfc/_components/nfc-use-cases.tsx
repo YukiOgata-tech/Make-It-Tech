@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { NfcSection } from "./nfc-section";
 import { NfcEmitter } from "./nfc-emitter";
@@ -23,7 +24,7 @@ export function NfcUseCases() {
       title={nfcUseCases.title}
       description={nfcUseCases.description}
     >
-      <div className="grid gap-10 lg:grid-cols-[1fr_20rem] lg:gap-16">
+      <div className="grid gap-10 lg:grid-cols-[1fr_23rem] lg:gap-16">
         {/* 選択肢 */}
         <ul className="flex flex-wrap gap-2" role="listbox" aria-label="つなげ先を選ぶ">
           {nfcUseCases.items.map((item, index) => {
@@ -55,27 +56,46 @@ export function NfcUseCases() {
         </ul>
 
         {/* 選んだ結果 */}
-        <div
-          className="flex flex-col items-center justify-center px-6 py-10 text-center"
-          style={{ border: "1px solid var(--nfc-line)" }}
-        >
-          <NfcEmitter size="md" />
+        <div className="nfc-panel overflow-hidden">
+          <div className="relative aspect-[4/3] overflow-hidden">
+            <Image
+              src={nfcUseCases.visual.src}
+              alt={nfcUseCases.visual.alt}
+              fill
+              sizes="(max-width: 1024px) 100vw, 23rem"
+              className="object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, var(--nfc-surface), transparent 55%)",
+              }}
+              aria-hidden
+            />
+            <NfcEmitter
+              size="sm"
+              className="absolute bottom-5 right-5"
+            />
+          </div>
 
-          <p className="nfc-label mt-8">かざすと開く</p>
-          <p
-            key={active.label}
-            className="nfc-display nfc-pop mt-3 text-lg"
-            style={{ color: "var(--nfc-signal)" }}
-            aria-live="polite"
-          >
-            {active.label}
-          </p>
-          <p
-            className="mt-3 text-xs leading-relaxed"
-            style={{ color: "var(--nfc-dim)" }}
-          >
-            {active.note}
-          </p>
+          <div className="px-6 pb-7 pt-5 text-left">
+            <p className="nfc-label">かざすと開く</p>
+            <p
+              key={active.label}
+              className="nfc-display nfc-pop mt-3 text-lg"
+              style={{ color: "var(--nfc-signal)" }}
+              aria-live="polite"
+            >
+              {active.label}
+            </p>
+            <p
+              className="mt-3 text-xs leading-relaxed"
+              style={{ color: "var(--nfc-dim)" }}
+            >
+              {active.note}
+            </p>
+          </div>
         </div>
       </div>
     </NfcSection>

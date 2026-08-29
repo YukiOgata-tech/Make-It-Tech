@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ArrowDown } from "lucide-react";
 import { NfcEmitter } from "./nfc-emitter";
@@ -52,23 +53,60 @@ export function NfcHero() {
           {nfcHero.titleAccent}
         </h1>
 
-        {/* 読み取りリングと行き先 */}
+        {/* 読み取りリングと、実際に置いたときの見え方 */}
         <div
-          className="nfc-rise mt-14 flex flex-col items-center"
+          className="nfc-rise mt-14 grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-12"
           style={{ animationDelay: "160ms" }}
         >
-          <NfcEmitter size="lg" />
+          <div className="flex flex-col items-center">
+            <NfcEmitter size="lg" />
 
-          <div className="mt-8">
-            <p className="nfc-label">かざすと開くページ</p>
-            <p
-              key={active.label}
-              className="nfc-display nfc-pop mt-3 text-xl sm:text-3xl"
-              style={{ color: "var(--nfc-signal)" }}
-              aria-live="polite"
-            >
-              {active.label}
-            </p>
+            <div className="mt-8">
+              <p className="nfc-label">かざすと開くページ</p>
+              <p
+                key={active.label}
+                className="nfc-display nfc-pop mt-3 text-xl sm:text-3xl"
+                style={{ color: "var(--nfc-signal)" }}
+                aria-live="polite"
+              >
+                {active.label}
+              </p>
+            </div>
+          </div>
+
+          <div className="nfc-panel relative aspect-[4/3] overflow-hidden text-left">
+            <Image
+              src="/images/flyer/shop/hero-stand.webp"
+              alt="テーブルやレジに置いて使えるNFCスタンド"
+              fill
+              sizes="(max-width: 1024px) 100vw, 32rem"
+              className="object-cover"
+              priority
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgb(5 7 13 / 0.92), transparent 62%)",
+              }}
+              aria-hidden
+            />
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-7">
+              <div>
+                <p className="nfc-label" style={{ color: "var(--nfc-signal)" }}>
+                  Ready to use
+                </p>
+                <p className="nfc-display mt-2 text-lg sm:text-xl">
+                  届いたら、置くだけ
+                </p>
+              </div>
+              <span
+                className="nfc-label shrink-0 border px-3 py-2"
+                style={{ borderColor: "var(--nfc-line-bright)" }}
+              >
+                SETUP 0
+              </span>
+            </div>
           </div>
         </div>
 
@@ -107,14 +145,14 @@ export function NfcHero() {
             </a>
           ) : null}
           <a
-            href={nfcLinks.contactUrl}
+            href={nfcLinks.lineUrl}
             className="nfc-display inline-flex h-12 items-center px-7 text-sm transition-colors"
             style={{
               border: "1px solid var(--nfc-line-bright)",
               color: "var(--nfc-text)",
             }}
           >
-            相談する
+            LINEで相談する
           </a>
         </div>
 

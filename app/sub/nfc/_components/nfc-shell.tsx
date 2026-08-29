@@ -10,7 +10,7 @@ import { nfcLinks, nfcHref, isShopReady } from "@/content/nfc/site";
 export function NfcShell({ children }: { children: React.ReactNode }) {
   const primary = isShopReady
     ? { href: nfcLinks.shopUrl, label: "購入する" }
-    : { href: nfcLinks.contactUrl, label: "相談する" };
+    : { href: nfcLinks.lineUrl, label: "LINEで相談" };
 
   return (
     <>
@@ -78,7 +78,7 @@ export function NfcShell({ children }: { children: React.ReactNode }) {
               {[
                 { href: nfcHref("/"), label: "商品について", internal: true },
                 { href: nfcHref("/demo"), label: "できること", internal: true },
-                { href: nfcLinks.contactUrl, label: "お問い合わせ", internal: false },
+                { href: nfcLinks.lineUrl, label: "公式LINEで相談", internal: false },
                 { href: nfcLinks.parentUrl, label: "Make It Tech 本体", internal: false },
                 {
                   href: `${nfcLinks.parentUrl}/privacy`,

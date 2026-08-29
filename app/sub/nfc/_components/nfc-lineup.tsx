@@ -1,5 +1,6 @@
+import Image from "next/image";
 import { NfcSection } from "./nfc-section";
-import { nfcProducts, nfcDesignTiers, nfcBundle } from "@/content/nfc/lp";
+import { nfcProducts, nfcDesignTiers } from "@/content/nfc/lp";
 
 const yen = (value: number) => value.toLocaleString("ja-JP");
 
@@ -12,15 +13,36 @@ export function NfcProducts() {
       title={nfcProducts.title}
       description={nfcProducts.description}
     >
-      <div className="grid gap-px" style={{ backgroundColor: "var(--nfc-line)" }}>
-        <div className="grid gap-px md:grid-cols-2" style={{ backgroundColor: "var(--nfc-line)" }}>
-          {nfcProducts.items.map((item) => (
-            <article
-              key={item.id}
-              className="p-7 sm:p-9"
-              style={{ backgroundColor: "var(--nfc-void)" }}
-            >
-              <p className="nfc-label">{item.summary}</p>
+      <div className="grid gap-5 md:grid-cols-2">
+        {nfcProducts.items.map((item) => (
+          <article key={item.id} className="nfc-panel overflow-hidden">
+            <div className="relative aspect-[16/10] overflow-hidden">
+              <Image
+                src={item.image.src}
+                alt={item.image.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover transition-transform duration-500 hover:scale-[1.02]"
+              />
+              <div
+                className="absolute inset-x-0 bottom-0 h-24"
+                style={{
+                  background: "linear-gradient(to top, var(--nfc-surface), transparent)",
+                }}
+                aria-hidden
+              />
+              <span
+                className="nfc-label absolute left-5 top-5 px-3 py-2"
+                style={{
+                  backgroundColor: "rgb(5 7 13 / 0.82)",
+                  color: "var(--nfc-signal)",
+                }}
+              >
+                {item.summary}
+              </span>
+            </div>
+
+            <div className="p-7 sm:p-9">
               <h3 className="nfc-display mt-3 text-xl sm:text-2xl">{item.name}</h3>
 
               <p
@@ -52,9 +74,9 @@ export function NfcProducts() {
                   </dd>
                 </div>
               </dl>
-            </article>
-          ))}
-        </div>
+            </div>
+          </article>
+        ))}
       </div>
     </NfcSection>
   );
@@ -64,6 +86,25 @@ export function NfcProducts() {
 export function NfcDesignTiers() {
   return (
     <NfcSection id="pricing" eyebrow={nfcDesignTiers.eyebrow} title={nfcDesignTiers.title}>
+      <div className="mb-12 grid grid-cols-3 gap-2 sm:gap-4">
+        {nfcDesignTiers.gallery.map((image) => (
+          <figure key={image.src} className="nfc-panel overflow-hidden">
+            <div className="relative aspect-[4/3]">
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 640px) 33vw, 24rem"
+                className="object-cover"
+              />
+            </div>
+            <figcaption className="nfc-label px-3 py-3 sm:px-5">
+              {image.label}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+
       <div className="grid gap-px md:grid-cols-2" style={{ backgroundColor: "var(--nfc-line)" }}>
         {nfcDesignTiers.items.map((tier) => (
           <article
@@ -119,6 +160,44 @@ export function NfcDesignTiers() {
         ))}
       </div>
 
+      <div className="mt-12 overflow-x-auto border" style={{ borderColor: "var(--nfc-line)" }}>
+        <table className="w-full min-w-[44rem] border-collapse text-left">
+          <thead>
+            <tr style={{ backgroundColor: "var(--nfc-raised)" }}>
+              <th className="nfc-label w-40 px-5 py-4" scope="col">
+                比較項目
+              </th>
+              {nfcDesignTiers.items.map((tier) => (
+                <th key={tier.id} className="px-5 py-4" scope="col">
+                  <span className="nfc-display block text-sm">{tier.name}</span>
+                  <span
+                    className="nfc-numeric mt-1 block text-lg"
+                    style={{ color: "var(--nfc-signal)" }}
+                  >
+                    {yen(tier.price)}円〜
+                  </span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {nfcDesignTiers.comparisonRows.map((row) => (
+              <tr key={row.label} style={{ borderTop: "1px solid var(--nfc-line)" }}>
+                <th className="nfc-label px-5 py-5" scope="row">
+                  {row.label}
+                </th>
+                <td className="px-5 py-5 text-sm" style={{ color: "var(--nfc-dim)" }}>
+                  {row.default}
+                </td>
+                <td className="px-5 py-5 text-sm" style={{ color: "var(--nfc-dim)" }}>
+                  {row.original}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       {/* デザイン制作費 */}
       <div className="mt-12">
         <p className="nfc-label">{nfcDesignTiers.designFee.title}</p>
@@ -137,54 +216,6 @@ export function NfcDesignTiers() {
             </div>
           ))}
         </dl>
-      </div>
-    </NfcSection>
-  );
-}
-
-/** まとめ買い。計算式ではなく結果だけを見せる。 */
-export function NfcBundle() {
-  return (
-    <NfcSection
-      eyebrow={nfcBundle.eyebrow}
-      title={nfcBundle.title}
-      description={nfcBundle.description}
-    >
-      <div className="grid gap-12 lg:grid-cols-[1fr_22rem] lg:gap-16">
-        <ul className="grid gap-px sm:grid-cols-3" style={{ backgroundColor: "var(--nfc-line)" }}>
-          {nfcBundle.rows.map((row) => (
-            <li
-              key={row.qty}
-              className="px-6 py-8 text-center"
-              style={{ backgroundColor: "var(--nfc-void)" }}
-            >
-              <p className="nfc-numeric text-3xl">{row.label}</p>
-              <p className="nfc-label mt-3" style={{ color: "var(--nfc-signal)" }}>
-                {row.effect}
-              </p>
-            </li>
-          ))}
-        </ul>
-
-        <div className="p-7" style={{ border: "1px solid var(--nfc-line)" }}>
-          <p className="nfc-label">{nfcBundle.example.title}</p>
-          <p className="mt-5 flex flex-wrap items-baseline gap-3">
-            <span
-              className="nfc-numeric text-lg line-through"
-              style={{ color: "var(--nfc-faint)" }}
-            >
-              {yen(nfcBundle.example.normal)}
-            </span>
-            <span
-              className="nfc-numeric text-3xl"
-              style={{ color: "var(--nfc-signal)" }}
-            >
-              {yen(nfcBundle.example.discounted)}
-              <span className="nfc-label ml-2">円</span>
-            </span>
-          </p>
-          <p className="nfc-label mt-6 leading-relaxed">{nfcBundle.note}</p>
-        </div>
       </div>
     </NfcSection>
   );

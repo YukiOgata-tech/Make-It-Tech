@@ -66,18 +66,14 @@ export function NfcCta() {
           </a>
         ) : null}
         <a
-          href={nfcLinks.contactUrl}
-          className="nfc-display inline-flex items-center px-8 py-4 text-sm"
-          style={{ border: "1px solid var(--nfc-line-bright)" }}
-        >
-          {nfcCta.secondary}
-        </a>
-        <a
           href={nfcLinks.lineUrl}
           className="nfc-display inline-flex items-center px-8 py-4 text-sm"
-          style={{ border: "1px solid var(--nfc-line)", color: "var(--nfc-dim)" }}
+          style={{
+            backgroundColor: "var(--nfc-signal)",
+            color: "var(--nfc-void)",
+          }}
         >
-          LINEで相談
+          {nfcCta.secondary}
         </a>
       </div>
 
