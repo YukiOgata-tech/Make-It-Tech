@@ -49,7 +49,7 @@ export const nfcUseCases = {
   eyebrow: "つなげられるページ",
   title: "自社のHPやレビュー、SNSのアクセスに繋げましょう！",
   description:
-    "すでにお持ちのページへの導線をつくるサービスです。リンク先そのものの制作は含みません。",
+    "すでにお持ちのページ・サービス・コンテンツへの導線をつくるサービスです。リンク先そのものの制作は含みません。",
   visual: {
     src: "https://cdn.shopify.com/s/files/1/1043/1397/9163/files/nfc-stand-type-b-example-instagram-white.jpg?v=1786987911&width=800",
     alt: "Instagramへ案内するNFCスタンド型Bの商品画像",
@@ -284,6 +284,6 @@ export const nfcCta = {
 } as const;
 
 export const nfcNotes = [
-  "表示価格は現時点の基本価格です。原価・送料・製造条件により変更する場合があります。",
+  "表示価格は現時点の基本価格です。原価・送料・製造条件により変更する場合があります。あらかじめご了承ください。",
   "税表記、送料、納期、保証・返品条件はECサイトでご案内しています。",
 ] as const;
