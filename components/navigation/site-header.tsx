@@ -33,6 +33,7 @@ function useScrollShadow(threshold = 8) {
 }
 
 const primaryNav: NavItem[] = [
+  { label: "ホームページ制作", href: "/web-production" },
   { label: "サービス", href: "/services" },
   { label: "実績紹介", href: "/works" },
   { label: "事業所概要", href: "/about" },

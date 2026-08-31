@@ -13,6 +13,7 @@ const INTERNAL_TITLES: Record<string, string> = {
   "/services": "サービス",
   "/survey": "LINEで相談",
   "/terms": "利用規約",
+  "/web-production": "ホームページ制作・Web運用",
 };
 
 const siteHost = (() => {

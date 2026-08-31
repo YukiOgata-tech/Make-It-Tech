@@ -8,6 +8,7 @@ import { site } from "@/lib/site";
 
 // ラベルのマッピング定義
 const labelMap: Record<string, string> = {
+  "web-production": "ホームページ制作",
   services: "サービス",
   about: "事業所概要",
   contact: "お問い合わせ",

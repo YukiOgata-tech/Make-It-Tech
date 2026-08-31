@@ -2,6 +2,7 @@ export const footerLinks = [
   {
     title: "サービス",
     links: [
+      { label: "ホームページ制作", href: "/web-production" },
       { label: "サービス概要", href: "/services" },
       { label: "実績紹介", href: "/works" },
       { label: "事業所概要", href: "/about" },

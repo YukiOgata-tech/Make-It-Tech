@@ -14,7 +14,7 @@ export const serviceAreas = [
     title: "HP/LP制作",
     desc: "SEO、導線設計、公開後の運用まで見据えたWeb制作に対応します。",
     icon: Globe,
-    href: "/hp-lp-request",
+    href: "/web-production",
     tone: "sky",
   },
   {

@@ -8,6 +8,7 @@ export const revalidate = false;
 
 const routes = [
   "",
+  "/web-production",
   "/services",
   "/about",
   "/contact",
@@ -50,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${site.url}${route}`,
     changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : 0.7,
+    priority: route === "" ? 1 : route === "/web-production" ? 0.9 : 0.7,
   }));
 
   return [...staticRoutes, ...blogRoutes, ...announcementRoutes];

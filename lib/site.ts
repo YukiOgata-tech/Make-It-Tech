@@ -25,6 +25,7 @@ export const site = {
     surveyUrl: "https://lin.ee/8uHdH0Y",
   },
   nav: [
+    { label: "ホームページ制作", href: "/web-production" },
     { label: "サービス", href: "/services" },
     { label: "事業所概要", href: "/about" },
     { label: "お問い合わせ", href: "/contact" },
