@@ -2,8 +2,8 @@ export const aboutOverviewItems = [
   { label: "屋号", value: "Make It Tech（メイクイットテック）" },
   { label: "開始", value: "2025/6" },
   { label: "代表取締役", value: "尾形友輝" },
-  { label: "事業内容", value: "Web制作/業務改善/自動化/DX支援/マーケティング支援" },
-  { label: "拠点", value: "新潟県(詳細は打合せ時に共有)" },
+  { label: "事業内容", value: "Web制作/システム開発/AI･DX支援/マーケティング支援" },
+  { label: "拠点", value: "新潟県" },
 ] as const;
 
 export interface RichTextChunk {
@@ -26,9 +26,9 @@ export const aboutDetailSections: AboutDetailSection[] = [
   {
     title: "事業について",
     body: [
-      "Make It Tech（メイクイットテック）は、Web制作やシステム開発、業務改善を中心に、現場に合わせたIT･DX支援を行う事業です。",
-      "企業や事業所の「今ある業務･実際に困っていること」を起点に、過剰な仕組みやツール導入ではなく、必要な部分を整理･実装し、運用まで支援することを大切にしています。",
-      "現在は、Web･LP制作、DX支援、LINEやWebを活用した業務効率化などを中心に、フロントエンドからバックエンドまで一貫した開発･支援を行っています。",
+      "Make It Tech（メイクイットテック）は、Web制作やシステム開発、FDE活動を中心に、現場に合わせたIT･DX支援を行う事業です。",
+      "企業や事業所の「今ある業務･実際に困っていること」を起点に、必要な部分を整理･実装し、運用まで支援することを大切にしています。",
+      "現在は、HP･LP制作、DX支援、LINEやWebを活用した業務効率化などを中心に、フロントエンドからバックエンドまで一貫した開発･支援を行っています。",
     ],
   },
   {

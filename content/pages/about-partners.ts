@@ -9,9 +9,8 @@ export interface PartnerCompany {
 }
 
 /**
- * パートナー企業の掲載情報です。
- * ロゴを掲載する場合は public/images/partners/ に配置し、
- * logoSrcへ /images/partners/ファイル名 の形式で指定してください。
+ * パートナー企業の掲載情報
+ * ロゴを掲載する場合は public/images/partners/ に配置し、logoSrcへ /images/partners/ファイル名 の形式で指定してください。
  * 外部サイトのロゴを直接使う場合は、next.config.tsのremotePatternsにも
  * 参照先ドメインを追加してください。
  */

@@ -61,11 +61,11 @@ export default function AboutPage() {
                 制作・支援実績をまとめています
               </p>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/80">
-                Web/LP制作、業務システム開発、運用支援など、実際に対応した案件の概要を掲載しています。
+                HP/LP制作、業務システム開発、運用支援など、実際に対応した案件の概要を掲載しています。
                 画面イメージや実施内容は実績紹介ページからご確認ください。
               </p>
               <p className="mt-4 text-sm leading-relaxed text-foreground/80">
-                Firebase/Supabaseなどを用いたバックエンド構築から、フロントエンド実装まで一貫して対応しています。
+                バックエンド構築から、フロントエンド実装まで一貫して対応しています。
               </p>
               <Button asChild className="mt-5 w-full rounded-xl sm:w-auto">
                 <Link href="/works">
@@ -76,10 +76,10 @@ export default function AboutPage() {
             </div>
             <ul className="grid gap-3 border-t border-border/70 pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
               {[
-                "飲食店Webサイトの企画・制作",
-                "教育事業所向けQRコードを用いた席利用状況のリアルタイム管理システムの開発",
+                "Webサイトの企画・制作",
+                "教育事業所向けQRコードを用いた席利用状況のリアルタイム管理システムと現地の機器接続の開発",
                 "企業との業務委託契約によるWeb・システム開発支援",
-                "Webサイト制作から簡易システム導入、運用改善までの一貫対応",
+                "Webアプリ制作からシステム導入、運用改善までの一貫対応",
               ].map((item) => (
                 <li key={item} className="flex gap-3 text-sm leading-relaxed text-foreground/85">
                   <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -110,7 +110,7 @@ export default function AboutPage() {
             <Separator className="my-2 sm:my-3" />
             <div className="text-sm leading-relaxed text-muted-foreground">
               山形県 南陽市出身
-              <p>新潟大学 工学部 情報電子分野 在学中</p>
+              <p>新潟大学 工学部 在学中</p>
               <p>ENTP / 憧れの先輩</p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function AboutPage() {
               <p>8歳よりバスケットボールに取り組み、インターハイ(2021)および国民体育大会(2019)に出場。</p>
               <p>大学を1年間休学し、カナダにてワーキングホリデーを経験(2024-25)。</p>
               <p>どんなことも自分で見たいし、自分で経験したい。そんなマインドで生きています。</p>
-              <p>現在は学業を続けながら、事業主として実務案件に携わっています。</p>
+              <p>現在は学業を続けながら、事業主として、様々な場に飛び込み、模索を繰り替えし、実務案件などに携わっています。</p>
             </div>
           </div>
         </div>

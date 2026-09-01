@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { ArrowUpRight, Building2, MapPin } from "lucide-react";
 import { Section } from "@/components/layout/section";
 import {
@@ -7,44 +8,76 @@ import {
 } from "@/content/pages/about-partners";
 import { site } from "@/lib/site";
 
-function PartnerCard({ partner }: { partner: PartnerCompany }) {
+type PartnerGridStyle = CSSProperties & {
+  "--partner-mobile-rows": number;
+  "--partner-desktop-rows": number;
+};
+
+type PartnerCardStyle = CSSProperties & {
+  "--partner-mobile-row": number;
+  "--partner-mobile-column": number;
+  "--partner-desktop-row": number;
+  "--partner-desktop-column": number;
+};
+
+function getPartnerCardStyle(index: number): PartnerCardStyle {
+  const desktopPage = Math.floor(index / 9);
+  const desktopIndex = index % 9;
+
+  return {
+    "--partner-mobile-row": (index % 2) + 1,
+    "--partner-mobile-column": Math.floor(index / 2) + 1,
+    "--partner-desktop-row": Math.floor(desktopIndex / 3) + 1,
+    "--partner-desktop-column": desktopPage * 3 + (desktopIndex % 3) + 1,
+  };
+}
+
+function PartnerCard({
+  partner,
+  index,
+}: {
+  partner: PartnerCompany;
+  index: number;
+}) {
   return (
-    <li className="h-full">
-      <article className="flex h-full flex-col rounded-2xl border border-border/80 bg-card p-5 sm:rounded-3xl sm:p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-background sm:size-16">
+    <li
+      className="snap-start [grid-column:var(--partner-mobile-column)] [grid-row:var(--partner-mobile-row)] md:h-full md:[grid-column:var(--partner-desktop-column)] md:[grid-row:var(--partner-desktop-row)]"
+      style={getPartnerCardStyle(index)}
+    >
+      <article className="flex flex-col rounded-xl border border-border/80 bg-card p-3 md:h-full md:rounded-2xl md:p-4 lg:p-5">
+        <div className="flex items-start gap-2.5 md:gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background md:size-12 md:rounded-2xl">
             {partner.logoSrc ? (
               <Image
                 src={partner.logoSrc}
                 alt={partner.logoAlt ?? `${partner.name}のロゴ`}
                 width={64}
                 height={64}
-                className="h-full w-full object-contain p-2"
+                className="h-full w-full object-contain p-1.5 md:p-2"
               />
             ) : (
-              <Building2 className="size-6 text-primary" aria-hidden="true" />
+              <Building2 className="size-5 text-primary" aria-hidden="true" />
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-semibold leading-snug sm:text-lg">
+            <h3 className="text-base font-semibold leading-snug md:text-lg">
               {partner.name}
             </h3>
             {partner.partnership ? (
-              <p className="mt-1 text-xs font-medium leading-relaxed text-primary sm:text-sm">
+              <p className="mt-0.5 line-clamp-1 text-[11px] font-medium leading-relaxed text-primary md:text-xs">
                 {partner.partnership}
               </p>
             ) : null}
+            <p className="mt-1 line-clamp-2 text-xs leading-5 text-foreground/85 md:line-clamp-3 md:text-sm md:leading-relaxed">
+              {partner.description}
+            </p>
           </div>
         </div>
 
-        <p className="mt-4 text-sm leading-relaxed text-foreground/85">
-          {partner.description}
-        </p>
-
-        <div className="mt-auto pt-5">
+        <div className="mt-2 md:mt-auto md:pt-4">
           {partner.location ? (
-            <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-foreground/75 sm:text-sm">
-              <MapPin className="size-4 text-primary" aria-hidden="true" />
+            <p className="mb-2 flex items-center gap-1 text-[11px] font-medium text-foreground/75 md:text-xs">
+              <MapPin className="size-3.5 text-primary" aria-hidden="true" />
               {partner.location}
             </p>
           ) : null}
@@ -52,11 +85,11 @@ function PartnerCard({ partner }: { partner: PartnerCompany }) {
             href={partner.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold transition-colors hover:border-primary/50 hover:text-primary"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold transition-colors hover:border-primary/50 hover:text-primary md:min-h-10 md:rounded-xl md:text-sm"
             aria-label={`${partner.name}の公式サイトを見る（新しいタブで開きます）`}
           >
             公式サイトを見る
-            <ArrowUpRight className="size-4" aria-hidden="true" />
+            <ArrowUpRight className="size-3.5 md:size-4" aria-hidden="true" />
           </a>
         </div>
       </article>
@@ -65,6 +98,13 @@ function PartnerCard({ partner }: { partner: PartnerCompany }) {
 }
 
 export function PartnerCompaniesSection() {
+  const gridStyle: PartnerGridStyle = {
+    "--partner-mobile-rows": Math.min(partnerCompanies.length, 2),
+    "--partner-desktop-rows": Math.min(
+      Math.ceil(partnerCompanies.length / 3),
+      3
+    ),
+  };
   const partnerListJsonLd = partnerCompanies.length
     ? {
         "@context": "https://schema.org",
@@ -97,9 +137,18 @@ export function PartnerCompaniesSection() {
     >
       <div id="partners" className="scroll-mt-28">
         {partnerCompanies.length ? (
-          <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {partnerCompanies.map((partner) => (
-              <PartnerCard key={partner.websiteUrl} partner={partner} />
+          <ul
+            className="grid snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-3 pr-4 [grid-auto-columns:min(82vw,19rem)] [grid-template-rows:repeat(var(--partner-mobile-rows),auto)] md:gap-4 md:pr-0 md:[grid-auto-columns:calc((100%_-_2rem)/3)] md:[grid-template-rows:repeat(var(--partner-desktop-rows),auto)]"
+            style={gridStyle}
+            tabIndex={0}
+            aria-label="パートナー企業一覧。横方向にスクロールできます"
+          >
+            {partnerCompanies.map((partner, index) => (
+              <PartnerCard
+                key={partner.websiteUrl}
+                partner={partner}
+                index={index}
+              />
             ))}
           </ul>
         ) : (
