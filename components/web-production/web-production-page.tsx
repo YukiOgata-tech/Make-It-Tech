@@ -30,6 +30,7 @@ import {
   Ticket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { webProductionFaqItems } from "@/content/pages/web-production";
 import { cn } from "@/lib/utils";
 
 type Feature = {
@@ -151,34 +152,6 @@ const process = [
   },
 ];
 
-const faqItems = [
-  {
-    question: "制作費はいつ発生しますか？",
-    answer:
-      "制作したデザイン・完成形をご確認いただき、公開を決定した場合に制作費9,800円（税込）が発生します。",
-  },
-  {
-    question: "月額24,980円はサーバー保守費ですか？",
-    answer:
-      "単なる維持・保守費ではありません。Webサイトの運用、一般的な修正・更新、構成改善、SEO・MEO・AIO、情報整備、施策提案を含む継続支援費です。",
-  },
-  {
-    question: "自分たちで情報を更新できますか？",
-    answer:
-      "CMSを利用し、お知らせやメニューなど、必要な情報を更新できる形で設計します。更新範囲は制作時に確認します。",
-  },
-  {
-    question: "予約や会員機能、ECサイトも作れますか？",
-    answer:
-      "対応可能です。通常のホームページ制作を超えるWebアプリ、会員・予約・決済・顧客管理などは、要件を整理したうえで別途お見積りします。",
-  },
-  {
-    question: "NFC商品は料金に含まれますか？",
-    answer:
-      "NFCスタンド・プレート本体は別途です。店舗・現地向け追加支援では、設置場所や目的に合わせた導線設計と運用改善を継続して支援します。",
-  },
-];
-
 function Reveal({
   children,
   className,
@@ -214,7 +187,11 @@ function SectionHeading({
   align?: "left" | "center";
 }) {
   return (
-    <Reveal className={cn("max-w-3xl", align === "center" && "mx-auto text-center")}>
+    <Reveal
+      className={cn(
+        align === "center" ? "mx-auto max-w-5xl text-center" : "max-w-3xl"
+      )}
+    >
       <div
         className={cn(
           "mb-2 flex items-center gap-2 sm:mb-4 sm:gap-3",
@@ -253,6 +230,7 @@ function HeroBackground() {
         alt=""
         fill
         priority
+        fetchPriority="high"
         sizes="100vw"
         className="object-cover object-[58%_center] lg:object-center"
       />
@@ -773,7 +751,7 @@ export function WebProductionPage() {
               </div>
 
               <div className="mt-3 divide-y divide-border/70 sm:mt-6">
-                {faqItems.map((item, index) => (
+                {webProductionFaqItems.map((item, index) => (
                   <details key={item.question} className="group py-3 sm:py-4" open={index === 0}>
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-semibold marker:content-none sm:gap-4 sm:text-sm">
                       <span>{item.question}</span>

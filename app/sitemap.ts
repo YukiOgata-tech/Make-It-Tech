@@ -52,6 +52,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${site.url}${route}`,
     changeFrequency: route === "" ? "weekly" : "monthly",
     priority: route === "" ? 1 : route === "/web-production" ? 0.9 : 0.7,
+    ...(route === "/web-production"
+      ? { images: [`${site.url}/images/web-production/hero-web-production.png`] }
+      : {}),
   }));
 
   return [...staticRoutes, ...blogRoutes, ...announcementRoutes];
