@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
         hostname: "cdn.shopify.com",
         pathname: "/s/files/**",
       },
+      {
+        protocol: "https",
+        hostname: "d-mise.com",
+        pathname: "/images/**",
+      },
     ],
   },
 };

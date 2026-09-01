@@ -1,6 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-import { CalendarCheck, ClipboardCheck, Video } from "lucide-react";
-
 export const aboutOverviewItems = [
   { label: "屋号", value: "Make It Tech（メイクイットテック）" },
   { label: "開始", value: "2025/6" },
@@ -35,23 +32,10 @@ export const aboutDetailSections: AboutDetailSection[] = [
     ],
   },
   {
-    title: "実務経験･対応内容",
-    body: [
-      "これまでに、以下のような案件に携わってきました。",
-    ],
-    bullets: [
-      "飲食店Webサイトの企画･制作",
-      "教育事業所向けQRコードを用いた席利用状況のリアルタイム管理システムの開発",
-      "企業との業務委託契約によるWeb・システム開発支援",
-      "Webサイト制作から簡易システム導入、運用改善までの一貫対応",
-    ],
-    bodyAfter: [
-      "開発においては、Firebase/Supabase などを用いたバックエンド構築から、フロントエンド実装まで対応しています。",
-    ],
-  },
-  {
     title: "その他の活動",
     body: [
+      "経営者同士の交流と地域でのつながりを深めるため、守成クラブに参加しています。",
+      "学生として新潟大学工学部に所属し、学業と実務の両方に取り組んでいます。",
       [
         {
           text: "実務と並行して、自身のキャリアや取り組みについて発信する場として「",
@@ -76,33 +60,3 @@ export const aboutDetailSections: AboutDetailSection[] = [
     ],
   },
 ];
-
-export interface AboutActivity {
-  title: string;
-  desc: string;
-  icon: LucideIcon;
-  kind?: "youtube";
-  youtubeId?: string;
-  youtubeUrl?: string;
-}
-
-export const aboutActivities: AboutActivity[] = [
-  {
-    title: "YouTube出演(2025)",
-    desc: "就活NEO というYouTubeコンテンツに出演。内定を得る(現在、業務委託契約中)。",
-    icon: Video,
-    kind: "youtube",
-    youtubeId: "dcRFAXXeBoU",
-    youtubeUrl: "https://youtu.be/dcRFAXXeBoU",
-  },
-  {
-    title: "現場ヒアリング",
-    desc: "現状の困りごとを整理し、改善の優先順位を短時間で整理し可視化させます。",
-    icon: CalendarCheck,
-  },
-  {
-    title: "貪欲に支援するスタイル",
-    desc: "一人でも自分の得意な領域で楽にできたり、頼んで良かったと思わせます。最低コストで最大効果が目標です。",
-    icon: ClipboardCheck,
-  },
-] as const;
