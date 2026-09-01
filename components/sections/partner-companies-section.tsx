@@ -130,7 +130,7 @@ export function PartnerCompaniesSection() {
 
   return (
     <Section
-      eyebrow="パートナー企業"
+      eyebrow="パートナー"
       title="事業をともに支えるパートナー"
       description="Make It Techと協業・連携について合意している企業をご紹介します。"
       className="bg-secondary/35"
