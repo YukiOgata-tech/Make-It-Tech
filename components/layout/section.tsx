@@ -15,7 +15,12 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section className={cn("py-3 sm:py-16", className)}>
+    <section
+      className={cn(
+        "border-y border-border/70 bg-background py-3 sm:py-16",
+        className
+      )}
+    >
       <Container>
         {(eyebrow || title || description) && (
           <div className="mb-3 sm:mb-10">

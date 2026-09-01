@@ -1,4 +1,3 @@
-import { HomeScrollVideoIntro } from "@/components/sections/home-scroll-video-intro";
 import { Hero } from "@/components/sections/hero";
 import { FAQSection } from "@/components/sections/faq-section";
 import { FloatingContactCta } from "@/components/sections/floating-contact-cta";
@@ -23,7 +22,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <HomeScrollVideoIntro />
       <div id="home-content-start">
         <FloatingContactCta showAfterElementId="home-content-start" />
         <Hero />

@@ -10,6 +10,7 @@ const routes = [
   "",
   "/web-production",
   "/services",
+  "/services/fde",
   "/about",
   "/contact",
   "/works",

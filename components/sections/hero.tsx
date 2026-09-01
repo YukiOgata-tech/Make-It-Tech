@@ -1,381 +1,233 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform, type Easing, type Variants } from "framer-motion";
-import { site } from "@/lib/site";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
+import {
+  ArrowRight,
+  BrainCircuit,
+  ExternalLink,
+  Globe2,
+  Nfc,
+  PanelsTopLeft,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LineButton } from "@/components/ui/line-button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { MobileDisclosure } from "@/components/mobile-disclosure";
-import { heroBullets, heroTrust } from "@/content/sections/hero";
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Timer } from "lucide-react";
+import { nfcSite } from "@/content/nfc/site";
+import { cn } from "@/lib/utils";
 
-const typePhrases = [
-  "現場で回るDXを設計。",
-  "最短の改善ルートを可視化。",
-  "小さく作って確実に検証。",
+type ServiceLink = {
+  title: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  external?: boolean;
+};
+
+const serviceLinks: ServiceLink[] = [
+  {
+    title: "ホームページ制作",
+    description: "制作・SEO・継続運用",
+    href: "/web-production",
+    icon: Globe2,
+  },
+  {
+    title: "FDE・AI業務DX",
+    description: "現場伴走・AI導入・業務改善",
+    href: "/services/fde",
+    icon: BrainCircuit,
+  },
+  {
+    title: "システム・アプリ",
+    description: "業務に合わせた設計・開発",
+    href: "/services",
+    icon: PanelsTopLeft,
+  },
+  {
+    title: "NFC・店舗導線",
+    description: "リアルとWebの接点づくり",
+    href: nfcSite.url,
+    icon: Nfc,
+    external: true,
+  },
 ];
 
-const easeOut: Easing = [0.22, 1, 0.36, 1];
-const easeInOut: Easing = [0.45, 0, 0.55, 1];
+const fdeSteps = ["課題整理", "設計", "実装", "現場定着"] as const;
 
-const contentVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
+const containerVariants: Variants = {
+  hidden: {},
+  visible: {
     transition: {
       staggerChildren: 0.08,
-      delayChildren: 0.1,
+      delayChildren: 0.05,
     },
   },
 };
 
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
-
-function Glow() {
+function HeroBackground({ reduceMotion }: { reduceMotion: boolean | null }) {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-aurora opacity-80 hero-aurora" />
-      <div className="absolute inset-0 bg-grid opacity-30 hero-grid" />
-      <div
-        className="absolute -left-16 top-12 hidden h-56 w-56 rounded-full blur-3xl hero-orb sm:block"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at center, rgb(var(--brand-sun) / 0.35), transparent 70%)",
-        }}
+    <motion.div
+      className="absolute inset-0"
+      initial={{ scale: 1.02 }}
+      animate={reduceMotion ? { scale: 1.02 } : { scale: [1.02, 1.055, 1.02] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <Image
+        src="/images/hero-dx-fde-network.png"
+        alt="Make It Techを中心に、Web制作、AI、DX、システム開発、業務改善がつながるイメージ"
+        fill
+        priority
+        fetchPriority="high"
+        sizes="100vw"
+        className="object-cover object-[52%_center] lg:object-center"
       />
-      <div
-        className="absolute right-[-12%] top-1/2 hidden h-72 w-72 -translate-y-1/2 rounded-full blur-3xl hero-orb hero-orb-delayed sm:block"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at center, rgb(var(--brand-teal) / 0.3), transparent 70%)",
-        }}
-      />
-      <div
-        className="absolute left-1/2 top-[-35%] hidden h-[140%] w-lg -translate-x-1/2 rotate-6 opacity-60 blur-3xl hero-orb sm:block"
-        style={{
-          backgroundImage:
-            "radial-gradient(closest-side, rgb(var(--brand-coral) / 0.28), transparent 75%)",
-        }}
-      />
-    </div>
+    </motion.div>
   );
 }
 
 export function Hero({ className }: { className?: string }) {
-  const shouldReduceMotion = useReducedMotion();
-  const slideDistance = shouldReduceMotion ? 0 : 16;
-  const heroRef = React.useRef<HTMLElement | null>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-
-  const progressScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const progressOpacity = useTransform(scrollYProgress, [0, 0.2, 1], [0.2, 0.8, 1]);
-  const progressAngle = useTransform(scrollYProgress, [0, 1], ["0deg", "320deg"]);
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -70]);
-  const parallaxRotate = useTransform(scrollYProgress, [0, 1], [0, -4]);
-
-  const [typedText, setTypedText] = React.useState(typePhrases[0]);
-  const [phraseIndex, setPhraseIndex] = React.useState(0);
-  const [charIndex, setCharIndex] = React.useState(0);
-  const [isDeleting, setIsDeleting] = React.useState(false);
-
-  React.useEffect(() => {
-    if (shouldReduceMotion) {
-      setTypedText(typePhrases[0]);
-      return;
-    }
-
-    const currentPhrase = typePhrases[phraseIndex];
-    let nextCharIndex = charIndex + (isDeleting ? -1 : 1);
-    let nextIsDeleting = isDeleting;
-    let delay = isDeleting ? 35 : 70;
-
-    if (!isDeleting && nextCharIndex >= currentPhrase.length) {
-      nextCharIndex = currentPhrase.length;
-      nextIsDeleting = true;
-      delay = 1200;
-    }
-
-    if (isDeleting && nextCharIndex <= 0) {
-      nextCharIndex = 0;
-      nextIsDeleting = false;
-      delay = 500;
-    }
-
-    const timeout = window.setTimeout(() => {
-      setCharIndex(nextCharIndex);
-      setIsDeleting(nextIsDeleting);
-      setTypedText(currentPhrase.slice(0, nextCharIndex));
-      if (isDeleting && nextCharIndex === 0) {
-        setPhraseIndex((prev) => (prev + 1) % typePhrases.length);
-      }
-    }, delay);
-
-    return () => window.clearTimeout(timeout);
-  }, [charIndex, isDeleting, phraseIndex, shouldReduceMotion]);
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: slideDistance },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.55, ease: easeOut },
-    },
-  };
-
-
-
-  const floatAnimation = shouldReduceMotion
-    ? { y: 0, rotate: 0 }
-    : { y: [0, -12, 0], rotate: [0, 0.6, 0] };
-  const floatTransition = shouldReduceMotion
-    ? { duration: 0 }
-    : { duration: 10, repeat: Infinity, ease: easeInOut };
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section ref={heroRef} className={cn("relative overflow-hidden pt-10 sm:pt-16", className)}>
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[170%] w-[170%] -translate-x-1/2 -translate-y-1/2 sm:rotate-90 bg-[url('/images/bg-3-light.png')] bg-cover bg-center opacity-35 dark:hidden shadow-2xl" />
-        <div className="absolute left-1/2 top-1/2 hidden h-[170%] w-[170%] -translate-x-1/2 -translate-y-1/2 sm:rotate-90 bg-[url('/images/bg-3-dark.png')] bg-cover bg-center opacity-35 dark:block shadow-2xl" />
-      </div>
-      <Glow />
+    <section
+      className={cn(
+        "relative isolate overflow-hidden border-b border-white/10 bg-[#07171d] text-white",
+        className
+      )}
+    >
+      <HeroBackground reduceMotion={reduceMotion} />
+      <div className="pointer-events-none absolute inset-0 bg-black/18" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,14,22,0.72)_0%,rgba(3,14,22,0.35)_28%,rgba(3,14,22,0.72)_72%,rgba(3,14,22,0.98)_100%)] lg:hidden" />
+      <div className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(3,14,22,0.98)_0%,rgba(3,14,22,0.92)_32%,rgba(3,14,22,0.62)_53%,rgba(3,14,22,0.16)_78%,rgba(3,14,22,0.36)_100%)] lg:block" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-linear-to-t from-[#07171d] via-[#07171d]/82 to-transparent" />
 
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-3 sm:gap-8 sm:px-6 sm:pb-20 lg:grid-cols-2 lg:items-center lg:px-8">
-        <motion.div
-          className="relative"
-          variants={contentVariants}
-          initial="hidden"
-          animate="show"
-        >
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="rounded-xl text-xs sm:text-sm">
-              IT 総合支援
-            </Badge>
-            <Badge
-              variant="outline"
-              className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
+      <div className="relative mx-auto flex min-h-[43rem] max-w-7xl flex-col justify-end px-4 py-8 sm:min-h-[48rem] sm:px-8 sm:py-14 lg:min-h-[calc(100svh-6rem)] lg:justify-between lg:py-16">
+        <div className="flex flex-1 items-center">
+          <motion.div
+            className="max-w-3xl"
+            variants={containerVariants}
+            initial={reduceMotion ? false : "hidden"}
+            animate="visible"
+          >
+            <motion.div variants={itemVariants} className="flex items-center gap-2.5">
+              <span className="h-px w-7 bg-[#ef7a4f] sm:w-10" />
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/82 sm:text-xs">
+                新潟のIT・DX・AI活用支援
+              </p>
+            </motion.div>
+
+            <motion.h1
+              variants={itemVariants}
+              className="mt-3 text-[2rem] font-semibold leading-[1.08] tracking-[-0.045em] sm:mt-5 sm:text-5xl lg:text-[4.1rem]"
             >
-              実装/現場密着
-            </Badge>
-            <Badge
-              variant="outline"
-              className="rounded-xl border-primary/30 text-primary text-xs sm:text-sm"
+              <span className="block">事業の課題を、</span>
+              <span className="mt-1 block sm:mt-2">
+                <span className="text-[#ff9a60]">IT・DX・AI</span>で前へ。
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={itemVariants}
+              className="mt-4 max-w-2xl text-xs leading-6 text-white/88 sm:mt-6 sm:text-base sm:leading-8"
             >
-              補助･助成金 対応
-            </Badge>
-          </motion.div>
+              ホームページ制作、AI導入、業務システム・アプリ開発、LINE・Google・NFCを活用した店舗導線から、
+              <span className="font-medium text-white">FDE（Forward Deployed Engineer）型の現場伴走支援</span>
+              まで。課題整理から実装、定着・運用改善まで一貫して支援します。
+            </motion.p>
 
-          <motion.h1
-            variants={itemVariants}
-            className="mt-4 text-2xl font-semibold tracking-tight sm:mt-5 sm:text-5xl"
-          >
-            Web制作から
-            <span className="text-gradient text-gradient-animate">DX</span>まで。
-            <span className="block text-muted-foreground text-lg sm:text-2xl">
-              “現場で回るシステム”を提供します。
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="mt-4 max-w-xl text-xs leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg"
-          >
-            {site.description}
-          </motion.p>
-
-          <motion.div
-            variants={itemVariants}
-            className="mt-2 sm:mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground sm:text-base"
-          >
-            <span className="flex min-h-[1.4em] max-w-full items-center font-medium text-foreground min-w-72 sm:min-w-104">
-              <span className="whitespace-pre">{typedText}</span>
-              <span className="type-caret" aria-hidden="true" />
-            </span>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="mt-6 grid gap-2 sm:mt-7 sm:flex sm:flex-wrap sm:gap-3"
-          >
-            <Button asChild className="rounded-xl">
-              <Link href="/contact">
-                無料相談へ <ArrowRight className="sm:ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/services">対応できることを見る</Link>
-            </Button>
-          </motion.div>
-
-          {/* <motion.div variants={itemVariants} className="mt-6">
-            <MobileDisclosure summary="対応内容を見る">
-              <div className="text-foreground">
-                <motion.div variants={listVariants} className="grid gap-2">
-                  {heroBullets.map((b) => (
-                    <motion.div
-                      key={b}
-                      variants={listItemVariants}
-                      className="flex items-start gap-2 text-sm text-foreground/90"
-                    >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                      <span>{b}</span>
-                    </motion.div>
-                  ))}
-                  <motion.div
-                    variants={listItemVariants}
-                    className="flex items-start gap-2 text-sm text-foreground/90"
-                  >
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>IT導入補助金･小規模事業者持続化補助金などの申請サポート</span>
-                  </motion.div>
-                </motion.div>
-                <div className="mt-4">
-                  <Button asChild size="sm" className="rounded-xl">
-                    <Link href="/services">
-                      サービス一覧へ <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </MobileDisclosure>
-          </motion.div> */}
-
-          <motion.div
-            variants={itemVariants}
-            className="mt-4 flex flex-wrap items-center gap-1 text-[10px] sm:text-xs text-muted-foreground sm:mt-8 sm:gap-3"
-          >
-            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-1 sm:px-3 sm:py-2">
-              <ShieldCheck className="h-4 w-4" />
-              対応範囲は事前に合意して進行
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-background/70 px-3 py-1 sm:px-3 sm:py-2">
-              <Timer className="h-4 w-4" />
-              小さな改善もOK
-            </span>
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="relative hidden lg:block lg:justify-self-end"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: easeOut, delay: 0.15 }}
-          style={{ y: parallaxY }}
-        >
-          <motion.div
-            className="absolute -left-6 top-14 hidden h-48 w-px origin-top rounded-full bg-primary/40 lg:block"
-            style={{ scaleY: progressScale, opacity: progressOpacity }}
-            aria-hidden="true"
-          />
-
-          <motion.div
-            className="absolute -right-6 top-8 hidden items-center gap-3 rounded-2xl border border-primary/20 bg-background/70 px-3 py-2 text-[11px] text-muted-foreground shadow-sm backdrop-blur lg:flex"
-            style={{ opacity: progressOpacity }}
-          >
-            <div className="h-9 w-9 rounded-full border border-primary/30 bg-secondary/30 p-0.75">
-              <div
-                className="hero-progress-ring h-full w-full rounded-full"
-                style={{
-                  ...(progressAngle
-                    ? ({ "--hero-progress": progressAngle } as React.CSSProperties)
-                    : {}),
-                }}
-              />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="font-medium text-foreground">Scroll Focus</span>
-              <span>改善の流れを確認</span>
-            </div>
-          </motion.div>
-
-          <motion.div className="relative" animate={floatAnimation} transition={floatTransition}>
             <motion.div
-              className="pointer-events-none absolute -inset-6 rounded-[2.5rem] opacity-50 blur-2xl"
-              style={{
-                backgroundImage:
-                  "conic-gradient(from 90deg, rgb(var(--brand-sun) / 0.4), rgb(var(--brand-teal) / 0.35), rgb(var(--brand-coral) / 0.4), rgb(var(--brand-sun) / 0.4))",
-                rotate: parallaxRotate,
-              }}
-            />
-            <div className="pointer-events-none absolute -inset-2 rounded-[2.2rem] border border-primary/20" />
+              variants={itemVariants}
+              className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:flex sm:flex-wrap sm:gap-3"
+            >
+              <Button
+                asChild
+                size="lg"
+                className="h-9 rounded-xl bg-[#ef6e42] px-3 text-xs text-white hover:bg-[#e56339] sm:h-11 sm:px-5 sm:text-sm"
+              >
+                <Link href="/services">
+                  支援内容を見る <ArrowRight className="size-3.5 sm:size-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-9 rounded-xl border-white/18 bg-white/[0.06] px-3 text-xs text-white hover:bg-white/12 hover:text-white sm:h-11 sm:px-5 sm:text-sm"
+              >
+                <Link href="/contact">まず相談する</Link>
+              </Button>
+            </motion.div>
 
-            <Card className="relative overflow-hidden rounded-3xl border bg-card/70 shadow-sm backdrop-blur">
-              <div className="pointer-events-none absolute inset-0 bg-[url('/images/bg-light.png')] bg-cover bg-center opacity-50 dark:bg-[url('/images/bg-dark.png')]" />
-              <div className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/2 translate-x-[-20%] rotate-6 bg-white/15 blur-xl hero-sheen" />
-
-              <CardContent className="relative py-2 sm:px-7">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-md font-semibold tracking-tight">よくある課題 → 解決の方向性</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      “まず整理”して、必要なら実装へ。
-                    </p>
-                  </div>
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-3">
-                  <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">問い合わせやメニューのリアルタイム更新など機能性の高いWEBページが欲しい</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      → 現状のサイト分析+要件整理からのWEBサイト制作/修正作業
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">手入力作業やデータ管理が大変、そして業務の引き継ぎが心配</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      → ルールの言語化+ビュー分離+運用の標準化。AIや計算システムを組み込んだ自動化システムの開発。
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <h3 className="text-sm font-medium">IT導入したいが何から？</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      → 目標/KPI→優先順位→実装のロードマップ
-                    </p>
-                  </div>
-                </div>
-
-                <Separator className="my-4" />
-
-                {/* <div className="grid gap-3 sm:grid-cols-3">
-                  {heroTrust.map((t) => (
-                    <div key={t.title} className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                      <t.icon className="h-4 w-4 text-primary" />
-                      <h3 className="mt-2 text-sm font-medium">{t.title}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">{t.desc}</p>
-                    </div>
-                  ))}
-                </div> */}
-
-                <div className="mt-6 rounded-2xl bg-muted/60 p-4">
-                  <p className="text-sm font-medium">次の一手</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    まずは「現状の困りごと･要望」を整理して、実装案を作ります。
-                  </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <Button asChild size="sm" className="rounded-xl">
-                    <Link href="/contact">相談する</Link>
-                  </Button>
-                  <LineButton href="/survey" size="sm">LINEで相談</LineButton>
-                </div>
-                </div>
-              </CardContent>
-            </Card>
+            <motion.div
+              variants={itemVariants}
+              className="mt-5 border-l border-white/14 pl-3 sm:mt-8 sm:pl-4"
+            >
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#76d9cb] sm:text-[11px]">
+                  FDE / Forward Deployed Engineering
+                </p>
+                <span className="text-[9px] text-white/68 sm:text-[11px]">現場に入り、使われるところまで</span>
+              </div>
+              <ol className="mt-2 flex items-center gap-1.5 text-[10px] font-medium text-white/90 sm:mt-3 sm:gap-2 sm:text-xs">
+                {fdeSteps.map((step, index) => (
+                  <li key={step} className="flex items-center gap-1.5 sm:gap-2">
+                    <span>{step}</span>
+                    {index < fdeSteps.length - 1 ? (
+                      <ArrowRight className="size-3 text-white/30" aria-hidden="true" />
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
+
+        <motion.nav
+          aria-label="主要サービス"
+          className="mt-5 grid grid-cols-2 gap-1.5 border-t border-white/12 pt-4 sm:mt-8 sm:gap-3 sm:pt-6 lg:grid-cols-4"
+          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.28 }}
+        >
+          {serviceLinks.map((service) => {
+            const Icon = service.icon;
+
+            return (
+              <Link
+                key={service.title}
+                href={service.href}
+                target={service.external ? "_blank" : undefined}
+                rel={service.external ? "noreferrer" : undefined}
+                className="group flex min-w-0 items-center gap-2 rounded-xl border border-white/12 bg-[#06151c]/68 p-2 backdrop-blur-md transition hover:border-white/24 hover:bg-[#0b222b]/82 sm:gap-3 sm:rounded-2xl sm:p-4"
+              >
+                <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white/[0.08] text-[#75d9ca] sm:size-11 sm:rounded-xl">
+                  <Icon className="size-4 sm:size-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1 text-[11px] font-semibold leading-tight text-white sm:text-sm">
+                    {service.title}
+                    {service.external ? <ExternalLink className="size-3 text-white/35" aria-hidden="true" /> : null}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[9px] text-white/74 sm:mt-1 sm:text-xs">
+                    {service.description}
+                  </span>
+                </span>
+                {!service.external ? (
+                  <ArrowRight className="hidden size-4 shrink-0 text-white/24 transition group-hover:translate-x-0.5 group-hover:text-white/60 sm:block" aria-hidden="true" />
+                ) : null}
+              </Link>
+            );
+          })}
+        </motion.nav>
       </div>
     </section>
   );

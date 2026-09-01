@@ -262,6 +262,45 @@ body[data-has-breadcrumbs="true"] {
   --grid-color: 255 255 255;
 }
 
+/*
+ * Main site surface hierarchy.
+ * Keep the canvas, section surface, and cards visibly separate without
+ * affecting the tools, NFC, admin, flyer, and app-specific layouts.
+ */
+.main-site-content {
+  --site-canvas: rgb(233 228 218);
+  --background: rgb(253 251 246);
+  --foreground: rgb(21 39 48);
+  --card: rgb(255 255 252);
+  --card-foreground: rgb(21 39 48);
+  --popover: rgb(255 255 252);
+  --popover-foreground: rgb(21 39 48);
+  --muted: rgb(232 225 213);
+  --muted-foreground: rgb(49 65 73);
+  --border: rgb(204 195 181);
+  --input: rgb(204 195 181);
+  background-color: var(--site-canvas);
+  color: var(--foreground);
+}
+
+.main-site-content .text-muted-foreground {
+  font-weight: 500;
+}
+
+.dark .main-site-content {
+  --site-canvas: rgb(11 23 28);
+  --background: rgb(18 36 43);
+  --foreground: rgb(246 242 234);
+  --card: rgb(25 47 55);
+  --card-foreground: rgb(246 242 234);
+  --popover: rgb(25 47 55);
+  --popover-foreground: rgb(246 242 234);
+  --muted: rgb(35 57 64);
+  --muted-foreground: rgb(207 218 222);
+  --border: rgb(74 95 103);
+  --input: rgb(74 95 103);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

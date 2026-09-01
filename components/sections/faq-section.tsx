@@ -57,7 +57,12 @@ export function FAQSection({ className }: { className?: string }) {
   };
 
   return (
-    <section className={cn("py-6 sm:py-18", className)}>
+    <section
+      className={cn(
+        "border-y border-border/70 bg-background py-6 sm:py-18",
+        className
+      )}
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

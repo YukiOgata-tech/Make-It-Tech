@@ -10,6 +10,7 @@ import { site } from "@/lib/site";
 const labelMap: Record<string, string> = {
   "web-production": "ホームページ制作",
   services: "サービス",
+  fde: "FDE・現場伴走支援",
   about: "事業所概要",
   contact: "お問い合わせ",
   survey: "LINE相談",

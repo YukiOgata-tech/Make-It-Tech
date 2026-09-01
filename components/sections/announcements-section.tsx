@@ -91,7 +91,7 @@ export async function AnnouncementsSection() {
       : announcements;
 
   return (
-    <section className="py-10 sm:py-16">
+    <section className="border-y border-border/70 bg-background py-10 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

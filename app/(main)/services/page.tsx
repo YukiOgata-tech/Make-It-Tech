@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <section className="py-3 sm:py-16">
+      <section className="border-b border-border/70 bg-background py-3 sm:py-16">
         <Container>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
             <div>

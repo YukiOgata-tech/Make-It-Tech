@@ -41,7 +41,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <SiteHeader />
         <SiteBreadcrumbs />
       </div>
-      <main className="flex-1 pt-[var(--header-offset)]">{children}</main>
+      <main className="main-site-content flex-1 pt-[var(--header-offset)]">{children}</main>
       <SiteFooter />
     </div>
   );
