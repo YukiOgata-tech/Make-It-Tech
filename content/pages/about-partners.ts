@@ -22,6 +22,12 @@ export const partnerCompanies: readonly PartnerCompany[] = [
     logoSrc: "https://d-mise.com/images/dmise-logo-trans.png",
     logoAlt: "Dミセのロゴ",
   },
+  {
+    name: "買取蔵の宮",
+    description: "士業も勧める買取店",
+    websiteUrl: "https://kaitorikuranomiya.com",
+    location: "神奈川県平塚市",
+  },
   // {
   //   name: "企業名",
   //   description: "企業および連携内容の簡潔な紹介文です。",
