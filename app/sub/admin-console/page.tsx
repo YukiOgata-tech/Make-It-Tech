@@ -66,6 +66,23 @@ export default async function AdminConsoleIndexPage() {
           </CardContent>
         </Card>
 
+        <Card className="rounded-2xl gap-2 border-orange-500/20 py-3 sm:col-span-2 sm:rounded-3xl sm:gap-4 sm:py-5">
+          <CardHeader>
+            <CardTitle className="text-base">電子契約管理</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              契約書PDFの登録、署名依頼、締結証跡とAudit Logを管理します。
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              法人契約・会社メールリンク認証
+            </span>
+            <Button asChild className="rounded-xl bg-orange-600 text-white hover:bg-orange-700">
+              <Link href="/sub/admin-console/contracts">契約管理を開く</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className="rounded-2xl gap-2 border-cyan-500/20 py-3 sm:rounded-3xl sm:gap-4 sm:py-5">
           <CardHeader>
             <CardTitle className="text-base">NFCリンク設定</CardTitle>

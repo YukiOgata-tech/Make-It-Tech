@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { nfcSite } from "@/content/nfc/site";
+import { signSite } from "@/content/sign/site";
 
 const hostRouteMap: Record<string, string> = {
   "lp.make-it-tech.com": "/sub/lp",
   "tools.make-it-tech.com": "/sub/tools",
   [nfcSite.host]: nfcSite.basePath,
+  [signSite.host]: signSite.basePath,
 };
 const adminConsolePrefix = "admin-console.";
 
@@ -18,6 +20,7 @@ const adminConsolePrefix = "admin-console.";
 const siteFileRoutes: Record<string, ReadonlySet<string>> = {
   "/sub/tools": new Set(["/robots.txt", "/sitemap.xml", "/ads.txt"]),
   [nfcSite.basePath]: new Set(["/robots.txt", "/sitemap.xml"]),
+  [signSite.basePath]: new Set(["/robots.txt", "/sitemap.xml"]),
 };
 
 const siteFilePaths = new Set(["/robots.txt", "/sitemap.xml", "/ads.txt"]);

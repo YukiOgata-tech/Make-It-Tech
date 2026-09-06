@@ -50,6 +50,12 @@ export function AdminHeader() {
             管理トップ
           </Link>
           <Link
+            href="/sub/admin-console/contracts"
+            className="rounded-xl border border-orange-300/60 bg-orange-50/80 px-2.5 py-1.5 text-[11px] font-medium text-orange-700 transition hover:border-orange-400 hover:text-orange-800 dark:border-orange-700/60 dark:bg-orange-950/40 dark:text-orange-300 dark:hover:border-orange-500 sm:px-3 sm:py-2 sm:text-xs"
+          >
+            契約管理
+          </Link>
+          <Link
             href="/sub/admin-console/news"
             className="rounded-xl border border-border/60 bg-background/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground sm:px-3 sm:py-2 sm:text-xs"
           >

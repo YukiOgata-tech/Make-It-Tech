@@ -30,6 +30,12 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
+    // 電子契約PDFは公開URLやClient SDKから直接配信しない。
+    // 署名トークンまたは管理者セッションを検証するRoute HandlerのみがAdmin SDKで扱う。
+    match /contracts/{contractId}/{fileName} {
+      allow read, write: if false;
+    }
+
     // その他は拒否
     match /{allPaths=**} {
       allow read, write: if false;

@@ -35,6 +35,24 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // 電子契約は機密情報を含むため、管理者もClient SDKから直接操作しない。
+    // 管理画面・署名画面ともに、認証済みRoute Handler + Admin SDKを経由する。
+    match /contracts/{contractId} {
+      allow read, write: if false;
+
+      match /events/{eventId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /contractTokens/{tokenId} {
+      allow read, write: if false;
+    }
+
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+
     // その他は全て拒否
     match /{document=**} {
       allow read, write: if false;
