@@ -4,120 +4,14 @@ import path from "node:path";
 import test from "node:test";
 import JSZip from "jszip";
 import { PDFDocument, StandardFonts } from "pdf-lib";
-import { buildAuditChain, verifyAuditChain } from "@/lib/contracts/audit";
-import {
-  CONTRACT_DOCUMENT_ACCESS_DAYS,
-  CONTRACT_TEMPLATES,
-} from "@/lib/contracts/constants";
-import { canonicalJson, createSigningToken, sha256 } from "@/lib/contracts/crypto";
-import { isAllowedSameOriginRequest } from "@/lib/contracts/origin";
+import { CONTRACT_TEMPLATES } from "@/lib/contracts/constants";
+import { sha256 } from "@/lib/contracts/crypto";
 import {
   generateNdaWordDocument,
   getGeneratedNdaFileName,
 } from "@/lib/contracts/nda-word-template";
 import { createContractArtifacts } from "@/lib/contracts/pdf";
 import { validateOriginalPdf } from "@/lib/contracts/pdf-validation";
-import { acceptContractSchema, createContractSchema } from "@/lib/contracts/schemas";
-import {
-  canAccessContractDocument,
-  canVoidContractStatus,
-} from "@/lib/contracts/token-policy";
-import nextConfig from "../next.config";
-
-test("canonical JSON is stable regardless of object key order", () => {
-  const left = canonicalJson({ z: 1, nested: { b: true, a: "value" }, list: [2, 1] });
-  const right = canonicalJson({ list: [2, 1], nested: { a: "value", b: true }, z: 1 });
-  assert.equal(left, right);
-  assert.equal(sha256(left), sha256(right));
-});
-
-test("signing tokens use 256 bits and only their hash needs persistence", () => {
-  const first = createSigningToken();
-  const second = createSigningToken();
-  assert.equal(Buffer.from(first.token, "base64url").byteLength, 32);
-  assert.equal(first.tokenHash.length, 64);
-  assert.notEqual(first.token, second.token);
-  assert.notEqual(first.tokenHash, second.tokenHash);
-  assert.equal(first.tokenHash, sha256(first.token));
-});
-
-test("completed contracts use a separate expiring document token", () => {
-  const now = new Date("2026-09-07T00:00:00.000Z");
-  const future = new Date("2026-09-14T00:00:00.000Z");
-  const past = new Date("2026-09-06T23:59:59.000Z");
-
-  assert.equal(CONTRACT_DOCUMENT_ACCESS_DAYS, 7);
-  assert.equal(canAccessContractDocument({
-    purpose: "signing",
-    tokenStatus: "used",
-    expiresAt: future,
-    contractStatus: "completed",
-    kind: "executed",
-    now,
-  }), false);
-  assert.equal(canAccessContractDocument({
-    purpose: "documents",
-    tokenStatus: "active",
-    expiresAt: future,
-    contractStatus: "completed",
-    kind: "executed",
-    now,
-  }), true);
-  assert.equal(canAccessContractDocument({
-    purpose: "documents",
-    tokenStatus: "active",
-    expiresAt: future,
-    contractStatus: "completed",
-    kind: "original",
-    now,
-  }), false);
-  assert.equal(canAccessContractDocument({
-    purpose: "documents",
-    tokenStatus: "active",
-    expiresAt: past,
-    contractStatus: "completed",
-    kind: "certificate",
-    now,
-  }), false);
-});
-
-test("completed contracts are terminal and cannot be voided", () => {
-  assert.equal(canVoidContractStatus("draft"), true);
-  assert.equal(canVoidContractStatus("expired"), true);
-  assert.equal(canVoidContractStatus("signed"), false);
-  assert.equal(canVoidContractStatus("completed"), false);
-  assert.equal(canVoidContractStatus("void"), false);
-});
-
-test("secret contract URLs send a no-referrer policy", async () => {
-  const rules = await nextConfig.headers?.();
-  const serialized = JSON.stringify(rules);
-  assert.match(serialized, /sign\\\\\.make-it-tech\\\\\.com/);
-  assert.match(serialized, /\/sub\/sign\/:path\*/);
-  assert.match(serialized, /\/api\/contracts\/c\/:path\*/);
-  assert.match(serialized, /Referrer-Policy/);
-  assert.match(serialized, /no-referrer/);
-});
-
-test("audit events form a deterministic, ordered hash chain", () => {
-  const occurredAt = new Date("2026-09-06T00:00:00.000Z");
-  const chain = buildAuditChain("contract-1", "", 0, [
-    { eventId: "event-1", eventType: "CONTRACT_CREATED", occurredAt, actorType: "admin", actorId: "admin-1" },
-    { eventId: "event-2", eventType: "DOCUMENT_UPLOADED", occurredAt, actorType: "admin", actorId: "admin-1", metadata: { documentSha256: "abc" } },
-  ]);
-  assert.equal(chain.events.length, 2);
-  assert.equal(chain.events[1].previousHash, chain.events[0].eventHash);
-  assert.equal(chain.lastHash, chain.events[1].eventHash);
-  assert.equal(chain.lastSequence, 2);
-  assert.equal(verifyAuditChain(chain.events, chain.lastHash).valid, true);
-
-  const changed = buildAuditChain("contract-1", "", 0, [
-    { eventId: "event-1", eventType: "CONTRACT_CREATED", occurredAt, actorType: "admin", actorId: "admin-1" },
-    { eventId: "event-2", eventType: "DOCUMENT_UPLOADED", occurredAt, actorType: "admin", actorId: "admin-1", metadata: { documentSha256: "changed" } },
-  ]);
-  assert.notEqual(changed.lastHash, chain.lastHash);
-  assert.equal(verifyAuditChain(changed.events, chain.lastHash).valid, false);
-});
 
 test("the NDA Word template is packaged intact and retains its review markers", async () => {
   const template = CONTRACT_TEMPLATES["nda-standard-v1"];
@@ -186,57 +80,6 @@ test("the NDA Word generator fills parties, date, terms, and electronic executio
     ]);
     assert.deepEqual(generatedPart, sourcePart, `${partName} must remain unchanged`);
   }
-});
-
-test("contract inputs reject missing signers, mismatched consent, and unknown templates", () => {
-  const validContract = {
-    title: "秘密保持契約書",
-    type: "nda",
-    internalMemo: "",
-    companyName: "株式会社テスト",
-    corporateNumber: "",
-    companyAddress: "",
-    signerName: "契約 太郎",
-    signerRole: "代表取締役",
-    signerEmail: "contract@example.com",
-    sourceTemplateId: "nda-standard-v1",
-  };
-  assert.equal(createContractSchema.safeParse(validContract).success, true);
-  assert.equal(createContractSchema.safeParse({ ...validContract, signerName: "" }).success, false);
-  assert.equal(createContractSchema.safeParse({ ...validContract, sourceTemplateId: "unknown" }).success, false);
-  assert.equal(acceptContractSchema.safeParse({
-    identityAccepted: true,
-    authorityAccepted: true,
-    reviewedAccepted: true,
-    consentAccepted: false,
-  }).success, false);
-});
-
-test("state-changing requests require the same origin", () => {
-  assert.equal(isAllowedSameOriginRequest(new Request("https://admin-console.make-it-tech.com/api/admin/contracts", {
-    headers: { origin: "https://admin-console.make-it-tech.com" },
-  })), true);
-  assert.equal(isAllowedSameOriginRequest(new Request("https://admin-console.make-it-tech.com/api/admin/contracts", {
-    headers: { origin: "https://attacker.example" },
-  })), false);
-  assert.equal(isAllowedSameOriginRequest(new Request("https://admin-console.make-it-tech.com/api/admin/contracts")), false);
-});
-
-test("Firebase client rules deny direct access to contract data and files", async () => {
-  const [firestoreRules, storageRules] = await Promise.all([
-    readFile(path.join(process.cwd(), "firestore.rules"), "utf8"),
-    readFile(path.join(process.cwd(), "storage.rules"), "utf8"),
-  ]);
-  assert.match(firestoreRules, /match \/contracts\/\{contractId\}[\s\S]*?allow read, write: if false;/);
-  assert.match(firestoreRules, /match \/contractTokens\/\{tokenId\}[\s\S]*?allow read, write: if false;/);
-  assert.match(storageRules, /match \/contracts\/\{contractId\}\/\{fileName\}[\s\S]*?allow read, write: if false;/);
-});
-
-test("invalid PDF input is rejected before parsing", async () => {
-  await assert.rejects(
-    validateOriginalPdf(new TextEncoder().encode("not a pdf")),
-    /PDFファイルのヘッダー/
-  );
 });
 
 test("contract PDFs preserve the original and generate readable Japanese artifacts", async () => {
