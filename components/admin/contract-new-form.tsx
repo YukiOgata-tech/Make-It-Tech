@@ -149,7 +149,7 @@ export function ContractNewForm() {
   const [companyAddress, setCompanyAddress] = useState("");
   const [signerName, setSignerName] = useState("");
   const [signerRole, setSignerRole] = useState("");
-  const [contractDate, setContractDate] = useState("");
+  const [effectiveDate, setEffectiveDate] = useState("");
   const [contractPurpose, setContractPurpose] = useState("");
   const [termYears, setTermYears] = useState(3);
   const [terminationNoticeDays, setTerminationNoticeDays] = useState(30);
@@ -186,7 +186,7 @@ export function ContractNewForm() {
         companyAddress,
         representativeRole: signerRole,
         representativeName: signerName,
-        contractDate,
+        effectiveDate,
         electronicExecutionAccepted,
       };
       const generationInput = template.formKind === "nda"
@@ -267,14 +267,16 @@ export function ContractNewForm() {
   const selectedTemplate = sourceTemplateId
     ? CONTRACT_TEMPLATES[sourceTemplateId]
     : null;
+  const dataHandlingFieldsComplete = Object.values(dataHandlingFields).every((value) => value.trim());
   const fdeMasterFieldsComplete = Object.values(fdeMasterFields).every((value) => value.trim());
   const canGenerateWord = Boolean(
     companyName.trim() &&
     companyAddress.trim() &&
     signerName.trim() &&
     signerRole.trim() &&
-    contractDate &&
+    effectiveDate &&
     electronicExecutionAccepted &&
+    (selectedTemplate?.formKind !== "data_handling" || dataHandlingFieldsComplete) &&
     (selectedTemplate?.formKind !== "fde_master" || fdeMasterFieldsComplete)
   );
 
@@ -405,9 +407,9 @@ export function ContractNewForm() {
               </p>
               <div className="mt-5 grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="effectiveDate">契約書記載日</Label>
-                  <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
-                  <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、契約書本文へ記載する日付です。</p>
+                  <Label htmlFor="effectiveDate">契約発効日</Label>
+                  <Input id="effectiveDate" name="effectiveDate" type="date" required value={effectiveDate} onChange={(event) => setEffectiveDate(event.target.value)} />
+                  <p className="text-xs text-muted-foreground">契約の効力が発生する日です。実際の電子署名・締結完了日時はシステムが別に記録します。</p>
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="contractPurpose">契約目的（任意）</Label>
@@ -450,12 +452,12 @@ export function ContractNewForm() {
             <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
               <h2 className="text-lg font-semibold">個人情報・データ取扱特約の空欄を入力</h2>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                入力したデータ条件だけを別紙へ反映します。未入力の項目はテンプレートの案内文を維持します。
+                別紙の全項目を契約条件として確定してください。該当しない項目も「なし」「対象外」「特段の定めなし」など、意味のある値を入力します。
               </p>
               <div className="mt-5 max-w-sm space-y-2">
-                <Label htmlFor="effectiveDate">契約締結日</Label>
-                <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
-                <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、特約本文へ記載する日付です。</p>
+                <Label htmlFor="effectiveDate">契約発効日</Label>
+                <Input id="effectiveDate" name="effectiveDate" type="date" required value={effectiveDate} onChange={(event) => setEffectiveDate(event.target.value)} />
+                <p className="text-xs text-muted-foreground">特約の効力が発生する日です。実際の電子署名・締結完了日時はシステムが別に記録します。</p>
               </div>
 
               <div className="mt-7 space-y-8">
@@ -467,10 +469,11 @@ export function ContractNewForm() {
                         const inputId = `dataHandling-${field.key}`;
                         return (
                           <div key={field.key} className="space-y-2">
-                            <Label htmlFor={inputId}>{field.label}（任意）</Label>
+                            <Label htmlFor={inputId}>{field.label}</Label>
                             <Input
                               id={inputId}
                               maxLength={500}
+                              required
                               value={dataHandlingFields[field.key]}
                               onChange={(event) => setDataHandlingFields((current) => ({
                                 ...current,
@@ -508,9 +511,9 @@ export function ContractNewForm() {
                 原本に〇で残されている契約条件をすべて入力します。委託料や個別業務の内容は、基本契約ではなく個別契約で定めます。
               </p>
               <div className="mt-5 max-w-sm space-y-2">
-                <Label htmlFor="effectiveDate">契約締結日</Label>
-                <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
-                <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、契約書本文へ記載する日付です。</p>
+                <Label htmlFor="effectiveDate">契約発効日</Label>
+                <Input id="effectiveDate" name="effectiveDate" type="date" required value={effectiveDate} onChange={(event) => setEffectiveDate(event.target.value)} />
+                <p className="text-xs text-muted-foreground">契約の効力が発生する日です。実際の電子署名・締結完了日時はシステムが別に記録します。</p>
               </div>
 
               <div className="mt-7 space-y-8">

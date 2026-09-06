@@ -13,7 +13,7 @@ const ELECTRONIC_EXECUTION =
   "本契約締結の証として、本契約の電磁的記録を作成し、甲乙双方が電子的に合意の上、各自その電磁的記録を保管する。";
 
 export function getGeneratedFdeMasterFileName(input: FdeMasterTemplateGenerationInput) {
-  return `FDE業務委託基本契約書_${sanitizeWordFileNamePart(input.companyName)}_${input.contractDate}.docx`;
+  return `FDE業務委託基本契約書_${sanitizeWordFileNamePart(input.companyName)}_${input.effectiveDate}.docx`;
 }
 
 export async function generateFdeMasterWordDocument(
@@ -44,8 +44,8 @@ export async function generateFdeMasterWordDocument(
   );
   replace(
     "契約締結日：202x年y月z日",
-    `契約締結日：${formatJapaneseContractDate(input.contractDate)}`,
-    "契約締結日"
+    `契約発効日：${formatJapaneseContractDate(input.effectiveDate)}`,
+    "契約発効日"
   );
   replace(
     "2. 甲が支払期日までに金銭債務を履行しない場合、甲は、支払期日の翌日から完済日まで、年〇％の割合による遅延損害金を支払う。",
@@ -79,7 +79,7 @@ export async function generateFdeMasterWordDocument(
   );
   replace(
     "1. 本契約の有効期間は、契約締結日から〇年間とする。",
-    `1. 本契約の有効期間は、契約締結日から${input.termYears}年間とする。`,
+    `1. 本契約の有効期間は、契約発効日から${input.termYears}年間とする。`,
     "契約期間"
   );
   replace(

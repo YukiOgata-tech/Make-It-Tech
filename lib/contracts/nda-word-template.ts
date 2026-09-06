@@ -45,7 +45,7 @@ export function getGeneratedNdaFileName(input: NdaTemplateGenerationInput) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 80) || "契約先";
-  return `秘密保持契約書_${safeCompanyName}_${input.contractDate}.docx`;
+  return `秘密保持契約書_${safeCompanyName}_${input.effectiveDate}.docx`;
 }
 
 export async function generateNdaWordDocument(
@@ -56,7 +56,7 @@ export async function generateNdaWordDocument(
   const documentPart = archive.file("word/document.xml");
   if (!documentPart) throw new Error("NDAテンプレートの本文を読み込めません。");
   let xml = await documentPart.async("string");
-  const date = formatContractDate(input.contractDate);
+  const date = formatContractDate(input.effectiveDate);
 
   xml = replaceTextOnce(
     xml,
@@ -72,6 +72,7 @@ export async function generateNdaWordDocument(
     `代表者：${input.representativeRole} ${input.representativeName}`,
     "甲の代表者"
   );
+  xml = replaceTextOnce(xml, "契約締結日：　　", "契約発効日：", "契約発効日の見出し");
   xml = replaceTextOnce(xml, "202x", date.year, "契約年");
   xml = replaceTextOnce(xml, "年　　月　　日", date.monthDay, "契約月日");
   xml = replaceTextOnce(xml, ORIGINAL_EXECUTION, ELECTRONIC_EXECUTION, "電子締結条項");
@@ -89,7 +90,7 @@ export async function generateNdaWordDocument(
   xml = replaceTextOnce(
     xml,
     ORIGINAL_TERM,
-    `1. 本契約の有効期間は、契約締結日から${input.termYears}年間とする。ただし、期間満了日の${input.terminationNoticeDays}日前までに甲又は乙から書面による終了の通知がない場合、本契約はさらに${input.renewalYears}年間更新され、以後も同様とする。`,
+    `1. 本契約の有効期間は、契約発効日から${input.termYears}年間とする。ただし、期間満了日の${input.terminationNoticeDays}日前までに甲又は乙から書面による終了の通知がない場合、本契約はさらに${input.renewalYears}年間更新され、以後も同様とする。`,
     "有効期間"
   );
   xml = replaceTextOnce(

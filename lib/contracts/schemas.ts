@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   CONTRACT_TEMPLATE_IDS,
   CONTRACT_TYPES,
+  CONTRACT_TOKEN_DEFAULT_DAYS,
   CONTRACT_TOKEN_MAX_DAYS,
 } from "@/lib/contracts/constants";
 
@@ -11,11 +12,6 @@ const singleLine = (min: number, max: number) => trimmed(min, max).refine(
   (value) => !/[\r\n]/.test(value),
   "改行は使用できません。"
 );
-const optionalSingleLine = (max: number) => z.string().trim().max(max).refine(
-  (value) => !/[\r\n]/.test(value),
-  "改行は使用できません。"
-).optional();
-
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
   const [year, month, day] = value.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
@@ -37,7 +33,7 @@ export const createContractSchema = z.object({
 });
 
 export const sendContractSchema = z.object({
-  expiresInDays: z.number().int().min(1).max(CONTRACT_TOKEN_MAX_DAYS).default(7),
+  expiresInDays: z.number().int().min(1).max(CONTRACT_TOKEN_MAX_DAYS).default(CONTRACT_TOKEN_DEFAULT_DAYS),
 });
 
 export const acceptContractSchema = z.object({
@@ -52,7 +48,7 @@ export const ndaTemplateGenerationSchema = z.object({
   companyAddress: singleLine(1, 500),
   representativeRole: singleLine(1, 120),
   representativeName: singleLine(1, 120),
-  contractDate: isoDate,
+  effectiveDate: isoDate,
   contractPurpose: singleLine(1, 500).optional(),
   termYears: z.number().int().min(1).max(99).default(3),
   terminationNoticeDays: z.number().int().min(1).max(365).default(30),
@@ -66,23 +62,23 @@ export const dataHandlingTemplateGenerationSchema = z.object({
   companyAddress: singleLine(1, 500),
   representativeRole: singleLine(1, 120),
   representativeName: singleLine(1, 120),
-  contractDate: isoDate,
-  targetData: optionalSingleLine(500),
-  processingPurpose: optionalSingleLine(500),
-  dataSubjects: optionalSingleLine(500),
-  sensitivePersonalInformation: optionalSingleLine(500),
-  specificPersonalInformation: optionalSingleLine(500),
-  systemsUsed: optionalSingleLine(500),
-  storageLocation: optionalSingleLine(500),
-  retentionPeriod: optionalSingleLine(500),
-  accessScope: optionalSingleLine(500),
-  subcontractors: optionalSingleLine(500),
-  thirdPartyServices: optionalSingleLine(500),
-  overseasUse: optionalSingleLine(500),
-  incidentContact: optionalSingleLine(500),
-  endOfTermHandling: optionalSingleLine(500),
-  additionalSecurityRequirements: optionalSingleLine(500),
-  specialProvisions: optionalSingleLine(500),
+  effectiveDate: isoDate,
+  targetData: singleLine(1, 500),
+  processingPurpose: singleLine(1, 500),
+  dataSubjects: singleLine(1, 500),
+  sensitivePersonalInformation: singleLine(1, 500),
+  specificPersonalInformation: singleLine(1, 500),
+  systemsUsed: singleLine(1, 500),
+  storageLocation: singleLine(1, 500),
+  retentionPeriod: singleLine(1, 500),
+  accessScope: singleLine(1, 500),
+  subcontractors: singleLine(1, 500),
+  thirdPartyServices: singleLine(1, 500),
+  overseasUse: singleLine(1, 500),
+  incidentContact: singleLine(1, 500),
+  endOfTermHandling: singleLine(1, 500),
+  additionalSecurityRequirements: singleLine(1, 500),
+  specialProvisions: singleLine(1, 500),
   electronicExecutionAccepted: z.literal(true),
 });
 
@@ -91,7 +87,7 @@ export const fdeMasterTemplateGenerationSchema = z.object({
   companyAddress: singleLine(1, 500),
   representativeRole: singleLine(1, 120),
   representativeName: singleLine(1, 120),
-  contractDate: isoDate,
+  effectiveDate: isoDate,
   latePaymentInterestRate: z.number().min(0).max(100),
   confidentialityYears: z.number().int().min(1).max(99),
   suspensionDelayDays: z.number().int().min(1).max(365),

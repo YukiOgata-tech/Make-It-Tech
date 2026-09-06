@@ -13,6 +13,12 @@ const ORIGINAL_EXECUTION =
   "本特約締結の証として、本書2通を作成し、甲乙双方が記名押印の上、各1通を保有する。";
 const ELECTRONIC_EXECUTION =
   "本特約締結の証として、本特約の電磁的記録を作成し、甲乙双方が電子的に合意の上、各自その電磁的記録を保管する。";
+const ORIGINAL_APPENDIX_HEADING = "別紙1　個別契約に記載するデータ条件（標準項目）";
+const FINAL_APPENDIX_HEADING = "別紙1　データ取扱条件";
+const ORIGINAL_APPENDIX_GUIDE =
+  "案件固有の条件がある場合は、個別契約書又はSOWに以下のうち必要な項目を記載する。本別紙に直接記入して合意する運用としてもよい。";
+const FINAL_APPENDIX_INTRO =
+  "本別紙に定めるデータ取扱条件は、本特約の一部を構成する。";
 
 const DATA_CONDITION_REPLACEMENTS = [
   ["対象データ", "例：従業員基本情報、勤怠、顧客情報、売上データ、問い合わせ履歴等", "targetData"],
@@ -61,7 +67,7 @@ function replaceTableValue(
 
 export function getGeneratedDataHandlingFileName(input: DataHandlingTemplateGenerationInput) {
   const safeCompanyName = sanitizeWordFileNamePart(input.companyName);
-  return `個人情報・データ取扱特約_${safeCompanyName}_${input.contractDate}.docx`;
+  return `個人情報・データ取扱特約_${safeCompanyName}_${input.effectiveDate}.docx`;
 }
 
 export async function generateDataHandlingWordDocument(
@@ -88,8 +94,22 @@ export async function generateDataHandlingWordDocument(
   xml = replaceWordTextOnce(
     xml,
     "契約締結日：〇年〇月〇日",
-    `契約締結日：${formatJapaneseContractDate(input.contractDate)}`,
-    "契約締結日",
+    `契約発効日：${formatJapaneseContractDate(input.effectiveDate)}`,
+    "契約発効日",
+    TEMPLATE_NAME
+  );
+  xml = replaceWordTextOnce(
+    xml,
+    ORIGINAL_APPENDIX_HEADING,
+    FINAL_APPENDIX_HEADING,
+    "別紙見出し",
+    TEMPLATE_NAME
+  );
+  xml = replaceWordTextOnce(
+    xml,
+    ORIGINAL_APPENDIX_GUIDE,
+    FINAL_APPENDIX_INTRO,
+    "別紙案内文",
     TEMPLATE_NAME
   );
   xml = replaceWordTextOnce(xml, ORIGINAL_EXECUTION, ELECTRONIC_EXECUTION, "電子締結条項", TEMPLATE_NAME);
@@ -102,10 +122,7 @@ export async function generateDataHandlingWordDocument(
   );
 
   for (const [rowLabel, originalValue, fieldName] of DATA_CONDITION_REPLACEMENTS) {
-    const value = input[fieldName];
-    if (typeof value === "string" && value.trim()) {
-      xml = replaceTableValue(xml, rowLabel, originalValue, value.trim());
-    }
+    xml = replaceTableValue(xml, rowLabel, originalValue, input[fieldName].trim());
   }
 
   archive.file("word/document.xml", xml);

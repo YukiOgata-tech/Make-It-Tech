@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { ContractStatus } from "@/lib/contracts/constants";
+import {
+  CONTRACT_TOKEN_DEFAULT_DAYS,
+  type ContractStatus,
+} from "@/lib/contracts/constants";
 import { canVoidContractStatus } from "@/lib/contracts/token-policy";
 
 export function ContractActions({ contractId, status }: { contractId: string; status: ContractStatus }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
-  const [expiresInDays, setExpiresInDays] = useState(7);
+  const [expiresInDays, setExpiresInDays] = useState(CONTRACT_TOKEN_DEFAULT_DAYS);
   const [error, setError] = useState("");
 
   async function run(action: "accept" | "send" | "void") {
@@ -52,7 +55,7 @@ export function ContractActions({ contractId, status }: { contractId: string; st
         {status === "ready" ? (
           <>
             <label className="space-y-1 text-xs text-muted-foreground">
-              署名期限（日）
+              署名期限（日・既定48時間）
               <Input className="w-24" type="number" min={1} max={30} value={expiresInDays} onChange={(event) => setExpiresInDays(Number(event.target.value))} />
             </label>
             <Button className="rounded-xl" disabled={Boolean(busy)} onClick={() => void run("send")}>
