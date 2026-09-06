@@ -52,7 +52,7 @@ export default async function ContractsPage({
     <div className="mx-auto max-w-6xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-sm font-medium text-orange-600"><FileSignature className="size-4" />Electronic Contracts</div>
+          <div className="flex items-center gap-2 text-sm font-medium text-orange-600 dark:text-orange-300"><FileSignature className="size-4" />Electronic Contracts</div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">契約管理</h1>
           <p className="mt-2 text-sm text-muted-foreground">契約原本、署名依頼、締結証跡を一元管理します。</p>
         </div>

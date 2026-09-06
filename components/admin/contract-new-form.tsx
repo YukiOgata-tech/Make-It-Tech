@@ -282,12 +282,12 @@ export function ContractNewForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <section className="rounded-2xl border bg-slate-50 p-4 sm:rounded-3xl sm:p-6">
+      <section className="rounded-2xl border bg-muted/40 p-4 sm:rounded-3xl sm:p-6">
         <div className="flex items-start gap-3">
-          <FileText className="mt-0.5 size-5 shrink-0 text-slate-700" aria-hidden="true" />
+          <FileText className="mt-0.5 size-5 shrink-0 text-foreground" aria-hidden="true" />
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">契約テンプレートを選択</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-600">
+            <h2 className="text-lg font-semibold text-foreground">契約テンプレートを選択</h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
               登録済みのテンプレートを選ぶと、その契約書に必要な入力欄が表示されます。
             </p>
           </div>
@@ -306,37 +306,37 @@ export function ContractNewForm() {
                 onClick={() => selectSourceTemplate(templateId)}
                 className={`group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition sm:p-5 ${
                   isSelected
-                    ? "border-orange-400 bg-white shadow-sm ring-2 ring-orange-100"
-                    : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                    ? "border-orange-400 bg-card shadow-sm ring-2 ring-orange-100 dark:border-orange-600 dark:ring-orange-950"
+                    : "border-border bg-card hover:border-foreground/25 hover:bg-accent/30 hover:shadow-sm"
                 }`}
               >
-                <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${isSelected ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"}`}>
+                <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${isSelected ? "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300" : "bg-muted text-muted-foreground"}`}>
                   <FileText className="size-5" aria-hidden="true" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-slate-950">{template.name}</span>
-                    <Badge variant="outline" className="rounded-lg bg-white text-[11px]">
+                    <span className="font-semibold text-foreground">{template.name}</span>
+                    <Badge variant="outline" className="rounded-lg bg-background text-[11px]">
                       {template.version}
                     </Badge>
                   </span>
-                  <span className="mt-1 block text-sm text-slate-600">{template.description}</span>
-                  <span className="mt-2 block text-xs font-medium text-slate-500">
+                  <span className="mt-1 block text-sm text-muted-foreground">{template.description}</span>
+                  <span className="mt-2 block text-xs font-medium text-muted-foreground">
                     {CONTRACT_TYPE_LABELS[template.contractType]}
                   </span>
                 </span>
                 {isSelected ? (
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-600 text-white">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-600 text-white dark:bg-orange-500">
                     <Check className="size-4" aria-hidden="true" />
                   </span>
                 ) : (
-                  <ChevronRight className="size-5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" aria-hidden="true" />
+                  <ChevronRight className="size-5 shrink-0 text-muted-foreground/60 transition group-hover:translate-x-0.5 group-hover:text-foreground" aria-hidden="true" />
                 )}
               </button>
             );
           })}
         </div>
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-muted-foreground">
           現在{CONTRACT_TEMPLATE_IDS.length}種類を登録済みです。契約内容に合うものを選択してください。
         </p>
       </section>
@@ -433,7 +433,7 @@ export function ContractNewForm() {
                   <Input id="confidentialityYears" type="number" min={1} max={99} required value={confidentialityYears} onChange={(event) => setConfidentialityYears(Number(event.target.value))} />
                 </div>
               </div>
-              <label className="mt-5 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+              <label className="mt-5 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                 <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
                 <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
               </label>
@@ -441,7 +441,7 @@ export function ContractNewForm() {
               <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
                 {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
               </Button>
-              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <p>生成後にWordで条文と当事者情報を最終確認し、PDFとして保存してください。電子契約で確定される原本は、次に登録するPDFです。</p>
               </div>
@@ -463,7 +463,7 @@ export function ContractNewForm() {
               <div className="mt-7 space-y-8">
                 {DATA_HANDLING_FIELD_GROUPS.map((group) => (
                   <fieldset key={group.title}>
-                    <legend className="text-sm font-semibold text-slate-900">{group.title}</legend>
+                    <legend className="text-sm font-semibold text-foreground">{group.title}</legend>
                     <div className="mt-4 grid gap-5 sm:grid-cols-2">
                       {group.fields.map((field) => {
                         const inputId = `dataHandling-${field.key}`;
@@ -489,7 +489,7 @@ export function ContractNewForm() {
                 ))}
               </div>
 
-              <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+              <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                 <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
                 <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
               </label>
@@ -497,7 +497,7 @@ export function ContractNewForm() {
               <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
                 {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
               </Button>
-              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <p>生成後にWordで条文、当事者情報、別紙のデータ条件を最終確認し、PDFとして保存してください。</p>
               </div>
@@ -519,7 +519,7 @@ export function ContractNewForm() {
               <div className="mt-7 space-y-8">
                 {FDE_MASTER_FIELD_GROUPS.map((group) => (
                   <fieldset key={group.title}>
-                    <legend className="text-sm font-semibold text-slate-900">{group.title}</legend>
+                    <legend className="text-sm font-semibold text-foreground">{group.title}</legend>
                     <div className="mt-4 grid gap-5 sm:grid-cols-2">
                       {group.fields.map((field) => {
                         const inputId = `fdeMaster-${field.key}`;
@@ -552,7 +552,7 @@ export function ContractNewForm() {
                 ))}
               </div>
 
-              <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+              <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                 <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
                 <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
               </label>
@@ -560,7 +560,7 @@ export function ContractNewForm() {
               <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
                 {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
               </Button>
-              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <p>生成後にWordで当事者情報、契約条件、条文を最終確認し、PDFとして保存してください。</p>
               </div>
