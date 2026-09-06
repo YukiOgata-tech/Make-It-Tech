@@ -1,5 +1,6 @@
 export const CONTRACT_TYPES = [
   "nda",
+  "data_handling_addendum",
   "fde_master",
   "fde_individual",
   "web",
@@ -11,6 +12,7 @@ export type ContractType = (typeof CONTRACT_TYPES)[number];
 
 export const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
   nda: "秘密保持契約（NDA）",
+  data_handling_addendum: "個人情報・データ取扱特約",
   fde_master: "FDE業務委託基本契約",
   fde_individual: "FDE個別契約",
   web: "Web制作契約",
@@ -63,7 +65,11 @@ export const CONTRACT_TOKEN_MAX_DAYS = 30;
 export const CONTRACT_DOCUMENT_ACCESS_DAYS = 7;
 export const CONTRACT_PDF_MAX_BYTES = 4 * 1024 * 1024;
 
-export const CONTRACT_TEMPLATE_IDS = ["nda-standard-v1"] as const;
+export const CONTRACT_TEMPLATE_IDS = [
+  "nda-standard-v1",
+  "data-handling-addendum-standard-v1",
+  "fde-master-standard-v1",
+] as const;
 export type ContractTemplateId = (typeof CONTRACT_TEMPLATE_IDS)[number];
 
 export const CONTRACT_TEMPLATES: Record<
@@ -73,9 +79,11 @@ export const CONTRACT_TEMPLATES: Record<
     version: string;
     contractType: ContractType;
     defaultTitle: string;
+    description: string;
+    formKind: "nda" | "data_handling" | "fde_master";
     fileName: string;
     sourceSha256: string;
-    downloadPath: string;
+    generationPath: string;
   }
 > = {
   "nda-standard-v1": {
@@ -83,9 +91,33 @@ export const CONTRACT_TEMPLATES: Record<
     version: "v1",
     contractType: "nda",
     defaultTitle: "秘密保持契約書",
+    description: "法人間で秘密情報を共有する前に締結する標準NDA",
+    formKind: "nda",
     fileName: "秘密保持契約書_NDA_標準テンプレート.docx",
     sourceSha256: "d63791aecfc06928e14ea3abe6d00e4143f51c177e45c502c3a0835801f1fe6c",
-    downloadPath: "/api/admin/contracts/templates/nda-standard-v1",
+    generationPath: "/api/admin/contracts/templates/nda-standard-v1/generate",
+  },
+  "data-handling-addendum-standard-v1": {
+    name: "個人情報・データ取扱特約 標準テンプレート",
+    version: "v1",
+    contractType: "data_handling_addendum",
+    defaultTitle: "個人情報・データ取扱特約",
+    description: "FDE業務で取り扱う個人情報・業務データの条件を定める特約",
+    formKind: "data_handling",
+    fileName: "個人情報・データ取扱特約_標準テンプレート.docx",
+    sourceSha256: "1f4eac910194d92dbd867c15fb08465f3fe8fb862ac67d0a8572118be4c550f1",
+    generationPath: "/api/admin/contracts/templates/data-handling-addendum-standard-v1/generate",
+  },
+  "fde-master-standard-v1": {
+    name: "FDE業務委託基本契約書 標準テンプレート",
+    version: "v1",
+    contractType: "fde_master",
+    defaultTitle: "FDE業務委託基本契約書",
+    description: "FDE業務の共通条件、契約期間、責任範囲などを定める基本契約",
+    formKind: "fde_master",
+    fileName: "FDE業務委託基本契約書_標準テンプレート.docx",
+    sourceSha256: "3d727b7d7d8c1b3a2f39a489009d94427e057c7eec2b219f44401e4fcf87f444",
+    generationPath: "/api/admin/contracts/templates/fde-master-standard-v1/generate",
   },
 };
 

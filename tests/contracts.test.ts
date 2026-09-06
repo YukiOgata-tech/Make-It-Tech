@@ -3,36 +3,27 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import JSZip from "jszip";
-import { PDFDocument, StandardFonts } from "pdf-lib";
 import { CONTRACT_TEMPLATES } from "@/lib/contracts/constants";
 import { sha256 } from "@/lib/contracts/crypto";
 import {
   generateNdaWordDocument,
   getGeneratedNdaFileName,
 } from "@/lib/contracts/nda-word-template";
-import { createContractArtifacts } from "@/lib/contracts/pdf";
-import { validateOriginalPdf } from "@/lib/contracts/pdf-validation";
+import {
+  generateDataHandlingWordDocument,
+  getGeneratedDataHandlingFileName,
+} from "@/lib/contracts/data-handling-word-template";
+import {
+  generateFdeMasterWordDocument,
+  getGeneratedFdeMasterFileName,
+} from "@/lib/contracts/fde-master-word-template";
 
-test("the NDA Word template is packaged intact and retains its review markers", async () => {
+test("the NDA Word template is intact and fills every supported field", async () => {
   const template = CONTRACT_TEMPLATES["nda-standard-v1"];
-  const bytes = await readFile(
-    path.join(process.cwd(), "assets", "contracts", "templates", "nda-standard-v1.docx")
-  );
-  assert.equal(sha256(bytes), template.sourceSha256);
-
-  const archive = await JSZip.loadAsync(bytes);
-  const documentXml = await archive.file("word/document.xml")?.async("string");
-  assert.ok(documentXml);
-  const documentText = documentXml.replace(/<[^>]+>/g, "");
-  assert.match(documentText, /秘密保持契約書/);
-  assert.match(documentText, /本書2通/);
-  assert.match(documentText, /202x年/);
-});
-
-test("the NDA Word generator fills parties, date, terms, and electronic execution wording", async () => {
   const sourceBytes = await readFile(
     path.join(process.cwd(), "assets", "contracts", "templates", "nda-standard-v1.docx")
   );
+  assert.equal(sha256(sourceBytes), template.sourceSha256);
   const input = {
     companyName: "株式会社テスト&パートナーズ",
     companyAddress: "東京都千代田区1-2-3",
@@ -82,40 +73,166 @@ test("the NDA Word generator fills parties, date, terms, and electronic executio
   }
 });
 
-test("contract PDFs preserve the original and generate readable Japanese artifacts", async () => {
-  const original = await PDFDocument.create();
-  const font = await original.embedFont(StandardFonts.Helvetica);
-  const page = original.addPage([400, 500]);
-  page.drawText("Original contract", { x: 40, y: 440, font, size: 16 });
-  const originalBytes = await original.save();
-  const validation = await validateOriginalPdf(originalBytes);
-  assert.equal(validation.pageCount, 1);
+test("the data handling Word template is intact and fills parties, data conditions, and electronic execution wording", async () => {
+  const template = CONTRACT_TEMPLATES["data-handling-addendum-standard-v1"];
+  const sourceBytes = await readFile(
+    path.join(
+      process.cwd(),
+      "assets",
+      "contracts",
+      "templates",
+      "data-handling-addendum-standard-v1.docx"
+    )
+  );
+  assert.equal(sha256(sourceBytes), template.sourceSha256);
 
-  const source = {
-    contractNumber: "MIT-C-2026-00001",
-    title: "FDE業務委託基本契約書",
-    type: "fde_master" as const,
-    companyName: "株式会社テスト",
-    signerName: "契約 太郎",
-    signerRole: "代表取締役",
-    verificationMethod: "company_email_link" as const,
-    signedAt: new Date("2026-09-06T03:04:05.000Z"),
-    documentSha256: sha256(originalBytes),
-    finalAuditHash: "a".repeat(64),
+  const input = {
+    companyName: "株式会社テスト&パートナーズ",
+    companyAddress: "東京都千代田区1-2-3",
+    representativeRole: "代表取締役",
+    representativeName: "契約 太郎",
+    contractDate: "2026-09-10",
+    targetData: "顧客情報、問い合わせ履歴",
+    processingPurpose: "問い合わせ分析と業務改善",
+    dataSubjects: "顧客、取引先担当者",
+    sensitivePersonalInformation: "無",
+    specificPersonalInformation: "対象外",
+    systemsUsed: "Google Cloud、社内分析基盤",
+    storageLocation: "日本国内",
+    retentionPeriod: "契約終了後30日以内",
+    accessScope: "業務担当者と管理者",
+    subcontractors: "なし",
+    thirdPartyServices: "Google Cloud",
+    overseasUse: "なし",
+    incidentContact: "発見後24時間以内に指定担当者へ連絡",
+    endOfTermHandling: "PDFで返却後、30日以内に削除",
+    additionalSecurityRequirements: "多要素認証、保存時暗号化",
+    specialProvisions: "なし",
+    electronicExecutionAccepted: true as const,
   };
-  const { executedBytes, certificateBytes } = await createContractArtifacts(originalBytes, source);
-  const executed = await PDFDocument.load(executedBytes);
-  const certificate = await PDFDocument.load(certificateBytes);
-  assert.equal(executed.getPageCount(), 2);
-  assert.equal(certificate.getPageCount(), 1);
-  assert.ok(executedBytes.length > originalBytes.length);
-  assert.ok(certificateBytes.length > 1000);
+  const generatedBytes = await generateDataHandlingWordDocument(sourceBytes, input);
+  const [sourceArchive, generatedArchive] = await Promise.all([
+    JSZip.loadAsync(sourceBytes),
+    JSZip.loadAsync(generatedBytes),
+  ]);
+  const documentXml = await generatedArchive.file("word/document.xml")?.async("string");
+  assert.ok(documentXml);
+  const documentText = documentXml
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&");
+  assert.match(documentText, /株式会社テスト&パートナーズ（以下「甲」という。）/);
+  assert.match(documentText, /所在地：東京都千代田区1-2-3/);
+  assert.match(documentText, /代表者：代表取締役 契約 太郎/);
+  assert.match(documentText, /契約締結日：2026年9月10日/);
+  for (const expected of [
+    input.targetData,
+    input.processingPurpose,
+    input.dataSubjects,
+    input.sensitivePersonalInformation,
+    input.specificPersonalInformation,
+    input.systemsUsed,
+    input.storageLocation,
+    input.retentionPeriod,
+    input.accessScope,
+    input.subcontractors,
+    input.thirdPartyServices,
+    input.overseasUse,
+    input.incidentContact,
+    input.endOfTermHandling,
+    input.additionalSecurityRequirements,
+    input.specialProvisions,
+  ]) {
+    assert.ok(documentText.includes(expected), `${expected} must be inserted`);
+  }
+  assert.match(documentText, /甲乙双方が電子的に合意/);
+  assert.doesNotMatch(documentText, /株式会社〇〇|〇年〇月〇日|本書2通/);
+  assert.equal(
+    getGeneratedDataHandlingFileName(input),
+    "個人情報・データ取扱特約_株式会社テスト&パートナーズ_2026-09-10.docx"
+  );
 
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const parsedCertificate = await pdfjs.getDocument({ data: certificateBytes }).promise;
-  const certificatePage = await parsedCertificate.getPage(1);
-  const text = await certificatePage.getTextContent();
-  const extracted = text.items.map((item) => ("str" in item ? item.str : "")).join(" ");
-  assert.match(extracted, /電子契約締結証明書/);
-  assert.match(extracted, /株式会社テスト/);
+  const preservedParts = Object.keys(sourceArchive.files).filter(
+    (partName) => partName !== "word/document.xml" && !sourceArchive.files[partName].dir
+  );
+  for (const partName of preservedParts) {
+    const [sourcePart, generatedPart] = await Promise.all([
+      sourceArchive.file(partName)?.async("uint8array"),
+      generatedArchive.file(partName)?.async("uint8array"),
+    ]);
+    assert.deepEqual(generatedPart, sourcePart, `${partName} must remain unchanged`);
+  }
+});
+
+test("the FDE master Word template is intact and fills every contract placeholder", async () => {
+  const template = CONTRACT_TEMPLATES["fde-master-standard-v1"];
+  const sourceBytes = await readFile(
+    path.join(process.cwd(), "assets", "contracts", "templates", "fde-master-standard-v1.docx")
+  );
+  assert.equal(sha256(sourceBytes), template.sourceSha256);
+
+  const input = {
+    companyName: "株式会社テスト&パートナーズ",
+    companyAddress: "東京都千代田区1-2-3",
+    representativeRole: "代表取締役",
+    representativeName: "契約 太郎",
+    contractDate: "2026-09-10",
+    latePaymentInterestRate: 3.5,
+    confidentialityYears: 5,
+    suspensionDelayDays: 30,
+    curePeriodDays: 14,
+    handoverDays: 30,
+    dataDeletionDays: 30,
+    termYears: 2,
+    renewalNoticeDays: 60,
+    renewalYears: 1,
+    terminationNoticeDays: 90,
+    jurisdiction: "東京",
+    electronicExecutionAccepted: true as const,
+  };
+  const generatedBytes = await generateFdeMasterWordDocument(sourceBytes, input);
+  const [sourceArchive, generatedArchive] = await Promise.all([
+    JSZip.loadAsync(sourceBytes),
+    JSZip.loadAsync(generatedBytes),
+  ]);
+  const documentXml = await generatedArchive.file("word/document.xml")?.async("string");
+  assert.ok(documentXml);
+  const documentText = documentXml
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&");
+  for (const expected of [
+    "株式会社テスト&パートナーズ（以下「甲」という。）",
+    "所在地：東京都千代田区1-2-3",
+    "代表者：代表取締役 契約 太郎",
+    "契約締結日：2026年9月10日",
+    "年3.5％の割合による遅延損害金",
+    "本契約終了後5年間存続",
+    "支払が30日以上遅延",
+    "14日以内に是正されない場合",
+    "終了日から30日以内を目安",
+    "移行完了を確認した後30日以内",
+    "契約締結日から2年間",
+    "期間満了日の60日前",
+    "さらに1年間更新",
+    "相手方に90日前までに書面で通知",
+    "東京地方裁判所又は東京簡易裁判所",
+    "甲乙双方が電子的に合意",
+  ]) {
+    assert.ok(documentText.includes(expected), `${expected} must be inserted`);
+  }
+  assert.doesNotMatch(documentText, /〇|202x年y月z日|本書2通/);
+  assert.equal(
+    getGeneratedFdeMasterFileName(input),
+    "FDE業務委託基本契約書_株式会社テスト&パートナーズ_2026-09-10.docx"
+  );
+
+  const preservedParts = Object.keys(sourceArchive.files).filter(
+    (partName) => partName !== "word/document.xml" && !sourceArchive.files[partName].dir
+  );
+  for (const partName of preservedParts) {
+    const [sourcePart, generatedPart] = await Promise.all([
+      sourceArchive.file(partName)?.async("uint8array"),
+      generatedArchive.file(partName)?.async("uint8array"),
+    ]);
+    assert.deepEqual(generatedPart, sourcePart, `${partName} must remain unchanged`);
+  }
 });

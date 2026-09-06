@@ -2,27 +2,148 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, FileText, Loader2, TriangleAlert } from "lucide-react";
+import { Check, ChevronRight, Download, FileText, Loader2, TriangleAlert } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   CONTRACT_TEMPLATES,
-  CONTRACT_TYPES,
+  CONTRACT_TEMPLATE_IDS,
   CONTRACT_TYPE_LABELS,
   type ContractTemplateId,
-  type ContractType,
 } from "@/lib/contracts/constants";
 
-const ndaTemplate = CONTRACT_TEMPLATES["nda-standard-v1"];
+const DATA_HANDLING_FIELD_GROUPS = [
+  {
+    title: "対象データ",
+    fields: [
+      { key: "targetData", label: "対象データ", placeholder: "例：従業員基本情報、勤怠、顧客情報、売上データ" },
+      { key: "processingPurpose", label: "利用目的・処理内容", placeholder: "例：業務分析、システム構築、データ移行、AI検索" },
+      { key: "dataSubjects", label: "対象者", placeholder: "例：従業員、顧客、取引先担当者" },
+      { key: "sensitivePersonalInformation", label: "要配慮個人情報", placeholder: "有・無／取り扱う対象と必要措置" },
+      { key: "specificPersonalInformation", label: "特定個人情報", placeholder: "原則対象外／取り扱う場合の追加条件" },
+    ],
+  },
+  {
+    title: "利用環境と権限",
+    fields: [
+      { key: "systemsUsed", label: "利用システム", placeholder: "クラウド、DB、AI、API、SaaSなど" },
+      { key: "storageLocation", label: "保存場所・地域", placeholder: "例：日本国内、Google Cloud東京リージョン" },
+      { key: "retentionPeriod", label: "保存期間", placeholder: "例：契約終了後30日以内に削除" },
+      { key: "accessScope", label: "アクセス権限", placeholder: "担当者、権限レベル、利用期間など" },
+      { key: "subcontractors", label: "再委託先", placeholder: "名称、対象データ、取扱範囲など" },
+      { key: "thirdPartyServices", label: "第三者サービス", placeholder: "利用するサービスと利用条件" },
+      { key: "overseasUse", label: "国外利用", placeholder: "国・地域の限定、または禁止条件" },
+    ],
+  },
+  {
+    title: "事故対応と終了時の取扱い",
+    fields: [
+      { key: "incidentContact", label: "事故時の連絡", placeholder: "初報期限、担当者、電話・メールなど" },
+      { key: "endOfTermHandling", label: "終了時の取扱い", placeholder: "返却形式、移行先、削除期限など" },
+      { key: "additionalSecurityRequirements", label: "追加セキュリティ要件", placeholder: "IP制限、VPN、暗号化方式、ログ保存期間など" },
+      { key: "specialProvisions", label: "特記事項", placeholder: "優先する条項と、その具体的な内容" },
+    ],
+  },
+] as const;
+
+type DataHandlingFieldKey = (typeof DATA_HANDLING_FIELD_GROUPS)[number]["fields"][number]["key"];
+
+const INITIAL_DATA_HANDLING_FIELDS: Record<DataHandlingFieldKey, string> = {
+  targetData: "",
+  processingPurpose: "",
+  dataSubjects: "",
+  sensitivePersonalInformation: "",
+  specificPersonalInformation: "",
+  systemsUsed: "",
+  storageLocation: "",
+  retentionPeriod: "",
+  accessScope: "",
+  subcontractors: "",
+  thirdPartyServices: "",
+  overseasUse: "",
+  incidentContact: "",
+  endOfTermHandling: "",
+  additionalSecurityRequirements: "",
+  specialProvisions: "",
+};
+
+type FdeMasterFieldKey =
+  | "latePaymentInterestRate"
+  | "confidentialityYears"
+  | "suspensionDelayDays"
+  | "curePeriodDays"
+  | "handoverDays"
+  | "dataDeletionDays"
+  | "termYears"
+  | "renewalNoticeDays"
+  | "renewalYears"
+  | "terminationNoticeDays"
+  | "jurisdiction";
+
+type FdeMasterField = {
+  key: FdeMasterFieldKey;
+  label: string;
+  type: "number" | "text";
+  min?: number;
+  max?: number;
+  step?: number;
+  placeholder?: string;
+};
+
+const FDE_MASTER_FIELD_GROUPS: ReadonlyArray<{
+  title: string;
+  fields: ReadonlyArray<FdeMasterField>;
+}> = [
+  {
+    title: "支払と情報保護",
+    fields: [
+      { key: "latePaymentInterestRate", label: "遅延損害金率（年率％）", type: "number", min: 0, max: 100, step: 0.01 },
+      { key: "confidentialityYears", label: "契約終了後の秘密保持期間（年）", type: "number", min: 1, max: 99 },
+      { key: "suspensionDelayDays", label: "業務停止の対象となる支払遅延（日）", type: "number", min: 1, max: 365 },
+    ],
+  },
+  {
+    title: "違反時と契約終了時",
+    fields: [
+      { key: "curePeriodDays", label: "契約違反の是正期間（日）", type: "number", min: 1, max: 365 },
+      { key: "handoverDays", label: "終了後の引渡し目安（日）", type: "number", min: 1, max: 365 },
+      { key: "dataDeletionDays", label: "移行完了後のデータ削除期限（日）", type: "number", min: 1, max: 365 },
+    ],
+  },
+  {
+    title: "契約期間と管轄",
+    fields: [
+      { key: "termYears", label: "基本契約の有効期間（年）", type: "number", min: 1, max: 99 },
+      { key: "renewalNoticeDays", label: "自動更新を停止する通知期限（日）", type: "number", min: 1, max: 365 },
+      { key: "renewalYears", label: "自動更新期間（年）", type: "number", min: 1, max: 20 },
+      { key: "terminationNoticeDays", label: "任意解約の通知期限（日）", type: "number", min: 1, max: 365 },
+      { key: "jurisdiction", label: "専属的合意管轄の地域名", type: "text", placeholder: "例：山形、東京" },
+    ],
+  },
+];
+
+const INITIAL_FDE_MASTER_FIELDS: Record<FdeMasterFieldKey, string> = {
+  latePaymentInterestRate: "",
+  confidentialityYears: "",
+  suspensionDelayDays: "",
+  curePeriodDays: "",
+  handoverDays: "",
+  dataDeletionDays: "",
+  termYears: "",
+  renewalNoticeDays: "",
+  renewalYears: "",
+  terminationNoticeDays: "",
+  jurisdiction: "",
+};
 
 export function ContractNewForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
-  const [contractType, setContractType] = useState<ContractType>("nda");
   const [sourceTemplateId, setSourceTemplateId] = useState<ContractTemplateId | "">("");
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
@@ -34,38 +155,69 @@ export function ContractNewForm() {
   const [terminationNoticeDays, setTerminationNoticeDays] = useState(30);
   const [renewalYears, setRenewalYears] = useState(1);
   const [confidentialityYears, setConfidentialityYears] = useState(5);
+  const [dataHandlingFields, setDataHandlingFields] = useState(INITIAL_DATA_HANDLING_FIELDS);
+  const [fdeMasterFields, setFdeMasterFields] = useState(INITIAL_FDE_MASTER_FIELDS);
   const [electronicExecutionAccepted, setElectronicExecutionAccepted] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [wordError, setWordError] = useState("");
 
   function selectSourceTemplate(value: ContractTemplateId | "") {
     setSourceTemplateId(value);
-    if (!value) return;
+    setWordError("");
+    setElectronicExecutionAccepted(false);
+    if (!value) {
+      setTitle("");
+      return;
+    }
     const template = CONTRACT_TEMPLATES[value];
-    setContractType(template.contractType);
-    setTitle((current) => current.trim() || template.defaultTitle);
+    setTitle(template.defaultTitle);
   }
 
   async function generateWord() {
     setWordError("");
     setIsGeneratingWord(true);
     try {
-      const response = await fetch(`${ndaTemplate.downloadPath}/generate`, {
+      if (!sourceTemplateId) {
+        throw new Error("契約テンプレートを選択してください。");
+      }
+      const template = CONTRACT_TEMPLATES[sourceTemplateId];
+      const commonInput = {
+        companyName,
+        companyAddress,
+        representativeRole: signerRole,
+        representativeName: signerName,
+        contractDate,
+        electronicExecutionAccepted,
+      };
+      const generationInput = template.formKind === "nda"
+        ? {
+            ...commonInput,
+            contractPurpose: contractPurpose.trim() || undefined,
+            termYears,
+            terminationNoticeDays,
+            renewalYears,
+            confidentialityYears,
+          }
+        : template.formKind === "data_handling"
+          ? { ...commonInput, ...dataHandlingFields }
+          : {
+              ...commonInput,
+              latePaymentInterestRate: Number(fdeMasterFields.latePaymentInterestRate),
+              confidentialityYears: Number(fdeMasterFields.confidentialityYears),
+              suspensionDelayDays: Number(fdeMasterFields.suspensionDelayDays),
+              curePeriodDays: Number(fdeMasterFields.curePeriodDays),
+              handoverDays: Number(fdeMasterFields.handoverDays),
+              dataDeletionDays: Number(fdeMasterFields.dataDeletionDays),
+              termYears: Number(fdeMasterFields.termYears),
+              renewalNoticeDays: Number(fdeMasterFields.renewalNoticeDays),
+              renewalYears: Number(fdeMasterFields.renewalYears),
+              terminationNoticeDays: Number(fdeMasterFields.terminationNoticeDays),
+              jurisdiction: fdeMasterFields.jurisdiction,
+            };
+      const response = await fetch(template.generationPath, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          companyName,
-          companyAddress,
-          representativeRole: signerRole,
-          representativeName: signerName,
-          contractDate,
-          contractPurpose: contractPurpose.trim() || undefined,
-          termYears,
-          terminationNoticeDays,
-          renewalYears,
-          confidentialityYears,
-          electronicExecutionAccepted,
-        }),
+        body: JSON.stringify(generationInput),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -76,7 +228,7 @@ export function ContractNewForm() {
       const encodedFileName = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
       const fileName = encodedFileName
         ? decodeURIComponent(encodedFileName)
-        : "秘密保持契約書_入力済み.docx";
+        : template.fileName;
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -85,7 +237,6 @@ export function ContractNewForm() {
       anchor.click();
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
-      selectSourceTemplate("nda-standard-v1");
     } catch (generationError) {
       setWordError(
         generationError instanceof Error ? generationError.message : "Wordを生成できませんでした。"
@@ -113,171 +264,326 @@ export function ContractNewForm() {
     }
   }
 
+  const selectedTemplate = sourceTemplateId
+    ? CONTRACT_TEMPLATES[sourceTemplateId]
+    : null;
+  const fdeMasterFieldsComplete = Object.values(fdeMasterFields).every((value) => value.trim());
   const canGenerateWord = Boolean(
     companyName.trim() &&
     companyAddress.trim() &&
     signerName.trim() &&
     signerRole.trim() &&
     contractDate &&
-    electronicExecutionAccepted
+    electronicExecutionAccepted &&
+    (selectedTemplate?.formKind !== "fde_master" || fdeMasterFieldsComplete)
   );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <section className="rounded-2xl border border-sky-200 bg-sky-50/60 p-4 sm:rounded-3xl sm:p-6">
+      <section className="rounded-2xl border bg-slate-50 p-4 sm:rounded-3xl sm:p-6">
         <div className="flex items-start gap-3">
-          <FileText className="mt-0.5 size-5 shrink-0 text-sky-700" />
+          <FileText className="mt-0.5 size-5 shrink-0 text-slate-700" aria-hidden="true" />
           <div>
-            <h2 className="text-lg font-semibold text-slate-950">NDA標準Wordテンプレート</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-700">
-              下のフォームへ法人・代表者・契約日を入力すると、テンプレートへ自動反映したWordを生成できます。
+            <h2 className="text-lg font-semibold text-slate-950">契約テンプレートを選択</h2>
+            <p className="mt-1 text-sm leading-relaxed text-slate-600">
+              登録済みのテンプレートを選ぶと、その契約書に必要な入力欄が表示されます。
             </p>
           </div>
         </div>
-        <ol className="mt-4 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-slate-700">
-          <li>「NDA自動作成を使用」を押し、契約情報と契約先を入力する</li>
-          <li>入力済みWordを生成し、必要な条文をWord上で最終確認する</li>
-          <li>PDF形式で保存して、下の原本欄へ登録する</li>
-        </ol>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Button type="button" className="rounded-xl" onClick={() => selectSourceTemplate("nda-standard-v1")}>
-            NDA自動作成を使用
-          </Button>
-          <Button asChild variant="outline" className="rounded-xl bg-white">
-            <a href={ndaTemplate.downloadPath}>
-              <Download />空のWordをダウンロード
-            </a>
-          </Button>
-          <span className="text-xs text-slate-600">{ndaTemplate.version}・管理者のみ取得可能</span>
+
+        <div className="mt-5 grid gap-3">
+          {CONTRACT_TEMPLATE_IDS.map((templateId) => {
+            const template = CONTRACT_TEMPLATES[templateId];
+            const isSelected = sourceTemplateId === templateId;
+
+            return (
+              <button
+                key={templateId}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => selectSourceTemplate(templateId)}
+                className={`group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition sm:p-5 ${
+                  isSelected
+                    ? "border-orange-400 bg-white shadow-sm ring-2 ring-orange-100"
+                    : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                }`}
+              >
+                <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${isSelected ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"}`}>
+                  <FileText className="size-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-slate-950">{template.name}</span>
+                    <Badge variant="outline" className="rounded-lg bg-white text-[11px]">
+                      {template.version}
+                    </Badge>
+                  </span>
+                  <span className="mt-1 block text-sm text-slate-600">{template.description}</span>
+                  <span className="mt-2 block text-xs font-medium text-slate-500">
+                    {CONTRACT_TYPE_LABELS[template.contractType]}
+                  </span>
+                </span>
+                {isSelected ? (
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-600 text-white">
+                    <Check className="size-4" aria-hidden="true" />
+                  </span>
+                ) : (
+                  <ChevronRight className="size-5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" aria-hidden="true" />
+                )}
+              </button>
+            );
+          })}
         </div>
-        <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
-          <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-          <p>自動生成後も契約条文と当事者情報の最終確認は必要です。電子契約で確定される原本は、最後に登録したPDFです。</p>
-        </div>
+        <p className="mt-3 text-xs text-slate-500">
+          現在{CONTRACT_TEMPLATE_IDS.length}種類を登録済みです。契約内容に合うものを選択してください。
+        </p>
       </section>
 
-      <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
-        <h2 className="text-lg font-semibold">契約情報</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="title">契約タイトル</Label>
-            <Input id="title" name="title" maxLength={160} required placeholder="FDE業務委託基本契約書" value={title} onChange={(event) => setTitle(event.target.value)} />
+      {selectedTemplate ? (
+        <>
+          <input type="hidden" name="type" value={selectedTemplate.contractType} />
+          <input type="hidden" name="sourceTemplateId" value={sourceTemplateId} />
+
+          <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold">管理情報</h2>
+                <p className="mt-1 text-xs text-muted-foreground">契約一覧と管理画面で使用する情報です。</p>
+              </div>
+              <Badge variant="secondary" className="rounded-lg">
+                {CONTRACT_TYPE_LABELS[selectedTemplate.contractType]}
+              </Badge>
+            </div>
+            <div className="mt-5 grid gap-5">
+              <div className="space-y-2">
+                <Label htmlFor="title">管理用タイトル</Label>
+                <Input id="title" name="title" maxLength={160} required value={title} onChange={(event) => setTitle(event.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="internalMemo">内部メモ（任意）</Label>
+                <Textarea id="internalMemo" name="internalMemo" maxLength={2000} rows={3} placeholder="管理者だけが確認するメモ" />
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
+            <h2 className="text-lg font-semibold">契約先法人・署名予定者</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Wordへ反映し、署名者画面にも固定表示する情報です。</p>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="companyName">法人名</Label>
+                <Input id="companyName" name="companyName" maxLength={200} required value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="corporateNumber">法人番号（任意）</Label>
+                <Input id="corporateNumber" name="corporateNumber" maxLength={30} inputMode="numeric" />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="companyAddress">所在地</Label>
+                <Input id="companyAddress" name="companyAddress" maxLength={500} required value={companyAddress} onChange={(event) => setCompanyAddress(event.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signerName">代表者・署名予定者氏名</Label>
+                <Input id="signerName" name="signerName" maxLength={120} required value={signerName} onChange={(event) => setSignerName(event.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signerRole">代表者の役職</Label>
+                <Input id="signerRole" name="signerRole" maxLength={120} required value={signerRole} onChange={(event) => setSignerRole(event.target.value)} />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="signerEmail">署名依頼先メールアドレス</Label>
+                <Input id="signerEmail" name="signerEmail" type="email" maxLength={320} required />
+              </div>
+            </div>
+          </section>
+
+          {selectedTemplate.formKind === "nda" ? (
+            <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
+              <h2 className="text-lg font-semibold">NDAの空欄を入力</h2>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                法人名・所在地・代表者に加えて、以下の内容をNDAテンプレートへ反映します。
+              </p>
+              <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="effectiveDate">契約書記載日</Label>
+                  <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
+                  <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、契約書本文へ記載する日付です。</p>
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="contractPurpose">契約目的（任意）</Label>
+                  <Input id="contractPurpose" maxLength={500} value={contractPurpose} onChange={(event) => setContractPurpose(event.target.value)} placeholder="例：FDE業務委託、システム開発及びその検討" />
+                  <p className="text-xs text-muted-foreground">入力した場合、第1条の対象取引部分を置き換えます。未入力なら標準文言を維持します。</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="termYears">契約期間（年）</Label>
+                  <Input id="termYears" type="number" min={1} max={99} required value={termYears} onChange={(event) => setTermYears(Number(event.target.value))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="terminationNoticeDays">終了通知期限（満了日の何日前）</Label>
+                  <Input id="terminationNoticeDays" type="number" min={1} max={365} required value={terminationNoticeDays} onChange={(event) => setTerminationNoticeDays(Number(event.target.value))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="renewalYears">自動更新期間（年）</Label>
+                  <Input id="renewalYears" type="number" min={1} max={20} required value={renewalYears} onChange={(event) => setRenewalYears(Number(event.target.value))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confidentialityYears">契約終了後の秘密保持期間（年）</Label>
+                  <Input id="confidentialityYears" type="number" min={1} max={99} required value={confidentialityYears} onChange={(event) => setConfidentialityYears(Number(event.target.value))} />
+                </div>
+              </div>
+              <label className="mt-5 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+                <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
+                <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
+              </label>
+              {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
+              <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
+                {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
+              </Button>
+              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+                <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <p>生成後にWordで条文と当事者情報を最終確認し、PDFとして保存してください。電子契約で確定される原本は、次に登録するPDFです。</p>
+              </div>
+            </section>
+          ) : null}
+
+          {selectedTemplate.formKind === "data_handling" ? (
+            <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
+              <h2 className="text-lg font-semibold">個人情報・データ取扱特約の空欄を入力</h2>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                入力したデータ条件だけを別紙へ反映します。未入力の項目はテンプレートの案内文を維持します。
+              </p>
+              <div className="mt-5 max-w-sm space-y-2">
+                <Label htmlFor="effectiveDate">契約締結日</Label>
+                <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
+                <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、特約本文へ記載する日付です。</p>
+              </div>
+
+              <div className="mt-7 space-y-8">
+                {DATA_HANDLING_FIELD_GROUPS.map((group) => (
+                  <fieldset key={group.title}>
+                    <legend className="text-sm font-semibold text-slate-900">{group.title}</legend>
+                    <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                      {group.fields.map((field) => {
+                        const inputId = `dataHandling-${field.key}`;
+                        return (
+                          <div key={field.key} className="space-y-2">
+                            <Label htmlFor={inputId}>{field.label}（任意）</Label>
+                            <Input
+                              id={inputId}
+                              maxLength={500}
+                              value={dataHandlingFields[field.key]}
+                              onChange={(event) => setDataHandlingFields((current) => ({
+                                ...current,
+                                [field.key]: event.target.value,
+                              }))}
+                              placeholder={field.placeholder}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
+
+              <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+                <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
+                <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
+              </label>
+              {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
+              <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
+                {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
+              </Button>
+              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+                <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <p>生成後にWordで条文、当事者情報、別紙のデータ条件を最終確認し、PDFとして保存してください。</p>
+              </div>
+            </section>
+          ) : null}
+
+          {selectedTemplate.formKind === "fde_master" ? (
+            <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
+              <h2 className="text-lg font-semibold">FDE業務委託基本契約の空欄を入力</h2>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                原本に〇で残されている契約条件をすべて入力します。委託料や個別業務の内容は、基本契約ではなく個別契約で定めます。
+              </p>
+              <div className="mt-5 max-w-sm space-y-2">
+                <Label htmlFor="effectiveDate">契約締結日</Label>
+                <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
+                <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、契約書本文へ記載する日付です。</p>
+              </div>
+
+              <div className="mt-7 space-y-8">
+                {FDE_MASTER_FIELD_GROUPS.map((group) => (
+                  <fieldset key={group.title}>
+                    <legend className="text-sm font-semibold text-slate-900">{group.title}</legend>
+                    <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                      {group.fields.map((field) => {
+                        const inputId = `fdeMaster-${field.key}`;
+                        return (
+                          <div key={field.key} className="space-y-2">
+                            <Label htmlFor={inputId}>{field.label}</Label>
+                            <Input
+                              id={inputId}
+                              type={field.type}
+                              min={field.min}
+                              max={field.max}
+                              step={field.step}
+                              maxLength={field.type === "text" ? 100 : undefined}
+                              required
+                              value={fdeMasterFields[field.key]}
+                              onChange={(event) => setFdeMasterFields((current) => ({
+                                ...current,
+                                [field.key]: event.target.value,
+                              }))}
+                              placeholder={field.placeholder}
+                            />
+                            {field.key === "jurisdiction" ? (
+                              <p className="text-xs text-muted-foreground">入力した地域名を「地方裁判所」と「簡易裁判所」の前へ挿入します。</p>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
+
+              <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+                <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
+                <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
+              </label>
+              {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
+              <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
+                {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
+              </Button>
+              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+                <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <p>生成後にWordで当事者情報、契約条件、条文を最終確認し、PDFとして保存してください。</p>
+              </div>
+            </section>
+          ) : null}
+
+          <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
+            <h2 className="text-lg font-semibold">確認済みPDFを登録</h2>
+            <p className="mt-1 text-xs text-muted-foreground">生成したWordを確認してPDF保存した後、そのPDFを選択してください。4MB以内・確定後は差し替えできません。</p>
+            <Input className="mt-5" name="pdf" type="file" accept="application/pdf,.pdf" required />
+          </section>
+
+          {error ? <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
+          <div className="flex justify-end">
+            <Button type="submit" size="lg" className="rounded-xl" disabled={isSubmitting}>
+              {isSubmitting ? <><Loader2 className="animate-spin" />作成中...</> : "下書きを作成"}
+            </Button>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">契約種別</Label>
-            <select id="type" name="type" required value={contractType} onChange={(event) => {
-              const value = event.target.value as ContractType;
-              setContractType(value);
-              if (sourceTemplateId && CONTRACT_TEMPLATES[sourceTemplateId].contractType !== value) {
-                setSourceTemplateId("");
-              }
-            }} className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
-              {CONTRACT_TYPES.map((type) => <option key={type} value={type}>{CONTRACT_TYPE_LABELS[type]}</option>)}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="sourceTemplateId">使用したWordテンプレート</Label>
-            <select id="sourceTemplateId" name="sourceTemplateId" value={sourceTemplateId} onChange={(event) => selectSourceTemplate(event.target.value as ContractTemplateId | "")} className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="">使用していない・不明</option>
-              <option value="nda-standard-v1">{ndaTemplate.name} {ndaTemplate.version}</option>
-            </select>
-            <p className="text-xs text-muted-foreground">選択したテンプレートの版とHashを契約記録に残します。</p>
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="internalMemo">内部メモ</Label>
-            <Textarea id="internalMemo" name="internalMemo" maxLength={2000} rows={4} placeholder="管理者だけが確認するメモ" />
-          </div>
+        </>
+      ) : (
+        <div className="rounded-2xl border border-dashed bg-muted/30 px-5 py-10 text-center sm:rounded-3xl">
+          <FileText className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
+          <p className="mt-3 text-sm font-medium">最初に契約テンプレートを選択してください</p>
+          <p className="mt-1 text-xs text-muted-foreground">選択したテンプレートに必要な入力欄だけを表示します。</p>
         </div>
-      </section>
-
-      <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
-        <h2 className="text-lg font-semibold">契約先法人・署名予定者</h2>
-        <p className="mt-1 text-xs text-muted-foreground">ここで指定した情報を署名者画面に固定表示します。</p>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="companyName">法人名</Label>
-            <Input id="companyName" name="companyName" maxLength={200} required value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="corporateNumber">法人番号（任意）</Label>
-            <Input id="corporateNumber" name="corporateNumber" maxLength={30} inputMode="numeric" />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="companyAddress">所在地（任意）</Label>
-            <Input id="companyAddress" name="companyAddress" maxLength={500} value={companyAddress} onChange={(event) => setCompanyAddress(event.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="signerName">代表者・署名予定者氏名</Label>
-            <Input id="signerName" name="signerName" maxLength={120} required value={signerName} onChange={(event) => setSignerName(event.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="signerRole">代表者の役職</Label>
-            <Input id="signerRole" name="signerRole" maxLength={120} required value={signerRole} onChange={(event) => setSignerRole(event.target.value)} />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="signerEmail">署名依頼先メールアドレス</Label>
-            <Input id="signerEmail" name="signerEmail" type="email" maxLength={320} required />
-          </div>
-        </div>
-      </section>
-
-      {sourceTemplateId === "nda-standard-v1" ? (
-        <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
-          <h2 className="text-lg font-semibold">NDA Wordへの自動入力</h2>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            上で入力した法人名・所在地・署名予定者の役職と氏名を、甲の当事者欄へ挿入します。
-          </p>
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="effectiveDate">契約書記載日</Label>
-              <Input id="effectiveDate" name="effectiveDate" type="date" required value={contractDate} onChange={(event) => setContractDate(event.target.value)} />
-              <p className="text-xs text-muted-foreground">実際の電子締結日時とは別に、契約書本文へ記載する日付です。</p>
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="contractPurpose">契約目的（任意）</Label>
-              <Input id="contractPurpose" maxLength={500} value={contractPurpose} onChange={(event) => setContractPurpose(event.target.value)} placeholder="例：FDE業務委託、システム開発及びその検討" />
-              <p className="text-xs text-muted-foreground">入力した場合、第1条の対象取引部分を置き換えます。未入力ならテンプレートの標準文言を維持します。</p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="termYears">契約期間（年）</Label>
-              <Input id="termYears" type="number" min={1} max={99} required value={termYears} onChange={(event) => setTermYears(Number(event.target.value))} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="terminationNoticeDays">終了通知期限（満了日の何日前）</Label>
-              <Input id="terminationNoticeDays" type="number" min={1} max={365} required value={terminationNoticeDays} onChange={(event) => setTerminationNoticeDays(Number(event.target.value))} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="renewalYears">自動更新期間（年）</Label>
-              <Input id="renewalYears" type="number" min={1} max={20} required value={renewalYears} onChange={(event) => setRenewalYears(Number(event.target.value))} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confidentialityYears">契約終了後の秘密保持期間（年）</Label>
-              <Input id="confidentialityYears" type="number" min={1} max={99} required value={confidentialityYears} onChange={(event) => setConfidentialityYears(Number(event.target.value))} />
-            </div>
-          </div>
-          <label className="mt-5 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
-            <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
-            <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
-          </label>
-          {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
-          <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
-            {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />入力済みWordを生成</>}
-          </Button>
-        </section>
-      ) : null}
-
-      <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
-        <h2 className="text-lg font-semibold">契約書原本</h2>
-        <p className="mt-1 text-xs text-muted-foreground">PDFのみ・4MB以内。Make It Tech承認後は差し替えできません。</p>
-        <Input className="mt-5" name="pdf" type="file" accept="application/pdf,.pdf" required />
-      </section>
-
-      {error ? <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
-      <div className="flex justify-end">
-        <Button type="submit" size="lg" className="rounded-xl" disabled={isSubmitting}>
-          {isSubmitting ? <><Loader2 className="animate-spin" />作成中...</> : "下書きを作成"}
-        </Button>
-      </div>
+      )}
     </form>
   );
 }

@@ -10,6 +10,8 @@ import { sha256 } from "@/lib/contracts/crypto";
 
 const TEMPLATE_FILES: Record<ContractTemplateId, string> = {
   "nda-standard-v1": "nda-standard-v1.docx",
+  "data-handling-addendum-standard-v1": "data-handling-addendum-standard-v1.docx",
+  "fde-master-standard-v1": "fde-master-standard-v1.docx",
 };
 
 export async function readContractTemplate(templateId: ContractTemplateId) {
