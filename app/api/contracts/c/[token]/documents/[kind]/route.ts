@@ -21,6 +21,7 @@ export async function GET(
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${result.contract.contractNumber}-${suffix}.pdf"`,
       "Cache-Control": "private, no-store, max-age=0",
+      "Referrer-Policy": "no-referrer",
       "X-Content-Type-Options": "nosniff",
       "Content-Security-Policy": "default-src 'none'; frame-ancestors 'self'",
     },

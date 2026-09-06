@@ -37,7 +37,7 @@ export default async function ContractSignPage({ params }: { params: Promise<{ t
   const result = await openSignSession(token, evidence);
 
   if (result.state === "invalid") return <StateMessage title="署名URLを確認できません" message="URLが正しいか確認してください。解決しない場合はMake It Techへお問い合わせください。" />;
-  if (result.state === "expired") return <StateMessage title="署名期限が切れています" message="このURLの有効期限は終了しました。Make It Techへ再発行をご依頼ください。" />;
+  if (result.state === "expired") return <StateMessage title="URLの有効期限が切れています" message="このURLの有効期限は終了しました。Make It Techへ再発行をご依頼ください。" />;
   if (result.state === "void") return <StateMessage title="この契約は失効しています" message="この署名URLは利用できません。詳細はMake It Techへお問い合わせください。" />;
   if (!result.contract) return <StateMessage title="契約を表示できません" message="時間をおいて再度お試しください。" />;
 
@@ -61,7 +61,7 @@ export default async function ContractSignPage({ params }: { params: Promise<{ t
           <div><p className="text-xs text-slate-500">契約先法人</p><p className="mt-1 text-sm font-medium">{contract.companyName}</p></div>
           <div><p className="text-xs text-slate-500">署名予定者</p><p className="mt-1 text-sm font-medium">{contract.signerRole} {contract.signerName}</p></div>
           <div><p className="text-xs text-slate-500">送信先</p><p className="mt-1 text-sm font-medium">{contract.signerEmailMasked}</p></div>
-          <div><p className="text-xs text-slate-500">署名期限</p><p className="mt-1 text-sm font-medium">{formatDate(contract.tokenExpiresAt)}</p></div>
+          <div><p className="text-xs text-slate-500">{result.state === "completed" ? "書類取得期限" : "署名期限"}</p><p className="mt-1 text-sm font-medium">{formatDate(contract.tokenExpiresAt)}</p></div>
         </section>
 
         {result.state === "completed" ? (

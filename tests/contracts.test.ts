@@ -5,7 +5,10 @@ import test from "node:test";
 import JSZip from "jszip";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { buildAuditChain, verifyAuditChain } from "@/lib/contracts/audit";
-import { CONTRACT_TEMPLATES } from "@/lib/contracts/constants";
+import {
+  CONTRACT_DOCUMENT_ACCESS_DAYS,
+  CONTRACT_TEMPLATES,
+} from "@/lib/contracts/constants";
 import { canonicalJson, createSigningToken, sha256 } from "@/lib/contracts/crypto";
 import { isAllowedSameOriginRequest } from "@/lib/contracts/origin";
 import {
@@ -15,6 +18,11 @@ import {
 import { createContractArtifacts } from "@/lib/contracts/pdf";
 import { validateOriginalPdf } from "@/lib/contracts/pdf-validation";
 import { acceptContractSchema, createContractSchema } from "@/lib/contracts/schemas";
+import {
+  canAccessContractDocument,
+  canVoidContractStatus,
+} from "@/lib/contracts/token-policy";
+import nextConfig from "../next.config";
 
 test("canonical JSON is stable regardless of object key order", () => {
   const left = canonicalJson({ z: 1, nested: { b: true, a: "value" }, list: [2, 1] });
@@ -31,6 +39,64 @@ test("signing tokens use 256 bits and only their hash needs persistence", () => 
   assert.notEqual(first.token, second.token);
   assert.notEqual(first.tokenHash, second.tokenHash);
   assert.equal(first.tokenHash, sha256(first.token));
+});
+
+test("completed contracts use a separate expiring document token", () => {
+  const now = new Date("2026-09-07T00:00:00.000Z");
+  const future = new Date("2026-09-14T00:00:00.000Z");
+  const past = new Date("2026-09-06T23:59:59.000Z");
+
+  assert.equal(CONTRACT_DOCUMENT_ACCESS_DAYS, 7);
+  assert.equal(canAccessContractDocument({
+    purpose: "signing",
+    tokenStatus: "used",
+    expiresAt: future,
+    contractStatus: "completed",
+    kind: "executed",
+    now,
+  }), false);
+  assert.equal(canAccessContractDocument({
+    purpose: "documents",
+    tokenStatus: "active",
+    expiresAt: future,
+    contractStatus: "completed",
+    kind: "executed",
+    now,
+  }), true);
+  assert.equal(canAccessContractDocument({
+    purpose: "documents",
+    tokenStatus: "active",
+    expiresAt: future,
+    contractStatus: "completed",
+    kind: "original",
+    now,
+  }), false);
+  assert.equal(canAccessContractDocument({
+    purpose: "documents",
+    tokenStatus: "active",
+    expiresAt: past,
+    contractStatus: "completed",
+    kind: "certificate",
+    now,
+  }), false);
+});
+
+test("completed contracts are terminal and cannot be voided", () => {
+  assert.equal(canVoidContractStatus("draft"), true);
+  assert.equal(canVoidContractStatus("expired"), true);
+  assert.equal(canVoidContractStatus("signed"), false);
+  assert.equal(canVoidContractStatus("completed"), false);
+  assert.equal(canVoidContractStatus("void"), false);
+});
+
+test("secret contract URLs send a no-referrer policy", async () => {
+  const rules = await nextConfig.headers?.();
+  const serialized = JSON.stringify(rules);
+  assert.match(serialized, /sign\\\\\.make-it-tech\\\\\.com/);
+  assert.match(serialized, /\/sub\/sign\/:path\*/);
+  assert.match(serialized, /\/api\/contracts\/c\/:path\*/);
+  assert.match(serialized, /Referrer-Policy/);
+  assert.match(serialized, /no-referrer/);
 });
 
 test("audit events form a deterministic, ordered hash chain", () => {

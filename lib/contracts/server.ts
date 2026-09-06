@@ -5,6 +5,7 @@ import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import {
   AUTHORITY_STATEMENT_VERSION,
   CONSENT_STATEMENT_VERSION,
+  CONTRACT_DOCUMENT_ACCESS_DAYS,
   CONTRACT_DOCUMENT_VERSION,
   CONTRACT_PDF_MAX_BYTES,
   CONTRACT_TEMPLATES,
@@ -25,6 +26,12 @@ import {
   saveContractPdfOnce,
 } from "@/lib/contracts/storage";
 import { getVerificationProvider } from "@/lib/contracts/verification";
+import {
+  canAccessContractDocument,
+  canVoidContractStatus,
+  getContractTokenPurpose,
+  type ContractDocumentKind,
+} from "@/lib/contracts/token-policy";
 
 type RequestEvidence = {
   ipAddress: string;
@@ -86,6 +93,8 @@ export type ContractRecord = {
   voidedAt?: Timestamp;
   tokenExpiresAt?: Timestamp;
   activeTokenHash?: string;
+  documentAccessExpiresAt?: Timestamp;
+  documentAccessTokenHash?: string;
   auditLastHash: string;
   auditSequence: number;
   acceptance?: {
@@ -117,6 +126,7 @@ export type ContractView = Omit<
   | "completedAt"
   | "voidedAt"
   | "tokenExpiresAt"
+  | "documentAccessExpiresAt"
   | "document"
   | "pendingCompletionEvent"
 > & {
@@ -128,6 +138,7 @@ export type ContractView = Omit<
   completedAt?: string;
   voidedAt?: string;
   tokenExpiresAt?: string;
+  documentAccessExpiresAt?: string;
   document: Omit<StoredDocument, "lockedAt"> & { lockedAt?: string };
 };
 
@@ -173,6 +184,7 @@ export function serializeContract(contract: ContractRecord): ContractView {
     completedAt: timestampToIso(contract.completedAt),
     voidedAt: timestampToIso(contract.voidedAt),
     tokenExpiresAt: timestampToIso(contract.tokenExpiresAt),
+    documentAccessExpiresAt: timestampToIso(contract.documentAccessExpiresAt),
     document: {
       ...contract.document,
       lockedAt: timestampToIso(contract.document.lockedAt),
@@ -180,7 +192,7 @@ export function serializeContract(contract: ContractRecord): ContractView {
   };
 }
 
-function toPublicContract(contract: ContractRecord): PublicContractView {
+function toPublicContract(contract: ContractRecord, linkExpiresAt = contract.tokenExpiresAt): PublicContractView {
   const [local = "", domain = ""] = contract.signer.email.split("@");
   return {
     id: contract.id,
@@ -196,7 +208,7 @@ function toPublicContract(contract: ContractRecord): PublicContractView {
     verificationMethod: contract.verificationMethod,
     documentVersion: contract.document.version,
     documentSha256: contract.document.sha256,
-    tokenExpiresAt: timestampToIso(contract.tokenExpiresAt),
+    tokenExpiresAt: timestampToIso(linkExpiresAt),
     signedAt: timestampToIso(contract.signedAt),
     completedAt: timestampToIso(contract.completedAt),
     executedAvailable: Boolean(contract.executedDocument?.storagePath),
@@ -445,6 +457,7 @@ export async function sendContract(contractId: string, expiresInDays = CONTRACT_
     transaction.create(tokenRef, {
       contractId,
       tokenHash,
+      purpose: "signing",
       status: "active",
       createdAt: Timestamp.fromDate(nowDate),
       expiresAt: Timestamp.fromDate(expiresAt),
@@ -537,19 +550,46 @@ export async function openSignSession(token: string, evidence: RequestEvidence):
     const contractSnapshot = await transaction.get(contractRef);
     if (!contractSnapshot.exists) return { state: "invalid" } as const;
     let contract = normalizeContract(contractSnapshot.id, contractSnapshot.data()!);
-    if (contract.activeTokenHash !== tokenHash && contract.status !== "completed") {
+    const purpose = getContractTokenPurpose(tokenData.purpose);
+    const expiresAtTimestamp = tokenData.expiresAt as Timestamp | undefined;
+    const expiresAt = expiresAtTimestamp?.toDate();
+
+    if (purpose === "documents") {
+      if (contract.status === "void" || tokenData.status === "revoked") {
+        return { state: "void", contract: toPublicContract(contract, expiresAtTimestamp) } as const;
+      }
+      if (contract.status !== "completed") {
+        return { state: "invalid" } as const;
+      }
+      if (contract.documentAccessTokenHash !== tokenHash) {
+        return { state: "invalid" } as const;
+      }
+      if (tokenData.status === "expired") {
+        return { state: "expired", contract: toPublicContract(contract, expiresAtTimestamp) } as const;
+      }
+      if (tokenData.status !== "active") return { state: "invalid" } as const;
+      if (!expiresAt || expiresAt.getTime() <= Date.now()) {
+        transaction.update(tokenRef, {
+          status: "expired",
+          expiredAt: Timestamp.fromDate(new Date()),
+        });
+        return { state: "expired", contract: toPublicContract(contract, expiresAtTimestamp) } as const;
+      }
+      return { state: "completed", contract: toPublicContract(contract, expiresAtTimestamp) } as const;
+    }
+
+    if (contract.status === "completed") {
+      return { state: "invalid" } as const;
+    }
+    if (contract.activeTokenHash !== tokenHash) {
       return { state: contract.status === "void" ? "void" : "invalid" } as const;
     }
     if (contract.status === "void" || tokenData.status === "revoked") {
       return { state: "void", contract: toPublicContract(contract) } as const;
     }
-    if (contract.status === "completed" && tokenData.status === "used") {
-      return { state: "completed", contract: toPublicContract(contract) } as const;
-    }
     if (contract.status === "signed" && tokenData.status === "used") {
       return { state: "processing", contract: toPublicContract(contract) } as const;
     }
-    const expiresAt = (tokenData.expiresAt as Timestamp | undefined)?.toDate();
     if (!expiresAt || expiresAt.getTime() <= Date.now() || tokenData.status === "expired") {
       if ((contract.status === "sent" || contract.status === "viewed") && tokenData.status === "active") {
         const eventDate = new Date();
@@ -612,6 +652,9 @@ export async function completeContractSigning(token: string, evidence: RequestEv
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
   const tokenSnapshot = await tokenRef.get();
   if (!tokenSnapshot.exists) throw new Error("署名URLが無効です。");
+  if (getContractTokenPurpose(tokenSnapshot.data()?.purpose) !== "signing") {
+    throw new Error("このURLでは契約を締結できません。");
+  }
   const contractRef = firestore.collection("contracts").doc(String(tokenSnapshot.data()?.contractId));
   const initialContract = await contractRef.get();
   if (!initialContract.exists) throw new Error("契約が見つかりません。");
@@ -636,7 +679,6 @@ export async function completeContractSigning(token: string, evidence: RequestEv
     }
     const tokenData = currentTokenSnapshot.data()!;
     const contract = normalizeContract(currentContractSnapshot.id, currentContractSnapshot.data()!);
-    if (contract.status === "completed" && tokenData.status === "used") return contract;
     if (contract.status === "signed" && tokenData.status === "used" && contract.pendingCompletionEvent) {
       return contract;
     }
@@ -719,7 +761,6 @@ export async function completeContractSigning(token: string, evidence: RequestEv
     };
   });
 
-  if (signedContract.status === "completed") return toPublicContract(signedContract);
   if (!signedContract.pendingCompletionEvent || !signedContract.signedAt) {
     throw new Error("締結処理の再開情報がありません。");
   }
@@ -750,6 +791,18 @@ export async function completeContractSigning(token: string, evidence: RequestEv
     saveContractPdfOnce(signedContract.id, "certificate", certificateBytes),
   ]);
 
+  const { token: documentAccessToken, tokenHash: documentAccessTokenHash } = createSigningToken();
+  const documentAccessTokenRef = firestore
+    .collection("contractTokens")
+    .doc(documentAccessTokenHash);
+  const documentAccessIssuedAtDate = new Date();
+  const documentAccessIssuedAt = Timestamp.fromDate(documentAccessIssuedAtDate);
+  const documentAccessExpiresAtDate = new Date(
+    documentAccessIssuedAtDate.getTime() +
+      CONTRACT_DOCUMENT_ACCESS_DAYS * 24 * 60 * 60 * 1000
+  );
+  const documentAccessExpiresAt = Timestamp.fromDate(documentAccessExpiresAtDate);
+
   const finalization = await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(contractRef);
     if (!snapshot.exists) throw new Error("契約が見つかりません。");
@@ -765,11 +818,26 @@ export async function completeContractSigning(token: string, evidence: RequestEv
       throw new Error("契約の最終確定状態が一致しません。");
     }
     transaction.create(contractRef.collection("events").doc(pending.eventId), pending);
+    transaction.create(documentAccessTokenRef, {
+      contractId: contract.id,
+      tokenHash: documentAccessTokenHash,
+      purpose: "documents",
+      status: "active",
+      createdAt: documentAccessIssuedAt,
+      expiresAt: documentAccessExpiresAt,
+    });
+    transaction.update(tokenRef, {
+      status: "consumed",
+      consumedAt: documentAccessIssuedAt,
+    });
     transaction.update(contractRef, {
       status: "completed",
       completedAt: pending.occurredAt,
       executedDocument: { storagePath: executed.path, sha256: executed.sha256 },
       certificateDocument: { storagePath: certificate.path, sha256: certificate.sha256 },
+      activeTokenHash: FieldValue.delete(),
+      documentAccessTokenHash,
+      documentAccessExpiresAt,
       pendingCompletionEvent: FieldValue.delete(),
       updatedAt: pending.occurredAt,
       auditLastHash: pending.eventHash,
@@ -783,6 +851,9 @@ export async function completeContractSigning(token: string, evidence: RequestEv
         completedAt: pending.occurredAt,
         executedDocument: { storagePath: executed.path, sha256: executed.sha256 },
         certificateDocument: { storagePath: certificate.path, sha256: certificate.sha256 },
+        activeTokenHash: undefined,
+        documentAccessTokenHash,
+        documentAccessExpiresAt,
         pendingCompletionEvent: undefined,
         updatedAt: pending.occurredAt,
         auditLastHash: pending.eventHash,
@@ -791,21 +862,42 @@ export async function completeContractSigning(token: string, evidence: RequestEv
     };
   });
   signedContract = finalization.contract;
-  if (finalization.completedNow) {
-    await sendCompletionEmail(
-      signedContract,
-      `${getSignBaseUrl()}/c/${token}`
-    ).catch(() => undefined);
+  if (!finalization.completedNow) {
+    return {
+      contract: toPublicContract(
+        signedContract,
+        signedContract.documentAccessExpiresAt
+      ),
+      documentAccessExpiresAt: timestampToIso(signedContract.documentAccessExpiresAt),
+    };
   }
-  return toPublicContract(signedContract);
+  await sendCompletionEmail(
+    signedContract,
+    `${getSignBaseUrl()}/c/${documentAccessToken}`,
+    documentAccessExpiresAtDate
+  ).catch(() => undefined);
+  return {
+    contract: toPublicContract(signedContract, documentAccessExpiresAt),
+    documentAccessToken,
+    documentAccessExpiresAt: documentAccessExpiresAtDate.toISOString(),
+  };
 }
 
-async function sendCompletionEmail(contract: ContractRecord, completionUrl: string) {
+async function sendCompletionEmail(
+  contract: ContractRecord,
+  completionUrl: string,
+  expiresAt: Date
+) {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.RESEND_FROM?.trim();
   const adminTo = process.env.RESEND_TO?.trim();
   if (!apiKey || !from) return;
   const recipients = Array.from(new Set([contract.signer.email, adminTo].filter(Boolean))) as string[];
+  const deadline = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    dateStyle: "long",
+    timeStyle: "short",
+  }).format(expiresAt);
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -813,7 +905,7 @@ async function sendCompletionEmail(contract: ContractRecord, completionUrl: stri
       from,
       to: recipients,
       subject: `【Make It Tech】契約締結完了：${contract.title}`,
-      text: `${contract.contractNumber}「${contract.title}」の電子契約が締結されました。\n締結書類: ${completionUrl}\n\n署名URLは第三者へ共有しないでください。`,
+      text: `${contract.contractNumber}「${contract.title}」の電子契約が締結されました。\n締結書類: ${completionUrl}\n取得期限: ${deadline}\n\nこの書類取得URLは第三者へ共有しないでください。期限後の再取得はMake It Techへご連絡ください。`,
     }),
   });
   if (!response.ok) throw new Error("Completion email failed.");
@@ -827,7 +919,9 @@ export async function voidContract(contractId: string, actor: AdminActor) {
     if (!snapshot.exists) throw new Error("契約が見つかりません。");
     const contract = normalizeContract(snapshot.id, snapshot.data()!);
     if (contract.status === "void") return;
-    if (contract.status === "signed") throw new Error("締結処理中の契約は失効できません。");
+    if (!canVoidContractStatus(contract.status)) {
+      throw new Error("締結処理中または締結済みの契約は失効できません。");
+    }
     const nowDate = new Date();
     const now = Timestamp.fromDate(nowDate);
     const chain = buildAuditChain(contract.id, contract.auditLastHash, contract.auditSequence, [
@@ -891,12 +985,17 @@ export async function getPublicContractDocument(token: string, kind: "original" 
   if (!tokenSnapshot.exists) return null;
   const contract = await getContract(String(tokenSnapshot.data()?.contractId));
   if (!contract) return null;
-  const tokenStatus = tokenSnapshot.data()?.status;
-  const tokenExpiresAt = (tokenSnapshot.data()?.expiresAt as Timestamp | undefined)?.toDate();
-  if (kind === "original") {
-    if (tokenStatus === "active" && (!tokenExpiresAt || tokenExpiresAt.getTime() <= Date.now())) return null;
-    if (tokenStatus !== "active" && tokenStatus !== "used") return null;
-  } else if (contract.status !== "completed" || tokenStatus !== "used") {
+  const tokenData = tokenSnapshot.data()!;
+  const purpose = getContractTokenPurpose(tokenData.purpose);
+  if (purpose === "documents" && contract.documentAccessTokenHash !== tokenHash) return null;
+  const tokenExpiresAt = (tokenData.expiresAt as Timestamp | undefined)?.toDate();
+  if (!canAccessContractDocument({
+    purpose,
+    tokenStatus: String(tokenData.status ?? ""),
+    expiresAt: tokenExpiresAt,
+    contractStatus: contract.status,
+    kind: kind as ContractDocumentKind,
+  })) {
     return null;
   }
   const path = getContractDocumentPath(contract, kind);

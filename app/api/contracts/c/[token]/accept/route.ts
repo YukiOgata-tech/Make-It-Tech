@@ -40,8 +40,8 @@ export async function POST(
     return Response.json({ error: "すべての確認項目への同意が必要です。" }, { status: 400 });
   }
   try {
-    const contract = await completeContractSigning(token, evidence);
-    return Response.json({ ok: true, contract });
+    const result = await completeContractSigning(token, evidence);
+    return Response.json({ ok: true, ...result });
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "契約を締結できませんでした。" },

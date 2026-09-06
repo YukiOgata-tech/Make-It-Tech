@@ -50,6 +50,7 @@ V1ではWordファイル自体を原本登録または署名対象にしませ�
 - `document`: 原本のversion、Storageパス、SHA-256、サイズ、ページ数、原ファイル名、ロック日時
 - `acceptance`: 本人・権限・内容確認・同意、文言バージョン、確認方法、接続証跡
 - `executedDocument`, `certificateDocument`: 生成物のStorageパスとSHA-256
+- `documentAccessTokenHash`, `documentAccessExpiresAt`: 締結書類取得専用トークンのHashと期限
 - `auditLastHash`, `auditSequence`: Auditチェーン末尾
 - 各種UTC Timestamp
 
@@ -59,7 +60,7 @@ append-onlyのAudit Logです。`sequence`、`eventType`、`occurredAt`、`actor
 
 ### `contractTokens/{tokenHash}`
 
-署名URLトークンのSHA-256をドキュメントIDとして利用します。平文トークンは保存しません。契約ID、状態、作成日時、有効期限、使用・失効日時を保持します。
+署名URLまたは書類取得URLのトークンSHA-256をドキュメントIDとして利用します。平文トークンは保存しません。契約ID、用途（`signing` / `documents`）、状態、作成日時、有効期限、使用・失効日時を保持します。旧データで用途がないトークンは署名用として扱います。
 
 ### `counters/contracts-{year}`
 
@@ -102,7 +103,7 @@ signed
   -> completed   PDF生成後に最終Auditイベントを確定
 
 completed
-  -> void        元データとPDFを保持したまま失効記録を追加
+  （終端状態）
 ```
 
 `signed`はPDF生成中または生成再開待ちの中間状態です。障害時は同じ署名URLから再実行でき、原本・同意・時刻・Audit Hashは変更されません。
@@ -114,10 +115,13 @@ completed
 - DBにはSHA-256のみ保存
 - 既定期限7日、管理画面で1～30日を指定可能
 - 締結時にTransaction内で`used`へ変更
+- 締結完了時に署名トークンを`consumed`へ変更し、以後の画面表示・PDF取得には利用しない
+- 締結完了時に別の256bit書類取得トークンを発行し、締結完了メールと完了画面だけへ返す
+- 書類取得トークンは発行から7日間だけ有効で、締結済みPDFと締結証明書だけを取得可能
 - 管理画面から失効時は`revoked`
 - 期限切れは署名ページ表示時に`expired`としてAudit記録
 - 使用済みトークンは再締結に利用できない
-- 締結完了後は同じ秘密URLから成果物を取得できるが、再同意処理は行われない
+- 期限後の書類再取得は管理者へ依頼し、管理画面から提供する
 
 URLは機密情報として扱い、メール以外で共有しません。アプリケーションログへ平文トークンを出力しません。
 
@@ -174,10 +178,12 @@ V1の`VerificationProvider`は`company_email_link`です。Make It Techが事前
 - 公開POSTは同一Originを要求し、IP・トークンHash単位のレート制限を適用
 - PDF固定名、Content-Type検査、サイズ制限、暗号化PDF拒否
 - completed後に当事者、原本、締結時刻、Hashを更新するAPIは提供しない
+- completedは終端状態とし、voidへの変更も禁止する
 - 公開レスポンスから内部メモ、メール全文、IP、User-Agent、トークンHashを除外
 - 表示・締結・ダウンロード時にStorage実データと保存済みSHA-256を再照合
 - `sign`ホストと`/sub/sign`をGoogle Analytics計測から除外し、署名URLを外部解析へ送らない
 - `Cache-Control: private, no-store`と`X-Content-Type-Options: nosniff`を使用
+- signサイトとトークン付きAPIへ`Referrer-Policy: no-referrer`を設定
 
 インメモリのレート制限は単一インスタンス単位です。高トラフィックや攻撃耐性が必要になった場合は、Vercel Firewallまたは共有レート制限ストアへ移行してください。
 
@@ -189,7 +195,7 @@ V1の`VerificationProvider`は`company_email_link`です。Make It Techが事前
 4. 期限を指定して署名依頼メールを送信
 5. 一覧・詳細で送信、閲覧、締結状態を確認
 6. 締結後は原本、締結済みPDF、締結証明書、Audit Logを確認
-7. 取消・作り直しが必要な場合は旧契約をvoidにし、新しい契約を作成
+7. 締結前に取消・作り直しが必要な場合は旧契約をvoidにし、新しい契約を作成。締結済み契約はvoidへ変更しない
 
 必要な環境変数は既存のFirebase、Resend、管理者設定に加え、任意で`SIGN_SITE_URL`を設定します。本番未指定時は`https://sign.make-it-tech.com`、開発時は`http://localhost:3000/sub/sign`を使用します。
 

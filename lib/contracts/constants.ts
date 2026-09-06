@@ -60,6 +60,7 @@ export const CONTRACT_DOCUMENT_VERSION = 1;
 export const CONTRACT_TOKEN_BYTES = 32;
 export const CONTRACT_TOKEN_DEFAULT_DAYS = 7;
 export const CONTRACT_TOKEN_MAX_DAYS = 30;
+export const CONTRACT_DOCUMENT_ACCESS_DAYS = 7;
 export const CONTRACT_PDF_MAX_BYTES = 4 * 1024 * 1024;
 
 export const CONTRACT_TEMPLATE_IDS = ["nda-standard-v1"] as const;

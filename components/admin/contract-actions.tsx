@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ContractStatus } from "@/lib/contracts/constants";
+import { canVoidContractStatus } from "@/lib/contracts/token-policy";
 
 export function ContractActions({ contractId, status }: { contractId: string; status: ContractStatus }) {
   const router = useRouter();
@@ -20,7 +21,7 @@ export function ContractActions({ contractId, status }: { contractId: string; st
         "PDF内の契約当事者・署名者・締結方法と、管理画面の登録情報が一致していることを確認しましたか？確定後は原本を差し替えできません。"
       )
     ) return;
-    if (action === "void" && !window.confirm("この契約を失効します。締結済みの証跡とPDFは保持されます。続行しますか？")) return;
+    if (action === "void" && !window.confirm("この契約と署名URLを失効します。締結前の取消として記録されます。続行しますか？")) return;
     setBusy(action);
     setError("");
     try {
@@ -60,7 +61,7 @@ export function ContractActions({ contractId, status }: { contractId: string; st
             </Button>
           </>
         ) : null}
-        {status !== "void" && status !== "signed" ? (
+        {canVoidContractStatus(status) ? (
           <Button variant="destructive" className="rounded-xl" disabled={Boolean(busy)} onClick={() => void run("void")}>
             {busy === "void" ? <Loader2 className="animate-spin" /> : null}
             契約を失効

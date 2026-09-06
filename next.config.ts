@@ -1,10 +1,31 @@
 import type { NextConfig } from "next";
 
+const noReferrerHeaders = () => [
+  { key: "Referrer-Policy", value: "no-referrer" },
+];
+
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/contracts/c/*/accept": ["./node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff"],
     "/api/admin/contracts/templates/*": ["./assets/contracts/templates/*.docx"],
     "/api/admin/contracts/templates/*/generate": ["./assets/contracts/templates/*.docx"],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "sign\\.make-it-tech\\.com" }],
+        headers: noReferrerHeaders(),
+      },
+      {
+        source: "/sub/sign/:path*",
+        headers: noReferrerHeaders(),
+      },
+      {
+        source: "/api/contracts/c/:path*",
+        headers: noReferrerHeaders(),
+      },
+    ];
   },
   async redirects() {
     return [

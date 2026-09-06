@@ -16,6 +16,8 @@ export function ContractSigningForm({ token }: { token: string }) {
   const [accepted, setAccepted] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [documentAccessToken, setDocumentAccessToken] = useState("");
+  const [documentAccessExpiresAt, setDocumentAccessExpiresAt] = useState("");
   const [error, setError] = useState("");
   const allAccepted = statements.every(([key]) => accepted[key]);
 
@@ -31,6 +33,14 @@ export function ContractSigningForm({ token }: { token: string }) {
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error ?? "契約を締結できませんでした。");
+      setDocumentAccessToken(
+        typeof payload.documentAccessToken === "string" ? payload.documentAccessToken : ""
+      );
+      setDocumentAccessExpiresAt(
+        typeof payload.documentAccessExpiresAt === "string"
+          ? payload.documentAccessExpiresAt
+          : ""
+      );
       setIsCompleted(true);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "契約を締結できませんでした。");
@@ -40,14 +50,29 @@ export function ContractSigningForm({ token }: { token: string }) {
   }
 
   if (isCompleted) {
+    const encodedDocumentToken = encodeURIComponent(documentAccessToken);
+    const deadline = documentAccessExpiresAt
+      ? new Intl.DateTimeFormat("ja-JP", {
+          timeZone: "Asia/Tokyo",
+          dateStyle: "long",
+          timeStyle: "short",
+        }).format(new Date(documentAccessExpiresAt))
+      : "";
     return (
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-950 sm:p-6">
         <div className="flex items-center gap-2 font-semibold"><ShieldCheck />契約締結が完了しました</div>
-        <p className="mt-2 text-sm">締結済みPDFと締結証明書をダウンロードできます。</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Button asChild className="rounded-xl"><a href={`/api/contracts/c/${encodeURIComponent(token)}/documents/executed`} target="_blank" rel="noreferrer">締結済みPDF</a></Button>
-          <Button asChild variant="outline" className="rounded-xl bg-white"><a href={`/api/contracts/c/${encodeURIComponent(token)}/documents/certificate`} target="_blank" rel="noreferrer">締結証明書</a></Button>
-        </div>
+        {documentAccessToken ? (
+          <>
+            <p className="mt-2 text-sm">締結済みPDFと締結証明書をダウンロードできます。</p>
+            {deadline ? <p className="mt-1 text-xs">取得期限：{deadline} JST</p> : null}
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button asChild className="rounded-xl"><a href={`/api/contracts/c/${encodedDocumentToken}/documents/executed`} target="_blank" rel="noreferrer">締結済みPDF</a></Button>
+              <Button asChild variant="outline" className="rounded-xl bg-white"><a href={`/api/contracts/c/${encodedDocumentToken}/documents/certificate`} target="_blank" rel="noreferrer">締結証明書</a></Button>
+            </div>
+          </>
+        ) : (
+          <p className="mt-2 text-sm">締結書類の取得URLをメールでご確認ください。</p>
+        )}
       </div>
     );
   }
