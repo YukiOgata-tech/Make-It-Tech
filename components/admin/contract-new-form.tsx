@@ -70,15 +70,15 @@ const INITIAL_DATA_HANDLING_FIELDS: Record<DataHandlingFieldKey, string> = {
   specificPersonalInformation: "",
   systemsUsed: "",
   storageLocation: "",
-  retentionPeriod: "",
-  accessScope: "",
+  retentionPeriod: "契約終了後30日以内に削除する",
+  accessScope: "本業務の遂行に必要な最小限の担当者に限定する",
   subcontractors: "",
   thirdPartyServices: "",
   overseasUse: "",
-  incidentContact: "",
-  endOfTermHandling: "",
-  additionalSecurityRequirements: "",
-  specialProvisions: "",
+  incidentContact: "漏えい等を認識した場合、速やかに甲指定の連絡先へ報告する",
+  endOfTermHandling: "契約終了後30日以内に返却または復元困難な方法で削除する",
+  additionalSecurityRequirements: "特段の定めなし",
+  specialProvisions: "特段の定めなし",
 };
 
 type FdeMasterFieldKey =
@@ -630,6 +630,9 @@ export function ContractNewForm() {
               <h2 className="text-lg font-semibold">個人情報・データ取扱特約の空欄を入力</h2>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                 別紙の全項目を契約条件として確定してください。該当しない項目も「なし」「対象外」「特段の定めなし」など、意味のある値を入力します。
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                保存期間、アクセス範囲、事故報告、終了時の取扱いには標準的な初期値を入れています。実際の運用に合わせて必ず確認・変更してください。
               </p>
               <div className="mt-5 max-w-sm space-y-2">
                 <Label htmlFor="effectiveDate">契約発効日</Label>

@@ -49,6 +49,8 @@ V1ではWordファイル自体を原本登録または署名対象にしませ�
 
 該当しない項目も「なし」「対象外」「特段の定めなし」など、契約条件として意味のある値を入力します。別紙の編集用見出し・案内文と全項目の記入例は生成時に除去され、確定値へ置き換わります。末尾の紙契約用締結文言と押印欄は、管理画面での確認を必須にした上で電子締結用へ置き換えます。生成後は管理者がPDF内容確認画面で本文と別紙を最終確認して原本登録します。
 
+保存期間、アクセス範囲、事故報告、終了時の返却・削除、追加セキュリティ要件、特記事項には変更可能な標準初期値を表示します。対象データ、利用目的、対象者、要配慮・特定個人情報、利用システム、保存地域、再委託先、第三者サービス、国外利用は案件の事実に依存するため自動入力しません。
+
 ## FDE業務委託基本契約 Wordテンプレート
 
 `fde-master-standard-v1`では、甲の法人名、所在地、代表者の役職・氏名、契約発効日に加え、原本で空欄になっている次の契約条件を必須入力としてWordへ反映します。
@@ -227,7 +229,7 @@ V1の`VerificationProvider`は`company_email_link`です。Make It Techが事前
 6. 締結後は原本、締結済みPDF、締結証明書、Audit Logを確認
 7. 締結前に取消・作り直しが必要な場合は旧契約をvoidにし、新しい契約を作成。締結済み契約はvoidへ変更しない
 
-必要な環境変数は既存のFirebase、Resend、管理者設定に加え、`CONTRACT_PDF_CONVERTER_URL`へ非公開GotenbergのベースURLを設定します。認証プロキシを利用する場合は`CONTRACT_PDF_CONVERTER_BEARER_TOKEN`も設定します。契約書が第三者へ送られないよう、公開デモや共有変換APIは使用しません。`SIGN_SITE_URL`は任意で、本番未指定時は`https://sign.make-it-tech.com`、開発時は`http://localhost:3000/sub/sign`を使用します。
+Windowsローカル環境では、`CONTRACT_PDF_CONVERTER_URL`が未指定の場合、PCへインストール済みのMicrosoft Wordを非表示で起動してPDFへ変換します。Dockerや追加の変換サービスは不要です。Windows以外の本番環境では、`CONTRACT_PDF_CONVERTER_URL`へ非公開GotenbergのベースURLを設定します。認証プロキシを利用する場合は`CONTRACT_PDF_CONVERTER_BEARER_TOKEN`も設定します。契約書が第三者へ送られないよう、公開デモや共有変換APIは使用しません。`SIGN_SITE_URL`は任意で、本番未指定時は`https://sign.make-it-tech.com`、開発時は`http://localhost:3000/sub/sign`を使用します。
 
 ## V1未対応
 
