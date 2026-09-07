@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Check, Copy, Link2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +16,8 @@ export function ContractActions({ contractId, status }: { contractId: string; st
   const [busy, setBusy] = useState<string | null>(null);
   const [expiresInDays, setExpiresInDays] = useState(CONTRACT_TOKEN_DEFAULT_DAYS);
   const [error, setError] = useState("");
+  const [issuedUrl, setIssuedUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
   async function run(action: "accept" | "send" | "void") {
     if (
@@ -35,11 +37,25 @@ export function ContractActions({ contractId, status }: { contractId: string; st
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error ?? "操作に失敗しました。");
+      if (action === "send" && typeof payload.signingUrl === "string") {
+        setIssuedUrl(payload.signingUrl);
+        setCopied(false);
+      }
       router.refresh();
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "操作に失敗しました。");
     } finally {
       setBusy(null);
+    }
+  }
+
+  async function copyIssuedUrl() {
+    setError("");
+    try {
+      await navigator.clipboard.writeText(issuedUrl);
+      setCopied(true);
+    } catch {
+      setError("URLをコピーできませんでした。選択して手動でコピーしてください。");
     }
   }
 
@@ -60,7 +76,7 @@ export function ContractActions({ contractId, status }: { contractId: string; st
             </label>
             <Button className="rounded-xl" disabled={Boolean(busy)} onClick={() => void run("send")}>
               {busy === "send" ? <Loader2 className="animate-spin" /> : null}
-              署名依頼メールを送信
+              署名URLを発行してメール送信
             </Button>
           </>
         ) : null}
@@ -71,6 +87,28 @@ export function ContractActions({ contractId, status }: { contractId: string; st
           </Button>
         ) : null}
       </div>
+      {issuedUrl ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-950/30">
+          <div className="flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white dark:bg-emerald-500">
+              <Link2 className="size-4" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-emerald-950 dark:text-emerald-100">署名URLを発行しました</p>
+              <p className="mt-1 text-xs leading-relaxed text-emerald-800 dark:text-emerald-200">
+                署名者へメール送信済みです。このURLはDBへ平文保存されず、この画面を離れると再表示できません。
+              </p>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <Input value={issuedUrl} readOnly aria-label="発行した署名URL" className="bg-background font-mono text-xs" onFocus={(event) => event.currentTarget.select()} />
+                <Button type="button" variant="outline" className="shrink-0 rounded-xl bg-background" onClick={() => void copyIssuedUrl()}>
+                  {copied ? <Check /> : <Copy />}
+                  {copied ? "コピー済み" : "URLをコピー"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
     </div>
   );

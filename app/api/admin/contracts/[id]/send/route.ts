@@ -27,7 +27,10 @@ export async function POST(
     });
     revalidatePath("/sub/admin-console/contracts");
     revalidatePath(`/sub/admin-console/contracts/${id}`);
-    return Response.json({ ok: true, ...result });
+    return Response.json(
+      { ok: true, ...result },
+      { headers: { "Cache-Control": "private, no-store, max-age=0" } }
+    );
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "署名依頼を送信できませんでした。" },

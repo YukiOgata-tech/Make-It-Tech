@@ -531,7 +531,7 @@ export async function sendContract(contractId: string, expiresInDays = CONTRACT_
     writeAuditEvents(transaction, contractRef, chain.events);
   });
 
-  return { expiresAt: expiresAt.toISOString() };
+  return { signingUrl, expiresAt: expiresAt.toISOString() };
 }
 
 type SignSessionResult =

@@ -1,8 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, ChevronRight, Download, FileText, Loader2, TriangleAlert } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  Download,
+  ExternalLink,
+  FileCheck2,
+  FileText,
+  Loader2,
+  ScanSearch,
+  TriangleAlert,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -144,11 +155,14 @@ export function ContractNewForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
+  const [internalMemo, setInternalMemo] = useState("");
   const [sourceTemplateId, setSourceTemplateId] = useState<ContractTemplateId | "">("");
   const [companyName, setCompanyName] = useState("");
+  const [corporateNumber, setCorporateNumber] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [signerName, setSignerName] = useState("");
   const [signerRole, setSignerRole] = useState("");
+  const [signerEmail, setSignerEmail] = useState("");
   const [effectiveDate, setEffectiveDate] = useState("");
   const [contractPurpose, setContractPurpose] = useState("");
   const [termYears, setTermYears] = useState(3);
@@ -159,11 +173,20 @@ export function ContractNewForm() {
   const [fdeMasterFields, setFdeMasterFields] = useState(INITIAL_FDE_MASTER_FIELDS);
   const [electronicExecutionAccepted, setElectronicExecutionAccepted] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [wordError, setWordError] = useState("");
+  const [reviewPdf, setReviewPdf] = useState<{ blob: Blob; url: string; fileName: string } | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (reviewPdf) URL.revokeObjectURL(reviewPdf.url);
+    };
+  }, [reviewPdf]);
 
   function selectSourceTemplate(value: ContractTemplateId | "") {
     setSourceTemplateId(value);
     setWordError("");
+    setReviewPdf(null);
     setElectronicExecutionAccepted(false);
     if (!value) {
       setTitle("");
@@ -171,6 +194,44 @@ export function ContractNewForm() {
     }
     const template = CONTRACT_TEMPLATES[value];
     setTitle(template.defaultTitle);
+  }
+
+  function buildGenerationInput() {
+    if (!sourceTemplateId) throw new Error("契約テンプレートを選択してください。");
+    const template = CONTRACT_TEMPLATES[sourceTemplateId];
+    const commonInput = {
+      companyName,
+      companyAddress,
+      representativeRole: signerRole,
+      representativeName: signerName,
+      effectiveDate,
+      electronicExecutionAccepted,
+    };
+    return template.formKind === "nda"
+      ? {
+          ...commonInput,
+          contractPurpose: contractPurpose.trim() || undefined,
+          termYears,
+          terminationNoticeDays,
+          renewalYears,
+          confidentialityYears,
+        }
+      : template.formKind === "data_handling"
+        ? { ...commonInput, ...dataHandlingFields }
+        : {
+            ...commonInput,
+            latePaymentInterestRate: Number(fdeMasterFields.latePaymentInterestRate),
+            confidentialityYears: Number(fdeMasterFields.confidentialityYears),
+            suspensionDelayDays: Number(fdeMasterFields.suspensionDelayDays),
+            curePeriodDays: Number(fdeMasterFields.curePeriodDays),
+            handoverDays: Number(fdeMasterFields.handoverDays),
+            dataDeletionDays: Number(fdeMasterFields.dataDeletionDays),
+            termYears: Number(fdeMasterFields.termYears),
+            renewalNoticeDays: Number(fdeMasterFields.renewalNoticeDays),
+            renewalYears: Number(fdeMasterFields.renewalYears),
+            terminationNoticeDays: Number(fdeMasterFields.terminationNoticeDays),
+            jurisdiction: fdeMasterFields.jurisdiction,
+          };
   }
 
   async function generateWord() {
@@ -181,43 +242,10 @@ export function ContractNewForm() {
         throw new Error("契約テンプレートを選択してください。");
       }
       const template = CONTRACT_TEMPLATES[sourceTemplateId];
-      const commonInput = {
-        companyName,
-        companyAddress,
-        representativeRole: signerRole,
-        representativeName: signerName,
-        effectiveDate,
-        electronicExecutionAccepted,
-      };
-      const generationInput = template.formKind === "nda"
-        ? {
-            ...commonInput,
-            contractPurpose: contractPurpose.trim() || undefined,
-            termYears,
-            terminationNoticeDays,
-            renewalYears,
-            confidentialityYears,
-          }
-        : template.formKind === "data_handling"
-          ? { ...commonInput, ...dataHandlingFields }
-          : {
-              ...commonInput,
-              latePaymentInterestRate: Number(fdeMasterFields.latePaymentInterestRate),
-              confidentialityYears: Number(fdeMasterFields.confidentialityYears),
-              suspensionDelayDays: Number(fdeMasterFields.suspensionDelayDays),
-              curePeriodDays: Number(fdeMasterFields.curePeriodDays),
-              handoverDays: Number(fdeMasterFields.handoverDays),
-              dataDeletionDays: Number(fdeMasterFields.dataDeletionDays),
-              termYears: Number(fdeMasterFields.termYears),
-              renewalNoticeDays: Number(fdeMasterFields.renewalNoticeDays),
-              renewalYears: Number(fdeMasterFields.renewalYears),
-              terminationNoticeDays: Number(fdeMasterFields.terminationNoticeDays),
-              jurisdiction: fdeMasterFields.jurisdiction,
-            };
       const response = await fetch(template.generationPath, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(generationInput),
+        body: JSON.stringify(buildGenerationInput()),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -246,12 +274,69 @@ export function ContractNewForm() {
     }
   }
 
+  async function generatePdfReview() {
+    setWordError("");
+    setIsGeneratingPdf(true);
+    try {
+      if (!sourceTemplateId) throw new Error("契約テンプレートを選択してください。");
+      const response = await fetch(
+        `/api/admin/contracts/templates/${sourceTemplateId}/preview`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildGenerationInput()),
+        }
+      );
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error ?? "確認用PDFを生成できませんでした。");
+      }
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("content-disposition") ?? "";
+      const encodedFileName = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+      const fileName = encodedFileName
+        ? decodeURIComponent(encodedFileName)
+        : `${CONTRACT_TEMPLATES[sourceTemplateId].defaultTitle}.pdf`;
+      setReviewPdf({ blob, url: URL.createObjectURL(blob), fileName });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (generationError) {
+      setWordError(
+        generationError instanceof Error
+          ? generationError.message
+          : "確認用PDFを生成できませんでした。"
+      );
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  }
+
+  function handlePdfReviewClick(event: React.MouseEvent<HTMLButtonElement>) {
+    if (!event.currentTarget.form?.reportValidity()) return;
+    void generatePdfReview();
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
-    const formData = new FormData(event.currentTarget);
     try {
+      if (!sourceTemplateId || !reviewPdf) {
+        throw new Error("先に確認用PDFを生成してください。");
+      }
+      const template = CONTRACT_TEMPLATES[sourceTemplateId];
+      const formData = new FormData();
+      formData.set("title", title);
+      formData.set("type", template.contractType);
+      formData.set("internalMemo", internalMemo);
+      formData.set("companyName", companyName);
+      formData.set("corporateNumber", corporateNumber);
+      formData.set("companyAddress", companyAddress);
+      formData.set("signerName", signerName);
+      formData.set("signerRole", signerRole);
+      formData.set("signerEmail", signerEmail);
+      formData.set("sourceTemplateId", sourceTemplateId);
+      formData.set("effectiveDate", effectiveDate);
+      formData.set("pdf", reviewPdf.blob, reviewPdf.fileName);
       const response = await fetch("/api/admin/contracts", { method: "POST", body: formData });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error ?? "契約を作成できませんでした。");
@@ -269,16 +354,105 @@ export function ContractNewForm() {
     : null;
   const dataHandlingFieldsComplete = Object.values(dataHandlingFields).every((value) => value.trim());
   const fdeMasterFieldsComplete = Object.values(fdeMasterFields).every((value) => value.trim());
-  const canGenerateWord = Boolean(
+  const canGenerateDocument = Boolean(
+    title.trim() &&
     companyName.trim() &&
     companyAddress.trim() &&
     signerName.trim() &&
     signerRole.trim() &&
+    signerEmail.trim() &&
     effectiveDate &&
     electronicExecutionAccepted &&
     (selectedTemplate?.formKind !== "data_handling" || dataHandlingFieldsComplete) &&
     (selectedTemplate?.formKind !== "fde_master" || fdeMasterFieldsComplete)
   );
+
+  if (selectedTemplate && reviewPdf) {
+    return (
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <section className="overflow-hidden rounded-2xl border bg-card sm:rounded-3xl">
+          <div className="border-b bg-muted/35 p-4 sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                  <ScanSearch className="size-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    Step 2 / 3
+                  </p>
+                  <h2 className="mt-1 text-xl font-semibold">PDFの内容確認</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    このPDFが電子契約の原本になります。全文と当事者情報を確認してください。
+                  </p>
+                </div>
+              </div>
+              <Badge variant="outline" className="rounded-lg bg-background">
+                {selectedTemplate.name}
+              </Badge>
+            </div>
+
+            <dl className="mt-5 grid gap-3 rounded-2xl border bg-background/80 p-4 text-sm sm:grid-cols-3">
+              <div>
+                <dt className="text-xs text-muted-foreground">契約先</dt>
+                <dd className="mt-1 font-medium">{companyName}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">署名予定者</dt>
+                <dd className="mt-1 font-medium">{signerRole} {signerName}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">契約発効日</dt>
+                <dd className="mt-1 font-medium">{effectiveDate}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div className="bg-muted/20 p-3 sm:p-5">
+            <object
+              data={reviewPdf.url}
+              type="application/pdf"
+              className="h-[68vh] min-h-[520px] w-full rounded-xl border bg-background"
+              aria-label="生成した契約書PDFのプレビュー"
+            >
+              <div className="flex min-h-80 flex-col items-center justify-center rounded-xl border bg-background p-6 text-center">
+                <FileText className="size-8 text-muted-foreground" aria-hidden="true" />
+                <p className="mt-3 text-sm">このブラウザではPDFを埋め込み表示できません。</p>
+                <Button asChild variant="outline" className="mt-4 rounded-xl">
+                  <a href={reviewPdf.url} target="_blank" rel="noreferrer">
+                    <ExternalLink />PDFを別画面で確認
+                  </a>
+                </Button>
+              </div>
+            </object>
+          </div>
+        </section>
+
+        <div className="flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <p>登録後は原本PDFを差し替えできません。内容確定後、契約詳細画面から原本をロックして署名URLを発行します。</p>
+        </div>
+
+        {error ? <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
+        {wordError ? <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Button type="button" variant="outline" className="rounded-xl" onClick={() => setReviewPdf(null)} disabled={isSubmitting}>
+            <ArrowLeft />入力内容を修正
+          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button type="button" variant="outline" className="rounded-xl" onClick={() => void generateWord()} disabled={isGeneratingWord || isSubmitting}>
+              {isGeneratingWord ? <Loader2 className="animate-spin" /> : <Download />}
+              Wordも保存
+            </Button>
+            <Button type="submit" size="lg" className="rounded-xl" disabled={isSubmitting}>
+              {isSubmitting ? <><Loader2 className="animate-spin" />登録中...</> : <><FileCheck2 />このPDFを原本登録</>}
+            </Button>
+          </div>
+        </div>
+      </form>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -363,7 +537,7 @@ export function ContractNewForm() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="internalMemo">内部メモ（任意）</Label>
-                <Textarea id="internalMemo" name="internalMemo" maxLength={2000} rows={3} placeholder="管理者だけが確認するメモ" />
+                <Textarea id="internalMemo" name="internalMemo" maxLength={2000} rows={3} placeholder="管理者だけが確認するメモ" value={internalMemo} onChange={(event) => setInternalMemo(event.target.value)} />
               </div>
             </div>
           </section>
@@ -378,7 +552,7 @@ export function ContractNewForm() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="corporateNumber">法人番号（任意）</Label>
-                <Input id="corporateNumber" name="corporateNumber" maxLength={30} inputMode="numeric" />
+                <Input id="corporateNumber" name="corporateNumber" maxLength={30} inputMode="numeric" value={corporateNumber} onChange={(event) => setCorporateNumber(event.target.value)} />
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="companyAddress">所在地</Label>
@@ -394,7 +568,7 @@ export function ContractNewForm() {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="signerEmail">署名依頼先メールアドレス</Label>
-                <Input id="signerEmail" name="signerEmail" type="email" maxLength={320} required />
+                <Input id="signerEmail" name="signerEmail" type="email" maxLength={320} required value={signerEmail} onChange={(event) => setSignerEmail(event.target.value)} />
               </div>
             </div>
           </section>
@@ -438,13 +612,16 @@ export function ContractNewForm() {
                 <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
               </label>
               {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
-              <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
-                {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
-              </Button>
-              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-                <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <p>生成後にWordで条文と当事者情報を最終確認し、PDFとして保存してください。電子契約で確定される原本は、次に登録するPDFです。</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button type="button" size="lg" className="rounded-xl" disabled={!canGenerateDocument || isGeneratingPdf} onClick={handlePdfReviewClick}>
+                  {isGeneratingPdf ? <><Loader2 className="animate-spin" />PDF変換中...</> : <><ScanSearch />PDFにして内容確認へ</>}
+                </Button>
+                <Button type="button" variant="outline" className="rounded-xl" disabled={!canGenerateDocument || isGeneratingWord} onClick={() => void generateWord()}>
+                  {isGeneratingWord ? <Loader2 className="animate-spin" /> : <Download />}
+                  Wordを保存
+                </Button>
               </div>
+              <p className="mt-3 text-xs text-muted-foreground">PDFは自動生成され、次の画面で原本登録前に全文を確認できます。</p>
             </section>
           ) : null}
 
@@ -494,13 +671,16 @@ export function ContractNewForm() {
                 <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
               </label>
               {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
-              <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
-                {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
-              </Button>
-              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-                <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <p>生成後にWordで条文、当事者情報、別紙のデータ条件を最終確認し、PDFとして保存してください。</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button type="button" size="lg" className="rounded-xl" disabled={!canGenerateDocument || isGeneratingPdf} onClick={handlePdfReviewClick}>
+                  {isGeneratingPdf ? <><Loader2 className="animate-spin" />PDF変換中...</> : <><ScanSearch />PDFにして内容確認へ</>}
+                </Button>
+                <Button type="button" variant="outline" className="rounded-xl" disabled={!canGenerateDocument || isGeneratingWord} onClick={() => void generateWord()}>
+                  {isGeneratingWord ? <Loader2 className="animate-spin" /> : <Download />}
+                  Wordを保存
+                </Button>
               </div>
+              <p className="mt-3 text-xs text-muted-foreground">PDFは自動生成され、次の画面で原本登録前に本文と別紙を確認できます。</p>
             </section>
           ) : null}
 
@@ -557,28 +737,20 @@ export function ContractNewForm() {
                 <span>紙契約用の「本書2通・記名押印・印」欄を削除し、「甲乙双方が電子的に合意し、各自が電磁的記録を保管する」という電子締結用文言へ置き換えることを確認しました。</span>
               </label>
               {wordError ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{wordError}</p> : null}
-              <Button type="button" size="lg" className="mt-5 rounded-xl" disabled={!canGenerateWord || isGeneratingWord} onClick={() => void generateWord()}>
-                {isGeneratingWord ? <><Loader2 className="animate-spin" />Word生成中...</> : <><Download />この内容でWordを生成</>}
-              </Button>
-              <div className="mt-4 flex gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
-                <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <p>生成後にWordで当事者情報、契約条件、条文を最終確認し、PDFとして保存してください。</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button type="button" size="lg" className="rounded-xl" disabled={!canGenerateDocument || isGeneratingPdf} onClick={handlePdfReviewClick}>
+                  {isGeneratingPdf ? <><Loader2 className="animate-spin" />PDF変換中...</> : <><ScanSearch />PDFにして内容確認へ</>}
+                </Button>
+                <Button type="button" variant="outline" className="rounded-xl" disabled={!canGenerateDocument || isGeneratingWord} onClick={() => void generateWord()}>
+                  {isGeneratingWord ? <Loader2 className="animate-spin" /> : <Download />}
+                  Wordを保存
+                </Button>
               </div>
+              <p className="mt-3 text-xs text-muted-foreground">PDFは自動生成され、次の画面で原本登録前に全条件と条文を確認できます。</p>
             </section>
           ) : null}
 
-          <section className="rounded-2xl border bg-card p-4 sm:rounded-3xl sm:p-6">
-            <h2 className="text-lg font-semibold">確認済みPDFを登録</h2>
-            <p className="mt-1 text-xs text-muted-foreground">生成したWordを確認してPDF保存した後、そのPDFを選択してください。4MB以内・確定後は差し替えできません。</p>
-            <Input className="mt-5" name="pdf" type="file" accept="application/pdf,.pdf" required />
-          </section>
-
           {error ? <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
-          <div className="flex justify-end">
-            <Button type="submit" size="lg" className="rounded-xl" disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 className="animate-spin" />作成中...</> : "下書きを作成"}
-            </Button>
-          </div>
         </>
       ) : (
         <div className="rounded-2xl border border-dashed bg-muted/30 px-5 py-10 text-center sm:rounded-3xl">

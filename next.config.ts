@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/contracts/c/*/accept": ["./node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff"],
     "/api/admin/contracts/templates/*/generate": ["./assets/contracts/templates/*.docx"],
+    "/api/admin/contracts/templates/*/preview": ["./assets/contracts/templates/*.docx"],
   },
   async headers() {
     return [

@@ -111,14 +111,16 @@ export default async function AdminConsoleIndexPage() {
               href="/sub/admin-console/results"
               className="group min-h-48 rounded-3xl bg-slate-950 p-5 text-white transition hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-slate-900 dark:ring-1 dark:ring-inset dark:ring-slate-800 dark:hover:bg-slate-800"
             >
-              <div className="flex items-start justify-between">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-sky-400/15 text-sky-300">
-                  <ClipboardList className="size-5" aria-hidden="true" />
-                </span>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sky-400/15 text-sky-300">
+                    <ClipboardList className="size-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="truncate font-semibold">業務診断 回答一覧</h3>
+                </div>
                 <ArrowUpRight className="size-5 text-slate-500 transition group-hover:text-white" aria-hidden="true" />
               </div>
-              <h3 className="mt-8 font-semibold">業務診断 回答一覧</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">相談内容の確認と対応ステータスの更新</p>
+              <p className="mt-6 text-sm leading-relaxed text-slate-400">相談内容の確認と対応ステータスの更新</p>
               <p className="mt-4 text-xs font-medium text-sky-300">最新100件まで表示</p>
             </Link>
 
@@ -126,14 +128,16 @@ export default async function AdminConsoleIndexPage() {
               href="/sub/admin-console/create-email"
               className="group min-h-48 rounded-3xl bg-violet-50 p-5 text-slate-950 ring-1 ring-inset ring-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-100/70 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-violet-950/40 dark:text-violet-50 dark:ring-violet-900 dark:hover:bg-violet-950/60"
             >
-              <div className="flex items-start justify-between">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-violet-600 text-white">
-                  <Mail className="size-5" aria-hidden="true" />
-                </span>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white">
+                    <Mail className="size-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="truncate font-semibold">メール送信</h3>
+                </div>
                 <ArrowUpRight className="size-5 text-violet-400 transition group-hover:text-violet-700 dark:text-violet-500 dark:group-hover:text-violet-300" aria-hidden="true" />
               </div>
-              <h3 className="mt-8 font-semibold">メール送信</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-violet-200/70">問い合わせ返信・営業メールを個別送信</p>
+              <p className="mt-6 text-sm leading-relaxed text-slate-600 dark:text-violet-200/70">問い合わせ返信・営業メールを個別送信</p>
               <p className="mt-4 text-xs font-medium text-violet-700 dark:text-violet-300">ブランドデザイン適用</p>
             </Link>
           </div>

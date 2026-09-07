@@ -1,9 +1,10 @@
 import { requireAdmin } from "@/lib/admin-auth";
-import { isAllowedSameOriginRequest } from "@/lib/contracts/http";
 import {
   ContractTemplateInputError,
   generateContractTemplateWord,
 } from "@/lib/contracts/generated-template.server";
+import { isAllowedSameOriginRequest } from "@/lib/contracts/http";
+import { convertWordToPdf } from "@/lib/contracts/word-to-pdf.server";
 import {
   CONTRACT_TEMPLATE_IDS,
   type ContractTemplateId,
@@ -11,6 +12,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(
   request: Request,
@@ -24,18 +26,19 @@ export async function POST(
   if (!CONTRACT_TEMPLATE_IDS.includes(templateId as ContractTemplateId)) {
     return Response.json({ error: "テンプレートが見つかりません。" }, { status: 404 });
   }
-  const contractTemplateId = templateId as ContractTemplateId;
-  const payload = await request.json().catch(() => ({}));
 
   try {
-    const generated = await generateContractTemplateWord(contractTemplateId, payload);
-
-    return new Response(Buffer.from(generated.bytes), {
+    const generated = await generateContractTemplateWord(
+      templateId as ContractTemplateId,
+      await request.json().catch(() => ({}))
+    );
+    const pdfBytes = await convertWordToPdf(generated.bytes, generated.fileName);
+    const pdfFileName = generated.fileName.replace(/\.docx$/i, ".pdf");
+    return new Response(Buffer.from(pdfBytes), {
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Type": "application/pdf",
         "Content-Disposition":
-          `attachment; filename="contract-filled.docx"; filename*=UTF-8''${encodeURIComponent(generated.fileName)}`,
+          `inline; filename="contract-preview.pdf"; filename*=UTF-8''${encodeURIComponent(pdfFileName)}`,
         "Cache-Control": "private, no-store, max-age=0",
         "X-Content-Type-Options": "nosniff",
       },
@@ -48,7 +51,7 @@ export async function POST(
       );
     }
     return Response.json(
-      { error: error instanceof Error ? error.message : "Wordを生成できませんでした。" },
+      { error: error instanceof Error ? error.message : "確認用PDFを生成できませんでした。" },
       { status: 500 }
     );
   }

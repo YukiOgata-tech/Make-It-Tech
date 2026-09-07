@@ -43,7 +43,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
       </div>
 
       <Card className="mt-7 rounded-2xl sm:rounded-3xl">
-        <CardHeader><CardTitle className="text-base">操作</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">原本確定・署名URL発行</CardTitle></CardHeader>
         <CardContent><ContractActions contractId={contract.id} status={contract.status} /></CardContent>
       </Card>
 
