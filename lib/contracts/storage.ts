@@ -32,11 +32,11 @@ export async function saveContractPdfOnce(
       },
       preconditionOpts: { ifGenerationMatch: 0 },
     });
-    return { path, sha256: sha256(bytes) };
+    return { path, sha256: sha256(bytes), created: true };
   } catch (error) {
     if (!isPreconditionFailure(error)) throw error;
     const [existing] = await file.download();
-    return { path, sha256: sha256(existing) };
+    return { path, sha256: sha256(existing), created: false };
   }
 }
 

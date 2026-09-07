@@ -14,6 +14,14 @@ import {
   CONTRACT_TYPE_LABELS,
   type ContractTemplateId,
 } from "@/lib/contracts/constants";
+import {
+  DATA_HANDLING_FIELD_GROUPS,
+  FDE_MASTER_FIELD_GROUPS,
+  INITIAL_DATA_HANDLING_FIELDS,
+  INITIAL_FDE_MASTER_FIELDS,
+  type DataHandlingFieldKey,
+  type FdeMasterFieldKey,
+} from "@/lib/contracts/form-config";
 
 type IssuedRequest = { id: string; inputUrl: string; expiresAt: string };
 
@@ -22,6 +30,15 @@ export function ContractInputRequestForm() {
   const [title, setTitle] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
   const [internalMemo, setInternalMemo] = useState("");
+  const [effectiveDate, setEffectiveDate] = useState("");
+  const [contractPurpose, setContractPurpose] = useState("");
+  const [termYears, setTermYears] = useState(3);
+  const [terminationNoticeDays, setTerminationNoticeDays] = useState(30);
+  const [renewalYears, setRenewalYears] = useState(1);
+  const [confidentialityYears, setConfidentialityYears] = useState(5);
+  const [dataFields, setDataFields] = useState(INITIAL_DATA_HANDLING_FIELDS);
+  const [fdeFields, setFdeFields] = useState(INITIAL_FDE_MASTER_FIELDS);
+  const [electronicExecutionAccepted, setElectronicExecutionAccepted] = useState(false);
   const [issued, setIssued] = useState<IssuedRequest | null>(null);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -30,7 +47,40 @@ export function ContractInputRequestForm() {
   function selectTemplate(templateId: ContractTemplateId) {
     setSourceTemplateId(templateId);
     setTitle(CONTRACT_TEMPLATES[templateId].defaultTitle);
+    setElectronicExecutionAccepted(false);
     setError("");
+  }
+
+  function buildContractConditions() {
+    if (!sourceTemplateId) throw new Error("契約テンプレートを選択してください。");
+    const template = CONTRACT_TEMPLATES[sourceTemplateId];
+    if (template.formKind === "nda") {
+      return {
+        effectiveDate,
+        contractPurpose: contractPurpose.trim() || undefined,
+        termYears,
+        terminationNoticeDays,
+        renewalYears,
+        confidentialityYears,
+      };
+    }
+    if (template.formKind === "data_handling") {
+      return { effectiveDate, ...dataFields };
+    }
+    return {
+      effectiveDate,
+      latePaymentInterestRate: Number(fdeFields.latePaymentInterestRate),
+      confidentialityYears: Number(fdeFields.confidentialityYears),
+      suspensionDelayDays: Number(fdeFields.suspensionDelayDays),
+      curePeriodDays: Number(fdeFields.curePeriodDays),
+      handoverDays: Number(fdeFields.handoverDays),
+      dataDeletionDays: Number(fdeFields.dataDeletionDays),
+      termYears: Number(fdeFields.termYears),
+      renewalNoticeDays: Number(fdeFields.renewalNoticeDays),
+      renewalYears: Number(fdeFields.renewalYears),
+      terminationNoticeDays: Number(fdeFields.terminationNoticeDays),
+      jurisdiction: fdeFields.jurisdiction,
+    };
   }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -41,7 +91,14 @@ export function ContractInputRequestForm() {
       const response = await fetch("/api/admin/contracts/input-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, signerEmail, internalMemo, sourceTemplateId }),
+        body: JSON.stringify({
+          title,
+          signerEmail,
+          internalMemo,
+          sourceTemplateId,
+          contractConditions: buildContractConditions(),
+          electronicExecutionAccepted,
+        }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error ?? "入力依頼を送信できませんでした。");
@@ -102,7 +159,7 @@ export function ContractInputRequestForm() {
           <FileInput className="mt-0.5 size-5 text-orange-600 dark:text-orange-300" aria-hidden="true" />
           <div>
             <h2 className="text-lg font-semibold">相手方が入力する契約書を選択</h2>
-            <p className="mt-1 text-sm text-muted-foreground">相手方は専用URLで法人情報、署名者情報、契約条件を入力します。</p>
+            <p className="mt-1 text-sm text-muted-foreground">契約条件はMake It Tech側で確定し、相手方には法人・署名者情報だけを入力してもらいます。</p>
           </div>
         </div>
         <div className="mt-5 grid gap-3">
@@ -130,6 +187,68 @@ export function ContractInputRequestForm() {
           })}
         </div>
       </section>
+
+      {sourceTemplateId ? (
+        <section className="rounded-3xl border bg-card p-5 sm:p-7">
+          <h2 className="text-lg font-semibold">Make It Tech側で契約条件を確定</h2>
+          <p className="mt-1 text-sm text-muted-foreground">ここで設定した条件は相手方入力画面では変更できません。</p>
+          <div className="mt-5 max-w-sm space-y-2">
+            <Label htmlFor="request-effective-date">契約発効日</Label>
+            <Input id="request-effective-date" type="date" required value={effectiveDate} onChange={(event) => setEffectiveDate(event.target.value)} />
+          </div>
+
+          {CONTRACT_TEMPLATES[sourceTemplateId].formKind === "nda" ? (
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2 sm:col-span-2"><Label htmlFor="request-purpose">契約目的（任意）</Label><Input id="request-purpose" maxLength={500} value={contractPurpose} onChange={(event) => setContractPurpose(event.target.value)} /></div>
+              <div className="space-y-2"><Label htmlFor="request-term">契約期間（年）</Label><Input id="request-term" type="number" min={1} max={99} required value={termYears} onChange={(event) => setTermYears(Number(event.target.value))} /></div>
+              <div className="space-y-2"><Label htmlFor="request-notice">終了通知期限（日）</Label><Input id="request-notice" type="number" min={1} max={365} required value={terminationNoticeDays} onChange={(event) => setTerminationNoticeDays(Number(event.target.value))} /></div>
+              <div className="space-y-2"><Label htmlFor="request-renewal">自動更新期間（年）</Label><Input id="request-renewal" type="number" min={1} max={20} required value={renewalYears} onChange={(event) => setRenewalYears(Number(event.target.value))} /></div>
+              <div className="space-y-2"><Label htmlFor="request-confidentiality">秘密保持期間（年）</Label><Input id="request-confidentiality" type="number" min={1} max={99} required value={confidentialityYears} onChange={(event) => setConfidentialityYears(Number(event.target.value))} /></div>
+            </div>
+          ) : null}
+
+          {CONTRACT_TEMPLATES[sourceTemplateId].formKind === "data_handling" ? (
+            <div className="mt-7 space-y-8">
+              {DATA_HANDLING_FIELD_GROUPS.map((group) => (
+                <fieldset key={group.title}>
+                  <legend className="text-sm font-semibold">{group.title}</legend>
+                  <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                    {group.fields.map((field) => (
+                      <div key={field.key} className="space-y-2">
+                        <Label htmlFor={`request-${field.key}`}>{field.label}</Label>
+                        <Input id={`request-${field.key}`} required maxLength={500} placeholder={field.placeholder} value={dataFields[field.key]} onChange={(event) => setDataFields((current) => ({ ...current, [field.key as DataHandlingFieldKey]: event.target.value }))} />
+                      </div>
+                    ))}
+                  </div>
+                </fieldset>
+              ))}
+            </div>
+          ) : null}
+
+          {CONTRACT_TEMPLATES[sourceTemplateId].formKind === "fde_master" ? (
+            <div className="mt-7 space-y-8">
+              {FDE_MASTER_FIELD_GROUPS.map((group) => (
+                <fieldset key={group.title}>
+                  <legend className="text-sm font-semibold">{group.title}</legend>
+                  <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                    {group.fields.map((field) => (
+                      <div key={field.key} className="space-y-2">
+                        <Label htmlFor={`request-${field.key}`}>{field.label}</Label>
+                        <Input id={`request-${field.key}`} type={field.type} min={field.min} max={field.max} step={field.step} required maxLength={field.type === "text" ? 100 : undefined} placeholder={field.placeholder} value={fdeFields[field.key]} onChange={(event) => setFdeFields((current) => ({ ...current, [field.key as FdeMasterFieldKey]: event.target.value }))} />
+                      </div>
+                    ))}
+                  </div>
+                </fieldset>
+              ))}
+            </div>
+          ) : null}
+
+          <label className="mt-7 flex cursor-pointer gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100">
+            <input type="checkbox" required className="mt-1 size-4 shrink-0 accent-orange-600" checked={electronicExecutionAccepted} onChange={(event) => setElectronicExecutionAccepted(event.target.checked)} />
+            <span>紙契約用の記名押印欄を電子締結用文言へ置き換え、相手方には会社・署名者情報だけを入力してもらうことを確認しました。</span>
+          </label>
+        </section>
+      ) : null}
 
       {sourceTemplateId ? (
         <section className="rounded-3xl border bg-card p-5 sm:p-7">

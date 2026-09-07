@@ -41,7 +41,7 @@ export function ContractCreationChooser() {
         <button type="button" onClick={() => setMode("recipient")} className="group rounded-3xl border bg-card p-6 text-left transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg dark:hover:border-sky-700 sm:p-8">
           <span className="flex size-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"><UserRoundPen className="size-6" /></span>
           <h2 className="mt-5 text-xl font-semibold">相手方に入力を依頼</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">相手方へ専用URLを送り、法人情報・署名者情報・契約条件を本人に入力してもらいます。</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">契約条件はこちらで確定し、相手方には専用URLから法人・署名者情報だけを入力してもらいます。</p>
           <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 dark:text-sky-300">この方式を選ぶ<UserRoundPen className="size-4 transition group-hover:translate-x-0.5" /></span>
         </button>
       </div>

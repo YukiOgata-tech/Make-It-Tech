@@ -111,18 +111,45 @@ export default async function ContractInputRequestPage({
                 </div>
               ))}
             </dl>
+            <p className="mt-5 text-xs text-muted-foreground">相手方入力 SHA-256</p>
+            <code className="mt-1 block break-all text-xs">{inputRequest.submittedInputSha256}</code>
           </CardContent>
         </Card>
       ) : (
         <Card className="mt-5 rounded-2xl sm:rounded-3xl"><CardContent className="py-10 text-center"><p className="text-sm font-medium">相手方の入力を待っています</p><p className="mt-2 text-xs text-muted-foreground">入力が完了すると、この画面から内容確認とPDF生成へ進めます。</p></CardContent></Card>
       )}
 
-      {["pending", "expired", "failed"].includes(inputRequest.status) ? (
-        <Card className="mt-5 rounded-2xl sm:rounded-3xl"><CardHeader><CardTitle className="text-base">入力URL</CardTitle></CardHeader><CardContent><p className="mb-4 text-xs text-muted-foreground">再発行すると以前の入力URLは失効し、新しいURLがメール送信されます。</p><ContractInputRequestActions requestId={inputRequest.id} /></CardContent></Card>
+      <Card className="mt-5 rounded-2xl sm:rounded-3xl">
+        <CardHeader><CardTitle className="text-base">Make It Techが確定した契約条件</CardTitle></CardHeader>
+        <CardContent>
+          <p className="mb-5 text-xs text-muted-foreground">相手方入力画面では変更できない条件です。</p>
+          <dl className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+            {Object.entries(inputRequest.contractConditions).map(([key, value]) => (
+              <div key={key} className="border-b pb-3">
+                <dt className="text-xs text-muted-foreground">{FIELD_LABELS[key] ?? key}</dt>
+                <dd className="mt-1 break-words text-sm font-medium">{String(value || "-")}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-5 text-xs text-muted-foreground">契約条件 SHA-256</p>
+          <code className="mt-1 block break-all text-xs">{inputRequest.contractConditionsSha256}</code>
+        </CardContent>
+      </Card>
+
+      {["pending", "submitted", "expired", "failed"].includes(inputRequest.status) ? (
+        <Card className="mt-5 rounded-2xl sm:rounded-3xl"><CardHeader><CardTitle className="text-base">入力依頼の操作</CardTitle></CardHeader><CardContent><p className="mb-4 text-xs text-muted-foreground">再発行すると以前の入力URLは失効します。取消は入力依頼だけを対象とし、締結済み契約の取消ではありません。</p><ContractInputRequestActions requestId={inputRequest.id} status={inputRequest.status} /></CardContent></Card>
       ) : null}
 
       {inputRequest.status === "submitted" ? (
         <Card className="mt-5 rounded-2xl sm:rounded-3xl"><CardHeader><CardTitle className="text-base">PDF生成・原本登録</CardTitle></CardHeader><CardContent><ContractInputRequestReview requestId={inputRequest.id} /></CardContent></Card>
+      ) : null}
+
+      {inputRequest.status === "finalizing" ? (
+        <Card className="mt-5 rounded-2xl sm:rounded-3xl"><CardHeader><CardTitle className="text-base">契約作成の再開</CardTitle></CardHeader><CardContent><ContractInputRequestReview requestId={inputRequest.id} resumeOnly /></CardContent></Card>
+      ) : null}
+
+      {inputRequest.status === "cancelled" ? (
+        <div className="mt-5 rounded-2xl border border-slate-300 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-900/40"><p className="font-semibold">入力依頼は取り消されています</p><p className="mt-2 text-sm text-muted-foreground">入力URLは失効済みです。取消日時：{formatDate(inputRequest.cancelledAt)}</p></div>
       ) : null}
 
       {inputRequest.status === "converted" && inputRequest.contractId ? (

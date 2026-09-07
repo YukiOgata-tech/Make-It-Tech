@@ -82,6 +82,8 @@ export type ContractRecord = {
     sourceSha256: string;
     fileName: string;
   };
+  sourceInputRequestId?: string;
+  sourceInputSha256?: string;
   document: StoredDocument;
   executedDocument?: { storagePath: string; sha256: string };
   certificateDocument?: { storagePath: string; sha256: string };
@@ -240,7 +242,33 @@ function jstYear(date: Date) {
   );
 }
 
-export async function createContract(input: CreateContractInput, pdf: File, actor: AdminActor) {
+type CreateContractOptions = {
+  contractId?: string;
+  sourceInputRequestId?: string;
+  sourceInputSha256?: string;
+};
+
+function getIdempotentContractResult(
+  contract: ContractRecord,
+  documentSha256: string,
+  options: CreateContractOptions
+) {
+  if (
+    contract.document.sha256 !== documentSha256 ||
+    contract.sourceInputRequestId !== options.sourceInputRequestId ||
+    contract.sourceInputSha256 !== options.sourceInputSha256
+  ) {
+    throw new Error("確保済みの契約IDに異なる原本または入力証跡が登録されています。");
+  }
+  return { id: contract.id, contractNumber: contract.contractNumber };
+}
+
+export async function createContract(
+  input: CreateContractInput,
+  pdf: File,
+  actor: AdminActor,
+  options: CreateContractOptions = {}
+) {
   if (pdf.type !== "application/pdf") throw new Error("PDF形式のファイルを選択してください。");
   if (pdf.size < 1 || pdf.size > CONTRACT_PDF_MAX_BYTES) {
     throw new Error("契約書PDFは4MB以内にしてください。");
@@ -257,8 +285,21 @@ export async function createContract(input: CreateContractInput, pdf: File, acto
     throw new Error("選択したテンプレートと契約種別が一致しません。");
   }
   const { firestore } = getFirebaseAdmin();
-  const contractRef = firestore.collection("contracts").doc();
+  const contractRef = options.contractId
+    ? firestore.collection("contracts").doc(options.contractId)
+    : firestore.collection("contracts").doc();
+  const existingSnapshot = await contractRef.get();
+  if (existingSnapshot.exists) {
+    return getIdempotentContractResult(
+      normalizeContract(existingSnapshot.id, existingSnapshot.data()!),
+      documentSha256,
+      options
+    );
+  }
   const original = await saveContractPdfOnce(contractRef.id, "original", bytes);
+  if (original.sha256 !== documentSha256) {
+    throw new Error("確保済みの契約IDに異なる原本PDFが保存されています。");
+  }
   const nowDate = new Date();
   const now = Timestamp.fromDate(nowDate);
   const year = jstYear(nowDate);
@@ -284,6 +325,12 @@ export async function createContract(input: CreateContractInput, pdf: File, acto
                   sourceTemplateId,
                   sourceTemplateVersion: template.version,
                   sourceTemplateSha256: template.sourceSha256,
+                }
+              : {}),
+            ...(options.sourceInputRequestId
+              ? {
+                  sourceInputRequestId: options.sourceInputRequestId,
+                  sourceInputSha256: options.sourceInputSha256,
                 }
               : {}),
           },
@@ -332,6 +379,12 @@ export async function createContract(input: CreateContractInput, pdf: File, acto
               },
             }
           : {}),
+        ...(options.sourceInputRequestId
+          ? {
+              sourceInputRequestId: options.sourceInputRequestId,
+              sourceInputSha256: options.sourceInputSha256,
+            }
+          : {}),
         document: {
           version: CONTRACT_DOCUMENT_VERSION,
           storagePath: original.path,
@@ -351,7 +404,17 @@ export async function createContract(input: CreateContractInput, pdf: File, acto
     });
     return result;
   } catch (error) {
-    await removeContractPdfAfterFailedCreate(original.path).catch(() => undefined);
+    const existingAfterFailure = await contractRef.get().catch(() => null);
+    if (existingAfterFailure?.exists) {
+      return getIdempotentContractResult(
+        normalizeContract(existingAfterFailure.id, existingAfterFailure.data()!),
+        documentSha256,
+        options
+      );
+    }
+    if (!options.contractId && original.created) {
+      await removeContractPdfAfterFailedCreate(original.path).catch(() => undefined);
+    }
     throw error;
   }
 }
@@ -690,7 +753,7 @@ export async function completeContractSigning(
     }
     const tokenData = currentTokenSnapshot.data()!;
     const contract = normalizeContract(currentContractSnapshot.id, currentContractSnapshot.data()!);
-    if (contract.status === "signed" && tokenData.status === "used" && contract.pendingCompletionEvent) {
+    if (contract.status === "signed" && tokenData.status === "used") {
       return contract;
     }
     if (tokenData.status !== "active" || contract.activeTokenHash !== tokenHash) {
@@ -740,13 +803,6 @@ export async function completeContractSigning(
       },
       { ...common, eventType: "CONTRACT_SIGNED", metadata: { documentSha256: contract.document.sha256 } },
     ]);
-    const completionChain = buildAuditChain(
-      contract.id,
-      signedChain.lastHash,
-      signedChain.lastSequence,
-      [{ ...common, eventType: "CONTRACT_COMPLETED" }]
-    );
-    const pendingCompletionEvent = completionChain.events[0];
     const acceptance = {
       verificationMethod: verification.method,
       verificationStatus: "succeeded" as const,
@@ -770,7 +826,6 @@ export async function completeContractSigning(
       status: "signed",
       signedAt,
       acceptance,
-      pendingCompletionEvent,
       updatedAt: signedAt,
       auditLastHash: signedChain.lastHash,
       auditSequence: signedChain.lastSequence,
@@ -781,14 +836,13 @@ export async function completeContractSigning(
       status: "signed" as const,
       signedAt,
       acceptance,
-      pendingCompletionEvent,
       updatedAt: signedAt,
       auditLastHash: signedChain.lastHash,
       auditSequence: signedChain.lastSequence,
     };
   });
 
-  if (!signedContract.pendingCompletionEvent || !signedContract.signedAt) {
+  if (!signedContract.signedAt) {
     throw new Error("締結処理の再開情報がありません。");
   }
 
@@ -806,7 +860,7 @@ export async function completeContractSigning(
     verificationMethod: signedContract.verificationMethod,
     signedAt: signedContract.signedAt.toDate(),
     documentSha256: signedContract.document.sha256,
-    finalAuditHash: signedContract.pendingCompletionEvent.eventHash,
+    signingAuditHash: signedContract.auditLastHash,
   };
   const { createContractArtifacts } = await import("@/lib/contracts/pdf");
   const { executedBytes, certificateBytes } = await createContractArtifacts(
@@ -835,16 +889,29 @@ export async function completeContractSigning(
     if (!snapshot.exists) throw new Error("契約が見つかりません。");
     const contract = normalizeContract(snapshot.id, snapshot.data()!);
     if (contract.status === "completed") return { contract, completedNow: false };
-    const pending = contract.pendingCompletionEvent;
-    if (
-      contract.status !== "signed" ||
-      !pending ||
-      pending.previousHash !== contract.auditLastHash ||
-      pending.sequence !== contract.auditSequence + 1
-    ) {
+    if (contract.status !== "signed") {
       throw new Error("契約の最終確定状態が一致しません。");
     }
-    transaction.create(contractRef.collection("events").doc(pending.eventId), pending);
+    const completedDate = new Date();
+    const completedAt = Timestamp.fromDate(completedDate);
+    const completionChain = buildAuditChain(
+      contract.id,
+      contract.auditLastHash,
+      contract.auditSequence,
+      [{
+        eventType: "CONTRACT_COMPLETED",
+        occurredAt: completedDate,
+        actorType: "system",
+        ipAddress: evidence.ipAddress,
+        userAgent: evidence.userAgent,
+        requestId: evidence.requestId,
+        metadata: {
+          executedDocumentSha256: executed.sha256,
+          certificateDocumentSha256: certificate.sha256,
+        },
+      }]
+    );
+    writeAuditEvents(transaction, contractRef, completionChain.events);
     transaction.create(documentAccessTokenRef, {
       contractId: contract.id,
       tokenHash: documentAccessTokenHash,
@@ -859,32 +926,32 @@ export async function completeContractSigning(
     });
     transaction.update(contractRef, {
       status: "completed",
-      completedAt: pending.occurredAt,
+      completedAt,
       executedDocument: { storagePath: executed.path, sha256: executed.sha256 },
       certificateDocument: { storagePath: certificate.path, sha256: certificate.sha256 },
       activeTokenHash: FieldValue.delete(),
       documentAccessTokenHash,
       documentAccessExpiresAt,
       pendingCompletionEvent: FieldValue.delete(),
-      updatedAt: pending.occurredAt,
-      auditLastHash: pending.eventHash,
-      auditSequence: pending.sequence,
+      updatedAt: completedAt,
+      auditLastHash: completionChain.lastHash,
+      auditSequence: completionChain.lastSequence,
     });
     return {
       completedNow: true,
       contract: {
         ...contract,
         status: "completed" as const,
-        completedAt: pending.occurredAt,
+        completedAt,
         executedDocument: { storagePath: executed.path, sha256: executed.sha256 },
         certificateDocument: { storagePath: certificate.path, sha256: certificate.sha256 },
         activeTokenHash: undefined,
         documentAccessTokenHash,
         documentAccessExpiresAt,
         pendingCompletionEvent: undefined,
-        updatedAt: pending.occurredAt,
-        auditLastHash: pending.eventHash,
-        auditSequence: pending.sequence,
+        updatedAt: completedAt,
+        auditLastHash: completionChain.lastHash,
+        auditSequence: completionChain.lastSequence,
       },
     };
   });

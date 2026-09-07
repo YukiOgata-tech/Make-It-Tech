@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ExternalLink, FileCheck2, Loader2, ScanSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function ContractInputRequestReview({ requestId }: { requestId: string }) {
+export function ContractInputRequestReview({
+  requestId,
+  resumeOnly = false,
+}: {
+  requestId: string;
+  resumeOnly?: boolean;
+}) {
   const router = useRouter();
   const [preview, setPreview] = useState<{ blob: Blob; url: string; fileName: string } | null>(null);
   const [busy, setBusy] = useState<"preview" | "finalize" | null>(null);
@@ -66,10 +72,42 @@ export function ContractInputRequestReview({ requestId }: { requestId: string })
     }
   }
 
+  async function resumeFinalize() {
+    setBusy("finalize");
+    setError("");
+    try {
+      const response = await fetch(
+        `/api/admin/contracts/input-requests/${requestId}/finalize`,
+        { method: "POST", body: new FormData() }
+      );
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error ?? "契約作成を再開できませんでした。");
+      router.push(`/sub/admin-console/contracts/${payload.id}`);
+      router.refresh();
+    } catch (finalizeError) {
+      setError(finalizeError instanceof Error ? finalizeError.message : "契約作成を再開できませんでした。");
+      router.refresh();
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  if (resumeOnly) {
+    return (
+      <div>
+        <p className="text-sm leading-relaxed text-muted-foreground">契約IDと原本は固定済みです。後続処理だけを再開するため、再実行しても契約は重複作成されません。</p>
+        {error ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
+        <Button type="button" size="lg" className="mt-5 rounded-xl" onClick={() => void resumeFinalize()} disabled={Boolean(busy)}>
+          {busy === "finalize" ? <><Loader2 className="animate-spin" />再開中...</> : <><FileCheck2 />契約作成を安全に再開</>}
+        </Button>
+      </div>
+    );
+  }
+
   if (!preview) {
     return (
       <div>
-        <p className="text-sm leading-relaxed text-muted-foreground">相手方の入力内容を確認したら、その内容をテンプレートへ反映してPDFを生成します。生成後に全文確認画面を挟みます。</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">相手方の会社・署名者情報と、Make It Tech側で確定済みの契約条件を組み合わせてPDFを生成します。生成後に全文確認画面を挟みます。</p>
         {error ? <p role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
         <Button type="button" size="lg" className="mt-5 rounded-xl" onClick={() => void generatePreview()} disabled={Boolean(busy)}>
           {busy === "preview" ? <><Loader2 className="animate-spin" />PDF変換中...</> : <><ScanSearch />PDFにして内容確認へ</>}

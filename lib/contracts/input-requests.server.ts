@@ -8,25 +8,27 @@ import {
   CONTRACT_TOKEN_DEFAULT_HOURS,
   type ContractTemplateId,
 } from "@/lib/contracts/constants";
-import { createSigningToken, sha256 } from "@/lib/contracts/crypto";
+import { canonicalJson, createSigningToken, sha256 } from "@/lib/contracts/crypto";
 import { maskEmail, type getRequestEvidence } from "@/lib/contracts/http";
 import {
   contractInputPartySchema,
-  dataHandlingTemplateGenerationSchema,
-  fdeMasterTemplateGenerationSchema,
-  ndaTemplateGenerationSchema,
+  type ContractInputParty,
   type CreateContractInputRequestInput,
+  type DataHandlingContractConditions,
   type DataHandlingTemplateGenerationInput,
+  type FdeMasterContractConditions,
   type FdeMasterTemplateGenerationInput,
+  type NdaContractConditions,
   type NdaTemplateGenerationInput,
 } from "@/lib/contracts/schemas";
-import { createContract } from "@/lib/contracts/server";
+import { createContract, getContract } from "@/lib/contracts/server";
 
 export const CONTRACT_INPUT_REQUEST_STATUSES = [
   "pending",
   "submitted",
   "finalizing",
   "converted",
+  "cancelled",
   "failed",
   "expired",
 ] as const;
@@ -42,15 +44,20 @@ export const CONTRACT_INPUT_REQUEST_STATUS_LABELS: Record<
   submitted: "入力内容の確認待ち",
   finalizing: "契約作成中",
   converted: "契約へ登録済み",
+  cancelled: "取消済み",
   failed: "送信失敗",
   expired: "期限切れ",
 };
 
-type SubmittedTemplateInput = (
+type ContractConditions =
+  | NdaContractConditions
+  | DataHandlingContractConditions
+  | FdeMasterContractConditions;
+
+type ContractGenerationInput =
   | NdaTemplateGenerationInput
   | DataHandlingTemplateGenerationInput
-  | FdeMasterTemplateGenerationInput
-) & { corporateNumber: string };
+  | FdeMasterTemplateGenerationInput;
 
 export type ContractInputRequestRecord = {
   id: string;
@@ -58,16 +65,21 @@ export type ContractInputRequestRecord = {
   internalMemo: string;
   signerEmail: string;
   sourceTemplateId: ContractTemplateId;
+  contractConditions: ContractConditions;
+  contractConditionsSha256: string;
+  electronicExecutionAccepted: true;
   status: ContractInputRequestStatus;
-  submittedInput?: SubmittedTemplateInput;
+  submittedInput?: ContractInputParty;
+  submittedInputSha256?: string;
   previewSha256?: string;
-  contractId?: string;
+  contractId: string;
   activeTokenHash?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   expiresAt: Timestamp;
   viewedAt?: Timestamp;
   submittedAt?: Timestamp;
+  cancelledAt?: Timestamp;
   convertedAt?: Timestamp;
   auditLastHash: string;
   auditSequence: number;
@@ -75,13 +87,14 @@ export type ContractInputRequestRecord = {
 
 export type ContractInputRequestView = Omit<
   ContractInputRequestRecord,
-  "createdAt" | "updatedAt" | "expiresAt" | "viewedAt" | "submittedAt" | "convertedAt"
+  "createdAt" | "updatedAt" | "expiresAt" | "viewedAt" | "submittedAt" | "cancelledAt" | "convertedAt"
 > & {
   createdAt: string;
   updatedAt: string;
   expiresAt: string;
   viewedAt?: string;
   submittedAt?: string;
+  cancelledAt?: string;
   convertedAt?: string;
 };
 
@@ -109,6 +122,7 @@ export function serializeContractInputRequest(
     expiresAt: serializeTimestamp(request.expiresAt) ?? "",
     viewedAt: serializeTimestamp(request.viewedAt),
     submittedAt: serializeTimestamp(request.submittedAt),
+    cancelledAt: serializeTimestamp(request.cancelledAt),
     convertedAt: serializeTimestamp(request.convertedAt),
   };
 }
@@ -142,7 +156,9 @@ function escapeHtml(value: string) {
 }
 
 async function sendInputRequestEmail(
-  input: CreateContractInputRequestInput,
+  input: Pick<CreateContractInputRequestInput, "title" | "signerEmail"> & {
+    sourceTemplateId: ContractTemplateId;
+  },
   inputUrl: string,
   expiresAt: Date
 ) {
@@ -161,12 +177,12 @@ async function sendInputRequestEmail(
     body: JSON.stringify({
       from,
       to: [input.signerEmail],
-      subject: `【Make It Tech】契約情報入力のお願い：${input.title}`,
-      html: `<div style="font-family:sans-serif;line-height:1.8;color:#202124"><h2>契約情報入力のお願い</h2><p>Make It Techとの「${escapeHtml(input.title)}」について、下記の専用ページから貴社情報と契約条件をご入力ください。</p><p><strong>契約書：</strong>${escapeHtml(template.name)}</p><p><strong>入力期限：</strong>${escapeHtml(deadline)}</p><p><a href="${escapeHtml(inputUrl)}" style="display:inline-block;padding:12px 20px;background:#df5d35;color:#fff;text-decoration:none;border-radius:8px">契約情報を入力する</a></p><p style="font-size:12px;color:#666">入力後、Make It Techが内容を確認して契約書PDFを作成します。このURLは第三者へ共有しないでください。</p></div>`,
-      text: `Make It Techから契約情報入力のお願いです。\n契約名: ${input.title}\n契約書: ${template.name}\n入力期限: ${deadline}\n入力URL: ${inputUrl}\n\nこのURLは第三者へ共有しないでください。`,
+      subject: `【Make It Tech】会社・署名者情報入力のお願い：${input.title}`,
+      html: `<div style="font-family:sans-serif;line-height:1.8;color:#202124"><h2>契約当事者情報入力のお願い</h2><p>Make It Techとの「${escapeHtml(input.title)}」について、下記の専用ページから貴社情報と署名予定者情報をご入力ください。契約条件はMake It Techが設定します。</p><p><strong>契約書：</strong>${escapeHtml(template.name)}</p><p><strong>入力期限：</strong>${escapeHtml(deadline)}</p><p><a href="${escapeHtml(inputUrl)}" style="display:inline-block;padding:12px 20px;background:#df5d35;color:#fff;text-decoration:none;border-radius:8px">会社・署名者情報を入力する</a></p><p style="font-size:12px;color:#666">入力後、Make It Techが内容を確認して契約書PDFを作成します。このURLは第三者へ共有しないでください。</p></div>`,
+      text: `Make It Techから会社・署名者情報入力のお願いです。契約条件はMake It Techが設定します。\n契約名: ${input.title}\n契約書: ${template.name}\n入力期限: ${deadline}\n入力URL: ${inputUrl}\n\nこのURLは第三者へ共有しないでください。`,
     }),
   });
-  if (!response.ok) throw new Error("契約情報入力メールを送信できませんでした。");
+  if (!response.ok) throw new Error("会社・署名者情報入力メールを送信できませんでした。");
 }
 
 export async function createContractInputRequest(
@@ -175,6 +191,7 @@ export async function createContractInputRequest(
 ) {
   const { firestore } = getFirebaseAdmin();
   const requestRef = firestore.collection("contractInputRequests").doc();
+  const contractId = firestore.collection("contracts").doc().id;
   const { token, tokenHash } = createSigningToken();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
   const nowDate = new Date();
@@ -183,6 +200,7 @@ export async function createContractInputRequest(
     nowDate.getTime() + CONTRACT_TOKEN_DEFAULT_HOURS * 60 * 60 * 1000
   );
   const expiresAt = Timestamp.fromDate(expiresAtDate);
+  const contractConditionsSha256 = sha256(canonicalJson(input.contractConditions));
   const chain = buildAuditChain(requestRef.id, "", 0, [
     {
       eventType: "INPUT_REQUEST_CREATED",
@@ -191,6 +209,8 @@ export async function createContractInputRequest(
       actorId: actor.uid,
       metadata: {
         sourceTemplateId: input.sourceTemplateId,
+        contractId,
+        contractConditionsSha256,
         recipientEmailHash: sha256(input.signerEmail.toLowerCase()),
         expiresAt: expiresAtDate.toISOString(),
       },
@@ -203,6 +223,10 @@ export async function createContractInputRequest(
       internalMemo: input.internalMemo,
       signerEmail: input.signerEmail.toLowerCase(),
       sourceTemplateId: input.sourceTemplateId,
+      contractConditions: input.contractConditions,
+      contractConditionsSha256,
+      electronicExecutionAccepted: input.electronicExecutionAccepted,
+      contractId,
       status: "pending",
       activeTokenHash: tokenHash,
       createdAt: now,
@@ -321,7 +345,6 @@ export type PublicContractInputRequest = {
   title: string;
   sourceTemplateId: ContractTemplateId;
   templateName: string;
-  formKind: "nda" | "data_handling" | "fde_master";
   signerEmailMasked: string;
   expiresAt: string;
 };
@@ -330,7 +353,8 @@ type OpenInputRequestResult =
   | { state: "available"; request: PublicContractInputRequest }
   | { state: "invalid" }
   | { state: "expired" }
-  | { state: "submitted" };
+  | { state: "submitted" }
+  | { state: "cancelled" };
 
 export async function openContractInputRequest(
   token: string,
@@ -350,6 +374,9 @@ export async function openContractInputRequest(
     const requestSnapshot = await transaction.get(requestRef);
     if (!requestSnapshot.exists) return { state: "invalid" } as const;
     const inputRequest = normalizeRequest(requestSnapshot.id, requestSnapshot.data()!);
+    if (inputRequest.status === "cancelled") {
+      return { state: "cancelled" } as const;
+    }
     if (inputRequest.status === "submitted" || inputRequest.status === "converted") {
       return { state: "submitted" } as const;
     }
@@ -412,7 +439,6 @@ export async function openContractInputRequest(
         title: inputRequest.title,
         sourceTemplateId: inputRequest.sourceTemplateId,
         templateName: template.name,
-        formKind: template.formKind,
         signerEmailMasked: maskEmail(inputRequest.signerEmail),
         expiresAt: inputRequest.expiresAt.toDate().toISOString(),
       },
@@ -420,18 +446,40 @@ export async function openContractInputRequest(
   });
 }
 
-function parseSubmittedInput(templateId: ContractTemplateId, payload: unknown) {
+function parseSubmittedInput(payload: unknown) {
   const party = contractInputPartySchema.safeParse(payload);
-  const template = CONTRACT_TEMPLATES[templateId];
-  const parsed = template.formKind === "nda"
-    ? ndaTemplateGenerationSchema.safeParse(payload)
-    : template.formKind === "data_handling"
-      ? dataHandlingTemplateGenerationSchema.safeParse(payload)
-      : fdeMasterTemplateGenerationSchema.safeParse(payload);
-  if (!party.success || !parsed.success) {
+  if (!party.success) {
     throw new Error("入力内容を確認してください。すべての必須項目を入力してください。");
   }
-  return { ...parsed.data, corporateNumber: party.data.corporateNumber } as SubmittedTemplateInput;
+  return party.data;
+}
+
+export function buildContractInputGenerationInput(
+  inputRequest: ContractInputRequestRecord
+): ContractGenerationInput {
+  if (!inputRequest.submittedInput || !inputRequest.submittedInputSha256) {
+    throw new Error("相手方の入力が完了していません。");
+  }
+  if (inputRequest.electronicExecutionAccepted !== true) {
+    throw new Error("電子締結用文言への置換確認が完了していません。");
+  }
+  if (
+    sha256(canonicalJson(inputRequest.submittedInput)) !==
+    inputRequest.submittedInputSha256
+  ) {
+    throw new Error("相手方入力のHashが一致しません。");
+  }
+  if (
+    sha256(canonicalJson(inputRequest.contractConditions)) !==
+    inputRequest.contractConditionsSha256
+  ) {
+    throw new Error("Make It Techが設定した契約条件のHashが一致しません。");
+  }
+  return {
+    ...inputRequest.contractConditions,
+    ...inputRequest.submittedInput,
+    electronicExecutionAccepted: true,
+  } as ContractGenerationInput;
 }
 
 export async function submitContractInputRequest(
@@ -449,10 +497,8 @@ export async function submitContractInputRequest(
   const requestRef = firestore
     .collection("contractInputRequests")
     .doc(String(tokenSnapshot.data()?.inputRequestId ?? ""));
-  const requestSnapshot = await requestRef.get();
-  if (!requestSnapshot.exists) throw new Error("入力依頼が見つかりません。");
-  const initial = normalizeRequest(requestSnapshot.id, requestSnapshot.data()!);
-  const submittedInput = parseSubmittedInput(initial.sourceTemplateId, payload);
+  const submittedInput = parseSubmittedInput(payload);
+  const submittedInputSha256 = sha256(canonicalJson(submittedInput));
 
   await firestore.runTransaction(async (transaction) => {
     const [currentTokenSnapshot, currentRequestSnapshot] = await Promise.all([
@@ -484,12 +530,16 @@ export async function submitContractInputRequest(
         ipAddress: evidence.ipAddress,
         userAgent: evidence.userAgent,
         requestId: evidence.requestId,
-        metadata: { sourceTemplateId: current.sourceTemplateId },
+        metadata: {
+          sourceTemplateId: current.sourceTemplateId,
+          submittedInputSha256,
+        },
       }]
     );
     transaction.update(requestRef, {
       status: "submitted",
       submittedInput,
+      submittedInputSha256,
       submittedAt,
       updatedAt: submittedAt,
       auditLastHash: chain.lastHash,
@@ -567,7 +617,6 @@ export async function reissueContractInputRequest(
     await sendInputRequestEmail(
       {
         title: currentRequest.title,
-        internalMemo: currentRequest.internalMemo,
         signerEmail: currentRequest.signerEmail,
         sourceTemplateId: currentRequest.sourceTemplateId,
       },
@@ -638,6 +687,56 @@ export async function reissueContractInputRequest(
   return { inputUrl, expiresAt: expiresAtDate.toISOString() };
 }
 
+export async function cancelContractInputRequest(
+  requestId: string,
+  actor: AdminActor
+) {
+  const { firestore } = getFirebaseAdmin();
+  const requestRef = firestore.collection("contractInputRequests").doc(requestId);
+  await firestore.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(requestRef);
+    if (!snapshot.exists) throw new Error("入力依頼が見つかりません。");
+    const current = normalizeRequest(snapshot.id, snapshot.data()!);
+    if (current.status === "cancelled") return;
+    if (!["pending", "submitted", "expired", "failed"].includes(current.status)) {
+      throw new Error("この入力依頼は取り消せません。");
+    }
+    const cancelledAtDate = new Date();
+    const cancelledAt = Timestamp.fromDate(cancelledAtDate);
+    const chain = buildAuditChain(
+      current.id,
+      current.auditLastHash,
+      current.auditSequence,
+      [{
+        eventType: "INPUT_REQUEST_CANCELLED",
+        occurredAt: cancelledAtDate,
+        actorType: "admin",
+        actorId: actor.uid,
+        metadata: {
+          previousStatus: current.status,
+          activeTokenRevoked: Boolean(current.activeTokenHash),
+        },
+      }]
+    );
+    if (current.activeTokenHash) {
+      transaction.set(
+        firestore.collection("contractTokens").doc(current.activeTokenHash),
+        { status: "revoked", revokedAt: cancelledAt },
+        { merge: true }
+      );
+    }
+    transaction.update(requestRef, {
+      status: "cancelled",
+      activeTokenHash: FieldValue.delete(),
+      cancelledAt,
+      updatedAt: cancelledAt,
+      auditLastHash: chain.lastHash,
+      auditSequence: chain.lastSequence,
+    });
+    writeEvents(transaction, requestRef, chain.events);
+  });
+}
+
 export async function recordContractInputPreview(
   requestId: string,
   previewSha256: string,
@@ -671,81 +770,177 @@ export async function recordContractInputPreview(
 
 export async function finalizeContractInputRequest(
   requestId: string,
-  pdf: File,
+  pdf: File | null,
   actor: AdminActor
 ) {
   const { firestore } = getFirebaseAdmin();
   const requestRef = firestore.collection("contractInputRequests").doc(requestId);
-  const bytes = new Uint8Array(await pdf.arrayBuffer());
-  const pdfSha256 = sha256(bytes);
-  let inputRequest!: ContractInputRequestRecord;
+  const initialSnapshot = await requestRef.get();
+  if (!initialSnapshot.exists) throw new Error("入力依頼が見つかりません。");
+  let inputRequest = normalizeRequest(initialSnapshot.id, initialSnapshot.data()!);
+  if (inputRequest.status === "converted") {
+    const existing = await getContract(inputRequest.contractId);
+    if (!existing) throw new Error("登録済みの契約が見つかりません。");
+    return { id: existing.id, contractNumber: existing.contractNumber };
+  }
+  if (!["submitted", "finalizing"].includes(inputRequest.status)) {
+    throw new Error("相手方の入力が完了していません。");
+  }
+  const generationInput = buildContractInputGenerationInput(inputRequest);
+  const existing = await getContract(inputRequest.contractId);
+  if (existing) {
+    if (
+      existing.document.sha256 !== inputRequest.previewSha256 ||
+      existing.sourceInputRequestId !== inputRequest.id ||
+      existing.sourceInputSha256 !== inputRequest.submittedInputSha256
+    ) {
+      throw new Error("確保済み契約と入力依頼の証跡が一致しません。");
+    }
+    if (inputRequest.status === "submitted") {
+      inputRequest = await firestore.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(requestRef);
+        if (!snapshot.exists) throw new Error("入力依頼が見つかりません。");
+        const current = normalizeRequest(snapshot.id, snapshot.data()!);
+        if (current.status === "converted") return current;
+        if (current.status !== "submitted") return current;
+        transaction.update(requestRef, {
+          status: "finalizing",
+          updatedAt: Timestamp.now(),
+        });
+        return { ...current, status: "finalizing" as const };
+      });
+    }
+  }
+
+  let bytes: Uint8Array | null = null;
+  let pdfSha256 = inputRequest.previewSha256 ?? "";
+  if (!existing) {
+    if (!pdf) {
+      if (inputRequest.status === "finalizing") {
+        await firestore.runTransaction(async (transaction) => {
+          const [requestSnapshot, contractSnapshot] = await Promise.all([
+            transaction.get(requestRef),
+            transaction.get(firestore.collection("contracts").doc(inputRequest.contractId)),
+          ]);
+          if (
+            requestSnapshot.exists &&
+            requestSnapshot.data()?.status === "finalizing" &&
+            !contractSnapshot.exists
+          ) {
+            transaction.update(requestRef, {
+              status: "submitted",
+              updatedAt: Timestamp.now(),
+            });
+          }
+        });
+      }
+      throw new Error("確認済みPDFがありません。PDFを再生成して再開してください。");
+    }
+    bytes = new Uint8Array(await pdf.arrayBuffer());
+    pdfSha256 = sha256(bytes);
+    if (!inputRequest.previewSha256 || inputRequest.previewSha256 !== pdfSha256) {
+      throw new Error("確認したPDFと登録するPDFが一致しません。もう一度内容を確認してください。");
+    }
+    inputRequest = await firestore.runTransaction(async (transaction) => {
+      const snapshot = await transaction.get(requestRef);
+      if (!snapshot.exists) throw new Error("入力依頼が見つかりません。");
+      const current = normalizeRequest(snapshot.id, snapshot.data()!);
+      if (current.status === "converted") return current;
+      if (!["submitted", "finalizing"].includes(current.status)) {
+        throw new Error("この入力依頼から契約を作成できません。");
+      }
+      if (current.previewSha256 !== pdfSha256) {
+        throw new Error("確認済みPDFのHashが変更されています。");
+      }
+      if (current.status === "submitted") {
+        transaction.update(requestRef, {
+          status: "finalizing",
+          updatedAt: Timestamp.now(),
+        });
+      }
+      return { ...current, status: "finalizing" as const };
+    });
+  }
+
+  let result = existing
+    ? { id: existing.id, contractNumber: existing.contractNumber }
+    : null;
+  if (!result && bytes && pdf) {
+    try {
+      const template = CONTRACT_TEMPLATES[inputRequest.sourceTemplateId];
+      result = await createContract(
+        {
+          title: inputRequest.title,
+          type: template.contractType,
+          internalMemo: inputRequest.internalMemo,
+          companyName: inputRequest.submittedInput!.companyName,
+          corporateNumber: inputRequest.submittedInput!.corporateNumber,
+          companyAddress: inputRequest.submittedInput!.companyAddress,
+          signerName: inputRequest.submittedInput!.representativeName,
+          signerRole: inputRequest.submittedInput!.representativeRole,
+          signerEmail: inputRequest.signerEmail,
+          sourceTemplateId: inputRequest.sourceTemplateId,
+          effectiveDate: generationInput.effectiveDate,
+        },
+        new File([Buffer.from(bytes)], pdf.name, { type: "application/pdf" }),
+        actor,
+        {
+          contractId: inputRequest.contractId,
+          sourceInputRequestId: inputRequest.id,
+          sourceInputSha256: inputRequest.submittedInputSha256,
+        }
+      );
+    } catch (error) {
+      await firestore.runTransaction(async (transaction) => {
+        const [requestSnapshot, contractSnapshot] = await Promise.all([
+          transaction.get(requestRef),
+          transaction.get(firestore.collection("contracts").doc(inputRequest.contractId)),
+        ]);
+        if (
+          requestSnapshot.exists &&
+          requestSnapshot.data()?.status === "finalizing" &&
+          !contractSnapshot.exists
+        ) {
+          transaction.update(requestRef, {
+            status: "submitted",
+            updatedAt: Timestamp.now(),
+          });
+        }
+      }).catch(() => undefined);
+      throw error;
+    }
+  }
+  if (!result) throw new Error("契約作成を再開できませんでした。");
 
   await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(requestRef);
     if (!snapshot.exists) throw new Error("入力依頼が見つかりません。");
-    inputRequest = normalizeRequest(snapshot.id, snapshot.data()!);
-    if (inputRequest.status !== "submitted" || !inputRequest.submittedInput) {
-      throw new Error("相手方の入力が完了していません。");
+    const current = normalizeRequest(snapshot.id, snapshot.data()!);
+    if (current.status === "converted" && current.contractId === result!.id) return;
+    if (current.status !== "finalizing" || current.contractId !== result!.id) {
+      throw new Error("入力依頼の最終化状態が一致しません。");
     }
-    if (!inputRequest.previewSha256 || inputRequest.previewSha256 !== pdfSha256) {
-      throw new Error("確認したPDFと登録するPDFが一致しません。もう一度内容を確認してください。");
-    }
-    transaction.update(requestRef, {
-      status: "finalizing",
-      updatedAt: Timestamp.now(),
-    });
-  });
-
-  try {
-    const template = CONTRACT_TEMPLATES[inputRequest.sourceTemplateId];
-    if (!inputRequest.submittedInput) {
-      throw new Error("相手方の入力が完了していません。");
-    }
-    const submitted = inputRequest.submittedInput;
-    const result = await createContract(
-      {
-        title: inputRequest.title,
-        type: template.contractType,
-        internalMemo: inputRequest.internalMemo,
-        companyName: submitted.companyName,
-        corporateNumber: submitted.corporateNumber,
-        companyAddress: submitted.companyAddress,
-        signerName: submitted.representativeName,
-        signerRole: submitted.representativeRole,
-        signerEmail: inputRequest.signerEmail,
-        sourceTemplateId: inputRequest.sourceTemplateId,
-        effectiveDate: submitted.effectiveDate,
+    const convertedAtDate = new Date();
+    const convertedAt = Timestamp.fromDate(convertedAtDate);
+    const chain = buildAuditChain(current.id, current.auditLastHash, current.auditSequence, [{
+      eventType: "INPUT_REQUEST_CONVERTED",
+      occurredAt: convertedAtDate,
+      actorType: "admin",
+      actorId: actor.uid,
+      metadata: {
+        contractId: result!.id,
+        documentSha256: pdfSha256,
+        submittedInputSha256: current.submittedInputSha256,
       },
-      new File([Buffer.from(bytes)], pdf.name, { type: "application/pdf" }),
-      actor
-    );
-
-    await firestore.runTransaction(async (transaction) => {
-      const snapshot = await transaction.get(requestRef);
-      if (!snapshot.exists) return;
-      const current = normalizeRequest(snapshot.id, snapshot.data()!);
-      const convertedAtDate = new Date();
-      const convertedAt = Timestamp.fromDate(convertedAtDate);
-      const chain = buildAuditChain(current.id, current.auditLastHash, current.auditSequence, [{
-        eventType: "INPUT_REQUEST_CONVERTED",
-        occurredAt: convertedAtDate,
-        actorType: "admin",
-        actorId: actor.uid,
-        metadata: { contractId: result.id, documentSha256: pdfSha256 },
-      }]);
-      transaction.update(requestRef, {
-        status: "converted",
-        contractId: result.id,
-        convertedAt,
-        updatedAt: convertedAt,
-        auditLastHash: chain.lastHash,
-        auditSequence: chain.lastSequence,
-      });
-      writeEvents(transaction, requestRef, chain.events);
+    }]);
+    transaction.update(requestRef, {
+      status: "converted",
+      convertedAt,
+      updatedAt: convertedAt,
+      auditLastHash: chain.lastHash,
+      auditSequence: chain.lastSequence,
     });
-    return result;
-  } catch (error) {
-    await requestRef.update({ status: "submitted", updatedAt: Timestamp.now() }).catch(() => undefined);
-    throw error;
-  }
+    writeEvents(transaction, requestRef, chain.events);
+  });
+  return result;
 }

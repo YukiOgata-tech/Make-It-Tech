@@ -100,7 +100,7 @@ export default async function ContractsPage({
 
       <div className="mt-5 overflow-hidden rounded-2xl border bg-card">
         <div className="hidden grid-cols-[140px_1.2fr_1fr_105px_125px_125px_125px] gap-3 border-b bg-muted/40 px-4 py-3 text-xs font-medium text-muted-foreground lg:grid">
-          <span>契約ID</span><span>契約</span><span>契約先・署名者</span><span>状態</span><span>作成日時</span><span>送信日時</span><span>締結日時</span>
+          <span>契約ID</span><span>契約</span><span>契約先・署名者</span><span>状態</span><span>作成日時</span><span>送信日時</span><span>相手方同意</span>
         </div>
         {filtered.length ? filtered.map((contract) => (
           <Link key={contract.id} href={`/sub/admin-console/contracts/${contract.id}`} className="grid gap-2 border-b px-4 py-4 transition last:border-b-0 hover:bg-muted/30 lg:grid-cols-[140px_1.2fr_1fr_105px_125px_125px_125px] lg:items-center lg:gap-3">

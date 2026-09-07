@@ -23,7 +23,7 @@ export type ContractArtifactSource = {
   verificationMethod: "company_email_link" | "jpki";
   signedAt: Date;
   documentSha256: string;
-  finalAuditHash: string;
+  signingAuditHash: string;
 };
 
 const PAGE_WIDTH = 595.28;
@@ -118,7 +118,7 @@ function drawEvidencePage(page: PDFPage, font: PDFFont, source: ContractArtifact
     ["契約先", source.companyName],
     ["署名者", `${source.signerRole} ${source.signerName}`],
     ["本人確認", verificationLabel(source.verificationMethod)],
-    ["契約締結日時", formatJst(source.signedAt)],
+    ["相手方同意日時（署名操作）", formatJst(source.signedAt)],
   ];
   let y = PAGE_HEIGHT - 155;
   for (const [label, value] of rows) {
@@ -130,8 +130,8 @@ function drawEvidencePage(page: PDFPage, font: PDFFont, source: ContractArtifact
   y -= 6;
   page.drawText("Document SHA-256", { x: MARGIN, y, size: 9, font, color: rgb(0.4, 0.43, 0.48) });
   y = drawWrapped(page, font, source.documentSha256, MARGIN, y - 23, { size: 8 });
-  page.drawText("Audit Log 最終Hash", { x: MARGIN, y: y - 8, size: 9, font, color: rgb(0.4, 0.43, 0.48) });
-  drawWrapped(page, font, source.finalAuditHash, MARGIN, y - 31, { size: 8 });
+  page.drawText("署名操作時 Audit Hash", { x: MARGIN, y: y - 8, size: 9, font, color: rgb(0.4, 0.43, 0.48) });
+  drawWrapped(page, font, source.signingAuditHash, MARGIN, y - 31, { size: 8 });
 
   page.drawText("このページは契約原本を変更せず、締結時の証跡情報を追加したものです。", {
     x: MARGIN,
@@ -196,7 +196,7 @@ export async function createCertificatePdf(source: ContractArtifactSource) {
     ["署名者", source.signerName],
     ["役職", source.signerRole],
     ["認証方式", verificationLabel(source.verificationMethod)],
-    ["契約締結日時", formatJst(source.signedAt)],
+    ["相手方同意日時（署名操作）", formatJst(source.signedAt)],
     ["契約ステータス", "締結済み（completed）"],
   ];
   let y = PAGE_HEIGHT - 170;
@@ -208,8 +208,8 @@ export async function createCertificatePdf(source: ContractArtifactSource) {
 
   page.drawText("Document SHA-256", { x: MARGIN, y, size: 9, font, color: rgb(0.4, 0.43, 0.48) });
   y = drawWrapped(page, font, source.documentSha256, MARGIN, y - 22, { size: 8 });
-  page.drawText("Audit Log 最終Hash", { x: MARGIN, y: y - 7, size: 9, font, color: rgb(0.4, 0.43, 0.48) });
-  drawWrapped(page, font, source.finalAuditHash, MARGIN, y - 29, { size: 8 });
+  page.drawText("署名操作時 Audit Hash", { x: MARGIN, y: y - 7, size: 9, font, color: rgb(0.4, 0.43, 0.48) });
+  drawWrapped(page, font, source.signingAuditHash, MARGIN, y - 29, { size: 8 });
 
   drawWrapped(
     page,

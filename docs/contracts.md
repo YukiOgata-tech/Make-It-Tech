@@ -2,7 +2,7 @@
 
 ## 目的と対象
 
-Make It Techと取引先法人の間で、確認済みPDFを原本としてNDA、FDE基本契約、FDE個別契約、Web制作契約、システム開発・業務委託契約、その他契約を締結・管理する内部業務システムです。テンプレートへの入力は、Make It Techが行う方法と、専用URLから取引先が行う方法を選択できます。
+Make It Techと取引先法人の間で、確認済みPDFを原本としてNDA、FDE基本契約、FDE個別契約、Web制作契約、システム開発・業務委託契約、その他契約を締結・管理する内部業務システムです。契約書の全項目をMake It Techが入力する方法と、契約条件をMake It Techが確定した上で会社・署名予定者情報だけを取引先へ入力依頼する方法を選択できます。
 
 V1は認定電子署名サービスや外部認証局を再現するものではありません。署名画像ではなく、契約当事者、固定したPDF、本人確認方法、権限表明、明示的同意、サーバー時刻、接続情報、Audit Logを契約IDへ結び付けて保存します。
 
@@ -29,16 +29,16 @@ V1は認定電子署名サービスや外部認証局を再現するものでは
 
 ### 相手方へ入力を依頼
 
-1. 管理者がテンプレート、管理用タイトル、相手方メールアドレスを指定する
+1. 管理者がテンプレート、管理用タイトル、相手方メールアドレス、契約発効日、テンプレート固有の契約条件を設定・確定する
 2. システムが48時間有効の相手方入力URLを発行し、メール送信する
-3. 相手方が法人情報、署名予定者、契約発効日、テンプレート固有の契約条件を入力する
+3. 相手方が法人名、法人番号、所在地、署名予定者氏名、役職だけを入力する。契約条件の入力欄は表示しない
 4. 入力URLを使用済みにし、管理者へ確認待ちとして表示する
-5. 管理者が入力値を確認し、WordからPDFを生成する
+5. 相手方入力をcanonical JSON化したSHA-256と、Make It Techが設定した契約条件のSHA-256を検証して組み合わせ、WordからPDFを生成する
 6. 管理者がPDF全文を確認し、確認したものと同一SHA-256のPDFだけを原本登録する
 7. 契約詳細画面でMake It Tech側の内容確定を行い、別の正式署名URLを発行・送信する
 8. 相手方がPDFを再確認し、登録済み署名者氏名を入力して4項目へ同意し、電子署名する
 
-相手方による情報送信は契約締結ではありません。入力用URLと正式署名URLは、用途・状態・有効期限を分離した別トークンです。入力後に管理者が契約条件を変更する編集機能は設けず、訂正が必要な場合は新しい入力依頼を作成します。
+相手方による情報送信は契約締結ではありません。入力用URLと正式署名URLは、用途・状態・有効期限を分離した別トークンです。契約条件は入力依頼作成時にMake It Tech側で固定します。訂正が必要な場合は入力依頼を取り消して新しく作成します。
 
 ## Wordテンプレート共通
 
@@ -101,12 +101,14 @@ V1ではWordファイル自体を原本登録または署名対象にしませ�
 - `signer`: 氏名、役職、メールアドレス
 - `verificationMethod`: V1は`company_email_link`
 - `effectiveDate`: 契約書に記載する契約発効日。電子署名・締結完了日時とは別管理
+- `sourceInputRequestId`, `sourceInputSha256`: 相手方入力依頼IDと、相手方が送信した会社・署名者情報のSHA-256
 - `document`: 原本のversion、Storageパス、SHA-256、サイズ、ページ数、原ファイル名、ロック日時
 - `acceptance`: 本人・権限・内容確認・同意、文言バージョン、確認方法、接続証跡
 - `executedDocument`, `certificateDocument`: 生成物のStorageパスとSHA-256
 - `documentAccessTokenHash`, `documentAccessExpiresAt`: 締結書類取得専用トークンのHashと期限
 - `auditLastHash`, `auditSequence`: Auditチェーン末尾
-- `signedAt`, `completedAt`: システムが記録する実際の電子署名日時・電子締結完了日時
+- `signedAt`: 相手方が氏名入力と同意を確定した署名操作日時（相手方同意日時）
+- `completedAt`: 締結済みPDF・証明書を保存した後、最終Auditイベントを確定した実時刻
 - その他の各種UTC Timestamp
 
 ### `contracts/{contractId}/events/{eventId}`
@@ -119,11 +121,13 @@ append-onlyのAudit Logです。`sequence`、`eventType`、`occurredAt`、`actor
 
 ### `contractInputRequests/{requestId}`
 
-相手方入力依頼を保存します。タイトル、送信先、テンプレートID、状態、入力期限、相手方の確定入力、確認用PDFのSHA-256、変換後の契約ID、Auditチェーン末尾を保持します。状態は`pending -> submitted -> finalizing -> converted`を基本とし、送信失敗時は`failed`、期限切れ時は`expired`です。`pending`・`failed`・`expired`は再発行でき、以前の入力トークンを失効させます。
+相手方入力依頼を保存します。タイトル、送信先、テンプレートID、Make It Techが確定した契約条件とそのSHA-256、状態、入力期限、相手方が送信した会社・署名者情報とそのSHA-256、確認用PDFのSHA-256、事前確保した契約ID、Auditチェーン末尾を保持します。状態は`pending -> submitted -> finalizing -> converted`を基本とし、送信失敗時は`failed`、期限切れ時は`expired`、管理者取消時は`cancelled`です。`pending`・`failed`・`expired`は再発行でき、以前の入力トークンを失効させます。
+
+`contractId`は入力依頼作成時に事前確保します。`finalize`は同じ契約ID、相手方入力Hash、原本PDF Hashの組み合わせだけを受け付けます。契約作成後に入力依頼側の更新が失敗した場合は`finalizing`から既存契約を検証して再開し、新しい契約を作成しません。
 
 ### `contractInputRequests/{requestId}/events/{eventId}`
 
-入力依頼の作成、メール送信、ページ初回表示、相手方入力、PDFプレビュー、契約への変換、期限切れ、再発行、送信失敗をappend-onlyで保存します。契約本体とは別のハッシュチェーンとして管理画面で整合性を検証します。
+入力依頼の作成、メール送信、ページ初回表示、相手方入力、PDFプレビュー、契約への変換、期限切れ、再発行、送信失敗、管理者取消をappend-onlyで保存します。`RECIPIENT_INPUT_SUBMITTED`には相手方入力SHA-256を記録します。契約本体とは別のハッシュチェーンとして管理画面で整合性を検証します。
 
 ### `counters/contracts-{year}`
 
@@ -185,6 +189,7 @@ completed
 - 管理画面から失効時は`revoked`
 - 期限切れは署名ページ表示時に`expired`としてAudit記録
 - 使用済みトークンは再締結に利用できない
+- 入力依頼の取消時はactiveな`recipient_input`トークンをTransaction内で即時`revoked`へ変更する
 - 期限後の書類再取得は管理者へ依頼し、管理画面から提供する
 
 URLは機密情報として扱います。署名URLの平文は発行直後の管理画面に一度だけ表示し、署名者へメール送信します。DBへ保存せず、アプリケーションログへも出力しません。
@@ -207,7 +212,7 @@ eventHash = SHA-256(canonicalEventPayload including previousHash)
 - `CONSENT_ACCEPTED`
 - `CONTRACT_SIGNED`
 
-続く`CONTRACT_COMPLETED`のHashを先に固定してPDFへ記載し、PDF保存後に同じイベントをTransactionで追加します。これにより証明書記載値と契約の最終Audit Hashが一致します。
+署名操作時は`CONTRACT_SIGNED`までをTransactionで確定し、その時点のAudit Hashを締結済みPDFと証明書へ記載します。PDFと証明書をStorageへ保存した後、実際の最終確定時刻と両生成物のSHA-256を含む`CONTRACT_COMPLETED`をTransactionで追加し、その時刻を`completedAt`へ保存します。
 
 ## 本人確認と同意
 
@@ -229,7 +234,7 @@ V1の`VerificationProvider`は`company_email_link`です。Make It Techが事前
 - `executed.pdf`: 原本ページを変更せず、末尾へ電子契約証跡ページを追加
 - `certificate.pdf`: Make It Tech独自の電子契約締結証明書
 - 日本語はNoto Sans JPを埋め込み
-- 契約ID、当事者、署名者、確認方式、JST締結日時、原本SHA-256、Audit最終Hashを記載
+- 契約ID、当事者、署名者、確認方式、JSTの相手方同意日時、原本SHA-256、署名操作時Audit Hashを記載
 - 外部認証局・認定電子署名サービスの証明書ではない旨を明記
 
 ## セキュリティ方針
@@ -255,13 +260,15 @@ V1の`VerificationProvider`は`company_email_link`です。Make It Techが事前
 
 1. 管理画面の「契約管理」から「新規契約」を開き、「Make It Techが入力」または「相手方へ入力を依頼」を選ぶ
 2. Make It Tech入力では、テンプレートを選び、法人・署名予定者・契約条件を入力する
-3. 相手方入力では、テンプレートとメールアドレスを指定して入力URLを送信し、一覧の「相手方入力依頼」で完了を待つ
+3. 相手方入力では、テンプレート、契約発効日、全契約条件、メールアドレスをMake It Tech側で確定して入力URLを送信し、一覧の「相手方入力依頼」で会社・署名者情報の入力完了を待つ
 4. 「PDFにして内容確認へ」で自動変換し、確認画面で全文を確認して原本登録する
 5. 契約詳細画面で法人・署名予定者・原本を再確認し、「Make It Techとして内容を確定」で原本をロックする
 6. 期限を指定し、「署名URLを発行してメール送信」を実行する。発行直後だけ表示されるURLは必要に応じてコピーする
 7. 相手方は正式署名画面で氏名を入力し、権限・PDF確認・電子締結へ同意して署名する
 8. 一覧・詳細で送信、閲覧、締結状態を確認し、締結後は原本、締結済みPDF、締結証明書、Audit Logを確認する
 9. 締結前に取消・作り直しが必要な場合は旧契約をvoidにし、新しい契約を作成する。締結済み契約はvoidへ変更しない
+
+相手方入力依頼の取消は、契約本体の`void`とは別操作です。`pending`・`submitted`・`expired`・`failed`の入力依頼だけを`cancelled`にでき、activeな入力URLを即時失効させます。`finalizing`・`converted`は入力依頼として取り消せません。
 
 Windowsローカル環境では、`CONTRACT_PDF_CONVERTER_URL`が未指定の場合、PCへインストール済みのMicrosoft Wordを非表示で起動してPDFへ変換します。Dockerや追加の変換サービスは不要です。Windows以外の本番環境では、`CONTRACT_PDF_CONVERTER_URL`へ非公開GotenbergのベースURLを設定します。認証プロキシを利用する場合は`CONTRACT_PDF_CONVERTER_BEARER_TOKEN`も設定します。契約書が第三者へ送られないよう、公開デモや共有変換APIは使用しません。`SIGN_SITE_URL`は任意で、本番未指定時は`https://sign.make-it-tech.com`、開発時は`http://localhost:3000/sub/sign`を使用します。
 

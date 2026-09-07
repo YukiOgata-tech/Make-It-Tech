@@ -32,15 +32,12 @@ export const createContractSchema = z.object({
   effectiveDate: isoDate.optional(),
 });
 
-export const createContractInputRequestSchema = z.object({
-  title: trimmed(1, 160),
-  internalMemo: optionalTrimmed(2000),
-  signerEmail: z.string().trim().email().max(320),
-  sourceTemplateId: z.enum(CONTRACT_TEMPLATE_IDS),
-});
-
 export const contractInputPartySchema = z.object({
+  companyName: singleLine(1, 200),
   corporateNumber: optionalTrimmed(30),
+  companyAddress: singleLine(1, 500),
+  representativeRole: singleLine(1, 120),
+  representativeName: singleLine(1, 120),
 });
 
 export const sendContractSchema = z.object({
@@ -114,8 +111,56 @@ export const fdeMasterTemplateGenerationSchema = z.object({
   electronicExecutionAccepted: z.literal(true),
 });
 
+const contractPartyFieldKeys = {
+  companyName: true,
+  companyAddress: true,
+  representativeRole: true,
+  representativeName: true,
+  electronicExecutionAccepted: true,
+} as const;
+
+export const ndaContractConditionsSchema = ndaTemplateGenerationSchema.omit(
+  contractPartyFieldKeys
+);
+export const dataHandlingContractConditionsSchema =
+  dataHandlingTemplateGenerationSchema.omit(contractPartyFieldKeys);
+export const fdeMasterContractConditionsSchema =
+  fdeMasterTemplateGenerationSchema.omit(contractPartyFieldKeys);
+
+const contractInputRequestBaseFields = {
+  title: trimmed(1, 160),
+  internalMemo: optionalTrimmed(2000),
+  signerEmail: z.string().trim().email().max(320),
+  electronicExecutionAccepted: z.literal(true),
+};
+
+export const createContractInputRequestSchema = z.discriminatedUnion(
+  "sourceTemplateId",
+  [
+    z.object({
+      ...contractInputRequestBaseFields,
+      sourceTemplateId: z.literal("nda-standard-v1"),
+      contractConditions: ndaContractConditionsSchema,
+    }),
+    z.object({
+      ...contractInputRequestBaseFields,
+      sourceTemplateId: z.literal("data-handling-addendum-standard-v1"),
+      contractConditions: dataHandlingContractConditionsSchema,
+    }),
+    z.object({
+      ...contractInputRequestBaseFields,
+      sourceTemplateId: z.literal("fde-master-standard-v1"),
+      contractConditions: fdeMasterContractConditionsSchema,
+    }),
+  ]
+);
+
 export type CreateContractInput = z.infer<typeof createContractSchema>;
 export type CreateContractInputRequestInput = z.infer<typeof createContractInputRequestSchema>;
+export type ContractInputParty = z.infer<typeof contractInputPartySchema>;
+export type NdaContractConditions = z.infer<typeof ndaContractConditionsSchema>;
+export type DataHandlingContractConditions = z.infer<typeof dataHandlingContractConditionsSchema>;
+export type FdeMasterContractConditions = z.infer<typeof fdeMasterContractConditionsSchema>;
 export type NdaTemplateGenerationInput = z.infer<typeof ndaTemplateGenerationSchema>;
 export type DataHandlingTemplateGenerationInput = z.infer<typeof dataHandlingTemplateGenerationSchema>;
 export type FdeMasterTemplateGenerationInput = z.infer<typeof fdeMasterTemplateGenerationSchema>;

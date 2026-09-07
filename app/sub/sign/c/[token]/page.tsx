@@ -67,7 +67,7 @@ export default async function ContractSignPage({ params }: { params: Promise<{ t
         {result.state === "completed" ? (
           <section className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-950">
             <div className="flex items-center gap-2 text-lg font-semibold"><ShieldCheck />契約締結済み</div>
-            <p className="mt-2 text-sm">締結日時：{formatDate(contract.completedAt)}</p>
+            <p className="mt-2 text-sm">電子締結最終確定日時：{formatDate(contract.completedAt)}</p>
             <div className="mt-5 flex flex-wrap gap-3"><Button asChild className="rounded-xl"><a href={`/api/contracts/c/${encodedToken}/documents/executed`} target="_blank" rel="noreferrer">締結済みPDF</a></Button><Button asChild variant="outline" className="rounded-xl bg-white"><a href={`/api/contracts/c/${encodedToken}/documents/certificate`} target="_blank" rel="noreferrer">締結証明書</a></Button></div>
           </section>
         ) : result.state === "processing" ? (

@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { generateContractTemplateWord } from "@/lib/contracts/generated-template.server";
 import { isAllowedSameOriginRequest } from "@/lib/contracts/http";
 import {
+  buildContractInputGenerationInput,
   getContractInputRequest,
   recordContractInputPreview,
 } from "@/lib/contracts/input-requests.server";
@@ -32,7 +33,7 @@ export async function POST(
   try {
     const generated = await generateContractTemplateWord(
       inputRequest.sourceTemplateId,
-      inputRequest.submittedInput
+      buildContractInputGenerationInput(inputRequest)
     );
     const pdfBytes = await convertWordToPdf(generated.bytes, generated.fileName);
     const previewSha256 = sha256(pdfBytes);
