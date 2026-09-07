@@ -137,16 +137,16 @@ const FDE_MASTER_FIELD_GROUPS: ReadonlyArray<{
 ];
 
 const INITIAL_FDE_MASTER_FIELDS: Record<FdeMasterFieldKey, string> = {
-  latePaymentInterestRate: "",
-  confidentialityYears: "",
-  suspensionDelayDays: "",
-  curePeriodDays: "",
-  handoverDays: "",
-  dataDeletionDays: "",
-  termYears: "",
-  renewalNoticeDays: "",
-  renewalYears: "",
-  terminationNoticeDays: "",
+  latePaymentInterestRate: "14.6",
+  confidentialityYears: "5",
+  suspensionDelayDays: "30",
+  curePeriodDays: "14",
+  handoverDays: "30",
+  dataDeletionDays: "30",
+  termYears: "1",
+  renewalNoticeDays: "30",
+  renewalYears: "1",
+  terminationNoticeDays: "30",
   jurisdiction: "",
 };
 
@@ -689,6 +689,9 @@ export function ContractNewForm() {
               <h2 className="text-lg font-semibold">FDE業務委託基本契約の空欄を入力</h2>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                 原本に〇で残されている契約条件をすべて入力します。委託料や個別業務の内容は、基本契約ではなく個別契約で定めます。
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                数値欄には一般的な取引条件を想定した初期値を入れています。案件と相手方との合意に応じて変更してください。
               </p>
               <div className="mt-5 max-w-sm space-y-2">
                 <Label htmlFor="effectiveDate">契約発効日</Label>
