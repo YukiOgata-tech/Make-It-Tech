@@ -5,6 +5,7 @@ import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import {
   AUTHORITY_STATEMENT_VERSION,
   CONSENT_STATEMENT_VERSION,
+  SIGNER_NAME_STATEMENT_VERSION,
   CONTRACT_DOCUMENT_ACCESS_DAYS,
   CONTRACT_DOCUMENT_VERSION,
   CONTRACT_PDF_MAX_BYTES,
@@ -112,6 +113,8 @@ export type ContractRecord = {
     ipAddress: string;
     userAgent: string;
     requestId: string;
+    typedSignerName: string;
+    signerNameStatementVersion: string;
   };
   pendingCompletionEvent?: ContractAuditEvent;
 };
@@ -646,7 +649,15 @@ export async function openSignSession(token: string, evidence: RequestEvidence):
   });
 }
 
-export async function completeContractSigning(token: string, evidence: RequestEvidence) {
+function normalizeSignerName(value: string) {
+  return value.normalize("NFKC").replace(/\s+/g, "").toLowerCase();
+}
+
+export async function completeContractSigning(
+  token: string,
+  evidence: RequestEvidence,
+  signatureInput: { typedSignerName: string }
+) {
   const tokenHash = sha256(token);
   const { firestore } = getFirebaseAdmin();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
@@ -688,6 +699,12 @@ export async function completeContractSigning(token: string, evidence: RequestEv
     const expiresAt = (tokenData.expiresAt as Timestamp | undefined)?.toDate();
     if (!expiresAt || expiresAt.getTime() <= Date.now()) throw new Error("署名URLの有効期限が切れています。");
     if (!["sent", "viewed"].includes(contract.status)) throw new Error("この契約は締結できません。");
+    if (
+      normalizeSignerName(signatureInput.typedSignerName) !==
+      normalizeSignerName(contract.signer.name)
+    ) {
+      throw new Error("入力した署名者氏名が登録情報と一致しません。");
+    }
 
     const signedDate = new Date();
     const signedAt = Timestamp.fromDate(signedDate);
@@ -703,6 +720,14 @@ export async function completeContractSigning(token: string, evidence: RequestEv
     const signedChain = buildAuditChain(contract.id, contract.auditLastHash, contract.auditSequence, [
       { ...common, eventType: "VERIFICATION_STARTED", metadata: { method: verification.method } },
       { ...common, eventType: "VERIFICATION_SUCCEEDED", metadata: { method: verification.method } },
+      {
+        ...common,
+        eventType: "SIGNER_NAME_CONFIRMED",
+        metadata: {
+          typedSignerName: signatureInput.typedSignerName.trim(),
+          statementVersion: SIGNER_NAME_STATEMENT_VERSION,
+        },
+      },
       {
         ...common,
         eventType: "AUTHORITY_ACCEPTED",
@@ -737,6 +762,8 @@ export async function completeContractSigning(token: string, evidence: RequestEv
       ipAddress: evidence.ipAddress,
       userAgent: evidence.userAgent,
       requestId: evidence.requestId,
+      typedSignerName: signatureInput.typedSignerName.trim(),
+      signerNameStatementVersion: SIGNER_NAME_STATEMENT_VERSION,
     };
     transaction.update(tokenRef, { status: "used", usedAt: signedAt });
     transaction.update(contractRef, {

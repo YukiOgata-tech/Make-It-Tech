@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { CONTRACT_ACCEPTANCE_STATEMENTS } from "@/lib/contracts/constants";
 
 const statements = [
@@ -12,14 +14,21 @@ const statements = [
   ["consentAccepted", CONTRACT_ACCEPTANCE_STATEMENTS.consent],
 ] as const;
 
-export function ContractSigningForm({ token }: { token: string }) {
+export function ContractSigningForm({
+  token,
+  expectedSignerName,
+}: {
+  token: string;
+  expectedSignerName: string;
+}) {
   const [accepted, setAccepted] = useState<Record<string, boolean>>({});
+  const [typedSignerName, setTypedSignerName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [documentAccessToken, setDocumentAccessToken] = useState("");
   const [documentAccessExpiresAt, setDocumentAccessExpiresAt] = useState("");
   const [error, setError] = useState("");
-  const allAccepted = statements.every(([key]) => accepted[key]);
+  const allAccepted = statements.every(([key]) => accepted[key]) && typedSignerName.trim();
 
   async function submit() {
     if (!allAccepted) return;
@@ -29,7 +38,10 @@ export function ContractSigningForm({ token }: { token: string }) {
       const response = await fetch(`/api/contracts/c/${encodeURIComponent(token)}/accept`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(statements.map(([key]) => [key, true]))),
+        body: JSON.stringify({
+          typedSignerName,
+          ...Object.fromEntries(statements.map(([key]) => [key, true])),
+        }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error ?? "契約を締結できませんでした。");
@@ -81,6 +93,20 @@ export function ContractSigningForm({ token }: { token: string }) {
     <section className="rounded-2xl border bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6">
       <h2 className="text-lg font-semibold text-slate-950">契約締結確認</h2>
       <p className="mt-1 text-sm text-slate-600">以下をすべて確認し、チェックしてください。</p>
+      <div className="mt-5 space-y-2 rounded-xl border border-orange-200 bg-orange-50 p-4">
+        <Label htmlFor="typedSignerName" className="text-slate-900">電子署名者氏名</Label>
+        <Input
+          id="typedSignerName"
+          required
+          maxLength={120}
+          autoComplete="name"
+          value={typedSignerName}
+          onChange={(event) => setTypedSignerName(event.target.value)}
+          placeholder={expectedSignerName}
+          className="bg-white text-slate-950"
+        />
+        <p className="text-xs text-slate-600">上に表示されている署名予定者本人が、氏名を入力してください。登録氏名と一致しない場合は締結できません。</p>
+      </div>
       <div className="mt-5 space-y-3">
         {statements.map(([key, label]) => (
           <label key={key} className="flex cursor-pointer gap-3 rounded-xl border border-slate-200 p-4 text-sm leading-relaxed text-slate-800 hover:border-orange-300">

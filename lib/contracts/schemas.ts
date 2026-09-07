@@ -32,11 +32,23 @@ export const createContractSchema = z.object({
   effectiveDate: isoDate.optional(),
 });
 
+export const createContractInputRequestSchema = z.object({
+  title: trimmed(1, 160),
+  internalMemo: optionalTrimmed(2000),
+  signerEmail: z.string().trim().email().max(320),
+  sourceTemplateId: z.enum(CONTRACT_TEMPLATE_IDS),
+});
+
+export const contractInputPartySchema = z.object({
+  corporateNumber: optionalTrimmed(30),
+});
+
 export const sendContractSchema = z.object({
   expiresInDays: z.number().int().min(1).max(CONTRACT_TOKEN_MAX_DAYS).default(CONTRACT_TOKEN_DEFAULT_DAYS),
 });
 
 export const acceptContractSchema = z.object({
+  typedSignerName: singleLine(1, 120),
   identityAccepted: z.literal(true),
   authorityAccepted: z.literal(true),
   reviewedAccepted: z.literal(true),
@@ -103,6 +115,7 @@ export const fdeMasterTemplateGenerationSchema = z.object({
 });
 
 export type CreateContractInput = z.infer<typeof createContractSchema>;
+export type CreateContractInputRequestInput = z.infer<typeof createContractInputRequestSchema>;
 export type NdaTemplateGenerationInput = z.infer<typeof ndaTemplateGenerationSchema>;
 export type DataHandlingTemplateGenerationInput = z.infer<typeof dataHandlingTemplateGenerationSchema>;
 export type FdeMasterTemplateGenerationInput = z.infer<typeof fdeMasterTemplateGenerationSchema>;

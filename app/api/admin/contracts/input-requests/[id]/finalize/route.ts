@@ -1,0 +1,37 @@
+import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/admin-auth";
+import { isAllowedSameOriginRequest } from "@/lib/contracts/http";
+import { finalizeContractInputRequest } from "@/lib/contracts/input-requests.server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!isAllowedSameOriginRequest(request)) {
+    return Response.json({ error: "不正な送信元です。" }, { status: 403 });
+  }
+  const session = await requireAdmin();
+  const { id } = await params;
+  const formData = await request.formData();
+  const pdf = formData.get("pdf");
+  if (!(pdf instanceof File)) {
+    return Response.json({ error: "確認済みPDFがありません。" }, { status: 400 });
+  }
+  try {
+    const result = await finalizeContractInputRequest(id, pdf, {
+      uid: session.uid,
+      email: session.email,
+    });
+    revalidatePath("/sub/admin-console/contracts");
+    revalidatePath(`/sub/admin-console/contracts/input-requests/${id}`);
+    return Response.json({ ok: true, ...result }, { status: 201 });
+  } catch (error) {
+    return Response.json(
+      { error: error instanceof Error ? error.message : "契約を作成できませんでした。" },
+      { status: 409 }
+    );
+  }
+}

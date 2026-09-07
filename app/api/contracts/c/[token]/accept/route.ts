@@ -37,10 +37,12 @@ export async function POST(
   }
   const parsed = acceptContractSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
-    return Response.json({ error: "すべての確認項目への同意が必要です。" }, { status: 400 });
+    return Response.json({ error: "署名者氏名の入力と、すべての確認項目への同意が必要です。" }, { status: 400 });
   }
   try {
-    const result = await completeContractSigning(token, evidence);
+    const result = await completeContractSigning(token, evidence, {
+      typedSignerName: parsed.data.typedSignerName,
+    });
     return Response.json({ ok: true, ...result });
   } catch (error) {
     return Response.json(

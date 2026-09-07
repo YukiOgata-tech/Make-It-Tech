@@ -1,6 +1,6 @@
 import type { ContractStatus } from "@/lib/contracts/constants";
 
-export type ContractTokenPurpose = "signing" | "documents";
+export type ContractTokenPurpose = "recipient_input" | "signing" | "documents";
 export type ContractDocumentKind = "original" | "executed" | "certificate";
 
 export const VOIDABLE_CONTRACT_STATUSES: readonly ContractStatus[] = [
@@ -12,7 +12,8 @@ export const VOIDABLE_CONTRACT_STATUSES: readonly ContractStatus[] = [
 ];
 
 export function getContractTokenPurpose(value: unknown): ContractTokenPurpose {
-  return value === "documents" ? "documents" : "signing";
+  if (value === "documents" || value === "recipient_input") return value;
+  return "signing";
 }
 
 export function canVoidContractStatus(status: ContractStatus) {
@@ -42,6 +43,8 @@ export function canAccessContractDocument(input: {
       (input.contractStatus === "sent" || input.contractStatus === "viewed")
     );
   }
+
+  if (input.purpose === "recipient_input") return false;
 
   return (
     input.contractStatus === "completed" &&

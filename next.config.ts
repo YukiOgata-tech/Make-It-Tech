@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     "/api/contracts/c/*/accept": ["./node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff"],
     "/api/admin/contracts/templates/*/generate": ["./assets/contracts/templates/*.docx"],
     "/api/admin/contracts/templates/*/preview": ["./assets/contracts/templates/*.docx"],
+    "/api/admin/contracts/input-requests/*/preview": ["./assets/contracts/templates/*.docx"],
   },
   async headers() {
     return [
@@ -23,6 +24,10 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/contracts/c/:path*",
+        headers: noReferrerHeaders(),
+      },
+      {
+        source: "/api/contracts/i/:path*",
         headers: noReferrerHeaders(),
       },
     ];

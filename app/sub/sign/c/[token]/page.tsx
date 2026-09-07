@@ -71,14 +71,14 @@ export default async function ContractSignPage({ params }: { params: Promise<{ t
             <div className="mt-5 flex flex-wrap gap-3"><Button asChild className="rounded-xl"><a href={`/api/contracts/c/${encodedToken}/documents/executed`} target="_blank" rel="noreferrer">締結済みPDF</a></Button><Button asChild variant="outline" className="rounded-xl bg-white"><a href={`/api/contracts/c/${encodedToken}/documents/certificate`} target="_blank" rel="noreferrer">締結証明書</a></Button></div>
           </section>
         ) : result.state === "processing" ? (
-          <section className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-6"><h2 className="font-semibold text-amber-950">締結書類を生成中です</h2><p className="mt-2 text-sm text-amber-800">処理が中断された場合は、下のボタンから安全に再開できます。</p><div className="mt-4"><ContractSigningForm token={token} /></div></section>
+          <section className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-6"><h2 className="font-semibold text-amber-950">締結書類を生成中です</h2><p className="mt-2 text-sm text-amber-800">処理が中断された場合は、下のボタンから安全に再開できます。</p><div className="mt-4"><ContractSigningForm token={token} expectedSignerName={contract.signerName} /></div></section>
         ) : (
           <>
             <section className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm sm:rounded-3xl">
               <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 sm:px-6"><div className="flex items-center gap-2 text-sm font-semibold"><FileCheck2 className="size-4 text-orange-600" />契約書原本</div><a href={`/api/contracts/c/${encodedToken}/documents/original`} target="_blank" rel="noreferrer" className="text-xs font-medium text-orange-700 hover:underline">別画面で開く</a></div>
               <iframe title={`${contract.title} 契約書PDF`} src={`/api/contracts/c/${encodedToken}/documents/original`} className="h-[65vh] min-h-[520px] w-full bg-slate-100" />
             </section>
-            <div className="mt-6"><ContractSigningForm token={token} /></div>
+            <div className="mt-6"><ContractSigningForm token={token} expectedSignerName={contract.signerName} /></div>
           </>
         )}
         <p className="mt-8 text-center text-xs leading-relaxed text-slate-500">本システムは、契約書・本人確認方法・権限表明・契約意思・日時を証跡として保存します。<br />外部認証局または認定電子署名サービスによる電子証明書ではありません。</p>

@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileSignature, Plus } from "lucide-react";
+import { FileInput, FileSignature, Plus } from "lucide-react";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getContracts } from "@/lib/contracts/server";
 import {
+  CONTRACT_INPUT_REQUEST_STATUS_LABELS,
+  getContractInputRequests,
+} from "@/lib/contracts/input-requests.server";
+import {
   CONTRACT_STATUSES,
   CONTRACT_STATUS_LABELS,
+  CONTRACT_TEMPLATES,
   CONTRACT_TYPES,
   CONTRACT_TYPE_LABELS,
   type ContractStatus,
@@ -13,6 +18,7 @@ import {
 } from "@/lib/contracts/constants";
 import { ContractStatusBadge } from "@/components/admin/contract-status-badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
 export const metadata: Metadata = { title: "契約管理", robots: { index: false, follow: false } };
@@ -38,7 +44,10 @@ export default async function ContractsPage({
 }) {
   await requireAdmin();
   const filters = await searchParams;
-  const contracts = await getContracts();
+  const [contracts, inputRequests] = await Promise.all([
+    getContracts(),
+    getContractInputRequests(50),
+  ]);
   const query = filters.q?.trim().toLowerCase() ?? "";
   const type = CONTRACT_TYPES.includes(filters.type as ContractType) ? (filters.type as ContractType) : "";
   const status = CONTRACT_STATUSES.includes(filters.status as ContractStatus) ? (filters.status as ContractStatus) : "";
@@ -71,6 +80,23 @@ export default async function ContractsPage({
         </select>
         <Button type="submit" variant="outline" className="rounded-xl">絞り込む</Button>
       </form>
+
+      {inputRequests.length ? (
+        <section className="mt-5 overflow-hidden rounded-2xl border bg-card">
+          <div className="flex items-center justify-between gap-3 border-b bg-sky-50/70 px-4 py-3 dark:bg-sky-950/20">
+            <div className="flex items-center gap-2"><FileInput className="size-4 text-sky-700 dark:text-sky-300" /><h2 className="text-sm font-semibold">相手方入力依頼</h2></div>
+            <span className="text-xs text-muted-foreground">最新{inputRequests.length}件</span>
+          </div>
+          {inputRequests.map((inputRequest) => (
+            <Link key={inputRequest.id} href={`/sub/admin-console/contracts/input-requests/${inputRequest.id}`} className="grid gap-2 border-b px-4 py-4 transition last:border-b-0 hover:bg-muted/30 sm:grid-cols-[1fr_220px_140px_150px] sm:items-center">
+              <span><strong className="block text-sm font-medium">{inputRequest.title}</strong><small className="text-xs text-muted-foreground">{CONTRACT_TYPE_LABELS[CONTRACT_TEMPLATES[inputRequest.sourceTemplateId].contractType]}</small></span>
+              <span className="break-all text-xs text-muted-foreground">{inputRequest.signerEmail}</span>
+              <Badge variant="outline" className="w-fit rounded-lg">{CONTRACT_INPUT_REQUEST_STATUS_LABELS[inputRequest.status]}</Badge>
+              <span className="text-xs text-muted-foreground">{formatDate(inputRequest.createdAt)}</span>
+            </Link>
+          ))}
+        </section>
+      ) : null}
 
       <div className="mt-5 overflow-hidden rounded-2xl border bg-card">
         <div className="hidden grid-cols-[140px_1.2fr_1fr_105px_125px_125px_125px] gap-3 border-b bg-muted/40 px-4 py-3 text-xs font-medium text-muted-foreground lg:grid">
