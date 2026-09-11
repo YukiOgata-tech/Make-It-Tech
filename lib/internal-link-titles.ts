@@ -8,6 +8,7 @@ const INTERNAL_TITLES: Record<string, string> = {
   "/contact": "お問い合わせ",
   "/news": "お知らせ",
   "/niigata": "新潟のDX支援",
+  "/partners": "協業パートナー",
   "/privacy": "プライバシーポリシー",
   "/security-policy": "セキュリティポリシー",
   "/services": "サービス",

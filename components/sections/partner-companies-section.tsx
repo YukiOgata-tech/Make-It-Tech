@@ -1,7 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
-import { ArrowUpRight, Building2, MapPin } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Building2, MapPin } from "lucide-react";
 import { Section } from "@/components/layout/section";
+import { Button } from "@/components/ui/button";
 import {
   partnerCompanies,
   type PartnerCompany,
@@ -166,6 +168,17 @@ export function PartnerCompaniesSection() {
             </div>
           </div>
         )}
+
+        {partnerCompanies.length ? (
+          <div className="mt-4 flex justify-end sm:mt-6">
+            <Button asChild variant="outline" className="rounded-xl">
+              <Link href="/partners">
+                協業パートナーを詳しく見る
+                <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       {partnerListJsonLd ? (

@@ -6,6 +6,7 @@ export const footerLinks = [
       { label: "サービス概要", href: "/services" },
       { label: "実績紹介", href: "/works" },
       { label: "事業所概要", href: "/about" },
+      { label: "協業パートナー", href: "/partners" },
       { label: "業務診断", href: "/#diagnosis" },
       { label: "LINEで相談", href: "/survey" },
     ],
