@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 type MyLifeMessageProps = {
   text: string;
@@ -8,12 +8,12 @@ type MyLifeMessageProps = {
 };
 
 export function MyLifeMessage({ text, speedMs = 32 }: MyLifeMessageProps) {
-  const normalizedText = useMemo(() => text.trim(), [text]);
-  const [count, setCount] = useState(0);
+  const normalizedText = text.trim();
+  return <MyLifeTypewriter key={normalizedText} normalizedText={normalizedText} speedMs={speedMs} />;
+}
 
-  useEffect(() => {
-    setCount(0);
-  }, [normalizedText]);
+function MyLifeTypewriter({ normalizedText, speedMs }: { normalizedText: string; speedMs: number }) {
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!normalizedText) return;

@@ -44,7 +44,7 @@ export default async function AdminNewsDetailPage({
     path?: string;
   };
   const links = Array.isArray(data.links)
-    ? data.links.map((item: any) => ({
+    ? data.links.map((item: { url?: unknown; title?: unknown; description?: unknown; image?: unknown }) => ({
         url: String(item?.url ?? ""),
         title: typeof item?.title === "string" ? item.title : "",
         description: typeof item?.description === "string" ? item.description : "",

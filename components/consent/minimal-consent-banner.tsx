@@ -28,10 +28,17 @@ export function MinimalConsentBanner() {
   const [consent, setConsent] = useState<ConsentState>("unset");
 
   useEffect(() => {
-    const stored = getCookieValue(COOKIE_NAME);
-    if (stored === "accepted" || stored === "declined") {
-      setConsent(stored);
-    }
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const stored = getCookieValue(COOKIE_NAME);
+      if (stored === "accepted" || stored === "declined") {
+        setConsent(stored);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const updateConsent = (next: Exclude<ConsentState, "unset">) => {

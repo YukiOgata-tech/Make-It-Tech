@@ -180,17 +180,24 @@ export function useConsent() {
   const [consent, setConsent] = useState<ConsentType>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(CONSENT_KEY);
-    if (stored) {
-      try {
-        const parsed: CookieConsent = JSON.parse(stored);
-        if (parsed.version === CONSENT_VERSION) {
-          setConsent(parsed.type);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const stored = localStorage.getItem(CONSENT_KEY);
+      if (stored) {
+        try {
+          const parsed: CookieConsent = JSON.parse(stored);
+          if (parsed.version === CONSENT_VERSION) {
+            setConsent(parsed.type);
+          }
+        } catch {
+          // Invalid data
         }
-      } catch {
-        // Invalid data
       }
-    }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return {

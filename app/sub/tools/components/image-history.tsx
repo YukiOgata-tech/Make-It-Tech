@@ -14,6 +14,10 @@ interface ImageHistoryProps {
   renderBadge?: (item: ImageHistoryItem) => React.ReactNode;
 }
 
+function expiresWithinOneHour(expiresAt: number) {
+  return expiresAt - Date.now() < 60 * 60 * 1000;
+}
+
 export function ImageHistory({
   items,
   title = "変換履歴",
@@ -119,7 +123,7 @@ export function ImageHistory({
                       </span>
                     </div>
                     {/* Expiration warning */}
-                    {item.expiresAt - Date.now() < 60 * 60 * 1000 && (
+                    {expiresWithinOneHour(item.expiresAt) && (
                       <div className="mt-1 text-[10px] text-yellow-500">
                         残り {getTimeRemaining(item.expiresAt)}
                       </div>

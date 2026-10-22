@@ -301,6 +301,111 @@ body[data-has-breadcrumbs="true"] {
   --input: rgb(74 95 103);
 }
 
+/* Admin console uses a restrained, system-like application palette. */
+.admin-app {
+  --background: rgb(245 245 247);
+  --foreground: rgb(29 29 31);
+  --card: rgb(255 255 255);
+  --card-foreground: rgb(29 29 31);
+  --popover: rgb(255 255 255);
+  --popover-foreground: rgb(29 29 31);
+  --primary: rgb(0 113 227);
+  --primary-foreground: rgb(255 255 255);
+  --secondary: rgb(239 239 242);
+  --secondary-foreground: rgb(44 44 46);
+  --muted: rgb(242 242 245);
+  --muted-foreground: rgb(105 105 111);
+  --accent: rgb(232 239 250);
+  --accent-foreground: rgb(0 83 181);
+  --border: rgb(225 225 230);
+  --input: rgb(218 218 224);
+  --ring: rgb(0 113 227);
+  --sidebar: rgb(251 251 253);
+  --sidebar-foreground: rgb(35 35 38);
+  --sidebar-primary: rgb(0 113 227);
+  --sidebar-primary-foreground: rgb(255 255 255);
+  --sidebar-accent: rgb(232 239 250);
+  --sidebar-accent-foreground: rgb(0 83 181);
+  --sidebar-border: rgb(229 229 233);
+  --sidebar-ring: rgb(0 113 227);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+  font-weight: 400;
+  background-image: radial-gradient(55rem 30rem at 95% -5%, rgb(215 231 255 / 0.4), transparent 68%);
+}
+
+.admin-app h1,
+.admin-app h2,
+.admin-app h3,
+.admin-app h4 {
+  font-family: inherit;
+  letter-spacing: -0.035em;
+}
+
+.admin-app .admin-surface {
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  background: var(--card);
+  box-shadow: 0 1px 2px rgb(18 30 48 / 0.025), 0 14px 36px rgb(18 30 48 / 0.035);
+}
+
+.admin-app .admin-surface.admin-surface--tinted {
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+}
+
+.admin-app .admin-field {
+  height: 2.75rem;
+  border: 1px solid var(--input);
+  border-radius: 0.8rem;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.admin-app .admin-field:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgb(0 113 227 / 0.14);
+}
+
+.admin-app .admin-field:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.dark .admin-app {
+  --background: rgb(20 20 23);
+  --foreground: rgb(245 245 247);
+  --card: rgb(35 35 39);
+  --card-foreground: rgb(245 245 247);
+  --popover: rgb(39 39 43);
+  --popover-foreground: rgb(245 245 247);
+  --primary: rgb(80 164 255);
+  --primary-foreground: rgb(11 24 41);
+  --secondary: rgb(53 53 58);
+  --secondary-foreground: rgb(239 239 242);
+  --muted: rgb(45 45 50);
+  --muted-foreground: rgb(176 176 183);
+  --accent: rgb(35 57 83);
+  --accent-foreground: rgb(175 212 255);
+  --border: rgb(62 62 69);
+  --input: rgb(76 76 83);
+  --ring: rgb(80 164 255);
+  --sidebar: rgb(28 28 32);
+  --sidebar-foreground: rgb(239 239 242);
+  --sidebar-primary: rgb(80 164 255);
+  --sidebar-primary-foreground: rgb(11 24 41);
+  --sidebar-accent: rgb(39 58 80);
+  --sidebar-accent-foreground: rgb(190 221 255);
+  --sidebar-border: rgb(57 57 63);
+  --sidebar-ring: rgb(80 164 255);
+  background-image: radial-gradient(55rem 30rem at 95% -5%, rgb(29 66 111 / 0.27), transparent 68%);
+}
+
+.dark .admin-app .admin-field:focus-visible {
+  box-shadow: 0 0 0 3px rgb(80 164 255 / 0.2);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

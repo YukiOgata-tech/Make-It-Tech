@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { LineButton } from "@/components/ui/line-button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
-import { faqCategoryMeta, faqItems } from "@/content/sections/faq-section";
+import { faqItems } from "@/content/sections/faq-section";
 import {
   Accordion,
   AccordionContent,

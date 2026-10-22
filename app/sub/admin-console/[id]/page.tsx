@@ -68,6 +68,10 @@ function formatBytes(bytes: number) {
   return `${(kb / 1024).toFixed(1)} MB`;
 }
 
+function getSignedUrlExpiration() {
+  return Date.now() + 7 * 24 * 60 * 60 * 1000;
+}
+
 export default async function AdminConsoleDetailPage({
   params,
 }: {
@@ -130,7 +134,7 @@ export default async function AdminConsoleDetailPage({
       try {
         const [url] = await bucket.file(storagePath).getSignedUrl({
           action: "read",
-          expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+          expires: getSignedUrlExpiration(),
         });
         return { ...item, url };
       } catch {

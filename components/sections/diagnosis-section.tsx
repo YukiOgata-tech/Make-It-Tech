@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LineButton } from "@/components/ui/line-button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MobileDisclosure } from "@/components/mobile-disclosure";
 import {
@@ -18,20 +18,6 @@ import {
 
 export function DiagnosisSection({ className }: { className?: string }) {
   const lineUrl = site.line?.surveyUrl ?? "https://lin.ee/8uHdH0Y";
-  const deliverableBubbles = [
-    {
-      lines: ["診断サマリー", "（現状/課題/優先事項）"],
-    },
-    {
-      lines: ["推奨IT/サービス", "の提案"],
-    },
-    {
-      lines: ["概算見積", "進行プラン"],
-    },
-    {
-      lines: ["次のアクション", "提案"],
-    },
-  ];
 
   return (
     <section id="diagnosis" className={cn("py-6 sm:py-18", className)}>

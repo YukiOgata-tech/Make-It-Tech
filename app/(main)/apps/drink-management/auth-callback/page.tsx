@@ -46,21 +46,29 @@ export default function DrinkManagementAuthCallbackPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const generated = buildDeepLinkFromLocation();
-    if (!generated) {
-      setStatus("error");
-      setErrorMessage("認証情報を確認できませんでした。メールのリンクを再度開いてください。");
-      return;
-    }
+    let cancelled = false;
+    let redirectTimer: number | undefined;
 
-    setDeepLink(generated);
-    setStatus("success");
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const generated = buildDeepLinkFromLocation();
+      if (!generated) {
+        setStatus("error");
+        setErrorMessage("認証情報を確認できませんでした。メールのリンクを再度開いてください。");
+        return;
+      }
 
-    const timer = window.setTimeout(() => {
-      window.location.href = generated;
-    }, 500);
+      setDeepLink(generated);
+      setStatus("success");
+      redirectTimer = window.setTimeout(() => {
+        window.location.href = generated;
+      }, 500);
+    });
 
-    return () => window.clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      if (redirectTimer !== undefined) window.clearTimeout(redirectTimer);
+    };
   }, []);
 
   const title = useMemo(() => {

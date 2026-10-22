@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
 import { useTextHistory } from "../hooks/use-text-history";
 import { useConsent } from "./cookie-consent";
@@ -22,7 +22,7 @@ export function QRGenerator() {
   const { allowsFunctional } = useConsent();
   const history = useTextHistory("qr", allowsFunctional);
 
-  const generateQR = async () => {
+  const generateQR = useCallback(async () => {
     if (!text.trim()) {
       setError("テキストを入力してください");
       setQrDataUrl("");
@@ -51,17 +51,17 @@ export function QRGenerator() {
 
       const dataUrl = canvas.toDataURL("image/png");
       setQrDataUrl(dataUrl);
-    } catch (err) {
+    } catch {
       setError("QRコードの生成に失敗しました");
       setQrDataUrl("");
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, [bgColor, errorLevel, fgColor, size, text]);
 
   useEffect(() => {
-    generateQR();
-  }, [text, size, bgColor, fgColor, errorLevel]);
+    void generateQR();
+  }, [generateQR]);
 
   const dataUrlToBlob = async (dataUrl: string) => {
     const response = await fetch(dataUrl);

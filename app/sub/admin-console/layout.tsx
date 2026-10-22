@@ -1,16 +1,23 @@
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminFooter } from "@/components/admin/admin-footer";
+import { cookies } from "next/headers";
+import { AdminShell } from "@/components/admin/admin-shell";
+import { getAdminSession } from "@/lib/admin-auth";
 
-export default function AdminConsoleLayout({
+export default async function AdminConsoleLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [session, cookieStore] = await Promise.all([getAdminSession(), cookies()]);
+
+  if (!session) {
+    return <div className="admin-app min-h-dvh bg-background text-foreground">{children}</div>;
+  }
+
+  const defaultSidebarOpen = cookieStore.get("admin_sidebar_state")?.value !== "false";
+
   return (
-    <div className="flex min-h-dvh flex-col bg-background text-foreground">
-      <AdminHeader />
-      <main className="flex-1">{children}</main>
-      <AdminFooter />
-    </div>
+    <AdminShell session={session} defaultSidebarOpen={defaultSidebarOpen}>
+      {children}
+    </AdminShell>
   );
 }

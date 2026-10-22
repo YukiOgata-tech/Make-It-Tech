@@ -2,22 +2,17 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+const subscribeToHostname = () => () => undefined;
 
 export function ChatWidgetScript() {
   const pathname = usePathname();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-
-  const hostname =
-    typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+  const hostname = useSyncExternalStore(
+    subscribeToHostname,
+    () => window.location.hostname.toLowerCase(),
+    () => ""
+  );
   const isMakeItTechSubdomain =
     hostname.endsWith(".make-it-tech.com") && hostname !== "make-it-tech.com";
   const isSubRoute = pathname.startsWith("/sub/");

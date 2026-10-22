@@ -88,6 +88,8 @@ export function BlogImageDialog() {
 
   return (
     <Dialog.Root open onOpenChange={(open) => !open && handleClose()}>
+      {/* MDXEditor owns this ref and Radix requires its current element as the portal container. */}
+      {/* eslint-disable-next-line react-hooks/refs */}
       <Dialog.Portal container={editorRootElementRef?.current ?? undefined}>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60" />
         <Dialog.Content

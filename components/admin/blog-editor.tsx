@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -243,7 +243,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
     []
   );
 
-  const compressImage = async (file: File, purpose: "cover" | "inline") => {
+  const compressImage = useCallback(async (file: File, purpose: "cover" | "inline") => {
     if (file.type === "image/gif") return file;
     const options = {
       maxSizeMB: purpose === "cover" ? MAX_COVER_IMAGE_MB : MAX_INLINE_IMAGE_MB,
@@ -260,9 +260,9 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
       console.warn("Image compression failed", error);
       return file;
     }
-  };
+  }, []);
 
-  const uploadImage = async (file: File, purpose: "cover" | "inline") => {
+  const uploadImage = useCallback(async (file: File, purpose: "cover" | "inline") => {
     const compressedFile = await compressImage(file, purpose);
     const formData = new FormData();
     formData.append("file", compressedFile);
@@ -296,7 +296,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
       throw new Error("画像URLを取得できませんでした。");
     }
     return { url, path };
-  };
+  }, [compressImage, id]);
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
@@ -562,10 +562,10 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
     }
   };
 
-  const imageUploadHandler: ImageUploadHandler = async (image) => {
+  const imageUploadHandler: ImageUploadHandler = useCallback(async (image: File) => {
     const uploaded = await uploadImage(image, "inline");
     return uploaded.url;
-  };
+  }, [uploadImage]);
 
   const editorPlugins = useMemo(
     () => [

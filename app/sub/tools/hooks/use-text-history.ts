@@ -27,32 +27,6 @@ export function useTextHistory(storageKey: string, enabled: boolean = true) {
 
   const fullKey = `devtools_${storageKey}_history`;
 
-  useEffect(() => {
-    if (!enabled) {
-      setIsLoaded(true);
-      return;
-    }
-
-    try {
-      const stored = localStorage.getItem(fullKey);
-      if (stored) {
-        const state: HistoryState = JSON.parse(stored);
-        if (state.version === HISTORY_VERSION) {
-          const now = Date.now();
-          const validItems = state.items.filter((item) => item.expiresAt > now);
-          setItems(validItems);
-
-          if (validItems.length !== state.items.length) {
-            saveToStorage(validItems);
-          }
-        }
-      }
-    } catch {
-      // Invalid data
-    }
-    setIsLoaded(true);
-  }, [enabled, fullKey]);
-
   const saveToStorage = useCallback((newItems: TextHistoryItem[]) => {
     const state: HistoryState = {
       items: newItems,
@@ -60,6 +34,39 @@ export function useTextHistory(storageKey: string, enabled: boolean = true) {
     };
     localStorage.setItem(fullKey, JSON.stringify(state));
   }, [fullKey]);
+
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      if (!enabled) {
+        setIsLoaded(true);
+        return;
+      }
+
+      try {
+        const stored = localStorage.getItem(fullKey);
+        if (stored) {
+          const state: HistoryState = JSON.parse(stored);
+          if (state.version === HISTORY_VERSION) {
+            const now = Date.now();
+            const validItems = state.items.filter((item) => item.expiresAt > now);
+            setItems(validItems);
+
+            if (validItems.length !== state.items.length) {
+              saveToStorage(validItems);
+            }
+          }
+        }
+      } catch {
+        // Invalid data
+      }
+      setIsLoaded(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, fullKey, saveToStorage]);
 
   const addItem = useCallback(
     (content: string, metadata: Record<string, string | number> = {}): void => {

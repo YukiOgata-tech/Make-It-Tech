@@ -14,24 +14,28 @@ export function HomeSplash() {
   const [phase, setPhase] = useState<SplashPhase>("checking");
 
   useEffect(() => {
-    const alreadySeen = window.sessionStorage.getItem(SPLASH_STORAGE_KEY);
-    if (alreadySeen) {
-      setPhase("done");
-      return;
-    }
+    let cancelled = false;
+    let hideTimer: number | undefined;
+    let doneTimer: number | undefined;
 
-    window.sessionStorage.setItem(SPLASH_STORAGE_KEY, "1");
-    setPhase("show");
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const alreadySeen = window.sessionStorage.getItem(SPLASH_STORAGE_KEY);
+      if (alreadySeen) {
+        setPhase("done");
+        return;
+      }
 
-    const hideTimer = window.setTimeout(() => setPhase("hide"), SHOW_MS);
-    const doneTimer = window.setTimeout(
-      () => setPhase("done"),
-      SHOW_MS + EXIT_MS
-    );
+      window.sessionStorage.setItem(SPLASH_STORAGE_KEY, "1");
+      setPhase("show");
+      hideTimer = window.setTimeout(() => setPhase("hide"), SHOW_MS);
+      doneTimer = window.setTimeout(() => setPhase("done"), SHOW_MS + EXIT_MS);
+    });
 
     return () => {
-      window.clearTimeout(hideTimer);
-      window.clearTimeout(doneTimer);
+      cancelled = true;
+      if (hideTimer !== undefined) window.clearTimeout(hideTimer);
+      if (doneTimer !== undefined) window.clearTimeout(doneTimer);
     };
   }, []);
 
