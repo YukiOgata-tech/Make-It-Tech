@@ -1,12 +1,8 @@
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
-import {
-  ADMIN_SESSION_COOKIE,
-  verifyAdminSessionCookie,
-} from "@/lib/admin-auth";
+import { getAdminSession } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -23,9 +19,7 @@ function addMonths(date: Date, months: number) {
 }
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value ?? "";
-  const session = await verifyAdminSessionCookie(cookie);
+  const session = await getAdminSession();
   if (!session) {
     return Response.json({ error: "Unauthorized." }, { status: 401 });
   }

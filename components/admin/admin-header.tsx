@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import {
   BookOpenText,
@@ -10,6 +10,7 @@ import {
   FileSignature,
   Heart,
   Home,
+  LogOut,
   Mail,
   Menu,
   Moon,
@@ -95,9 +96,11 @@ const menuGroups = [
 
 export function AdminHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [loggingOut, setLoggingOut] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -110,6 +113,18 @@ export function AdminHeader() {
       ? "ライトモードに切り替え"
       : "ダークモードに切り替え"
     : "テーマを切り替え";
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await fetch("/api/admin/session", { method: "DELETE" });
+      router.replace("/login");
+      router.refresh();
+    } finally {
+      setLoggingOut(false);
+      setMenuOpen(false);
+    }
+  };
 
   return (
     <header className="border-b border-border/60 bg-background/80 backdrop-blur">
@@ -223,6 +238,21 @@ export function AdminHeader() {
                     <span className="mt-0.5 block text-xs text-muted-foreground">公開サイトを確認</span>
                   </span>
                 </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="mt-1 cursor-pointer rounded-xl p-2.5 text-destructive focus:text-destructive"
+                disabled={loggingOut}
+                onSelect={(event) => {
+                  event.preventDefault();
+                  void handleLogout();
+                }}
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
+                  <LogOut className="size-4" aria-hidden="true" />
+                </span>
+                <span className="text-sm font-medium">
+                  {loggingOut ? "ログアウト中..." : "ログアウト"}
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

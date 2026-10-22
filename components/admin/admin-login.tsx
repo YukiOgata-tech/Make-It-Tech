@@ -2,17 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
 import { Loader2 } from "lucide-react";
-import { getFirebaseClientAuth } from "@/lib/firebase-client";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+
+const ADMIN_ROLES = new Set(["owner", "admin"]);
 
 export function AdminLogin() {
   const router = useRouter();
@@ -21,16 +18,16 @@ export function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const createSession = async (idToken: string) => {
-    const response = await fetch("/api/admin/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
-    });
+  const verifyAdminAccess = async () => {
+    const supabase = createSupabaseBrowserClient();
+    const { data, error } = await supabase
+      .rpc("get_mit_admin_access")
+      .maybeSingle();
 
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(payload?.error ?? "ログインに失敗しました。");
+    const access = data as { role?: string } | null;
+    if (error || !access?.role || !ADMIN_ROLES.has(access.role)) {
+      await supabase.auth.signOut();
+      throw new Error("この管理画面を利用する権限がありません。");
     }
   };
 
@@ -39,11 +36,13 @@ export function AdminLogin() {
     setLoading(true);
     setMessage("");
     try {
-      const auth = getFirebaseClientAuth();
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await result.user.getIdToken();
-      await createSession(idToken);
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      await verifyAdminAccess();
       router.replace("/");
+      router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "ログインに失敗しました。");
     } finally {
@@ -55,15 +54,16 @@ export function AdminLogin() {
     setLoading(true);
     setMessage("");
     try {
-      const auth = getFirebaseClientAuth();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      await createSession(idToken);
-      router.replace("/");
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "ログインに失敗しました。");
-    } finally {
       setLoading(false);
     }
   };
@@ -75,7 +75,7 @@ export function AdminLogin() {
           管理者ログイン
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          管理者アカウントでログインしてください。
+          Make It Tech の管理者アカウントでログインしてください。
         </p>
 
         <form onSubmit={handleEmailLogin} className="mt-5 grid gap-3 sm:gap-4">

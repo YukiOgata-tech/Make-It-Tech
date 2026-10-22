@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { nfcSite } from "@/content/nfc/site";
 import { signSite } from "@/content/sign/site";
+import { refreshSupabaseSession } from "@/lib/supabase/proxy";
 
 const hostRouteMap: Record<string, string> = {
   "lp.make-it-tech.com": "/sub/lp",
@@ -30,35 +31,49 @@ function normalizeHost(host: string) {
   return host.toLowerCase().split(":")[0];
 }
 
-export function proxy(request: NextRequest) {
+function applyCookieUpdates(
+  response: NextResponse,
+  cookieUpdates: Awaited<ReturnType<typeof refreshSupabaseSession>>
+) {
+  cookieUpdates.forEach(({ name, value, options }) => {
+    response.cookies.set(name, value, options);
+  });
+  return response;
+}
+
+export async function proxy(request: NextRequest) {
   const host = normalizeHost(request.headers.get("host") ?? "");
   const { pathname } = request.nextUrl;
+  const isAdminConsole = host.startsWith(adminConsolePrefix);
+  const cookieUpdates = isAdminConsole
+    ? await refreshSupabaseSession(request)
+    : [];
 
-  const targetBase = host.startsWith(adminConsolePrefix)
+  const targetBase = isAdminConsole
     ? "/sub/admin-console"
     : hostRouteMap[host];
 
   if (!targetBase) {
-    return NextResponse.next();
+    return applyCookieUpdates(NextResponse.next({ request }), cookieUpdates);
   }
 
   // `public/images` is shared by the main site and every subdomain. Rewriting
   // these requests would turn `/images/...` into `/sub/*/images/...` and 404.
   if (sharedPublicPathPrefixes.some((prefix) => pathname.startsWith(prefix))) {
-    return NextResponse.next();
+    return applyCookieUpdates(NextResponse.next({ request }), cookieUpdates);
   }
 
   if (siteFilePaths.has(pathname) && !siteFileRoutes[targetBase]?.has(pathname)) {
-    return NextResponse.next();
+    return applyCookieUpdates(NextResponse.next({ request }), cookieUpdates);
   }
 
   if (pathname.startsWith(targetBase)) {
-    return NextResponse.next();
+    return applyCookieUpdates(NextResponse.next({ request }), cookieUpdates);
   }
 
   const url = request.nextUrl.clone();
   url.pathname = pathname === "/" ? targetBase : `${targetBase}${pathname}`;
-  return NextResponse.rewrite(url);
+  return applyCookieUpdates(NextResponse.rewrite(url, { request }), cookieUpdates);
 }
 
 export const config = {

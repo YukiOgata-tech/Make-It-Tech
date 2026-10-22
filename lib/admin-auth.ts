@@ -1,78 +1,76 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Timestamp } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export const ADMIN_SESSION_COOKIE = "admin_session";
-export const SESSION_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000;
+export const MIT_ROLES = ["owner", "admin", "staff", "viewer"] as const;
+export type MitRole = (typeof MIT_ROLES)[number];
 
-export function getAllowedAdminEmails() {
-  return (process.env.ADMIN_ALLOWED_EMAILS ?? "")
-    .split(",")
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean);
+export type MitSession = {
+  uid: string;
+  email: string;
+  entityId: string;
+  role: MitRole;
+};
+
+type MitAccessRow = {
+  user_id: string;
+  email: string;
+  entity_id: string;
+  role: string;
+};
+
+function isMitRole(value: unknown): value is MitRole {
+  return typeof value === "string" && MIT_ROLES.includes(value as MitRole);
 }
 
-export async function verifyAdminSessionCookie(cookieValue: string) {
-  if (!cookieValue) return null;
-  const { auth, firestore } = getFirebaseAdmin();
-  try {
-    const decoded = await auth.verifySessionCookie(cookieValue, true);
-    const email = decoded.email?.toLowerCase() ?? "";
-    const uid = decoded.uid;
+export async function getMitSession(): Promise<MitSession | null> {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-    if (uid) {
-      try {
-        const adminDoc = await firestore.collection("adminUsers").doc(uid).get();
-        if (adminDoc.exists) {
-          const data = adminDoc.data() ?? {};
-          if (data.enabled === true) {
-            return decoded;
-          }
-        }
-      } catch {
-        return null;
-      }
-    }
+  if (userError || !user?.id || !user.email) return null;
 
-    const allowed = getAllowedAdminEmails();
-    if (allowed.length && email && allowed.includes(email)) {
-      if (uid) {
-        const now = Timestamp.now();
-        try {
-          await firestore.collection("adminUsers").doc(uid).set(
-            {
-              email,
-              enabled: true,
-              role: "admin",
-              createdAt: now,
-              updatedAt: now,
-            },
-            { merge: true }
-          );
-        } catch {
-          return null;
-        }
-      }
-      return decoded;
-    }
+  const { data, error: accessError } = await supabase
+    .rpc("get_mit_admin_access")
+    .maybeSingle();
+  const access = data as MitAccessRow | null;
 
-    return null;
-  } catch {
+  if (
+    accessError ||
+    !access ||
+    access.user_id !== user.id ||
+    typeof access.entity_id !== "string" ||
+    typeof access.email !== "string" ||
+    !isMitRole(access.role)
+  ) {
     return null;
   }
+
+  return {
+    uid: user.id,
+    email: access.email.toLowerCase(),
+    entityId: access.entity_id,
+    role: access.role,
+  };
 }
 
 export async function getAdminSession() {
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value ?? "";
-  return verifyAdminSessionCookie(cookie);
+  const session = await getMitSession();
+  if (!session || !(["owner", "admin"] as MitRole[]).includes(session.role)) {
+    return null;
+  }
+  return session;
 }
 
-export async function requireAdmin() {
-  const session = await getAdminSession();
-  if (!session) {
+export async function requireMitRole(allowedRoles: readonly MitRole[]) {
+  const session = await getMitSession();
+  if (!session || !allowedRoles.includes(session.role)) {
     redirect("/login");
   }
   return session;
+}
+
+export async function requireAdmin() {
+  return requireMitRole(["owner", "admin"]);
 }

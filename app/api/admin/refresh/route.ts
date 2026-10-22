@@ -1,9 +1,5 @@
-import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
-import {
-  ADMIN_SESSION_COOKIE,
-  verifyAdminSessionCookie,
-} from "@/lib/admin-auth";
+import { getAdminSession } from "@/lib/admin-auth";
 
 /**
  * 管理画面を開かずに再検証を叩けるようにするためのトークン認証。
@@ -27,9 +23,7 @@ function hasValidRevalidateToken(request: Request) {
 
 export async function POST(request: Request) {
   if (!hasValidRevalidateToken(request)) {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.get(ADMIN_SESSION_COOKIE)?.value ?? "";
-    const session = await verifyAdminSessionCookie(cookie);
+    const session = await getAdminSession();
     if (!session) {
       return Response.json({ error: "Unauthorized." }, { status: 401 });
     }
