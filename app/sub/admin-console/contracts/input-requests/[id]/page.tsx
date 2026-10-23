@@ -89,14 +89,21 @@ export default async function ContractInputRequestPage({
     <div className="mx-auto max-w-5xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Link href="/sub/admin-console/contracts" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" />契約管理へ戻る</Link>
       <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
-        <div><div className="flex items-center gap-2 text-sm font-medium text-sky-700 dark:text-sky-300"><FileInput className="size-4" />相手方入力依頼</div><h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{inputRequest.title}</h1><p className="mt-2 text-sm text-muted-foreground">{template.name}</p></div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-sky-700 dark:text-sky-300">相手方入力依頼</p>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-700 dark:text-sky-300"><FileInput className="size-5" aria-hidden="true" /></span>
+            <h1 className="min-w-0 break-words text-2xl font-semibold tracking-tight sm:text-3xl">{inputRequest.title}</h1>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">{template.name}</p>
+        </div>
         <Badge variant="outline" className="rounded-lg bg-card">{CONTRACT_INPUT_REQUEST_STATUS_LABELS[inputRequest.status]}</Badge>
       </div>
 
       <div className="mt-7 grid gap-5 sm:grid-cols-3">
-        <Card className="rounded-2xl"><CardContent className="pt-6"><Mail className="size-4 text-muted-foreground" /><p className="mt-3 text-xs text-muted-foreground">送信先</p><p className="mt-1 break-all text-sm font-medium">{inputRequest.signerEmail}</p></CardContent></Card>
-        <Card className="rounded-2xl"><CardContent className="pt-6"><Clock3 className="size-4 text-muted-foreground" /><p className="mt-3 text-xs text-muted-foreground">入力期限</p><p className="mt-1 text-sm font-medium">{formatDate(inputRequest.expiresAt)}</p></CardContent></Card>
-        <Card className="rounded-2xl"><CardContent className="pt-6"><CheckCircle2 className="size-4 text-muted-foreground" /><p className="mt-3 text-xs text-muted-foreground">入力完了日時</p><p className="mt-1 text-sm font-medium">{formatDate(inputRequest.submittedAt)}</p></CardContent></Card>
+        <Card className="rounded-2xl"><CardContent className="pt-6"><div className="flex items-center gap-2"><Mail className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" /><p className="text-xs text-muted-foreground">送信先</p></div><p className="mt-3 break-all text-sm font-medium">{inputRequest.signerEmail}</p></CardContent></Card>
+        <Card className="rounded-2xl"><CardContent className="pt-6"><div className="flex items-center gap-2"><Clock3 className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" /><p className="text-xs text-muted-foreground">入力期限</p></div><p className="mt-3 text-sm font-medium">{formatDate(inputRequest.expiresAt)}</p></CardContent></Card>
+        <Card className="rounded-2xl"><CardContent className="pt-6"><div className="flex items-center gap-2"><CheckCircle2 className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" /><p className="text-xs text-muted-foreground">入力完了日時</p></div><p className="mt-3 text-sm font-medium">{formatDate(inputRequest.submittedAt)}</p></CardContent></Card>
       </div>
 
       {inputRequest.submittedInput ? (

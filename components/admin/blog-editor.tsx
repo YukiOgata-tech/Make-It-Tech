@@ -33,6 +33,7 @@ import {
 } from "@mdxeditor/editor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -215,6 +216,8 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
   const [coverOriginalAspect, setCoverOriginalAspect] = useState(16 / 9);
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [saving, setSaving] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [pendingLinkLabelRemoval, setPendingLinkLabelRemoval] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<"info" | "success" | "error">("info");
@@ -685,8 +688,6 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
 
   const handleDelete = async () => {
     if (!id) return;
-    const confirmed = window.confirm("このブログ記事を削除しますか？");
-    if (!confirmed) return;
     setSaving(true);
     setMessage("");
     setMessageTone("info");
@@ -728,6 +729,27 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
 
   return (
     <div className="grid gap-4">
+      <AdminConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={() => void handleDelete()}
+        title="ブログ記事を削除しますか？"
+        description="公開ページと管理画面からこの記事が削除されます。この操作は元に戻せません。"
+        confirmLabel="削除する"
+        busy={saving}
+        error={messageTone === "error" ? message : undefined}
+      />
+      <AdminConfirmDialog
+        open={pendingLinkLabelRemoval !== null}
+        onOpenChange={(open) => { if (!open) setPendingLinkLabelRemoval(null); }}
+        onConfirm={() => {
+          if (pendingLinkLabelRemoval) handleRemoveLinkLabel(pendingLinkLabelRemoval);
+          setPendingLinkLabelRemoval(null);
+        }}
+        title="リンクの表示名を削除しますか？"
+        description="編集内容から削除します。保存すると公開記事にも反映されます。"
+        confirmLabel="削除する"
+      />
       <div className="rounded-3xl border border-border/60 bg-background/70 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -756,7 +778,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
             </Button>
             {id ? (
               <Button
-                onClick={handleDelete}
+                onClick={() => { setMessage(""); setDeleteConfirmOpen(true); }}
                 variant="outline"
                 className="rounded-xl"
                 disabled={saving}
@@ -956,7 +978,7 @@ export function BlogEditor({ id, initial }: BlogEditorProps) {
                           variant="outline"
                           size="sm"
                           className="rounded-xl"
-                          onClick={() => handleRemoveLinkLabel(item.id)}
+                          onClick={() => setPendingLinkLabelRemoval(item.id)}
                         >
                           削除
                         </Button>

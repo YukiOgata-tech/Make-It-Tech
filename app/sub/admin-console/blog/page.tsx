@@ -171,6 +171,7 @@ export default async function AdminBlogPage({
       </div>
 
       <form
+        data-admin-navigation-form
         action="/sub/admin-console/blog"
         method="get"
         className="mt-4 grid gap-3 sm:flex sm:flex-wrap sm:items-end"

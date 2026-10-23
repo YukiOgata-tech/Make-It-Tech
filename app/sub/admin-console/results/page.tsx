@@ -184,6 +184,7 @@ export default async function AdminConsolePage({
       </div>
 
       <form
+        data-admin-navigation-form
         action="/sub/admin-console/results"
         method="get"
         className="mt-4 grid gap-3 sm:flex sm:flex-wrap sm:items-end"

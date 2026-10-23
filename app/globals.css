@@ -373,6 +373,21 @@ body[data-has-breadcrumbs="true"] {
   opacity: 0.55;
 }
 
+.admin-navigation-progress::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 35%;
+  border-radius: inherit;
+  background: var(--primary);
+  animation: admin-navigation-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes admin-navigation-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(300%); }
+}
+
 .dark .admin-app {
   --background: rgb(20 20 23);
   --foreground: rgb(245 245 247);
@@ -725,6 +740,10 @@ body[data-has-breadcrumbs="true"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .admin-navigation-progress::after {
+    animation: none;
+    width: 100%;
+  }
   .text-gradient-animate,
   .hero-aurora,
   .hero-grid,

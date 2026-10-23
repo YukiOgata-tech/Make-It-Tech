@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,6 +36,7 @@ import {
 export function ContractNewForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmRegisterOpen, setConfirmRegisterOpen] = useState(false);
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [internalMemo, setInternalMemo] = useState("");
@@ -197,8 +199,7 @@ export function ContractNewForm() {
     void generatePdfReview();
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submitContract() {
     setError("");
     setIsSubmitting(true);
     try {
@@ -251,7 +252,18 @@ export function ContractNewForm() {
 
   if (selectedTemplate && reviewPdf) {
     return (
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={(event) => { event.preventDefault(); setError(""); setConfirmRegisterOpen(true); }} className="space-y-6">
+        <AdminConfirmDialog
+          open={confirmRegisterOpen}
+          onOpenChange={setConfirmRegisterOpen}
+          onConfirm={() => void submitContract()}
+          title="このPDFを契約原本として登録しますか？"
+          description="登録後は原本PDFを差し替えできません。契約当事者、署名者、契約条件を確認してから進めてください。"
+          confirmLabel="原本として登録"
+          tone="caution"
+          busy={isSubmitting}
+          error={error}
+        />
         <section className="overflow-hidden rounded-2xl border bg-card sm:rounded-3xl">
           <div className="border-b bg-muted/35 p-4 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -337,7 +349,7 @@ export function ContractNewForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={(event) => event.preventDefault()} className="space-y-8">
       <section className="rounded-2xl border bg-muted/40 p-4 sm:rounded-3xl sm:p-6">
         <div className="flex items-start gap-3">
           <FileText className="mt-0.5 size-5 shrink-0 text-foreground" aria-hidden="true" />
@@ -642,8 +654,10 @@ export function ContractNewForm() {
         </>
       ) : (
         <div className="rounded-2xl border border-dashed bg-muted/30 px-5 py-10 text-center sm:rounded-3xl">
-          <FileText className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
-          <p className="mt-3 text-sm font-medium">最初に契約テンプレートを選択してください</p>
+          <div className="flex items-center justify-center gap-3">
+            <FileText className="size-6 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <p className="text-sm font-medium">最初に契約テンプレートを選択してください</p>
+          </div>
           <p className="mt-1 text-xs text-muted-foreground">選択したテンプレートに必要な入力欄だけを表示します。</p>
         </div>
       )}

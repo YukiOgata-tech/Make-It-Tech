@@ -41,10 +41,11 @@ export default async function ExpenseStatsPage() {
         <ArrowLeft className="size-4" aria-hidden="true" />経費一覧へ戻る
       </Link>
       <header className="mt-5">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-          <ReceiptText className="size-4" aria-hidden="true" />Accounting / Insights
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Accounting / Insights</p>
+        <div className="mt-2 flex items-center gap-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ReceiptText className="size-5" aria-hidden="true" /></span>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">経費統計</h1>
         </div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">経費統計</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">確定した経費の月別推移と内訳を確認できます。</p>
       </header>
 

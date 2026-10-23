@@ -33,15 +33,19 @@ export function ContractCreationChooser() {
     <section>
       <div className="grid gap-4 md:grid-cols-2">
         <button type="button" onClick={() => setMode("admin")} className="group rounded-3xl border bg-card p-6 text-left transition hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-lg dark:hover:border-orange-700 sm:p-8">
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300"><FilePenLine className="size-6" /></span>
-          <h2 className="mt-5 text-xl font-semibold">こちらで入力して作成</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Make It Tech側で法人情報と契約条件をすべて入力し、PDFを確認して署名依頼を送ります。</p>
+          <div className="flex items-center gap-3">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300"><FilePenLine className="size-6" aria-hidden="true" /></span>
+            <h2 className="text-xl font-semibold">こちらで入力して作成</h2>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Make It Tech側で法人情報と契約条件をすべて入力し、PDFを確認して署名依頼を送ります。</p>
           <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-orange-700 dark:text-orange-300">この方式を選ぶ<Building2 className="size-4 transition group-hover:translate-x-0.5" /></span>
         </button>
         <button type="button" onClick={() => setMode("recipient")} className="group rounded-3xl border bg-card p-6 text-left transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg dark:hover:border-sky-700 sm:p-8">
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"><UserRoundPen className="size-6" /></span>
-          <h2 className="mt-5 text-xl font-semibold">相手方に入力を依頼</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">契約条件はこちらで確定し、相手方には専用URLから法人・署名者情報だけを入力してもらいます。</p>
+          <div className="flex items-center gap-3">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"><UserRoundPen className="size-6" aria-hidden="true" /></span>
+            <h2 className="text-xl font-semibold">相手方に入力を依頼</h2>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">契約条件はこちらで確定し、相手方には専用URLから法人・署名者情報だけを入力してもらいます。</p>
           <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 dark:text-sky-300">この方式を選ぶ<UserRoundPen className="size-4 transition group-hover:translate-x-0.5" /></span>
         </button>
       </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import imageCompression from "browser-image-compression";
 import { Button } from "@/components/ui/button";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -127,6 +128,8 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
   const [linkInput, setLinkInput] = useState("");
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
   const [saving, setSaving] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [pendingRemoval, setPendingRemoval] = useState<{ kind: "label" | "link"; url: string } | null>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<"info" | "success" | "error">("info");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
@@ -383,8 +386,6 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
 
   const handleDelete = async () => {
     if (!id) return;
-    const confirmed = window.confirm("このお知らせを削除しますか？");
-    if (!confirmed) return;
     setSaving(true);
     setMessage("");
     setMessageTone("info");
@@ -407,6 +408,28 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
 
   return (
     <div className="grid gap-4">
+      <AdminConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={() => void handleDelete()}
+        title="お知らせを削除しますか？"
+        description="公開ページと管理画面からこのお知らせが削除されます。この操作は元に戻せません。"
+        confirmLabel="削除する"
+        busy={saving}
+        error={messageTone === "error" ? message : undefined}
+      />
+      <AdminConfirmDialog
+        open={pendingRemoval !== null}
+        onOpenChange={(open) => { if (!open) setPendingRemoval(null); }}
+        onConfirm={() => {
+          if (pendingRemoval?.kind === "label") handleRemoveLinkLabel(pendingRemoval.url);
+          if (pendingRemoval?.kind === "link") setLinkItems((prev) => prev.filter((link) => link.url !== pendingRemoval.url));
+          setPendingRemoval(null);
+        }}
+        title={pendingRemoval?.kind === "label" ? "リンクの表示名を削除しますか？" : "リンクを削除しますか？"}
+        description="編集内容から削除します。保存すると公開内容にも反映されます。"
+        confirmLabel="削除する"
+      />
       <div className="rounded-3xl border border-border/60 bg-background/70 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -434,7 +457,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
             </Button>
             {id ? (
               <Button
-                onClick={handleDelete}
+                onClick={() => { setMessage(""); setDeleteConfirmOpen(true); }}
                 variant="outline"
                 className="rounded-xl"
                 disabled={saving}
@@ -563,7 +586,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
                       variant="outline"
                       size="sm"
                       className="rounded-xl"
-                      onClick={() => handleRemoveLinkLabel(item.url)}
+                      onClick={() => setPendingRemoval({ kind: "label", url: item.url })}
                     >
                       削除
                     </Button>
@@ -650,9 +673,7 @@ export function AnnouncementEditor({ id, initial }: AnnouncementEditorProps) {
                         variant="outline"
                         size="sm"
                         className="rounded-xl"
-                        onClick={() =>
-                          setLinkItems((prev) => prev.filter((link) => link.url !== item.url))
-                        }
+                        onClick={() => setPendingRemoval({ kind: "link", url: item.url })}
                       >
                         削除
                       </Button>

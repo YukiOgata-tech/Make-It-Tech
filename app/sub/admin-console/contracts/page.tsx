@@ -61,14 +61,17 @@ export default async function ContractsPage({
     <div className="mx-auto max-w-6xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-sm font-medium text-orange-600 dark:text-orange-300"><FileSignature className="size-4" />Electronic Contracts</div>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">契約管理</h1>
+          <p className="text-sm font-medium text-orange-600 dark:text-orange-300">Electronic Contracts</p>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-300"><FileSignature className="size-5" aria-hidden="true" /></span>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">契約管理</h1>
+          </div>
           <p className="mt-2 text-sm text-muted-foreground">契約原本、署名依頼、締結証跡を一元管理します。</p>
         </div>
         <Button asChild size="lg" className="rounded-xl"><Link href="/sub/admin-console/contracts/new"><Plus />契約を新規作成</Link></Button>
       </div>
 
-      <form className="mt-7 grid gap-3 rounded-2xl border bg-card p-4 sm:grid-cols-[1fr_220px_180px_auto]">
+      <form data-admin-navigation-form className="mt-7 grid gap-3 rounded-2xl border bg-card p-4 sm:grid-cols-[1fr_220px_180px_auto]">
         <Input name="q" defaultValue={filters.q} placeholder="契約ID・契約名・法人・署名者" />
         <select name="type" defaultValue={type} className="h-9 rounded-md border border-input bg-background px-3 text-sm">
           <option value="">すべての契約種別</option>

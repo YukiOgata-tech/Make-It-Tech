@@ -27,6 +27,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -249,6 +250,11 @@ function EmailPreview({ html }: { html: string }) {
 export function EmailComposer() {
   const [showPreview, setShowPreview] = useState(false);
   const [isSending, setIsSending]     = useState(false);
+  const [confirmAction, setConfirmAction] = useState<"send" | "reset" | "remove" | null>(null);
+  const [pendingSend, setPendingSend] = useState<FormValues | null>(null);
+  const [pendingRemoval, setPendingRemoval] = useState<
+    { kind: "cta"; id: string; name: string } | { kind: "attachment"; index: number; name: string } | null
+  >(null);
   const [fromKey, setFromKey]         = useState<FromKey>("manual");
   const [lastSent, setLastSent]       = useState<{ to: string; subject: string } | null>(null);
 
@@ -409,7 +415,7 @@ export function EmailComposer() {
 
   // ── Submit ────────────────────────────────────────────────────────────────
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const requestSend: SubmitHandler<FormValues> = (data) => {
     // Validate CTA buttons
     for (const btn of ctaButtons) {
       if (!btn.label.trim()) { toast.error("CTAボタンのテキストを入力してください。"); return; }
@@ -418,6 +424,11 @@ export function EmailComposer() {
       }
     }
 
+    setPendingSend(data);
+    setConfirmAction("send");
+  };
+
+  const sendEmail = async (data: FormValues) => {
     setIsSending(true);
     try {
       const payload = {
@@ -462,6 +473,36 @@ export function EmailComposer() {
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col gap-6">
+      <AdminConfirmDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => { if (!open) { setConfirmAction(null); setPendingRemoval(null); } }}
+        onConfirm={() => {
+          if (confirmAction === "remove" && pendingRemoval) {
+            if (pendingRemoval.kind === "cta") removeCta(pendingRemoval.id);
+            else removeAttachment(pendingRemoval.index);
+            setPendingRemoval(null);
+            setConfirmAction(null);
+          } else if (confirmAction === "reset") {
+            handleReset();
+            setConfirmAction(null);
+          } else if (confirmAction === "send" && pendingSend) {
+            setConfirmAction(null);
+            void sendEmail(pendingSend);
+          }
+        }}
+        title={confirmAction === "remove"
+          ? pendingRemoval?.kind === "cta" ? "CTAボタンを削除しますか？" : "添付ファイルを削除しますか？"
+          : confirmAction === "reset" ? "入力内容をリセットしますか？" : "メールを送信しますか？"
+        }
+        description={confirmAction === "remove"
+          ? `「${pendingRemoval?.name ?? ""}」を作成中のメールから削除します。`
+          : confirmAction === "reset"
+            ? "入力中の本文、ボタン、添付ファイルが消えます。この操作は元に戻せません。"
+            : `宛先 ${pendingSend?.to ?? ""} に「${pendingSend?.subject ?? ""}」を送信します。送信後は取り消せません。`
+        }
+        confirmLabel={confirmAction === "remove" ? "削除する" : confirmAction === "reset" ? "リセットする" : "メールを送信"}
+        tone={confirmAction === "send" ? "caution" : "danger"}
+      />
       {/* Page header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -483,7 +524,7 @@ export function EmailComposer() {
           </Button>
           <Button type="button" variant="outline" size="sm"
             className="rounded-xl gap-1.5 text-xs"
-            onClick={handleReset}>
+            onClick={() => setConfirmAction("reset")}>
             <RotateCcw className="h-3.5 w-3.5" />
             リセット
           </Button>
@@ -505,7 +546,7 @@ export function EmailComposer() {
 
         {/* ── Form ── */}
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(requestSend)}
           className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-4 sm:p-6"
           noValidate
         >
@@ -643,7 +684,8 @@ export function EmailComposer() {
                           />
                         ))}
                       </div>
-                      <button type="button" onClick={() => removeCta(btn.id)}
+                      <button type="button" onClick={() => { setPendingRemoval({ kind: "cta", id: btn.id, name: btn.label || `ボタン ${i + 1}` }); setConfirmAction("remove"); }}
+                        aria-label={`${btn.label || `ボタン ${i + 1}`} を削除`}
                         className="flex h-6 w-6 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -757,7 +799,7 @@ export function EmailComposer() {
                         <p className="truncate text-xs font-medium">{att.filename}</p>
                         <p className="text-[10px] text-muted-foreground">{formatBytes(att.size)}</p>
                       </div>
-                      <button type="button" onClick={() => removeAttachment(i)}
+                      <button type="button" onClick={() => { setPendingRemoval({ kind: "attachment", index: i, name: att.filename }); setConfirmAction("remove"); }}
                         aria-label={`${att.filename} を削除`}
                         className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive">
                         <X className="h-3.5 w-3.5" />

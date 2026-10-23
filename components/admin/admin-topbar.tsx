@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight, Menu, PanelLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { MitSession } from "@/lib/admin-auth";
 import { getAdminBreadcrumbs, getAdminPageMeta } from "@/lib/admin-navigation";
+import { site } from "@/lib/site";
 import { AdminUserMenu } from "@/components/admin/admin-user-menu";
 
 type AdminTopbarProps = {
@@ -28,6 +30,9 @@ export function AdminTopbar({ session, onDesktopToggle, onMobileOpen }: AdminTop
       >
         <Menu className="size-5" aria-hidden="true" />
       </button>
+      <Link href="/sub/admin-console" className="mr-3 flex size-9 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-black/5 md:hidden" aria-label="Make It Tech 管理トップ">
+        <Image src={site.logo} alt="" width={32} height={32} className="size-full object-contain" />
+      </Link>
       <button
         type="button"
         onClick={onDesktopToggle}

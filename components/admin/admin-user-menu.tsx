@@ -5,6 +5,7 @@ import { Check, Laptop, LogOut, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import type { MitSession } from "@/lib/admin-auth";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,14 +32,20 @@ export function AdminUserMenu({ session, compact = false }: AdminUserMenuProps) 
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [loggingOut, setLoggingOut] = React.useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = React.useState(false);
+  const [logoutError, setLogoutError] = React.useState("");
   const initial = session.email.slice(0, 1).toUpperCase();
 
   const handleLogout = async () => {
     setLoggingOut(true);
+    setLogoutError("");
     try {
-      await fetch("/api/admin/session", { method: "DELETE" });
+      const response = await fetch("/api/admin/session", { method: "DELETE" });
+      if (!response.ok) throw new Error("ログアウトできませんでした。もう一度お試しください。");
       router.replace("/login");
       router.refresh();
+    } catch (error) {
+      setLogoutError(error instanceof Error ? error.message : "ログアウトできませんでした。");
     } finally {
       setLoggingOut(false);
     }
@@ -51,6 +58,7 @@ export function AdminUserMenu({ session, compact = false }: AdminUserMenuProps) 
   ] as const;
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
@@ -104,15 +112,25 @@ export function AdminUserMenu({ session, compact = false }: AdminUserMenuProps) 
         <DropdownMenuItem
           className="rounded-lg text-destructive focus:text-destructive"
           disabled={loggingOut}
-          onSelect={(event) => {
-            event.preventDefault();
-            void handleLogout();
-          }}
+          onSelect={() => setLogoutConfirmOpen(true)}
         >
           <LogOut className="size-4" aria-hidden="true" />
           {loggingOut ? "ログアウト中..." : "ログアウト"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    <AdminConfirmDialog
+      open={logoutConfirmOpen}
+      onOpenChange={(open) => { setLogoutConfirmOpen(open); if (!open) setLogoutError(""); }}
+      onConfirm={() => void handleLogout()}
+      title="ログアウトしますか？"
+      description="管理画面からサインアウトします。再度利用するにはログインが必要です。"
+      confirmLabel="ログアウト"
+      icon="logout"
+      tone="caution"
+      busy={loggingOut}
+      error={logoutError}
+    />
+    </>
   );
 }

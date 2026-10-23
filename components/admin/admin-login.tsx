@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { site } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,19 +75,23 @@ export function AdminLogin() {
       <section className="relative hidden overflow-hidden bg-slate-950 p-10 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(226,103,61,0.28),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(42,157,145,0.2),transparent_40%)]" aria-hidden="true" />
         <div className="relative flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-white text-xs font-bold text-slate-950">MIT</span>
+          <span className="flex size-10 items-center justify-center rounded-xl bg-white p-1">
+            <Image src={site.logo} alt="Make It Tech" width={36} height={36} className="size-full object-contain" />
+          </span>
           <div>
             <p className="text-sm font-semibold">Make It Tech</p>
             <p className="text-[10px] uppercase tracking-[0.17em] text-slate-400">Business Console</p>
           </div>
         </div>
         <div className="relative max-w-lg">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-white/10 text-orange-300 ring-1 ring-white/10">
-            <ShieldCheck className="size-5" aria-hidden="true" />
-          </span>
-          <h1 className="mt-6 text-3xl font-semibold leading-tight tracking-tight">
-            事業の情報と日々の業務を、ひとつの場所に。
-          </h1>
+          <div className="flex items-start gap-4">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-orange-300 ring-1 ring-white/10">
+              <ShieldCheck className="size-5" aria-hidden="true" />
+            </span>
+            <h1 className="text-3xl font-semibold leading-tight tracking-tight">
+              事業の情報と日々の業務を、ひとつの場所に。
+            </h1>
+          </div>
           <p className="mt-4 text-sm leading-7 text-slate-300">
             問い合わせ、契約、メール、コンテンツを安全に管理するためのMake It Tech専用コンソールです。
           </p>
@@ -96,17 +102,21 @@ export function AdminLogin() {
       <main className="flex min-h-dvh items-center justify-center px-4 py-10 sm:px-8">
         <div className="w-full max-w-md">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-xs font-bold text-primary-foreground">MIT</span>
+            <span className="flex size-10 items-center justify-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-black/5">
+              <Image src={site.logo} alt="Make It Tech" width={36} height={36} className="size-full object-contain" />
+            </span>
             <div>
               <p className="text-sm font-semibold">Make It Tech</p>
               <p className="text-[10px] uppercase tracking-[0.17em] text-muted-foreground">Business Console</p>
             </div>
           </div>
 
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <LockKeyhole className="size-5" aria-hidden="true" />
-          </span>
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight">管理者ログイン</h2>
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <LockKeyhole className="size-5" aria-hidden="true" />
+            </span>
+            <h2 className="text-2xl font-semibold tracking-tight">管理者ログイン</h2>
+          </div>
           <p className="mt-2 text-sm text-muted-foreground">
             管理権限のあるアカウントでログインしてください。
           </p>

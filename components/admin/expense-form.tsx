@@ -163,8 +163,10 @@ export function ExpenseForm({ categories, expense }: ExpenseFormProps) {
           </div>
           <div className="space-y-4 px-5 py-5 sm:px-6">
             <div className="relative flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed border-primary/35 bg-primary/[0.035] px-5 py-6 text-center transition-colors hover:bg-primary/[0.07] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ImagePlus className="size-6" aria-hidden="true" /></span>
-              <span className="mt-3 text-sm font-semibold">{availableFiles ? "写真・PDFを選択" : "追加上限に達しました"}</span>
+              <span className="flex items-center gap-3">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ImagePlus className="size-5" aria-hidden="true" /></span>
+                <span className="text-sm font-semibold">{availableFiles ? "写真・PDFを選択" : "追加上限に達しました"}</span>
+              </span>
               <span className="mt-1 text-xs leading-5 text-muted-foreground">JPEG、PNG、WebP、PDF</span>
               <Input
                 id="expense-files"

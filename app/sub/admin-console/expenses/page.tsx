@@ -43,10 +43,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
     <AdminPage>
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-primary">
-            <ReceiptText className="size-4" aria-hidden="true" /> 経理
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">経費・領収書</h1>
+          <p className="text-xs font-semibold tracking-wide text-primary">経理</p>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ReceiptText className="size-5" aria-hidden="true" /></span>
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">経費・領収書</h1>
+          </div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">領収書から取引内容まで、ひとつの記録にまとめて管理。</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -76,7 +77,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
               <a href={`/api/admin/expenses/export?${exportParams.toString()}`}><Download className="size-4" />CSVを出力</a>
             </Button>
           </div>
-          <form className="mt-5 space-y-3">
+          <form data-admin-navigation-form className="mt-5 space-y-3">
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_11rem_13rem]">
               <div className="relative min-w-0">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -145,8 +146,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
           </div>
         ) : (
           <div className="flex flex-col items-center px-6 py-16 text-center">
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><ReceiptText className="size-7" aria-hidden="true" /></span>
-            <h3 className="mt-4 text-base font-semibold">記録が見つかりません</h3>
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-muted text-muted-foreground"><ReceiptText className="size-5" aria-hidden="true" /></span>
+              <h3 className="text-base font-semibold">記録が見つかりません</h3>
+            </div>
             <p className="mt-1 text-sm text-muted-foreground">条件を変えるか、新しい経費を登録してください。</p>
             <Button asChild variant="outline" className="mt-5 rounded-xl"><Link href="/sub/admin-console/expenses/new"><Plus className="size-4" />新規登録</Link></Button>
           </div>

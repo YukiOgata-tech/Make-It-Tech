@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ExternalLink, FileCheck2, Loader2, ScanSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 
 export function ContractInputRequestReview({
   requestId,
@@ -15,6 +16,7 @@ export function ContractInputRequestReview({
   const router = useRouter();
   const [preview, setPreview] = useState<{ blob: Blob; url: string; fileName: string } | null>(null);
   const [busy, setBusy] = useState<"preview" | "finalize" | null>(null);
+  const [confirmFinalizeOpen, setConfirmFinalizeOpen] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -118,6 +120,17 @@ export function ContractInputRequestReview({
 
   return (
     <div className="space-y-5">
+      <AdminConfirmDialog
+        open={confirmFinalizeOpen}
+        onOpenChange={setConfirmFinalizeOpen}
+        onConfirm={() => void finalize()}
+        title="このPDFを契約原本として登録しますか？"
+        description="登録後は原本PDFを差し替えできません。相手方の入力内容と契約条件を確認してから進めてください。"
+        confirmLabel="原本として登録"
+        tone="caution"
+        busy={Boolean(busy)}
+        error={error}
+      />
       <div className="overflow-hidden rounded-2xl border bg-muted/20 p-3">
         <object data={preview.url} type="application/pdf" className="h-[68vh] min-h-[520px] w-full rounded-xl border bg-background" aria-label="相手方入力から生成した契約書PDF">
           <div className="flex min-h-80 flex-col items-center justify-center p-6 text-center">
@@ -130,7 +143,7 @@ export function ContractInputRequestReview({
       {error ? <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button type="button" variant="outline" className="rounded-xl" onClick={() => setPreview(null)} disabled={Boolean(busy)}><ArrowLeft />入力内容へ戻る</Button>
-        <Button type="button" size="lg" className="rounded-xl" onClick={() => void finalize()} disabled={Boolean(busy)}>
+        <Button type="button" size="lg" className="rounded-xl" onClick={() => { setError(""); setConfirmFinalizeOpen(true); }} disabled={Boolean(busy)}>
           {busy === "finalize" ? <><Loader2 className="animate-spin" />原本登録中...</> : <><FileCheck2 />確認したPDFを原本登録</>}
         </Button>
       </div>

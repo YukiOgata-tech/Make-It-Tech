@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronDown,
@@ -11,6 +12,7 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import type { MitSession } from "@/lib/admin-auth";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import {
   adminNavigation,
   isAdminNavigationItemActive,
@@ -36,16 +38,22 @@ export function AdminSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = React.useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = React.useState(false);
+  const [logoutError, setLogoutError] = React.useState("");
   const [openSections, setOpenSections] = React.useState<Set<string>>(
     () => new Set(adminNavigation.map((section) => section.label))
   );
 
   const handleLogout = async () => {
     setLoggingOut(true);
+    setLogoutError("");
     try {
-      await fetch("/api/admin/session", { method: "DELETE" });
+      const response = await fetch("/api/admin/session", { method: "DELETE" });
+      if (!response.ok) throw new Error("ログアウトできませんでした。もう一度お試しください。");
       router.replace("/login");
       router.refresh();
+    } catch (error) {
+      setLogoutError(error instanceof Error ? error.message : "ログアウトできませんでした。");
     } finally {
       setLoggingOut(false);
     }
@@ -68,8 +76,8 @@ export function AdminSidebar({
           onClick={onNavigate}
           className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
         >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-[14px] bg-primary text-xs font-bold tracking-tight text-primary-foreground shadow-[0_4px_14px_rgb(0_82_204/0.18)]">
-            MIT
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-[14px] bg-white p-1 shadow-sm ring-1 ring-black/5">
+            <Image src={site.logo} alt="Make It Tech" width={36} height={36} className="size-full object-contain" />
           </span>
           {!collapsed ? (
             <span className="min-w-0">
@@ -147,7 +155,7 @@ export function AdminSidebar({
         </a>
         <button
           type="button"
-          onClick={() => void handleLogout()}
+          onClick={() => setLogoutConfirmOpen(true)}
           disabled={loggingOut}
           className={cn(
             "flex h-10 w-full items-center gap-3 rounded-lg text-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring disabled:opacity-50",
@@ -158,6 +166,18 @@ export function AdminSidebar({
           <LogOut className="size-[18px] shrink-0" aria-hidden="true" />
           {!collapsed ? <span>{loggingOut ? "ログアウト中..." : "ログアウト"}</span> : null}
         </button>
+        <AdminConfirmDialog
+          open={logoutConfirmOpen}
+          onOpenChange={(open) => { setLogoutConfirmOpen(open); if (!open) setLogoutError(""); }}
+          onConfirm={() => void handleLogout()}
+          title="ログアウトしますか？"
+          description="管理画面からサインアウトします。再度利用するにはログインが必要です。"
+          confirmLabel="ログアウト"
+          icon="logout"
+          tone="caution"
+          busy={loggingOut}
+          error={logoutError}
+        />
         {!mobile && onToggle ? (
           <button
             type="button"

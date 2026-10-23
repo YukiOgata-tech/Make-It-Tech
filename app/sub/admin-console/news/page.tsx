@@ -172,6 +172,7 @@ export default async function AdminAnnouncementsPage({
       </div>
 
       <form
+        data-admin-navigation-form
         action="/sub/admin-console/news"
         method="get"
         className="mt-4 grid gap-3 sm:flex sm:flex-wrap sm:items-end"

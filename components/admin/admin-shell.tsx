@@ -4,6 +4,7 @@ import * as React from "react";
 import type { MitSession } from "@/lib/admin-auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";
+import { AdminNavigationProgress } from "@/components/admin/admin-navigation-progress";
 import {
   Sheet,
   SheetContent,
@@ -45,6 +46,9 @@ export function AdminShell({ session, defaultSidebarOpen, children }: AdminShell
 
   return (
     <div className="admin-app flex min-h-dvh bg-background text-foreground">
+      <React.Suspense fallback={null}>
+        <AdminNavigationProgress />
+      </React.Suspense>
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border transition-[width] duration-200 md:block",

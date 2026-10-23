@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, ChevronRight, Copy, FileInput, Loader2, Mail } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,6 +42,7 @@ export function ContractInputRequestForm() {
   const [electronicExecutionAccepted, setElectronicExecutionAccepted] = useState(false);
   const [issued, setIssued] = useState<IssuedRequest | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirmSendOpen, setConfirmSendOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
@@ -83,8 +85,7 @@ export function ContractInputRequestForm() {
     };
   }
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submit() {
     setBusy(true);
     setError("");
     try {
@@ -102,6 +103,7 @@ export function ContractInputRequestForm() {
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error ?? "入力依頼を送信できませんでした。");
+      setConfirmSendOpen(false);
       setIssued({ id: payload.id, inputUrl: payload.inputUrl, expiresAt: payload.expiresAt });
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "入力依頼を送信できませんでした。");
@@ -153,7 +155,18 @@ export function ContractInputRequestForm() {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-6">
+    <form onSubmit={(event) => { event.preventDefault(); setError(""); setConfirmSendOpen(true); }} className="space-y-6">
+      <AdminConfirmDialog
+        open={confirmSendOpen}
+        onOpenChange={setConfirmSendOpen}
+        onConfirm={() => void submit()}
+        title="相手方へ入力依頼を送信しますか？"
+        description={`${signerEmail} 宛に入力用URLをメール送信します。送信後は取り消せません。`}
+        confirmLabel="入力依頼を送信"
+        tone="caution"
+        busy={busy}
+        error={error}
+      />
       <section className="rounded-3xl border bg-card p-5 sm:p-7">
         <div className="flex items-start gap-3">
           <FileInput className="mt-0.5 size-5 text-orange-600 dark:text-orange-300" aria-hidden="true" />

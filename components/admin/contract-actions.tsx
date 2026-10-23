@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Copy, Link2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 import { Input } from "@/components/ui/input";
 import {
   CONTRACT_TOKEN_DEFAULT_DAYS,
@@ -14,19 +15,13 @@ import { canVoidContractStatus } from "@/lib/contracts/token-policy";
 export function ContractActions({ contractId, status }: { contractId: string; status: ContractStatus }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"accept" | "send" | "void" | null>(null);
   const [expiresInDays, setExpiresInDays] = useState(CONTRACT_TOKEN_DEFAULT_DAYS);
   const [error, setError] = useState("");
   const [issuedUrl, setIssuedUrl] = useState("");
   const [copied, setCopied] = useState(false);
 
   async function run(action: "accept" | "send" | "void") {
-    if (
-      action === "accept" &&
-      !window.confirm(
-        "PDF内の契約当事者・署名者・締結方法と、管理画面の登録情報が一致していることを確認しましたか？確定後は原本を差し替えできません。"
-      )
-    ) return;
-    if (action === "void" && !window.confirm("この契約と署名URLを失効します。締結前の取消として記録されます。続行しますか？")) return;
     setBusy(action);
     setError("");
     try {
@@ -41,6 +36,7 @@ export function ContractActions({ contractId, status }: { contractId: string; st
         setIssuedUrl(payload.signingUrl);
         setCopied(false);
       }
+      setConfirmAction(null);
       router.refresh();
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "操作に失敗しました。");
@@ -61,9 +57,25 @@ export function ContractActions({ contractId, status }: { contractId: string; st
 
   return (
     <div className="space-y-3">
+      <AdminConfirmDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => { if (!open) setConfirmAction(null); }}
+        onConfirm={() => { if (confirmAction) void run(confirmAction); }}
+        title={confirmAction === "void" ? "契約を失効しますか？" : confirmAction === "accept" ? "契約内容を確定しますか？" : "署名URLを発行してメール送信しますか？"}
+        description={confirmAction === "void"
+          ? "契約と署名URLを失効し、締結前の取消として記録します。この操作は元に戻せません。"
+          : confirmAction === "accept"
+            ? "PDFの契約当事者・署名者・締結方法が登録情報と一致することを確認してください。確定後は原本を差し替えできません。"
+            : "署名URLを発行し、署名者へメールを送信します。送信後は取り消せません。"
+        }
+        confirmLabel={confirmAction === "void" ? "契約を失効" : confirmAction === "accept" ? "内容を確定" : "発行して送信"}
+        tone={confirmAction === "void" ? "danger" : "caution"}
+        busy={Boolean(busy)}
+        error={error}
+      />
       <div className="flex flex-wrap items-end gap-3">
         {status === "draft" ? (
-          <Button className="rounded-xl" disabled={Boolean(busy)} onClick={() => void run("accept")}>
+          <Button className="rounded-xl" disabled={Boolean(busy)} onClick={() => { setError(""); setConfirmAction("accept"); }}>
             {busy === "accept" ? <Loader2 className="animate-spin" /> : null}
             Make It Techとして内容を確定
           </Button>
@@ -74,14 +86,14 @@ export function ContractActions({ contractId, status }: { contractId: string; st
               署名期限（日・既定48時間）
               <Input className="w-24" type="number" min={1} max={30} value={expiresInDays} onChange={(event) => setExpiresInDays(Number(event.target.value))} />
             </label>
-            <Button className="rounded-xl" disabled={Boolean(busy)} onClick={() => void run("send")}>
+            <Button className="rounded-xl" disabled={Boolean(busy)} onClick={() => { setError(""); setConfirmAction("send"); }}>
               {busy === "send" ? <Loader2 className="animate-spin" /> : null}
               署名URLを発行してメール送信
             </Button>
           </>
         ) : null}
         {canVoidContractStatus(status) ? (
-          <Button variant="destructive" className="rounded-xl" disabled={Boolean(busy)} onClick={() => void run("void")}>
+          <Button variant="destructive" className="rounded-xl" disabled={Boolean(busy)} onClick={() => { setError(""); setConfirmAction("void"); }}>
             {busy === "void" ? <Loader2 className="animate-spin" /> : null}
             契約を失効
           </Button>

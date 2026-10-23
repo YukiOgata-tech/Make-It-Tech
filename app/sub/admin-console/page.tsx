@@ -144,16 +144,16 @@ export default async function AdminConsoleIndexPage() {
               <Link
                 key={action.href}
                 href={action.href}
-                className="admin-surface group flex min-h-44 flex-col p-5 transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="admin-surface group flex min-h-36 flex-col p-5 transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <span className={cn("flex size-10 items-center justify-center rounded-xl", action.accent)}>
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", action.accent)}>
                     <Icon className="size-5" aria-hidden="true" />
                   </span>
-                  <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" aria-hidden="true" />
+                  <h3 className="min-w-0 flex-1 text-sm font-semibold leading-5">{action.label}</h3>
+                  <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" aria-hidden="true" />
                 </div>
-                <h3 className="mt-5 text-sm font-semibold">{action.label}</h3>
-                <p className="mt-2 text-xs leading-5 text-muted-foreground">{action.description}</p>
+                <p className="mt-4 text-xs leading-5 text-muted-foreground">{action.description}</p>
               </Link>
             );
           })}
