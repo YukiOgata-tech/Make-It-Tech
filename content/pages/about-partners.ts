@@ -3,6 +3,7 @@ export interface PartnerCompany {
   description: string;
   introduction: string;
   websiteUrl: string;
+  profilePath?: string;
   logoSrc?: string;
   logoAlt?: string;
   location?: string;
@@ -34,6 +35,7 @@ export const partnerCompanies: readonly PartnerCompany[] = [
     introduction:
       "お客様との信頼関係を大切にし、一つひとつの相談に丁寧に向き合う買取サービスを提供しています。地域のお客様に誠実な価値を届ける事業者として、Make It Techの取り組みを支えていただきながら、事業運営における相互連携を進めています。",
     websiteUrl: "https://kaitorikuranomiya.com",
+    profilePath: "/partners/kaitorikuranomiya",
     location: "神奈川県平塚市",
     partnership: "事業運営における相互連携",
   },
@@ -42,6 +44,7 @@ export const partnerCompanies: readonly PartnerCompany[] = [
   //   description: "企業および連携内容の簡潔な紹介文です。",
   //   introduction: "専用ページに掲載する詳しい紹介文です。",
   //   websiteUrl: "https://example.com/",
+  //   profilePath: "/partners/example",
   //   logoSrc: "/images/partners/example.svg",
   //   logoAlt: "企業名のロゴ",
   //   location: "新潟県新潟市",

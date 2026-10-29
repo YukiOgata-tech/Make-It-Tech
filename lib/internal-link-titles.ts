@@ -9,6 +9,7 @@ const INTERNAL_TITLES: Record<string, string> = {
   "/news": "お知らせ",
   "/niigata": "新潟のDX支援",
   "/partners": "協業パートナー",
+  "/partners/kaitorikuranomiya": "買取 蔵の宮",
   "/privacy": "プライバシーポリシー",
   "/security-policy": "セキュリティポリシー",
   "/services": "サービス",

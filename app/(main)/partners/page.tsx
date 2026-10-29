@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight, Building2, MapPin } from "lucide-react";
 import { partnerCompanies } from "@/content/pages/about-partners";
 import { Badge } from "@/components/ui/badge";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "協業パートナー | 事業をともに支える企業",
+  title: "協業パートナー | Dミセ・買取 蔵の宮",
   description:
-    "Make It Techの事業を支え、ともに価値を届ける協業パートナーをご紹介します。専門性や現場知見を持ち寄り、より良い支援につなげています。",
-  keywords: ["協業パートナー", "事業連携", "業務DX", "Make It Tech"],
+    "Make It Techの協業パートナー、Dミセと神奈川県平塚市の買取専門店「買取 蔵の宮」をご紹介します。",
+  keywords: [
+    "協業パートナー",
+    "事業連携",
+    "Dミセ",
+    "買取 蔵の宮",
+    "買取蔵の宮",
+    "Make It Tech",
+  ],
   alternates: {
     canonical: "/partners",
   },
@@ -84,7 +92,16 @@ export default function PartnersPage() {
                   </div>
                   <div className="min-w-0">
                     <h2 className="text-lg font-semibold tracking-tight sm:text-xl">
-                      {partner.name}
+                      {partner.profilePath ? (
+                        <Link
+                          href={partner.profilePath}
+                          className="transition-colors hover:text-primary"
+                        >
+                          {partner.name}
+                        </Link>
+                      ) : (
+                        partner.name
+                      )}
                     </h2>
                     {partner.partnership ? (
                       <Badge
@@ -111,11 +128,19 @@ export default function PartnersPage() {
                       <span className="truncate">{partner.location}</span>
                     </span>
                   ) : null}
+                  {partner.profilePath ? (
+                    <Link
+                      href={partner.profilePath}
+                      className="ml-auto text-sm font-semibold text-foreground transition-colors hover:text-primary"
+                    >
+                      詳しく見る
+                    </Link>
+                  ) : null}
                   <a
                     href={partner.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-auto inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary/75"
+                    className={`${partner.profilePath ? "" : "ml-auto "}inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary/75`}
                     aria-label={`${partner.name}の公式サイトを見る（新しいタブで開きます）`}
                   >
                     公式サイト

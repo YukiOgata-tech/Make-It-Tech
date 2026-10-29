@@ -13,6 +13,7 @@ const labelMap: Record<string, string> = {
   fde: "FDE・現場伴走支援",
   about: "事業所概要",
   partners: "協業パートナー",
+  kaitorikuranomiya: "買取 蔵の宮",
   contact: "お問い合わせ",
   survey: "LINE相談",
   news: "お知らせ",

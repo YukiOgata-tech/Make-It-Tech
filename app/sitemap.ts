@@ -13,6 +13,7 @@ const routes = [
   "/services/fde",
   "/about",
   "/partners",
+  "/partners/kaitorikuranomiya",
   "/contact",
   "/works",
   "/survey",
