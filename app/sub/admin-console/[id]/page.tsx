@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getPrivateSiteFileSignedUrl } from "@/lib/site-storage";
 import { requireAdmin } from "@/lib/admin-auth";
 import { Badge } from "@/components/ui/badge";
 import { IntakeStatusForm } from "@/components/admin/intake-status-form";
@@ -68,10 +69,6 @@ function formatBytes(bytes: number) {
   return `${(kb / 1024).toFixed(1)} MB`;
 }
 
-function getSignedUrlExpiration() {
-  return Date.now() + 7 * 24 * 60 * 60 * 1000;
-}
-
 export default async function AdminConsoleDetailPage({
   params,
 }: {
@@ -122,9 +119,6 @@ export default async function AdminConsoleDetailPage({
   const attachments = Array.isArray(data.attachments)
     ? (data.attachments as AttachmentItem[])
     : [];
-  const { storage } = getFirebaseAdmin();
-  const bucket = storage.bucket();
-
   const attachmentsWithUrl: AttachmentItem[] = await Promise.all(
     attachments.map(async (item) => {
       const storagePath = item.storagePath ?? "";
@@ -132,10 +126,7 @@ export default async function AdminConsoleDetailPage({
         return { ...item, url: "" };
       }
       try {
-        const [url] = await bucket.file(storagePath).getSignedUrl({
-          action: "read",
-          expires: getSignedUrlExpiration(),
-        });
+        const url = await getPrivateSiteFileSignedUrl(storagePath, 7 * 24 * 60 * 60);
         return { ...item, url };
       } catch {
         return { ...item, url: "" };

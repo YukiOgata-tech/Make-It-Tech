@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Timestamp } from "firebase-admin/firestore";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getPrivateSiteFileSignedUrl, uploadPrivateSiteFile } from "@/lib/site-storage";
 
 export const runtime = "nodejs";
 
@@ -115,9 +116,6 @@ async function uploadAttachments(
 ): Promise<UploadResult[]> {
   if (files.length === 0) return [];
 
-  const { storage } = getFirebaseAdmin();
-  const bucket = storage.bucket();
-
   const results: UploadResult[] = [];
 
   for (const [index, file] of files.entries()) {
@@ -129,13 +127,7 @@ async function uploadAttachments(
     const storagePath = `intake/${id}/${Date.now()}-${index + 1}-${safeName}`;
     const contentType = file.type || "application/octet-stream";
 
-    await bucket.file(storagePath).save(buffer, {
-      contentType,
-      resumable: false,
-      metadata: {
-        cacheControl: "private, max-age=0",
-      },
-    });
+    await uploadPrivateSiteFile(storagePath, buffer, contentType);
 
     const result: UploadResult = {
       name: file.name,
@@ -149,11 +141,9 @@ async function uploadAttachments(
     }
 
     try {
-      const [signedUrl] = await bucket.file(storagePath).getSignedUrl({
-        action: "read",
-        expires: Date.now() + ADMIN_ATTACHMENT_URL_DAYS * 24 * 60 * 60 * 1000,
-      });
-      result.signedUrl = signedUrl;
+      result.signedUrl = await getPrivateSiteFileSignedUrl(
+        storagePath, ADMIN_ATTACHMENT_URL_DAYS * 24 * 60 * 60
+      );
     } catch {
       result.signedUrl = undefined;
     }

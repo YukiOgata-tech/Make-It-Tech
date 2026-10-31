@@ -10,6 +10,10 @@ const mode = process.argv[2] ?? "--dry-run";
 if (!["--dry-run", "--apply", "--verify"].includes(mode)) {
   throw new Error("Use --dry-run, --apply or --verify.");
 }
+const storageUrls = process.argv.includes("--storage-urls");
+if (process.argv.slice(3).some((arg) => arg !== "--storage-urls")) {
+  throw new Error("Only --storage-urls is supported after the mode.");
+}
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
@@ -99,7 +103,28 @@ const destination = createClient(url, key, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+const FIREBASE_URL = /https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/([^/\s"')]+)\/o\/([^?\s"')]+)\?alt=media&token=[A-Za-z0-9-]+/g;
+function expectedValue(value) {
+  if (!storageUrls) return value;
+  if (typeof value === "string") {
+    return value.replace(FIREBASE_URL, (original, bucket, encodedPath) => {
+      if (bucket !== process.env.FIREBASE_STORAGE_BUCKET) return original;
+      const path = decodeURIComponent(encodedPath);
+      if (!["blog/", "announcements/", "my-life/"].some((prefix) => path.startsWith(prefix))) {
+        throw new Error(`Unexpected Firebase file URL: ${path}`);
+      }
+      return destination.storage.from("mit-site-media").getPublicUrl(path).data.publicUrl;
+    });
+  }
+  if (Array.isArray(value)) return value.map(expectedValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([field, item]) => [field, expectedValue(item)]));
+  }
+  return value;
+}
+
 for (const document of documents) {
+  const expectedData = expectedValue(document.data);
   const { data: existing, error: readError } = await destination
     .from("site_documents")
     .select("path,data")
@@ -108,7 +133,7 @@ for (const document of documents) {
   if (readError) throw readError;
 
   if (existing) {
-    if (digest(existing.data) !== digest(document.data)) {
+    if (digest(existing.data) !== digest(expectedData)) {
       throw new Error(`Destination differs from source: ${document.path}`);
     }
     continue;
@@ -117,7 +142,7 @@ for (const document of documents) {
   if (mode === "--apply") {
     const { error } = await destination
       .from("site_documents")
-      .insert({ path: document.path, data: document.data });
+      .insert({ path: document.path, data: expectedData });
     if (error) throw error;
   } else {
     throw new Error(`Destination is missing: ${document.path}`);

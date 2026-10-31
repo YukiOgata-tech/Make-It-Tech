@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { prepareImageUpload } from "@/lib/image-upload";
+import { uploadPublicSiteFile } from "@/lib/site-storage";
 
 export const runtime = "nodejs";
 
@@ -18,24 +17,8 @@ export async function POST(request: Request) {
       return Response.json({ error: prepared.error }, { status: prepared.status });
     }
 
-    const { storage } = getFirebaseAdmin();
-    const bucket = storage.bucket();
     const path = `my-life/main/cover/${Date.now()}-${prepared.fileName}`;
-    const token = randomUUID();
-
-    await bucket.file(path).save(prepared.buffer, {
-      contentType: prepared.contentType,
-      resumable: false,
-      metadata: {
-        cacheControl: "public, max-age=31536000",
-        metadata: {
-          firebaseStorageDownloadTokens: token,
-        },
-      },
-    });
-
-    const encodedPath = encodeURIComponent(path);
-    const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodedPath}?alt=media&token=${token}`;
+    const url = await uploadPublicSiteFile(path, prepared.buffer, prepared.contentType);
 
     return Response.json({ ok: true, url, path });
   } catch (error) {

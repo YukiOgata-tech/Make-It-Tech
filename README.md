@@ -97,7 +97,8 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - Supabase Auth: 管理者認証
 - Supabase Postgres: CMS・フォーム回答・電子契約・NFC の文書データ（切替可能）
 - Firebase Firestore: データ移行中の既定の文書データ保存先
-- Firebase Storage: 画像・添付ファイル・契約 PDF の保存先
+- Supabase Storage: 画像・添付ファイル・契約 PDF の保存先（切替可能）
+- Firebase Storage: ファイル移行中の既定の保存先
 - React Hook Form + Zod: フォーム管理とバリデーション
 - react-markdown + remark/rehype: 公開側の Markdown 描画
 - @mdxeditor/editor: 管理画面のエディタ
@@ -128,17 +129,27 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - クッキー同意モーダルを表示し、同意状態はクッキーに保存します。
 - お問い合わせフォームの入力内容は一時保存（localStorage）に対応し、保存期間はユーザーが変更可能です。
 
-### Firestore 文書データの Supabase 切替
+### Firestore / Firebase Storage の Supabase 切替
 
 `supabase/migrations/` の `site_documents` マイグレーションを適用した上で、
 `node scripts/migrate-site-documents.mjs --dry-run` で移行対象を確認します。
-`--apply` で未移行の文書をコピーし、`--verify` で原本と件数・内容の SHA-256 を照合します。
-移行スクリプトは Firestore の文書を削除しません。コピー先に差分があれば停止します。
+`--apply` で未移行の文書をコピーします。続いて
+`node scripts/migrate-site-storage.mjs --dry-run` でファイルを確認し、`--apply` で
+公開・非公開の別バケットへコピーして SHA-256 を照合します。この処理は Supabase 側に
+保存された公開画像 URL も更新します。最後に以下を実行します。
+
+```bash
+node scripts/migrate-site-storage.mjs --verify
+node scripts/migrate-site-documents.mjs --verify --storage-urls
+```
+
+移行スクリプトは Firebase 側の文書・ファイルを削除しません。コピー先の内容が違えば停止します。
 
 本番の切替時は、Firestore での更新を止めて最終照合を行い、サーバー専用の
-`SUPABASE_SERVICE_ROLE_KEY` と `SITE_DATA_BACKEND=supabase` をサーバー環境に設定してから
-デプロイします。設定前は Firestore を使い続けます。キーをブラウザに公開したり
-`NEXT_PUBLIC_` 変数に入れたりしないでください。Firebase Storage はこの切替対象外です。
+`SUPABASE_SERVICE_ROLE_KEY`、`SITE_DATA_BACKEND=supabase`、
+`SITE_STORAGE_BACKEND=supabase` をサーバー環境に設定してからデプロイします。
+設定前は Firebase を使い続けます。キーをブラウザに公開したり `NEXT_PUBLIC_` 変数に
+入れたりしないでください。契約 PDF は非公開バケットで原本の SHA-256 を維持します。
 
 ---
 
