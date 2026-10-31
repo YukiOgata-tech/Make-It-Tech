@@ -126,7 +126,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
                 className="group block px-4 py-4 transition-colors hover:bg-muted/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:px-6 xl:grid xl:grid-cols-[7rem_7rem_minmax(0,1fr)_9rem_8rem_6rem] xl:items-center xl:gap-4"
               >
                 <div className="flex items-center justify-between gap-3 xl:contents">
-                  <span className="font-mono text-xs tabular-nums text-muted-foreground">{formatExpenseNumber(expense.receipt_number)}</span>
+                  <span className="font-mono text-xs tabular-nums text-muted-foreground">{formatExpenseNumber(expense.receipt_number, expense.created_at)}</span>
                   <span className="text-xs text-muted-foreground xl:text-[13px]">{expense.transaction_date ?? "日付未入力"}</span>
                 </div>
                 <div className="mt-2 min-w-0 xl:mt-0">

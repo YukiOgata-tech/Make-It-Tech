@@ -12,6 +12,7 @@ import {
 import type { ExpenseFilters, ExpenseRecord, ExpenseCategory, ExpenseFile } from "@/lib/expenses/types";
 import type { ExpenseRecordInput } from "@/lib/expenses/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { prepareFinancialDocument } from "@/lib/financial-document-upload";
 
 const expenseRecordSelect = `
   id, entity_id, receipt_number, transaction_date, merchant_name,
@@ -218,14 +219,19 @@ async function uploadExpenseFiles(session: MitSession, expenseId: string, files:
   if (fileCountError) throw new Error(fileCountError.message);
 
   for (const [index, file] of files.entries()) {
-    const bytes = Buffer.from(await file.arrayBuffer());
-    const sha256 = createHash("sha256").update(bytes).digest("hex");
-    const extension = file.type === "application/pdf" ? "pdf" : file.type.split("/")[1].replace("jpeg", "jpg");
+    let prepared: Awaited<ReturnType<typeof prepareFinancialDocument>>;
+    try {
+      prepared = await prepareFinancialDocument(file, MAX_EXPENSE_FILE_SIZE);
+    } catch (error) {
+      warnings.push(error instanceof Error ? error.message : `${file.name}を変換できませんでした。`);
+      continue;
+    }
+    const sha256 = createHash("sha256").update(prepared.bytes).digest("hex");
     const fileId = randomUUID();
-    const storagePath = `${session.entityId}/${expenseId}/${fileId}.${extension}`;
+    const storagePath = `${session.entityId}/${expenseId}/${fileId}.${prepared.extension}`;
     const { error: uploadError } = await supabase.storage
       .from(EXPENSE_BUCKET)
-      .upload(storagePath, bytes, { contentType: file.type, upsert: false });
+      .upload(storagePath, prepared.bytes, { contentType: prepared.mimeType, upsert: false });
 
     if (uploadError) {
       warnings.push(`${file.name}: ${uploadError.message}`);
@@ -241,8 +247,8 @@ async function uploadExpenseFiles(session: MitSession, expenseId: string, files:
         storage_bucket: EXPENSE_BUCKET,
         storage_path: storagePath,
         original_filename: file.name.slice(0, 255),
-        mime_type: file.type,
-        file_size_bytes: file.size,
+        mime_type: prepared.mimeType,
+        file_size_bytes: prepared.bytes.length,
         sha256,
         is_primary: (existingFileCount ?? 0) === 0 && index === 0,
         uploaded_by: session.uid,

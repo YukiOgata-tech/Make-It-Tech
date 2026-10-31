@@ -43,8 +43,14 @@ export const EXPENSE_FILE_TYPES = [
   "application/pdf",
 ] as const;
 
-export function formatExpenseNumber(value: number | string) {
-  return `R-${String(value).padStart(6, "0")}`;
+const registrationYearFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+});
+
+export function formatExpenseNumber(value: number | string, createdAt: string) {
+  const registrationYear = registrationYearFormatter.format(new Date(createdAt));
+  return `R-${registrationYear}-${String(value).padStart(6, "0")}`;
 }
 
 export function formatYen(value: number | null | undefined) {

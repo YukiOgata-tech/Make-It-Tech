@@ -167,7 +167,7 @@ export function ExpenseForm({ categories, expense }: ExpenseFormProps) {
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ImagePlus className="size-5" aria-hidden="true" /></span>
                 <span className="text-sm font-semibold">{availableFiles ? "写真・PDFを選択" : "追加上限に達しました"}</span>
               </span>
-              <span className="mt-1 text-xs leading-5 text-muted-foreground">JPEG、PNG、WebP、PDF</span>
+              <span className="mt-1 text-xs leading-5 text-muted-foreground">JPEG、PNG、WebP、PDF。画像はWebPで保存します。</span>
               <Input
                 id="expense-files"
                 name="files"

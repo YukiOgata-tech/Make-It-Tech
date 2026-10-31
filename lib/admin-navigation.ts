@@ -10,6 +10,7 @@ import {
   RadioTower,
   ReceiptText,
   BarChart3,
+  TrendingUp,
 } from "lucide-react";
 
 export type AdminNavigationItem = {
@@ -72,6 +73,18 @@ export const adminNavigation: readonly AdminNavigationSection[] = [
         href: "/sub/admin-console/expenses/stats",
         label: "経費統計",
         description: "月別・分類別の集計",
+        icon: BarChart3,
+      },
+      {
+        href: "/sub/admin-console/sales",
+        label: "売上・入金",
+        description: "請求書・入金・証憑を管理",
+        icon: TrendingUp,
+      },
+      {
+        href: "/sub/admin-console/sales/stats",
+        label: "売上統計",
+        description: "月別の計上額と入金額",
         icon: BarChart3,
       },
     ],
@@ -149,6 +162,12 @@ export function isAdminNavigationItemActive(
     return (
       (currentPath === "/expenses" || currentPath.startsWith("/expenses/")) &&
       !currentPath.startsWith("/expenses/stats")
+    );
+  }
+  if (itemPath === "/sales") {
+    return (
+      (currentPath === "/sales" || currentPath.startsWith("/sales/")) &&
+      !currentPath.startsWith("/sales/stats")
     );
   }
   return currentPath === itemPath || currentPath.startsWith(`${itemPath}/`);

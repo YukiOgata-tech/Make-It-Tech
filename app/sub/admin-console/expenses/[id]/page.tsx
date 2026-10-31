@@ -28,7 +28,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
         <div className="flex min-w-0 items-start gap-4">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><ReceiptText className="size-6" aria-hidden="true" /></span>
           <div className="min-w-0">
-            <p className="font-mono text-xs tabular-nums text-muted-foreground">{formatExpenseNumber(expense.receipt_number)}</p>
+            <p className="font-mono text-xs tabular-nums text-muted-foreground">{formatExpenseNumber(expense.receipt_number, expense.created_at)}</p>
             <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight sm:text-4xl">{expense.merchant_name ?? "未整理の領収書"}</h1>
             <p className="mt-2 text-sm text-muted-foreground">登録日時 {new Intl.DateTimeFormat("ja-JP", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Tokyo" }).format(new Date(expense.created_at))}</p>
           </div>

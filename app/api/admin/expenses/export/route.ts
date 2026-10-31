@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     "支払方法", "用途", "メモ", "画像数", "書類種別", "状態", "登録日時",
   ];
   const rows = expenses.map((expense) => [
-    formatExpenseNumber(expense.receipt_number),
+    formatExpenseNumber(expense.receipt_number, expense.created_at),
     expense.transaction_date,
     expense.merchant_name,
     expense.amount_yen,
