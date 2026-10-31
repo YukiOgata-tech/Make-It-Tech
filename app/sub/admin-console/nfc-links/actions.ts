@@ -89,7 +89,7 @@ export async function saveNfcLink(
   } catch {
     return {
       status: "error",
-      message: "保存に失敗しました。Firebaseの設定を確認してください。",
+      message: "保存に失敗しました。データベースの設定を確認してください。",
     };
   }
 

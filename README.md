@@ -81,7 +81,7 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - LINEで相談（LINE）
 - お問い合わせ / HP・LP 制作依頼 / 業務診断フォーム
 - 事業所概要
-- ブログ・お知らせ（Firebase 管理の CMS で更新）
+- ブログ・お知らせ（管理画面の CMS で更新）
 - 制作実績、提供アプリの案内
 - プライバシーポリシー
 - 注意事項（利用規約）、セキュリティポリシー
@@ -94,7 +94,10 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - TypeScript
 - Tailwind CSS 4 + Shadcn UI（Radix UI ベース）
 - Framer Motion / Lenis / Lottie
-- Firebase（Auth・Firestore・Storage）: CMS とフォーム回答の保存先
+- Supabase Auth: 管理者認証
+- Supabase Postgres: CMS・フォーム回答・電子契約・NFC の文書データ（切替可能）
+- Firebase Firestore: データ移行中の既定の文書データ保存先
+- Firebase Storage: 画像・添付ファイル・契約 PDF の保存先
 - React Hook Form + Zod: フォーム管理とバリデーション
 - react-markdown + remark/rehype: 公開側の Markdown 描画
 - @mdxeditor/editor: 管理画面のエディタ
@@ -112,7 +115,7 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - `components/ui/`: ベースUI部品
 - `components/providers/`: アプリ全体のProvider
 - `content/`: 本文データ（`privacy.ts`, `terms.ts` など）
-- `lib/`: ユーティリティ、Firebase 初期化、管理者認証、Markdown 処理
+- `lib/`: ユーティリティ、Firebase / Supabase 初期化、管理者認証、Markdown 処理
 - `proxy.ts`: ホスト名によるサブドメインリライト
 - `scripts/`: 運用スクリプト
 - `public/`: 静的アセット（画像、アイコン）
@@ -124,6 +127,18 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 
 - クッキー同意モーダルを表示し、同意状態はクッキーに保存します。
 - お問い合わせフォームの入力内容は一時保存（localStorage）に対応し、保存期間はユーザーが変更可能です。
+
+### Firestore 文書データの Supabase 切替
+
+`supabase/migrations/` の `site_documents` マイグレーションを適用した上で、
+`node scripts/migrate-site-documents.mjs --dry-run` で移行対象を確認します。
+`--apply` で未移行の文書をコピーし、`--verify` で原本と件数・内容の SHA-256 を照合します。
+移行スクリプトは Firestore の文書を削除しません。コピー先に差分があれば停止します。
+
+本番の切替時は、Firestore での更新を止めて最終照合を行い、サーバー専用の
+`SUPABASE_SERVICE_ROLE_KEY` と `SITE_DATA_BACKEND=supabase` をサーバー環境に設定してから
+デプロイします。設定前は Firestore を使い続けます。キーをブラウザに公開したり
+`NEXT_PUBLIC_` 変数に入れたりしないでください。Firebase Storage はこの切替対象外です。
 
 ---
 

@@ -2,6 +2,7 @@ import { cert, getApp, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
+import { siteDocumentStore } from "@/lib/supabase/site-documents";
 
 function getPrivateKey() {
   const raw = process.env.FIREBASE_PRIVATE_KEY;
@@ -22,7 +23,7 @@ function ensureFirebaseConfig() {
   return { projectId, clientEmail, privateKey, storageBucket };
 }
 
-export function getFirebaseAdmin() {
+function getFirebaseApp() {
   if (!getApps().length) {
     const { projectId, clientEmail, privateKey, storageBucket } = ensureFirebaseConfig();
     initializeApp({
@@ -31,10 +32,16 @@ export function getFirebaseAdmin() {
     });
   }
 
-  const app = getApp();
+  return getApp();
+}
+
+export function getFirebaseAdmin() {
+  const app = getFirebaseApp();
   return {
     auth: getAuth(app),
-    firestore: getFirestore(app),
+    firestore: process.env.SITE_DATA_BACKEND === "supabase"
+      ? siteDocumentStore as unknown as FirebaseFirestore.Firestore
+      : getFirestore(app),
     storage: getStorage(app),
   };
 }

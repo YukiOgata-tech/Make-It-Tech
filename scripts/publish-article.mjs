@@ -2,14 +2,14 @@
  * ブログ記事の入稿スクリプト。
  *
  * 外部で書いた Markdown と画像を zip（またはフォルダ）で受け取り、検証 → 画像の
- * WebP 正規化 → Firestore への書き込みまでを一度に行う。記事の実体は Firestore の
+ * WebP 正規化 → 設定済みデータベースへの書き込みまでを一度に行う。記事の実体は
  * blogPosts にあり、画像だけが public/images/blog/ に置かれる、という本文と画像の
  * 置き場所の違いを吸収するのが目的。
  *
  * 使い方:
  *   node scripts/publish-article.mjs <zipかフォルダのパス> [--dry-run] [--update]
  *
- *   --dry-run  検証だけして、ファイルもFirestoreも書き換えない
+ *   --dry-run  検証だけして、ファイルもデータベースも書き換えない
  *   --update   同じ slug の既存記事を上書きする（publishedAt は維持）
  *
  * 期待する中身:
@@ -21,11 +21,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { randomBytes } from "node:crypto";
 import nextEnv from "@next/env";
 import JSZip from "jszip";
 import sharp from "sharp";
 import { cert, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { createClient } from "@supabase/supabase-js";
 
 const IMAGE_DIR = "public/images/blog";
 const PUBLIC_PREFIX = "/images/blog";
@@ -49,6 +51,79 @@ const problems = [];
 const warnings = [];
 const fail = (message) => problems.push(message);
 const warn = (message) => warnings.push(message);
+
+function serializeSiteValue(value) {
+  if (value instanceof Date) return { __mit_firestore_timestamp__: value.toISOString() };
+  if (Array.isArray(value)) return value.map(serializeSiteValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, serializeSiteValue(item)]));
+  }
+  return value;
+}
+
+function writeFields(record) {
+  return Object.fromEntries(Object.entries(record).map(([key, value]) => [
+    key, { operation: "set", value: serializeSiteValue(value) },
+  ]));
+}
+
+async function openBlogDatabase() {
+  if (process.env.SITE_DATA_BACKEND !== "supabase") {
+    initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").split(String.fromCharCode(92) + "n").join("\n"),
+      }),
+    });
+    const db = getFirestore();
+    return {
+      list: async () => (await db.collection("blogPosts").get()).docs,
+      add: (record) => db.collection("blogPosts").add(record),
+      update: (doc, patch) => doc.ref.update(patch),
+    };
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Supabase site data configuration is missing.");
+  const db = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const commit = async (write) => {
+    const { error } = await db.rpc("commit_site_documents", { p_reads: [], p_writes: [write] });
+    if (error) throw error;
+  };
+  return {
+    list: async () => {
+      const docs = [];
+      for (let offset = 0; ; offset += 1000) {
+        const { data, error } = await db.from("site_documents")
+          .select("path,data")
+          .eq("collection_path", "blogPosts")
+          .order("path", { ascending: true })
+          .range(offset, offset + 999);
+        if (error) throw error;
+        const page = data ?? [];
+        docs.push(...page.map((row) => ({
+          id: row.path.split("/").at(-1),
+          ref: { path: row.path },
+          data: () => row.data,
+        })));
+        if (page.length < 1000) break;
+      }
+      return docs;
+    },
+    add: async (record) => {
+      const id = randomBytes(18).toString("base64url").slice(0, 20);
+      await commit({ path: `blogPosts/${id}`, action: "create", fields: writeFields(record) });
+      return { id };
+    },
+    update: (doc, patch) => commit({
+      path: doc.ref.path, action: "update", fields: writeFields(patch),
+    }),
+  };
+}
 
 function parseArgs(argv) {
   const rest = argv.filter((a) => !a.startsWith("--"));
@@ -210,14 +285,7 @@ async function main() {
   }
 
   nextEnv.loadEnvConfig(process.cwd());
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").split(String.fromCharCode(92) + "n").join("\n"),
-    }),
-  });
-  const db = getFirestore();
+  const db = await openBlogDatabase();
 
   const files = stripCommonRoot(await loadSource(source));
   const mdName = [...files.keys()].find((p) => p.toLowerCase().endsWith(".md"));
@@ -274,16 +342,17 @@ async function main() {
     }
   }
 
-  const existing = await db.collection("blogPosts").where("slug", "==", slug).limit(1).get();
-  if (!existing.empty && !update) {
+  const allDocuments = await db.list();
+  const existing = allDocuments.find((doc) => doc.data().slug === slug);
+  if (existing && !update) {
     fail(`slug "${slug}" は既に存在します。上書きするなら --update をつける`);
   }
-  if (existing.empty && update) {
+  if (!existing && update) {
     fail(`slug "${slug}" が見つかりません。--update は既存記事の上書き用`);
   }
 
   // 内部リンクの宛先が実在するか（記事を消したあとのリンク切れを防ぐ）
-  const allPosts = (await db.collection("blogPosts").get()).docs.map((d) => d.data());
+  const allPosts = allDocuments.map((doc) => doc.data());
   const knownSlugs = new Set(allPosts.map((p) => p.slug));
   for (const m of body.matchAll(/\]\((\/blog\/([a-z0-9-]+))\)/g)) {
     if (!knownSlugs.has(m[2])) fail(`リンク先の記事が存在しません: ${m[1]}`);
@@ -297,7 +366,7 @@ async function main() {
   if (!overlap) warn("既存記事と重なるタグがありません。関連記事が新着順で埋まります");
 
   console.log(`\n${meta.title}`);
-  console.log(`  slug     : ${slug}${!existing.empty && update ? "（上書き）" : ""}`);
+  console.log(`  slug     : ${slug}${existing && update ? "（上書き）" : ""}`);
   console.log(`  category : ${meta.category} / tags: ${tags.join(", ")}`);
   console.log(`  summary  : ${summary.length}字`);
   console.log(`  本文     : ${body.length}字 / H2 ${h2Count}個 / 画像 ${bodyImages.length}枚`);
@@ -338,7 +407,7 @@ async function main() {
   }
 
   if (dryRun) {
-    console.log("\n--dry-run なので、ファイルもFirestoreも書き換えていません。");
+    console.log("\n--dry-run なので、ファイルもデータベースも書き換えていません。");
     process.exit(0);
   }
 
@@ -360,19 +429,19 @@ async function main() {
     updatedAt: now,
   };
 
-  if (existing.empty) {
-    const ref = await db.collection("blogPosts").add({
+  if (!existing) {
+    const ref = await db.add({
       ...record,
       createdAt: now,
       ...(status === "published" ? { publishedAt: now } : {}),
     });
     console.log(`\n登録しました: docId ${ref.id}`);
   } else {
-    const doc = existing.docs[0];
+    const doc = existing;
     const patch = { ...record };
     // 公開日は動かさない。更新日だけ進める。
     if (status === "published" && !doc.data().publishedAt) patch.publishedAt = now;
-    await doc.ref.update(patch);
+    await db.update(doc, patch);
     console.log(`\n上書きしました: docId ${doc.id}`);
   }
 
