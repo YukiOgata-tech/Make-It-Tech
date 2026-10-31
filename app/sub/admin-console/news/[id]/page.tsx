@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { AnnouncementEditor } from "@/components/admin/announcement-editor";
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ export default async function AdminNewsDetailPage({
   const id = resolvedParams?.id ?? "";
   if (!id) return notFound();
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore.collection("announcements").doc(id).get();
   if (!snapshot.exists) return notFound();
 

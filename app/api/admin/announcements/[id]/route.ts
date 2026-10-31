@@ -2,7 +2,7 @@ import { z } from "zod";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { normalizeLinkLabelItems } from "@/lib/link-labels";
 
 export const runtime = "nodejs";
@@ -96,7 +96,7 @@ export async function PATCH(
     );
   }
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const docRef = firestore.collection("announcements").doc(id);
   const snapshot = await docRef.get();
   if (!snapshot.exists) {
@@ -182,7 +182,7 @@ export async function DELETE(
     return Response.json({ error: "Not found." }, { status: 404 });
   }
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const docRef = firestore.collection("announcements").doc(id);
   const snapshot = await docRef.get();
   if (!snapshot.exists) {

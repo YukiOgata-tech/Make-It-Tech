@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { requireAdmin } from "@/lib/admin-auth";
 import { Badge } from "@/components/ui/badge";
 import { AdminRefreshButton } from "@/components/admin/admin-refresh-button";
@@ -53,7 +53,7 @@ type IntakeRecord = {
 
 const getCachedIntakeResponses = unstable_cache(
   async () => {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore
       .collection("intakeResponses")
       .orderBy("createdAt", "desc")

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { NextResponse, type NextRequest } from "next/server";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import {
   mitGoogleExperience,
   type MitGoogleScanResponse,
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       : randomUUID();
 
   try {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const experienceRef = firestore
       .collection("nfcExperiences")
       .doc(mitGoogleExperience.id);

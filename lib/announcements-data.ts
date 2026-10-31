@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import type { AnnouncementCategory, AnnouncementStatus } from "@/lib/announcements";
 import { normalizeLinkLabelItems, type LinkLabel } from "@/lib/link-labels";
 
@@ -115,7 +115,7 @@ export function normalizeAnnouncementDoc(
 
 const getLatestAnnouncements = unstable_cache(
   async () => {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const now = new Date();
     const baseQuery = firestore.collection("announcements");
     const query = process.env.NODE_ENV === "production"
@@ -131,7 +131,7 @@ const getLatestAnnouncements = unstable_cache(
 
 const getAnnouncementList = unstable_cache(
   async () => {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const now = new Date();
     const baseQuery = firestore.collection("announcements");
     const query = process.env.NODE_ENV === "production"
@@ -147,7 +147,7 @@ const getAnnouncementList = unstable_cache(
 
 export async function fetchLatestAnnouncements() {
   if (process.env.NODE_ENV !== "production") {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore
       .collection("announcements")
       .orderBy("publishedAt", "desc")
@@ -166,7 +166,7 @@ export async function fetchLatestAnnouncements() {
 
 export async function fetchAnnouncementList() {
   if (process.env.NODE_ENV !== "production") {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore
       .collection("announcements")
       .orderBy("publishedAt", "desc")
@@ -187,7 +187,7 @@ export async function fetchAnnouncementBySlug(slug: string) {
   if (!slug) return null;
   const getCached = unstable_cache(
     async () => {
-      const { firestore } = getFirebaseAdmin();
+      const { firestore } = getSiteDataStore();
       const snapshot = await firestore
         .collection("announcements")
         .where("slug", "==", slug)
@@ -204,7 +204,7 @@ export async function fetchAnnouncementBySlug(slug: string) {
 
   const record = process.env.NODE_ENV !== "production"
     ? await (async () => {
-        const { firestore } = getFirebaseAdmin();
+        const { firestore } = getSiteDataStore();
         const snapshot = await firestore
           .collection("announcements")
           .where("slug", "==", slug)

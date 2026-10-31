@@ -1,6 +1,8 @@
 # Admin Console の Supabase 移行方針
 
-## 現在の構成
+> 移行時の計画記録です。現在のサイト実行時のデータとファイル保存先は Supabase です。Firebase は移行・照合スクリプトの入力元としてのみ使用します。現行構成は `README.md` を参照してください。
+
+## 移行当時の構成
 
 - 認証と管理画面のアクセス判定は Supabase Auth と `mit` スキーマを使用する。
 - 記事、契約、問い合わせ、NFC、My Life などの既存データ処理は引き続き Firestore / Firebase Storage を使用する。

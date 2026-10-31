@@ -25,8 +25,6 @@ import { randomBytes } from "node:crypto";
 import nextEnv from "@next/env";
 import JSZip from "jszip";
 import sharp from "sharp";
-import { cert, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
 import { createClient } from "@supabase/supabase-js";
 
 const IMAGE_DIR = "public/images/blog";
@@ -68,22 +66,6 @@ function writeFields(record) {
 }
 
 async function openBlogDatabase() {
-  if (process.env.SITE_DATA_BACKEND !== "supabase") {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").split(String.fromCharCode(92) + "n").join("\n"),
-      }),
-    });
-    const db = getFirestore();
-    return {
-      list: async () => (await db.collection("blogPosts").get()).docs,
-      add: (record) => db.collection("blogPosts").add(record),
-      update: (doc, patch) => doc.ref.update(patch),
-    };
-  }
-
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Supabase site data configuration is missing.");

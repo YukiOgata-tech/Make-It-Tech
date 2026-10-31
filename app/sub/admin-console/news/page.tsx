@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AdminRefreshButton } from "@/components/admin/admin-refresh-button";
@@ -63,7 +63,7 @@ function toDateString(value: unknown) {
 
 const getCachedAnnouncements = unstable_cache(
   async () => {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore
       .collection("announcements")
       .orderBy("createdAt", "desc")

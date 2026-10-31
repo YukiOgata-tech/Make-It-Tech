@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { BlogEditor } from "@/components/admin/blog-editor";
 
 export const metadata: Metadata = {
@@ -52,7 +52,7 @@ export default async function AdminBlogDetailPage({
   const id = resolvedParams?.id ?? "";
   if (!id) return notFound();
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore.collection("blogPosts").doc(id).get();
   if (!snapshot.exists) return notFound();
 

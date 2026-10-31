@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { nfcSite } from "@/content/nfc/site";
 import {
   STAMP_COOKIE,
@@ -25,7 +25,7 @@ const STATS_DOC = "mit-card";
 /** 集計は「計測もできる」ことを見せるためのもの。失敗してもデモは動かす。 */
 async function recordStats(isNewDevice: boolean) {
   try {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     await firestore
       .collection("nfcDemoStats")
       .doc(STATS_DOC)

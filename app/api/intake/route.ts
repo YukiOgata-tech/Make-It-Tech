@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Timestamp } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { getPrivateSiteFileSignedUrl, uploadPrivateSiteFile } from "@/lib/site-storage";
 
 export const runtime = "nodejs";
@@ -554,7 +554,7 @@ export async function POST(request: Request) {
     const expiresAt = Timestamp.fromDate(addMonths(now.toDate(), 2));
 
     const uploads = await uploadAttachments(files, id);
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
 
     await firestore.collection("intakeResponses").doc(id).set({
       id,

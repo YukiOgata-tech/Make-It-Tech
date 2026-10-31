@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Timestamp } from "firebase-admin/firestore";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { blogCategories, blogStatuses } from "@/lib/blog";
 import { normalizeLinkLabelItems } from "@/lib/link-labels";
 
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const slug = normalizeSlug(payload.slug);
 
   const existing = await firestore

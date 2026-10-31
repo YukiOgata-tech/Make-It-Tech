@@ -1,7 +1,7 @@
 import "server-only";
 
 import { FieldValue, Timestamp, type DocumentReference, type Transaction } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import {
   AUTHORITY_STATEMENT_VERSION,
   CONSENT_STATEMENT_VERSION,
@@ -284,7 +284,7 @@ export async function createContract(
   if (template && template.contractType !== input.type) {
     throw new Error("選択したテンプレートと契約種別が一致しません。");
   }
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const contractRef = options.contractId
     ? firestore.collection("contracts").doc(options.contractId)
     : firestore.collection("contracts").doc();
@@ -420,7 +420,7 @@ export async function createContract(
 }
 
 export async function acceptContractForMit(contractId: string, actor: AdminActor) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const contractRef = firestore.collection("contracts").doc(contractId);
   await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(contractRef);
@@ -498,7 +498,7 @@ async function sendSignatureRequestEmail(contract: ContractRecord, signingUrl: s
 }
 
 export async function sendContract(contractId: string, expiresInDays = CONTRACT_TOKEN_DEFAULT_DAYS, actor: AdminActor) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const contractRef = firestore.collection("contracts").doc(contractId);
   const { token, tokenHash } = createSigningToken();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
@@ -606,7 +606,7 @@ type SignSessionResult =
 
 export async function openSignSession(token: string, evidence: RequestEvidence): Promise<SignSessionResult> {
   const tokenHash = sha256(token);
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
   return firestore.runTransaction(async (transaction) => {
     const tokenSnapshot = await transaction.get(tokenRef);
@@ -722,7 +722,7 @@ export async function completeContractSigning(
   signatureInput: { typedSignerName: string }
 ) {
   const tokenHash = sha256(token);
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
   const tokenSnapshot = await tokenRef.get();
   if (!tokenSnapshot.exists) throw new Error("署名URLが無効です。");
@@ -1006,7 +1006,7 @@ async function sendCompletionEmail(
 }
 
 export async function voidContract(contractId: string, actor: AdminActor) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const contractRef = firestore.collection("contracts").doc(contractId);
   await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(contractRef);
@@ -1040,19 +1040,19 @@ export async function voidContract(contractId: string, actor: AdminActor) {
 }
 
 export async function getContract(contractId: string) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore.collection("contracts").doc(contractId).get();
   return snapshot.exists ? normalizeContract(snapshot.id, snapshot.data()!) : null;
 }
 
 export async function getContracts() {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore.collection("contracts").orderBy("createdAt", "desc").limit(200).get();
   return snapshot.docs.map((document) => normalizeContract(document.id, document.data()));
 }
 
 export async function getContractEvents(contractId: string) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore
     .collection("contracts")
     .doc(contractId)
@@ -1074,7 +1074,7 @@ export function getContractDocumentPath(contract: ContractRecord, kind: "origina
 
 export async function getPublicContractDocument(token: string, kind: "original" | "executed" | "certificate") {
   const tokenHash = sha256(token);
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const tokenSnapshot = await firestore.collection("contractTokens").doc(tokenHash).get();
   if (!tokenSnapshot.exists) return null;
   const contract = await getContract(String(tokenSnapshot.data()?.contractId));

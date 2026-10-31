@@ -95,10 +95,8 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - Tailwind CSS 4 + Shadcn UI（Radix UI ベース）
 - Framer Motion / Lenis / Lottie
 - Supabase Auth: 管理者認証
-- Supabase Postgres: CMS・フォーム回答・電子契約・NFC の文書データ（切替可能）
-- Firebase Firestore: データ移行中の既定の文書データ保存先
-- Supabase Storage: 画像・添付ファイル・契約 PDF の保存先（切替可能）
-- Firebase Storage: ファイル移行中の既定の保存先
+- Supabase Postgres: `mit` スキーマに CMS・フォーム回答・電子契約・NFC の文書データを保存
+- Supabase Storage: 画像・添付ファイル・契約 PDF の保存先
 - React Hook Form + Zod: フォーム管理とバリデーション
 - react-markdown + remark/rehype: 公開側の Markdown 描画
 - @mdxeditor/editor: 管理画面のエディタ
@@ -116,11 +114,11 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - `components/ui/`: ベースUI部品
 - `components/providers/`: アプリ全体のProvider
 - `content/`: 本文データ（`privacy.ts`, `terms.ts` など）
-- `lib/`: ユーティリティ、Firebase / Supabase 初期化、管理者認証、Markdown 処理
+- `lib/`: ユーティリティ、Supabase データアクセス、管理者認証、Markdown 処理
 - `proxy.ts`: ホスト名によるサブドメインリライト
 - `scripts/`: 運用スクリプト
 - `public/`: 静的アセット（画像、アイコン）
-- `firestore.rules` / `storage.rules`: Firebase セキュリティルール
+- `firestore.rules` / `storage.rules`: 移行前の Firebase セキュリティルール（実行時は不使用）
 
 ---
 
@@ -130,6 +128,11 @@ ITツールや簡易システムを活用して「現場で実際に使える形
 - お問い合わせフォームの入力内容は一時保存（localStorage）に対応し、保存期間はユーザーが変更可能です。
 
 ### Firestore / Firebase Storage の Supabase 切替
+
+Firestore 由来の実データは `mit.site_documents` に保存します。アプリが利用する
+`public.site_documents` は RLS を尊重する更新可能な API ビューで、
+`public.commit_site_documents` は `mit` 側の処理を呼ぶ互換入口です。
+Storage のバケットは Postgres の `mit` スキーマとは別管理です。
 
 `supabase/migrations/` の `site_documents` マイグレーションを適用した上で、
 `node scripts/migrate-site-documents.mjs --dry-run` で移行対象を確認します。
@@ -145,11 +148,10 @@ node scripts/migrate-site-documents.mjs --verify --storage-urls
 
 移行スクリプトは Firebase 側の文書・ファイルを削除しません。コピー先の内容が違えば停止します。
 
-本番の切替時は、Firestore での更新を止めて最終照合を行い、サーバー専用の
-`SUPABASE_SERVICE_ROLE_KEY`、`SITE_DATA_BACKEND=supabase`、
-`SITE_STORAGE_BACKEND=supabase` をサーバー環境に設定してからデプロイします。
-設定前は Firebase を使い続けます。キーをブラウザに公開したり `NEXT_PUBLIC_` 変数に
-入れたりしないでください。契約 PDF は非公開バケットで原本の SHA-256 を維持します。
+サイトの実行時は常に Supabase を使います。サーバー専用の
+`SUPABASE_SERVICE_ROLE_KEY` を設定し、ブラウザへ公開したり `NEXT_PUBLIC_` 変数に
+入れたりしないでください。Firebase の環境変数は上記の移行・照合スクリプトを
+実行する場合にのみ必要です。契約 PDF は非公開バケットで原本の SHA-256 を維持します。
 
 ---
 

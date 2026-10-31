@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { revalidateTag } from "next/cache";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { getAdminSession } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     contractEndDate = parsed;
   }
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const docRef = firestore.collection("intakeResponses").doc(payload.id);
   const snapshot = await docRef.get();
 

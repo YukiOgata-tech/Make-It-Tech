@@ -72,7 +72,7 @@ export default async function AdminNfcLinksPage() {
         <CardContent>
           {loadError ? (
             <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              Firebaseから現在の設定を取得できませんでした。接続設定を確認してください。
+              現在の設定を取得できませんでした。データベース接続を確認してください。
             </p>
           ) : (
             <NfcLinkForm

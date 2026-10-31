@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { getPrivateSiteFileSignedUrl } from "@/lib/site-storage";
 import { requireAdmin } from "@/lib/admin-auth";
 import { Badge } from "@/components/ui/badge";
@@ -84,7 +84,7 @@ export default async function AdminConsoleDetailPage({
 
   const getCachedDetail = unstable_cache(
     async () => {
-      const { firestore } = getFirebaseAdmin();
+      const { firestore } = getSiteDataStore();
       const snapshot = await firestore.collection("intakeResponses").doc(id).get();
       if (!snapshot.exists) return null;
       return { id: snapshot.id, data: snapshot.data() ?? {} };

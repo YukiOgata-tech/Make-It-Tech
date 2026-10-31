@@ -1,5 +1,5 @@
 import { nfcSite } from "@/content/nfc/site";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 
 const COLLECTION_NAME = "nfcManagedLinks";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -61,7 +61,7 @@ function timestampToIso(value: unknown) {
 export async function getManagedNfcLink(slug: string): Promise<ManagedNfcLink | null> {
   if (!isManagedNfcSlug(slug)) return null;
 
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore.collection(COLLECTION_NAME).doc(slug).get();
   if (!snapshot.exists) return null;
 
@@ -89,6 +89,6 @@ export async function getManagedNfcLink(slug: string): Promise<ManagedNfcLink | 
 }
 
 export function getManagedNfcLinkCollection() {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   return firestore.collection(COLLECTION_NAME);
 }

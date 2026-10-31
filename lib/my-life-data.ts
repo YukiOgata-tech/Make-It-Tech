@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { Timestamp } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 
 export type MyLifeConfig = {
   leadText?: string;
@@ -50,7 +50,7 @@ function normalize(data: Record<string, unknown> | undefined): MyLifeConfig {
 
 const getCachedMyLifeConfig = unstable_cache(
   async () => {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore.collection("myLife").doc(MY_LIFE_DOC_ID).get();
     if (!snapshot.exists) {
       return { message: "" } satisfies MyLifeConfig;
@@ -63,7 +63,7 @@ const getCachedMyLifeConfig = unstable_cache(
 
 export async function fetchMyLifeConfig(options?: { bypassCache?: boolean }) {
   if (options?.bypassCache || process.env.NODE_ENV !== "production") {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore.collection("myLife").doc(MY_LIFE_DOC_ID).get();
     if (!snapshot.exists) {
       return { message: "" } satisfies MyLifeConfig;
@@ -80,7 +80,7 @@ export async function saveMyLifeConfig(payload: {
   imageUrl?: string;
   imagePath?: string;
 }) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   await firestore.collection("myLife").doc(MY_LIFE_DOC_ID).set(
     {
       leadText: payload.leadText ?? "",

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { FieldValue, Timestamp, type DocumentReference, type Transaction } from "firebase-admin/firestore";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import { buildAuditChain, type ContractAuditEvent } from "@/lib/contracts/audit";
 import {
   CONTRACT_TEMPLATES,
@@ -189,7 +189,7 @@ export async function createContractInputRequest(
   input: CreateContractInputRequestInput,
   actor: AdminActor
 ) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const requestRef = firestore.collection("contractInputRequests").doc();
   const contractId = firestore.collection("contracts").doc().id;
   const { token, tokenHash } = createSigningToken();
@@ -310,13 +310,13 @@ export async function createContractInputRequest(
 }
 
 export async function getContractInputRequest(id: string) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore.collection("contractInputRequests").doc(id).get();
   return snapshot.exists ? normalizeRequest(snapshot.id, snapshot.data()!) : null;
 }
 
 export async function getContractInputRequests(limit = 100) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore
     .collection("contractInputRequests")
     .orderBy("createdAt", "desc")
@@ -326,7 +326,7 @@ export async function getContractInputRequests(limit = 100) {
 }
 
 export async function getContractInputRequestEvents(requestId: string) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const snapshot = await firestore
     .collection("contractInputRequests")
     .doc(requestId)
@@ -361,7 +361,7 @@ export async function openContractInputRequest(
   evidence: RequestEvidence
 ): Promise<OpenInputRequestResult> {
   const tokenHash = sha256(token);
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
   return firestore.runTransaction(async (transaction) => {
     const tokenSnapshot = await transaction.get(tokenRef);
@@ -488,7 +488,7 @@ export async function submitContractInputRequest(
   evidence: RequestEvidence
 ) {
   const tokenHash = sha256(token);
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
   const tokenSnapshot = await tokenRef.get();
   if (!tokenSnapshot.exists || tokenSnapshot.data()?.purpose !== "recipient_input") {
@@ -555,7 +555,7 @@ export async function reissueContractInputRequest(
   requestId: string,
   actor: AdminActor
 ) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const requestRef = firestore.collection("contractInputRequests").doc(requestId);
   const { token, tokenHash } = createSigningToken();
   const tokenRef = firestore.collection("contractTokens").doc(tokenHash);
@@ -691,7 +691,7 @@ export async function cancelContractInputRequest(
   requestId: string,
   actor: AdminActor
 ) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const requestRef = firestore.collection("contractInputRequests").doc(requestId);
   await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(requestRef);
@@ -742,7 +742,7 @@ export async function recordContractInputPreview(
   previewSha256: string,
   actor: AdminActor
 ) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const requestRef = firestore.collection("contractInputRequests").doc(requestId);
   await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(requestRef);
@@ -773,7 +773,7 @@ export async function finalizeContractInputRequest(
   pdf: File | null,
   actor: AdminActor
 ) {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const requestRef = firestore.collection("contractInputRequests").doc(requestId);
   const initialSnapshot = await requestRef.get();
   if (!initialSnapshot.exists) throw new Error("入力依頼が見つかりません。");

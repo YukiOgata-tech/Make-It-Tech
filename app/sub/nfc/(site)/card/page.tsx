@@ -6,7 +6,7 @@ import { NfcSection } from "../../_components/nfc-section";
 import { STAMP_COOKIE, parseStamp } from "../../_lib/stamp";
 import { stampConfig, stampContent } from "@/content/nfc/stamp";
 import { nfcHref, nfcLinks, nfcSite } from "@/content/nfc/site";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 
 /** Cookie を読むため毎回サーバーで描画する。 */
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 async function readStats() {
   try {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore
       .collection("nfcDemoStats")
       .doc("mit-card")

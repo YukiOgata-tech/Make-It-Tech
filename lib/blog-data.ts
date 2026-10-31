@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { getFirebaseAdmin } from "@/lib/firebase-admin";
+import { getSiteDataStore } from "@/lib/site-data-store";
 import type { BlogCategory, BlogStatus } from "@/lib/blog";
 import { normalizeLinkLabelItems, type LinkLabel } from "@/lib/link-labels";
 
@@ -122,7 +122,7 @@ export function normalizeBlogDoc(
 
 const getBlogList = unstable_cache(
   async () => {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const now = new Date();
     const snapshot = await firestore
       .collection("blogPosts")
@@ -140,7 +140,7 @@ const getBlogList = unstable_cache(
 const getBlogBySlug = (slug: string) =>
   unstable_cache(
     async () => {
-      const { firestore } = getFirebaseAdmin();
+      const { firestore } = getSiteDataStore();
       const snapshot = await firestore
         .collection("blogPosts")
         .where("slug", "==", slug)
@@ -156,7 +156,7 @@ const getBlogBySlug = (slug: string) =>
 
 export async function fetchBlogList() {
   if (process.env.NODE_ENV !== "production") {
-    const { firestore } = getFirebaseAdmin();
+    const { firestore } = getSiteDataStore();
     const snapshot = await firestore
       .collection("blogPosts")
       .orderBy("createdAt", "desc")
@@ -179,7 +179,7 @@ export async function fetchBlogBySlug(slug: string) {
   const record =
     process.env.NODE_ENV !== "production"
       ? await (async () => {
-          const { firestore } = getFirebaseAdmin();
+          const { firestore } = getSiteDataStore();
           const snapshot = await firestore
             .collection("blogPosts")
             .where("slug", "==", slug)
@@ -217,7 +217,7 @@ export async function fetchBlogBySlug(slug: string) {
 }
 
 export async function fetchBlogSlugs() {
-  const { firestore } = getFirebaseAdmin();
+  const { firestore } = getSiteDataStore();
   const now = new Date();
   const snapshot = await firestore
     .collection("blogPosts")

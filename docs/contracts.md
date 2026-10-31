@@ -1,5 +1,7 @@
 # Make It Tech 電子契約 V1 技術・運用仕様
 
+> 保存先についての Firestore / Firebase Storage / Firebase Admin の記述は移行前の実装を示します。現在の実行時は Supabase のデータストア・Storage・認証を使用し、Firebase には接続しません。契約の操作・監査仕様と保存先の実装を混同しないでください。
+
 ## 目的と対象
 
 Make It Techと取引先法人の間で、確認済みPDFを原本としてNDA、FDE基本契約、FDE個別契約、Web制作契約、システム開発・業務委託契約、その他契約を締結・管理する内部業務システムです。契約書の全項目をMake It Techが入力する方法と、契約条件をMake It Techが確定した上で会社・署名予定者情報だけを取引先へ入力依頼する方法を選択できます。
