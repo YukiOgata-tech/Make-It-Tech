@@ -15,12 +15,15 @@ export async function POST(request: Request) {
   if (!parsed.success) return Response.json({error:parsed.error.issues[0]?.message ?? "入力を確認してください。"},{status:400});
   const x = parsed.data;
   const db = await createSupabaseServerClient();
-  const table = x.kind === "business" ? "mit_task_businesses" :
-    x.kind === "department" ? "mit_task_departments" : "mit_task_categories";
-  const record = x.kind === "department"
-    ? { entity_id:session.entityId, business_id:x.businessId, name:x.name }
-    : { entity_id:session.entityId, name:x.name, color:x.color };
-  const { data,error } = await db.from(table).insert(record).select("id").single();
+  const result = x.kind === "business"
+    ? await db.from("mit_task_businesses")
+        .insert({ entity_id:session.entityId, name:x.name, color:x.color }).select("id").single()
+    : x.kind === "department"
+    ? await db.from("mit_task_departments")
+        .insert({ entity_id:session.entityId, business_id:x.businessId, name:x.name }).select("id").single()
+    : await db.from("mit_task_categories")
+        .insert({ entity_id:session.entityId, name:x.name, color:x.color }).select("id").single();
+  const { data,error } = result;
   if (error) return Response.json({error:error.code === "23505" ? "同じ名称がすでに登録されています。" : error.message},{status:400});
   revalidatePath("/sub/admin-console/tasks");
   return Response.json({id:data.id},{status:201});
