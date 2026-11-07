@@ -339,8 +339,8 @@ export function WebProductionPage() {
             <motion.dl variants={reveal} className="mt-6 grid max-w-2xl grid-cols-3 divide-x divide-white/15 border-y border-white/15 sm:mt-8">
               {[
                 ["初期費用", "0円"],
-                ["制作費", "9,800円"],
-                ["月額運用", "24,980円"],
+                ["制作費", "9,800円から"],
+                ["月額運用", "24,980円から"],
               ].map(([label, value]) => (
                 <div key={label} className="px-2 py-3 first:pl-0 last:pr-0 sm:px-4 sm:py-4">
                   <dt className="text-[9px] font-bold text-white/45 sm:text-xs">{label}</dt>
@@ -356,7 +356,7 @@ export function WebProductionPage() {
                   {item}
                 </span>
               ))}
-              <span className="w-full text-[9px] text-white/40 sm:text-[10px]">表示価格は税込です。独自ドメイン費は別途。</span>
+              <span className="w-full text-[9px] text-white/40 sm:text-[10px]">表示価格は税込の開始価格です。独自ドメイン費は別途。</span>
             </motion.div>
           </motion.div>
         </div>
@@ -513,15 +513,15 @@ export function WebProductionPage() {
                     <p className="text-[9px] font-bold text-white/50">公開時の制作費</p>
                     <p className="mt-1 flex items-end gap-1 font-semibold tabular-nums">
                       <span className="text-2xl tracking-tight">9,800</span>
-                      <span className="pb-0.5 text-[10px]">円</span>
+                      <span className="pb-0.5 text-[10px]">円から</span>
                     </p>
                     <p className="mt-1 text-[9px] text-white/45">初期費用 0円</p>
                   </div>
                   <div className="pl-3">
-                    <p className="text-[9px] font-bold text-teal-100/65">公開後の継続支援</p>
+                    <p className="text-[9px] font-bold text-teal-100/65">月額・公開後の継続支援</p>
                     <p className="mt-1 flex items-end gap-1 font-semibold tabular-nums">
                       <span className="text-2xl tracking-tight">24,980</span>
-                      <span className="pb-0.5 text-[10px]">円/月</span>
+                      <span className="pb-0.5 text-[10px]">円から</span>
                     </p>
                     <p className="mt-1 text-[9px] text-teal-100/45">運用・改善・集客支援</p>
                   </div>
@@ -536,7 +536,7 @@ export function WebProductionPage() {
                   <div>
                     <p className="text-xs font-semibold">完成形を確認してから公開を判断</p>
                     <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground">
-                      公開を決定した場合に、制作費9,800円が発生します。
+                      公開を決定した場合に、制作費9,800円から発生します。
                     </p>
                   </div>
                 </div>
@@ -594,7 +594,7 @@ export function WebProductionPage() {
                 <h3 className="mt-2 text-sm font-semibold sm:mt-4 sm:text-xl">Webサイト制作</h3>
                 <div className="mt-3 flex items-end gap-1 sm:mt-6 sm:gap-2">
                   <span className="text-2xl font-semibold tabular-nums tracking-tight sm:text-5xl">9,800</span>
-                  <span className="pb-0.5 text-[10px] font-semibold sm:pb-1 sm:text-base">円</span>
+                  <span className="pb-0.5 text-[10px] font-semibold sm:pb-1 sm:text-base">円から</span>
                 </div>
                 <p className="mt-1 text-[9px] text-muted-foreground sm:text-xs">税込 / 初期費用0円</p>
 
@@ -644,9 +644,9 @@ export function WebProductionPage() {
 
                 <div className="mt-3 flex items-end gap-1 sm:mt-7 sm:gap-2">
                   <span className="text-2xl font-semibold tabular-nums tracking-tight sm:text-6xl">24,980</span>
-                  <span className="pb-0.5 text-[9px] font-semibold sm:pb-1 sm:text-base">円/月</span>
+                  <span className="pb-0.5 text-[9px] font-semibold sm:pb-1 sm:text-base">円から</span>
                 </div>
-                <p className="mt-1 text-[9px] text-white/50 sm:text-xs">税込</p>
+                <p className="mt-1 text-[9px] text-white/50 sm:text-xs">月額・税込</p>
 
                 <div className="mt-4 grid gap-1.5 sm:mt-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-3">
                   {supportItems.map((item) => (
@@ -672,6 +672,9 @@ export function WebProductionPage() {
               </div>
             </Reveal>
           </div>
+          <p className="mx-auto mt-5 max-w-4xl text-[11px] leading-5 text-muted-foreground sm:mt-7 sm:text-sm sm:leading-7">
+            表示価格は税込の開始価格です。ページ数が多いサイトや複雑なシステム・追加機能が必要な場合は、内容に応じて別途お見積もりとなる場合があります。お見積もりとヒアリングは無料です。
+          </p>
         </div>
       </section>
 
@@ -783,7 +786,7 @@ export function WebProductionPage() {
                 事業のことから聞かせてください。
               </h2>
               <p className="mt-2 max-w-2xl text-xs leading-5 text-white/60 sm:mt-4 sm:text-base sm:leading-8">
-                見せたい情報、今困っていること、公開後に続けたいことを整理し、必要なページと運用方法を提案します。
+                見せたい情報、今困っていること、公開後に続けたいことを整理し、必要なページと運用方法を提案します。お見積もり・ヒアリングは無料です。新潟県内では現地での対応も可能ですので、お気軽にお問い合わせください。
               </p>
             </div>
             <div className="grid gap-2 sm:flex sm:gap-3 lg:grid">

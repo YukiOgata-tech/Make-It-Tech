@@ -7,7 +7,7 @@ const pagePath = "/web-production";
 const pageUrl = `${site.url}${pagePath}`;
 const pageTitle = "新潟のホームページ制作・Web制作｜SEO・MEO・AI検索対応";
 const pageDescription =
-  "新潟の中小事業者・店舗向けホームページ制作。初期費用0円、制作費9,800円（税込）。CMS対応のWeb制作からSEO・MEO・AI検索対策、公開後の更新・改善まで継続支援します。";
+  "新潟の中小事業者・店舗向けホームページ制作。初期費用0円、制作費9,800円（税込）から、月額運用24,980円（税込）から。お見積もり・ヒアリングは無料。県内は現地対応も可能です。";
 const heroImagePath = "/images/web-production/hero-web-production.png";
 const heroImageUrl = `${site.url}${heroImagePath}`;
 
@@ -101,34 +101,20 @@ export default function Page() {
         ],
         offers: [
           {
-            "@type": "Offer",
+            "@type": "AggregateOffer",
             name: "Webサイト制作費",
-            description: "完成形を確認し、公開を決定した場合に発生する制作費。初期費用は0円。",
+            description: "完成形を確認し、公開を決定した場合に発生する制作費。9,800円（税込）から。ページ数や機能により別途見積もり。初期費用は0円。",
             url: `${pageUrl}#pricing`,
-            price: "9800",
+            lowPrice: "9800",
             priceCurrency: "JPY",
-            priceSpecification: {
-              "@type": "PriceSpecification",
-              price: "9800",
-              priceCurrency: "JPY",
-              valueAddedTaxIncluded: true,
-            },
           },
           {
-            "@type": "Offer",
+            "@type": "AggregateOffer",
             name: "Web運用・改善・Webマーケティング継続支援",
-            description: "公開後の更新・改善、SEO・MEO・AIOを含む月額の継続支援。",
+            description: "公開後の更新・改善、SEO・MEO・AIOを含む月額24,980円（税込）からの継続支援。",
             url: `${pageUrl}#pricing`,
-            price: "24980",
+            lowPrice: "24980",
             priceCurrency: "JPY",
-            priceSpecification: {
-              "@type": "UnitPriceSpecification",
-              price: "24980",
-              priceCurrency: "JPY",
-              billingDuration: "P1M",
-              unitText: "月",
-              valueAddedTaxIncluded: true,
-            },
           },
           {
             "@type": "Offer",
