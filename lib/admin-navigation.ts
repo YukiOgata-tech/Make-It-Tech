@@ -11,6 +11,7 @@ import {
   ReceiptText,
   BarChart3,
   TrendingUp,
+  ListTodo,
 } from "lucide-react";
 
 export type AdminNavigationItem = {
@@ -34,6 +35,17 @@ export const adminNavigation: readonly AdminNavigationSection[] = [
         label: "ダッシュボード",
         description: "業務全体を確認",
         icon: Gauge,
+      },
+    ],
+  },
+  {
+    label: "業務管理",
+    items: [
+      {
+        href: "/sub/admin-console/tasks",
+        label: "タスク管理",
+        description: "事業別のタスク・担当・期限",
+        icon: ListTodo,
       },
     ],
   },
