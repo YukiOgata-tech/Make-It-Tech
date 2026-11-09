@@ -33,7 +33,7 @@
 
 ## Testing Guidelines
 
-現時点では自動テスト未導入で、`npm test` スクリプトもありません。導入する場合は `*.test.ts`/`*.test.tsx` または `__tests__/` を使い、`package.json` にテストスクリプトを追加し、ここに実行方法を記載してください。
+`npm run test:contracts` で契約のテストを実行します。`npm test` スクリプトはありません。追加する場合は `*.test.ts`/`*.test.tsx` または `__tests__/` を使い、実行方法をここに記載してください。
 
 ## Visual Review Policy
 

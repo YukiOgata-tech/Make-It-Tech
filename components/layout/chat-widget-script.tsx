@@ -19,7 +19,7 @@ export function ChatWidgetScript() {
   // /flyer, /flyer-nfc, /flyer02 ... all print sheets render without site chrome
   const isFlyerPath = /^\/flyer($|[-\d])/.test(pathname);
 
-  if (isMakeItTechSubdomain || isSubRoute || isFlyerPath) {
+  if (isMakeItTechSubdomain || isSubRoute || isFlyerPath || pathname.startsWith("/pay/")) {
     return null;
   }
 

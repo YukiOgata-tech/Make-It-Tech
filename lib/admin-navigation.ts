@@ -11,6 +11,7 @@ import {
   ReceiptText,
   BarChart3,
   TrendingUp,
+  CreditCard,
 } from "lucide-react";
 
 export type AdminNavigationItem = {
@@ -40,6 +41,12 @@ export const adminNavigation: readonly AdminNavigationSection[] = [
   {
     label: "顧客対応",
     items: [
+      {
+        href: "/sub/admin-console/payment-links",
+        label: "受注・決済リンク",
+        description: "注文承認とStripe決済",
+        icon: CreditCard,
+      },
       {
         href: "/sub/admin-console/results",
         label: "問い合わせ",

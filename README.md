@@ -20,6 +20,7 @@ npm run dev
 - 本番起動: `npm run start`
 - Lint: `npm run lint`
 - 型チェック: `npm run typecheck`
+- 決済リンクの設定・検証手順: `docs/payment-links.md`
 - GA 運用スクリプト: `npm run ga:admin`
 
 環境変数は `.env.example` を `.env.local` にコピーして設定してください。

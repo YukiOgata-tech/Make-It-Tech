@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/pay/:path*",
+        headers: [
+          ...noReferrerHeaders(),
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      },
+      {
         source: "/:path*",
         has: [{ type: "host", value: "sign\\.make-it-tech\\.com" }],
         headers: noReferrerHeaders(),

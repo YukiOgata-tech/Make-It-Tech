@@ -61,6 +61,7 @@ function getConsentState(pathname: string): ConsentState {
 }
 
 function shouldTrackPath(pathname: string) {
+  if (pathname === "/pay" || pathname.startsWith("/pay/")) return false;
   if (pathname.startsWith("/sub/admin-console")) return false;
   if (pathname.startsWith("/sub/lp")) return false;
   if (pathname.startsWith("/sub/sign")) return false;
